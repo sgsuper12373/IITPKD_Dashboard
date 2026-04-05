@@ -2,9 +2,10 @@
 -- PostgreSQL database dump
 --
 
+\restrict bjqal8uTjWCWToGHrvVWxSHSu9svT8caXCD3GPxqch9jPdxNU4ltH0oVnEUjhmF
 
--- Dumped from database version 18.1
--- Dumped by pg_dump version 18.1
+-- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1165,7 +1166,7 @@ ALTER SEQUENCE public.research_patents_patent_id_seq OWNED BY public.research_pa
 --
 
 CREATE TABLE public.research_publications (
-    publication_id integer NOT NULL,
+    publication_id character varying(32) NOT NULL,
     publication_title character varying(500) NOT NULL,
     journal_name character varying(500),
     department character varying(100),
@@ -1177,28 +1178,6 @@ CREATE TABLE public.research_publications (
 
 
 ALTER TABLE public.research_publications OWNER TO postgres;
-
---
--- Name: research_publications_publication_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.research_publications_publication_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.research_publications_publication_id_seq OWNER TO postgres;
-
---
--- Name: research_publications_publication_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.research_publications_publication_id_seq OWNED BY public.research_publications.publication_id;
-
 
 --
 -- Name: roles; Type: TABLE; Schema: public; Owner: postgres
@@ -1562,13 +1541,6 @@ ALTER TABLE ONLY public.research_patents ALTER COLUMN patent_id SET DEFAULT next
 
 
 --
--- Name: research_publications publication_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.research_publications ALTER COLUMN publication_id SET DEFAULT nextval('public.research_publications_publication_id_seq'::regclass);
-
-
---
 -- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1849,7 +1821,15 @@ ALTER TABLE ONLY public.research_patents
 --
 
 ALTER TABLE ONLY public.research_publications
-    ADD CONSTRAINT research_publications_pkey PRIMARY KEY (publication_title);
+    ADD CONSTRAINT research_publications_pkey PRIMARY KEY (publication_id);
+
+
+--
+-- Name: research_publications research_publications_unique_entry; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.research_publications
+    ADD CONSTRAINT research_publications_unique_entry UNIQUE (publication_title, publication_year, faculty_name);
 
 
 --
@@ -1993,4 +1973,6 @@ ALTER TABLE ONLY public.users
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict bjqal8uTjWCWToGHrvVWxSHSu9svT8caXCD3GPxqch9jPdxNU4ltH0oVnEUjhmF
 
