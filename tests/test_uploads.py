@@ -70,10 +70,10 @@ def get_token(email, password):
         if response.status_code == 200:
             return response.json().get("token")
         else:
-            logging.error(f"Login failed: {response.json().get('message', 'Unknown error')}")
+            logging.error("Login failed: %s", response.json().get("message", "Unknown error"))
             return None
     except Exception as e:
-        logging.error(f"Error during login: {e}")
+        logging.error("Error during login: %s", e)
         return None
 
 def upload_csv(table_name, file_path, token):
@@ -114,7 +114,7 @@ def run_tests(token):
     for table_name in UPLOAD_ORDER:
         if table_name in all_csv_files:
             file_path = all_csv_files[table_name]
-            logging.info(f"Uploading {table_name}...")
+            logging.info("Uploading %s...", table_name)
             success, message = upload_csv(table_name, file_path, token)
             
             status = "PASS" if success else "FAIL"
@@ -165,7 +165,7 @@ def main():
         logging.error("Email and password are required. Use --email/--password or set TEST_EMAIL/TEST_PASSWORD environment variables.")
         return
 
-    logging.info(f"Targeting backend at {BASE_URL}")
+    logging.info("Targeting backend at %s", BASE_URL)
     token = get_token(email, password)
     if not token:
         return
