@@ -40,7 +40,7 @@ const ENGAGEMENT_LABELS = {
   Adjunct: 'Adjunct',
   Honorary: 'Honorary',
   Visiting: 'Visiting',
-  FacultyFellow: 'Faculty Fellow',
+  // FacultyFellow: 'Faculty Fellow',
   PoP: 'PoP'
 };
 
@@ -671,7 +671,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </button>
                   </div>
 
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
                     <div className="filter-group">
                       <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                       <select
@@ -685,52 +685,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         ))}
                       </select>
                     </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={summaryFilters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
-                      <select
-                        value={summaryFilters.engagement_type}
-                        onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.engagement_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{ 
-                    marginTop: '12px', 
-                    padding: '8px', 
-                    backgroundColor: '#e9ecef', 
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {summaryFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {summaryFilters.year}</span>}
-                    {summaryFilters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {summaryFilters.department}</span>}
-                    {summaryFilters.engagement_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {summaryFilters.engagement_type}</span>}
-                    {summaryFilters.year === 'All' && summaryFilters.department === 'All' && summaryFilters.engagement_type === 'All' && 
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-header">
@@ -746,7 +702,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   gap: '1.5rem',
                   marginTop: '1.5rem'
                 }}>
-                  {summaryCards.map((card) => (
+                  {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
                     <div
                       key={card.type}
                       style={{
@@ -890,22 +846,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{ 
-                    marginTop: '12px', 
-                    padding: '8px', 
-                    backgroundColor: '#e9ecef', 
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {departmentFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {departmentFilters.year}</span>}
-                    {departmentFilters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {departmentFilters.department}</span>}
-                    {departmentFilters.engagement_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {departmentFilters.engagement_type}</span>}
-                    {departmentFilters.year === 'All' && departmentFilters.department === 'All' && departmentFilters.engagement_type === 'All' && 
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-header">
@@ -1042,22 +982,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{ 
-                    marginTop: '12px', 
-                    padding: '8px', 
-                    backgroundColor: '#e9ecef', 
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {trendFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {trendFilters.year}</span>}
-                    {trendFilters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {trendFilters.department}</span>}
-                    {trendFilters.engagement_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {trendFilters.engagement_type}</span>}
-                    {trendFilters.year === 'All' && trendFilters.department === 'All' && trendFilters.engagement_type === 'All' && 
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-header">
@@ -1192,22 +1116,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{ 
-                    marginTop: '12px', 
-                    padding: '8px', 
-                    backgroundColor: '#e9ecef', 
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {distributionFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {distributionFilters.year}</span>}
-                    {distributionFilters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {distributionFilters.department}</span>}
-                    {distributionFilters.engagement_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {distributionFilters.engagement_type}</span>}
-                    {distributionFilters.year === 'All' && distributionFilters.department === 'All' && distributionFilters.engagement_type === 'All' && 
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-header">
@@ -1330,22 +1238,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{ 
-                    marginTop: '12px', 
-                    padding: '8px', 
-                    backgroundColor: '#e9ecef', 
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {detailsFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {detailsFilters.year}</span>}
-                    {detailsFilters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {detailsFilters.department}</span>}
-                    {detailsFilters.engagement_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {detailsFilters.engagement_type}</span>}
-                    {detailsFilters.year === 'All' && detailsFilters.department === 'All' && detailsFilters.engagement_type === 'All' && 
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-header">

@@ -166,10 +166,10 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   const typePieData = useMemo(() => {
     if (!typeDistribution.length) return [];
-    return typeDistribution.map((row) => ({
-      name: row.publication_type,
-      value: Number(row.total) || 0
-    }));
+    return typeDistribution
+      .map((row) => ({ name: row.publication_type, value: Number(row.total) || 0 }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
   }, [typeDistribution]);
 
   const participatingDepartments = useMemo(
@@ -584,22 +584,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                    {filters.publication_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.publication_year}</span>}
-                    {filters.publication_type !== 'All' && <span style={{ marginRight: '8px' }}>📋 {filters.publication_type}</span>}
-                    {filters.department === 'All' && filters.publication_year === 'All' && filters.publication_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-container">
@@ -700,21 +684,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.publication_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.publication_year}</span>}
-                    {filters.publication_type !== 'All' && <span style={{ marginRight: '8px' }}>📋 {filters.publication_type}</span>}
-                    {filters.publication_year === 'All' && filters.publication_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-container">
@@ -814,21 +783,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                    {filters.publication_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.publication_year}</span>}
-                    {filters.department === 'All' && filters.publication_year === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="chart-container">
@@ -951,22 +905,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                    {filters.publication_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.publication_year}</span>}
-                    {filters.publication_type !== 'All' && <span style={{ marginRight: '8px' }}>📋 {filters.publication_type}</span>}
-                    {filters.department === 'All' && filters.publication_year === 'All' && filters.publication_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
                 </div>
 
                 <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>

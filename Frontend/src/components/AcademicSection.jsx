@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { fetchFilterOptions, fetchGenderDistributionFiltered, fetchStudentStrengthFiltered, fetchGenderTrends, fetchProgramTrends, fetchCumulativeStudentSummary } from '../services/academicStats';
+import { fetchFilterOptions, fetchGenderDistributionFiltered, fetchStudentStrengthFiltered, fetchGenderTrends, fetchProgramTrends, fetchCumulativeStudentSummary, fetchOnrollSummary } from '../services/academicStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
 import './Page.css';
@@ -88,6 +88,11 @@ function AcademicSection({ user, isPublicView = false }) {
   });
   const [summaryLoading, setSummaryLoading] = useState(false);
 
+  const [onrollSummary, setOnrollSummary] = useState({
+    total_onroll: 0, ug_onroll: 0, pg_onroll: 0, research_onroll: 0
+  });
+  const [onrollLoading, setOnrollLoading] = useState(false);
+
   const [filters, setFilters] = useState({
     yearofadmission: null, program: null, batch: null, branch: null,
     department: null, category: null, pwd: null
@@ -165,6 +170,28 @@ function AcademicSection({ user, isPublicView = false }) {
     };
     loadCumulativeSummary();
   }, [token, summaryYear, uploadVersion]);
+
+  // Fetch on-roll summary data
+  useEffect(() => {
+    const loadOnrollSummary = async () => {
+      if (!token) return;
+      try {
+        setOnrollLoading(true);
+        const result = await fetchOnrollSummary(token);
+        setOnrollSummary({
+          total_onroll:    result.total_onroll    || 0,
+          ug_onroll:       result.ug_onroll       || 0,
+          pg_onroll:       result.pg_onroll       || 0,
+          research_onroll: result.research_onroll || 0,
+        });
+      } catch (err) {
+        console.error('Failed to load on-roll summary:', err);
+      } finally {
+        setOnrollLoading(false);
+      }
+    };
+    loadOnrollSummary();
+  }, [token, uploadVersion]);
 
   useEffect(() => {
     const load = async () => {
@@ -246,6 +273,73 @@ function AcademicSection({ user, isPublicView = false }) {
           </div>
         )}
         {error && <div className="error-message">{error}</div>}
+
+        {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
+        <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '30px' }}>
+          Students On Roll
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+          {[
+            {
+              label: 'Total Studnets On Roll', icon: '🎯', value: onrollSummary.total_onroll,
+              grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)',
+              subtitle: 'Cumulative students on roll'
+            },
+            {
+              label: 'UG', icon: '📘', value: onrollSummary.ug_onroll,
+              grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)',
+              subtitle: 'BTech — On Roll'
+            },
+            {
+              label: 'PG', icon: '🎓', value: onrollSummary.pg_onroll,
+              grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)',
+              subtitle: 'MTech + MS — On Roll'
+            },
+            {
+              label: 'Research', icon: '🔬', value: onrollSummary.research_onroll,
+              grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',
+              subtitle: 'PhD + MSe By Research) — On Roll'
+            },
+          ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
+            const delay = onrollLoading ? 0 : idx * 55;
+            const enterTransition = `opacity 0.45s cubic-bezier(0.2, 0, 0, 1) ${delay}ms, transform 0.45s cubic-bezier(0.2, 0, 0, 1) ${delay}ms`;
+            const exitTransition = 'opacity 0.15s ease-in, transform 0.15s ease-in';
+            const t = onrollLoading ? exitTransition : enterTransition;
+            return (
+              <div key={label} style={{
+                background: grad, borderRadius: '16px', padding: '24px',
+                boxShadow: `0 10px 20px ${shadow}`, position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>{icon}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500' }}>{label}</span>
+                  </div>
+                  <div style={{
+                    fontSize: '40px', fontWeight: 'bold', color: 'white', marginBottom: '4px',
+                    opacity: onrollLoading ? 0 : 1,
+                    transform: onrollLoading ? 'translateY(10px) scale(0.96)' : 'translateY(0) scale(1)',
+                    transition: t,
+                    willChange: 'opacity, transform',
+                  }}>
+                    {value}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{
+                      fontSize: '11px', color: 'rgba(255,255,255,0.7)',
+                      opacity: onrollLoading ? 0 : 1,
+                      transform: onrollLoading ? 'translateY(4px)' : 'translateY(0)',
+                      transition: t,
+                      display: 'inline-block',
+                    }}>{subtitle}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
         <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
@@ -420,7 +514,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     <Tooltip {...tooltipStyle} />
                     <Legend
                       verticalAlign="top" align="center"
-                      content={(props) => <InlineLegend {...props} totalLabel="Total Students" totalValue={trendTotal} />}
+                      content={(props) => <InlineLegend {...props} />}
                     />
                     {areaKeys.map(key => (
                       <Area
@@ -456,7 +550,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     <Tooltip {...tooltipStyle} />
                     <Legend
                       verticalAlign="top" align="center"
-                      content={(props) => <InlineLegend {...props} totalLabel="Total Students" totalValue={trendTotal} />}
+                      content={(props) => <InlineLegend {...props} />}
                     />
                     {selectedGender === 'Total' && <Bar dataKey="Total" fill="#667eea" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
                     {selectedGender === 'All' && <><Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /></>}
@@ -563,7 +657,7 @@ function AcademicSection({ user, isPublicView = false }) {
                   <Tooltip content={<StackedBarTooltip total={strengthTotal} />} />
                   <Legend
                     verticalAlign="top" align="center"
-                    content={(props) => <InlineLegend {...props} totalLabel="Total Students" totalValue={strengthTotal} />}
+                    content={(props) => <InlineLegend {...props} />}
                   />
                   <Bar dataKey="Male" stackId="a" fill="#667eea" {...BAR_ANIMATION} />
                   <Bar dataKey="Female" stackId="a" fill="#764ba2" {...BAR_ANIMATION} />

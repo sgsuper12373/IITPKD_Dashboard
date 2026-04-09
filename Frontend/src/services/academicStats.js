@@ -184,6 +184,28 @@ export const fetchProgramTrends = async (filters, token) => {
 };
 
 /**
+ * Fetches on-roll student counts broken down by program type.
+ * UG       : BTech + (On Roll | Slow-Paced)
+ * PG       : PG   + (On Roll | Slow-Paced)
+ * Research : PHD  + (On Roll | Slow-Paced | Thesis Submitted | Viva Voce Completed)
+ * Total    : sum of the three
+ * @param {string} token - Authentication token
+ * @returns {Promise<Object>} { total_onroll, ug_onroll, pg_onroll, research_onroll }
+ */
+export const fetchOnrollSummary = async (token) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/stats/onroll-summary`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching on-roll summary:', error);
+    return { total_onroll: 0, ug_onroll: 0, pg_onroll: 0, research_onroll: 0 };
+  }
+};
+
+/**
  * Fetches student summary counts (Total / UG / PG / Research) from the
  * academic_program_type column.
  * @param {number|null} year - Admission year to filter by (null = all years)

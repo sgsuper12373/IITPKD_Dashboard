@@ -67,26 +67,59 @@ def get_filter_options(current_user_id):
             return jsonify({'message': 'Database connection failed.'}), 500
         cur = conn.cursor()
 
+        # Normalise helper: lowercase + strip spaces and commas
+        NORM = "REGEXP_REPLACE(LOWER({col}), '[\\s,]+', '', 'g')"
+
         cur.execute(f"""
             SELECT
-                ARRAY(SELECT DISTINCT course_category FROM {COURSES_TABLE}
-                      WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') AND course_category IS NOT NULL ORDER BY course_category) AS categories,
-                ARRAY(SELECT DISTINCT target_programme FROM {COURSES_TABLE}
-                      WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') AND target_programme IS NOT NULL ORDER BY target_programme) AS programmes,
-                ARRAY(SELECT DISTINCT industry_course_status_currentay FROM {COURSES_TABLE}
-                      WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') AND industry_course_status_currentay IS NOT NULL ORDER BY industry_course_status_currentay) AS statuses,
-                ARRAY(SELECT DISTINCT proposal_type FROM {COURSES_TABLE}
-                      WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') AND proposal_type IS NOT NULL ORDER BY proposal_type) AS proposal_types,
-                ARRAY(SELECT DISTINCT target_discipline FROM {COURSES_TABLE}
-                      WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') AND target_discipline IS NOT NULL ORDER BY target_discipline) AS disciplines
+                -- categories: normalise, skip blank
+                ARRAY(
+                    SELECT DISTINCT {NORM.format(col='course_category')}
+                    FROM {COURSES_TABLE}
+                    WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                      AND COALESCE(TRIM(course_category), '') != ''
+                    ORDER BY 1
+                ) AS categories,
+
+                -- programmes: normalise, skip blank
+                ARRAY(
+                    SELECT DISTINCT {NORM.format(col='target_programme')}
+                    FROM {COURSES_TABLE}
+                    WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                      AND COALESCE(TRIM(target_programme), '') != ''
+                    ORDER BY 1
+                ) AS programmes,
+
+                -- proposal_types: normalise; blank/NULL → 'old'
+                ARRAY(
+                    SELECT DISTINCT
+                        CASE
+                            WHEN COALESCE(TRIM({NORM.format(col='COALESCE(proposal_type,\'\')')}), '') = ''
+                            THEN 'old'
+                            ELSE {NORM.format(col='proposal_type')}
+                        END
+                    FROM {COURSES_TABLE}
+                    WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                    ORDER BY 1
+                ) AS proposal_types,
+
+                -- disciplines: normalise, skip blank
+                ARRAY(
+                    SELECT DISTINCT {NORM.format(col='target_discipline')}
+                    FROM {COURSES_TABLE}
+                    WHERE UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                      AND COALESCE(TRIM(target_discipline), '') != ''
+                    ORDER BY 1
+                ) AS disciplines
         """)
         row = cur.fetchone() or {}
         return jsonify({
-            'categories': row.get('categories') or [],
-            'programmes': row.get('programmes') or [],
-            'statuses': row.get('statuses') or [],
+            'categories':     row.get('categories')     or [],
+            'programmes':     row.get('programmes')     or [],
+            # status is a binary derived field — only two meaningful values
+            'statuses':       ['Active', 'Inactive'],
             'proposal_types': row.get('proposal_types') or [],
-            'disciplines': row.get('disciplines') or []
+            'disciplines':    row.get('disciplines')    or [],
         }), 200
     except UndefinedTable:
         return jsonify({'message': 'Academic module tables are missing.'}), 500
@@ -289,21 +322,40 @@ def get_courses(current_user_id):
             return jsonify({'message': 'Database connection failed.'}), 500
         cur = conn.cursor()
 
-        where_clause, params = build_where_clause(
-            filters,
-            {
-                'category': 'course_category',
-                'programme': 'target_programme',
-                'status': 'industry_course_status_currentay',
-                'proposal_type': 'proposal_type',
-            }
-        )
-        # Global filter for industry courses (captures 'YES', 'TRUE', or 'T')
-        industry_filter = "UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')"
-        if where_clause:
-            where_clause += f" AND {industry_filter}"
-        else:
-            where_clause = f"WHERE {industry_filter}"
+        # Build WHERE conditions with normalised matching
+        NORM = "REGEXP_REPLACE(LOWER(COALESCE({col}, '')), '[\\s,]+', '', 'g')"
+        conditions = ["UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')"]
+        params = []
+
+        category = filters.get('category')
+        if category not in (None, '', 'All'):
+            conditions.append(f"{NORM.format(col='course_category')} = %s")
+            params.append(category)
+
+        programme = filters.get('programme')
+        if programme not in (None, '', 'All'):
+            conditions.append(f"{NORM.format(col='target_programme')} = %s")
+            params.append(programme)
+
+        # status: 'Active' → industry_course_status_currentay = 'YES' (case-insensitive)
+        #         'Inactive' → everything else (including NULL)
+        status = filters.get('status')
+        if status == 'Active':
+            conditions.append("UPPER(COALESCE(industry_course_status_currentay, '')) = 'YES'")
+        elif status == 'Inactive':
+            conditions.append("UPPER(COALESCE(industry_course_status_currentay, '')) != 'YES'")
+
+        # proposal_type: normalised match; 'old' also matches blank/NULL rows
+        proposal_type = filters.get('proposal_type')
+        if proposal_type not in (None, '', 'All'):
+            norm_col = NORM.format(col='proposal_type')
+            if proposal_type == 'old':
+                conditions.append(f"COALESCE({norm_col}, '') IN ('', 'old')")
+            else:
+                conditions.append(f"{norm_col} = %s")
+                params.append(proposal_type)
+
+        where_clause = "WHERE " + " AND ".join(conditions)
 
         # Add search
         if search:

@@ -17,7 +17,6 @@ import {
 } from 'recharts';
 
 import {
-  fetchFilterOptions,
   fetchSummary,
   fetchCategoryBreakdown,
   fetchProgrammeBreakdown,
@@ -40,38 +39,8 @@ function EducationAcademicSection({ user, isPublicView = false }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
-  const [filterOptions, setFilterOptions] = useState({
-    categories: [],
-    programmes: [],
-    statuses: [],
-    proposal_types: [],
-    disciplines: []
-  });
-
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('categoryBreakdown'); // 'categoryBreakdown' | 'programmeBreakdown' | 'courseCatalogue'
-
-  // Independent filter states for each view
-  const [categoryFilters, setCategoryFilters] = useState({
-    category: 'All',
-    programme: 'All',
-    status: 'All',
-    proposal_type: 'All'
-  });
-
-  const [programmeFilters, setProgrammeFilters] = useState({
-    category: 'All',
-    programme: 'All',
-    status: 'All',
-    proposal_type: 'All'
-  });
-
-  const [catalogueFilters, setCatalogueFilters] = useState({
-    category: 'All',
-    programme: 'All',
-    status: 'All',
-    proposal_type: 'All'
-  });
 
   const [summary, setSummary] = useState({
     total_courses: 0,
@@ -94,96 +63,17 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  // Get current filters based on view type
-  const getCurrentFilters = () => {
-    switch (viewType) {
-      case 'categoryBreakdown': return categoryFilters;
-      case 'programmeBreakdown': return programmeFilters;
-      case 'courseCatalogue': return catalogueFilters;
-      default: return categoryFilters;
-    }
-  };
-
-  // Handle filter change for current view
-  const handleFilterChange = (field, value) => {
-    switch (viewType) {
-      case 'categoryBreakdown':
-        setCategoryFilters(prev => ({ ...prev, [field]: value }));
-        break;
-      case 'programmeBreakdown':
-        setProgrammeFilters(prev => ({ ...prev, [field]: value }));
-        break;
-      case 'courseCatalogue':
-        setCatalogueFilters(prev => ({ ...prev, [field]: value }));
-        break;
-    }
-  };
-
-  // Clear filters for current view
-  const handleClearFilters = () => {
-    const defaultFilters = {
-      category: 'All',
-      programme: 'All',
-      status: 'All',
-      proposal_type: 'All'
-    };
-
-    switch (viewType) {
-      case 'categoryBreakdown':
-        setCategoryFilters(defaultFilters);
-        break;
-      case 'programmeBreakdown':
-        setProgrammeFilters(defaultFilters);
-        break;
-      case 'courseCatalogue':
-        setCatalogueFilters(defaultFilters);
-        break;
-    }
-  };
-
-  useEffect(() => {
-    const loadFilterOptions = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        return;
-      }
-      try {
-        const options = await fetchFilterOptions(token);
-        setFilterOptions({
-          categories: Array.isArray(options?.categories) ? options.categories : [],
-          programmes: Array.isArray(options?.programmes) ? options.programmes : [],
-          statuses: Array.isArray(options?.statuses) ? options.statuses : [],
-          proposal_types: Array.isArray(options?.proposal_types) ? options.proposal_types : [],
-          disciplines: Array.isArray(options?.disciplines) ? options.disciplines : []
-        });
-      } catch (err) {
-        console.error('Failed to load academic module filter options:', err);
-        setError(err.message || 'Failed to load filter options.');
-      }
-    };
-
-    loadFilterOptions();
-  }, [token, uploadVersion]);
-
-  // Fetch summary data
+  // Fetch summary + category breakdown data
   useEffect(() => {
     const loadSummaryData = async () => {
       if (!token) return;
       try {
         setLoading(prev => ({ ...prev, category: true }));
         setError(null);
-
-        const filterParams = {};
-        if (categoryFilters.category !== 'All') filterParams.category = categoryFilters.category;
-        if (categoryFilters.programme !== 'All') filterParams.programme = categoryFilters.programme;
-        if (categoryFilters.status !== 'All') filterParams.status = categoryFilters.status;
-        if (categoryFilters.proposal_type !== 'All') filterParams.proposal_type = categoryFilters.proposal_type;
-
         const [summaryResp, trendResp] = await Promise.all([
-          fetchSummary(filterParams, token),
-          fetchCategoryBreakdown(filterParams, token)
+          fetchSummary({}, token),
+          fetchCategoryBreakdown({}, token)
         ]);
-
         setSummary(summaryResp?.data || summary);
         setCourseTrend(trendResp?.data || []);
       } catch (err) {
@@ -193,11 +83,8 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         setLoading(prev => ({ ...prev, category: false }));
       }
     };
-
-    if (viewType === 'categoryBreakdown') {
-      loadSummaryData();
-    }
-  }, [categoryFilters, token, viewType, uploadVersion]);
+    if (viewType === 'categoryBreakdown') loadSummaryData();
+  }, [token, viewType, uploadVersion]);
 
   // Fetch programme breakdown data
   useEffect(() => {
@@ -206,14 +93,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
       try {
         setLoading(prev => ({ ...prev, programme: true }));
         setError(null);
-
-        const filterParams = {};
-        if (programmeFilters.category !== 'All') filterParams.category = programmeFilters.category;
-        if (programmeFilters.programme !== 'All') filterParams.programme = programmeFilters.programme;
-        if (programmeFilters.status !== 'All') filterParams.status = programmeFilters.status;
-        if (programmeFilters.proposal_type !== 'All') filterParams.proposal_type = programmeFilters.proposal_type;
-
-        const progBreakdownResp = await fetchProgrammeBreakdown(filterParams, token);
+        const progBreakdownResp = await fetchProgrammeBreakdown({}, token);
         setProgrammeBreakdown(progBreakdownResp?.data || []);
       } catch (err) {
         console.error('Failed to load programme data:', err);
@@ -222,11 +102,8 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         setLoading(prev => ({ ...prev, programme: false }));
       }
     };
-
-    if (viewType === 'programmeBreakdown') {
-      loadProgrammeData();
-    }
-  }, [programmeFilters, token, viewType, uploadVersion]);
+    if (viewType === 'programmeBreakdown') loadProgrammeData();
+  }, [token, viewType, uploadVersion]);
 
   // Fetch course catalogue data
   useEffect(() => {
@@ -235,14 +112,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
       try {
         setLoading(prev => ({ ...prev, catalogue: true }));
         setError(null);
-
-        const filterParams = {};
-        if (catalogueFilters.category !== 'All') filterParams.category = catalogueFilters.category;
-        if (catalogueFilters.programme !== 'All') filterParams.programme = catalogueFilters.programme;
-        if (catalogueFilters.status !== 'All') filterParams.status = catalogueFilters.status;
-        if (catalogueFilters.proposal_type !== 'All') filterParams.proposal_type = catalogueFilters.proposal_type;
-
-        const courseResp = await fetchCourses(filterParams, '', 1, 1000, token);
+        const courseResp = await fetchCourses({}, '', 1, 1000, token);
         setCourseList(courseResp?.data || []);
       } catch (err) {
         console.error('Failed to load course catalogue:', err);
@@ -251,11 +121,8 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         setLoading(prev => ({ ...prev, catalogue: false }));
       }
     };
-
-    if (viewType === 'courseCatalogue') {
-      loadCatalogueData();
-    }
-  }, [catalogueFilters, token, viewType, uploadVersion]);
+    if (viewType === 'courseCatalogue') loadCatalogueData();
+  }, [token, viewType, uploadVersion]);
 
   const courseTrendChartData = useMemo(() => {
     if (!courseTrend.length) return [];
@@ -580,115 +447,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             {/* Category Breakdown View */}
             {viewType === 'categoryBreakdown' && (
               <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Category View */}
-                <div className="filter-panel" style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div className="filter-header" style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Category Breakdown</h4>
-                    <button
-                      className="clear-filters-btn"
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Category</label>
-                      <select
-                        value={categoryFilters.category}
-                        onChange={(e) => handleFilterChange('category', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Categories</option>
-                        {filterOptions.categories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Programme</label>
-                      <select
-                        value={categoryFilters.programme}
-                        onChange={(e) => handleFilterChange('programme', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Programmes</option>
-                        {filterOptions.programmes.map((prog) => (
-                          <option key={prog} value={prog}>{prog}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Status</label>
-                      <select
-                        value={categoryFilters.status}
-                        onChange={(e) => handleFilterChange('status', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Statuses</option>
-                        {filterOptions.statuses.map((stat) => (
-                          <option key={stat} value={stat}>{stat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Proposal Type</label>
-                      <select
-                        value={categoryFilters.proposal_type}
-                        onChange={(e) => handleFilterChange('proposal_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.proposal_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {categoryFilters.category !== 'All' && <span style={{ marginRight: '8px' }}>📁 {categoryFilters.category}</span>}
-                    {categoryFilters.programme !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {categoryFilters.programme}</span>}
-                    {categoryFilters.status !== 'All' && <span style={{ marginRight: '8px' }}>✅ {categoryFilters.status}</span>}
-                    {categoryFilters.proposal_type !== 'All' && <span style={{ marginRight: '8px' }}>📝 {categoryFilters.proposal_type}</span>}
-                    {categoryFilters.category === 'All' && categoryFilters.programme === 'All' && categoryFilters.status === 'All' && categoryFilters.proposal_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
-                </div>
-
                 <div className="chart-header">
                   <h2>Industry Course Categories</h2>
                   <p className="chart-description">
@@ -728,7 +486,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
                     </ResponsiveContainer>
 
                     {/* Chart Statistics */}
-                    <div style={{
+                    {/* <div style={{
                       marginTop: '20px',
                       padding: '15px',
                       backgroundColor: '#f8f9fa',
@@ -758,7 +516,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
                         </div>
                         <div style={{ color: '#666', fontSize: '12px' }}>Dominant Category</div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               </div>
@@ -767,115 +525,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             {/* Programme Breakdown View */}
             {viewType === 'programmeBreakdown' && (
               <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Programme View */}
-                <div className="filter-panel" style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div className="filter-header" style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Programme Breakdown</h4>
-                    <button
-                      className="clear-filters-btn"
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Category</label>
-                      <select
-                        value={programmeFilters.category}
-                        onChange={(e) => handleFilterChange('category', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Categories</option>
-                        {filterOptions.categories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Programme</label>
-                      <select
-                        value={programmeFilters.programme}
-                        onChange={(e) => handleFilterChange('programme', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Programmes</option>
-                        {filterOptions.programmes.map((prog) => (
-                          <option key={prog} value={prog}>{prog}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Status</label>
-                      <select
-                        value={programmeFilters.status}
-                        onChange={(e) => handleFilterChange('status', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Statuses</option>
-                        {filterOptions.statuses.map((stat) => (
-                          <option key={stat} value={stat}>{stat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Proposal Type</label>
-                      <select
-                        value={programmeFilters.proposal_type}
-                        onChange={(e) => handleFilterChange('proposal_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.proposal_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {programmeFilters.category !== 'All' && <span style={{ marginRight: '8px' }}>📁 {programmeFilters.category}</span>}
-                    {programmeFilters.programme !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {programmeFilters.programme}</span>}
-                    {programmeFilters.status !== 'All' && <span style={{ marginRight: '8px' }}>✅ {programmeFilters.status}</span>}
-                    {programmeFilters.proposal_type !== 'All' && <span style={{ marginRight: '8px' }}>📝 {programmeFilters.proposal_type}</span>}
-                    {programmeFilters.category === 'All' && programmeFilters.programme === 'All' && programmeFilters.status === 'All' && programmeFilters.proposal_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
-                </div>
-
                 <div className="chart-header">
                   <h2>Industry Courses by Programme</h2>
                   <p className="chart-description">
@@ -960,115 +609,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             {/* Course Catalogue View */}
             {viewType === 'courseCatalogue' && (
               <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Catalogue View */}
-                <div className="filter-panel" style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div className="filter-header" style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Course Catalogue</h4>
-                    <button
-                      className="clear-filters-btn"
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Category</label>
-                      <select
-                        value={catalogueFilters.category}
-                        onChange={(e) => handleFilterChange('category', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Categories</option>
-                        {filterOptions.categories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Programme</label>
-                      <select
-                        value={catalogueFilters.programme}
-                        onChange={(e) => handleFilterChange('programme', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Programmes</option>
-                        {filterOptions.programmes.map((prog) => (
-                          <option key={prog} value={prog}>{prog}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Status</label>
-                      <select
-                        value={catalogueFilters.status}
-                        onChange={(e) => handleFilterChange('status', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Statuses</option>
-                        {filterOptions.statuses.map((stat) => (
-                          <option key={stat} value={stat}>{stat}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Proposal Type</label>
-                      <select
-                        value={catalogueFilters.proposal_type}
-                        onChange={(e) => handleFilterChange('proposal_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.proposal_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {catalogueFilters.category !== 'All' && <span style={{ marginRight: '8px' }}>📁 {catalogueFilters.category}</span>}
-                    {catalogueFilters.programme !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {catalogueFilters.programme}</span>}
-                    {catalogueFilters.status !== 'All' && <span style={{ marginRight: '8px' }}>✅ {catalogueFilters.status}</span>}
-                    {catalogueFilters.proposal_type !== 'All' && <span style={{ marginRight: '8px' }}>📝 {catalogueFilters.proposal_type}</span>}
-                    {catalogueFilters.category === 'All' && catalogueFilters.programme === 'All' && catalogueFilters.status === 'All' && catalogueFilters.proposal_type === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
-                </div>
-
                 <div className="chart-header">
                   <h2>Industry Collaboration Course Catalogue</h2>
                   <p className="chart-description">

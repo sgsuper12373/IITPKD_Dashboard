@@ -586,7 +586,7 @@ function PlacementSection({ user, isPublicView = false }) {
             {/* Modern Summary Cards */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(6, 1fr)',
+              gridTemplateColumns: 'repeat(5, 1fr)',
               gap: '20px',
               marginBottom: '40px'
             }}>
@@ -755,38 +755,6 @@ function PlacementSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              {/* Lowest Package Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                borderRadius: '16px',
-                padding: '20px',
-                boxShadow: '0 10px 20px rgba(239, 68, 68, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '80px',
-                  height: '80px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📉</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Lowest</span>
-                  </div>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                    {formatCurrency(summary.lowest_package)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Minimum package</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Styled Radio Buttons - Outside */}
@@ -942,23 +910,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {trendFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {trendFilters.year}</span>}
-                        {trendFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {trendFilters.program}</span>}
-                        {trendFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {trendFilters.gender}</span>}
-                        {trendFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {trendFilters.sector}</span>}
-                        {trendFilters.year === 'All' && trendFilters.program === 'All' && trendFilters.gender === 'All' && trendFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -1116,23 +1067,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {genderFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {genderFilters.year}</span>}
-                        {genderFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {genderFilters.program}</span>}
-                        {genderFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {genderFilters.gender}</span>}
-                        {genderFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {genderFilters.sector}</span>}
-                        {genderFilters.year === 'All' && genderFilters.program === 'All' && genderFilters.gender === 'All' && genderFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -1176,12 +1110,13 @@ function PlacementSection({ user, isPublicView = false }) {
                           backgroundColor: '#f8f9fa',
                           borderRadius: '8px',
                           border: '1px solid #e0e0e0',
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(3, 1fr)',
-                          gap: '15px'
+                          display: 'flex',
+                          justifyContent: 'center',
+                          gap: '40px',
+                          flexWrap: 'wrap'
                         }}>
                           {genderPieData.map((item, index) => (
-                            <div key={item.name} style={{ textAlign: 'center' }}>
+                            <div key={item.name} style={{ textAlign: 'center', minWidth: '120px' }}>
                               <div style={{ color: GENDER_COLORS[index % GENDER_COLORS.length], fontWeight: 'bold', fontSize: '20px' }}>
                                 {item.registered} / {item.placed}
                               </div>
@@ -1289,23 +1224,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {programFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {programFilters.year}</span>}
-                        {programFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {programFilters.program}</span>}
-                        {programFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {programFilters.gender}</span>}
-                        {programFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {programFilters.sector}</span>}
-                        {programFilters.year === 'All' && programFilters.program === 'All' && programFilters.gender === 'All' && programFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -1454,23 +1372,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {recruitersFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {recruitersFilters.year}</span>}
-                        {recruitersFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {recruitersFilters.program}</span>}
-                        {recruitersFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {recruitersFilters.gender}</span>}
-                        {recruitersFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {recruitersFilters.sector}</span>}
-                        {recruitersFilters.year === 'All' && recruitersFilters.program === 'All' && recruitersFilters.gender === 'All' && recruitersFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -1626,23 +1527,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {sectorFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {sectorFilters.year}</span>}
-                        {sectorFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {sectorFilters.program}</span>}
-                        {sectorFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {sectorFilters.gender}</span>}
-                        {sectorFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {sectorFilters.sector}</span>}
-                        {sectorFilters.year === 'All' && sectorFilters.program === 'All' && sectorFilters.gender === 'All' && sectorFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -1832,23 +1716,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {packageFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {packageFilters.year}</span>}
-                        {packageFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {packageFilters.program}</span>}
-                        {packageFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {packageFilters.gender}</span>}
-                        {packageFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {packageFilters.sector}</span>}
-                        {packageFilters.year === 'All' && packageFilters.program === 'All' && packageFilters.gender === 'All' && packageFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">
@@ -2005,23 +1872,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </div>
                       </div>
 
-                      {/* Active Filters Summary */}
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '8px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                      }}>
-                        <strong>Active Filters:</strong>{' '}
-                        {topRecruitersFilters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {topRecruitersFilters.year}</span>}
-                        {topRecruitersFilters.program !== 'All' && <span style={{ marginRight: '8px' }}>🎓 {topRecruitersFilters.program}</span>}
-                        {topRecruitersFilters.gender !== 'All' && <span style={{ marginRight: '8px' }}>👤 {topRecruitersFilters.gender}</span>}
-                        {topRecruitersFilters.sector !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {topRecruitersFilters.sector}</span>}
-                        {topRecruitersFilters.year === 'All' && topRecruitersFilters.program === 'All' && topRecruitersFilters.gender === 'All' && topRecruitersFilters.sector === 'All' &&
-                          <span>No filters applied</span>
-                        }
-                      </div>
                     </div>
 
                     <div className="chart-header">

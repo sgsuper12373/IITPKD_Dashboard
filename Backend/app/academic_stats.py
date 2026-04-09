@@ -61,17 +61,15 @@ def build_filter_query(filters):
         if not column_name:
             continue
 
-        # Handle PWD filter — pwd_status is a varchar ('Yes'/'No') not a boolean
+        # Handle PWD filter — pwd_status is a varchar ('Yes'/'No') not a boolean.
+        # Blank/NULL entries are treated as 'No'.
         if filter_name == 'pwd':
-            if isinstance(value, bool):
-                conditions.append(f"{column_name} = %s")
-                params.append('Yes' if value else 'No')
-            elif value == 'true':
-                conditions.append(f"{column_name} = %s")
-                params.append('Yes')
-            elif value == 'false':
-                conditions.append(f"{column_name} = %s")
-                params.append('No')
+            is_yes = (value is True) or (value == 'true')
+            if is_yes:
+                conditions.append(f"UPPER(COALESCE({column_name}, '')) = 'YES'")
+            else:
+                # 'No' includes explicit 'No' values AND blank/NULL entries
+                conditions.append(f"UPPER(COALESCE({column_name}, '')) != 'YES'")
         else:
             conditions.append(f"{column_name} = %s")
             params.append(value)
@@ -498,6 +496,78 @@ def get_student_summary(current_user_id):
         import traceback
         print(f"Error fetching student summary: {e}\n{traceback.format_exc()}")
         return jsonify({'message': 'An error occurred while fetching student summary.'}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+@academic_bp.route('/stats/onroll-summary', methods=['GET'])
+@token_required
+def get_onroll_summary(current_user_id):
+    """
+    Returns on-roll student counts by program type.
+    Normalises academic_program_type and student_status by lowercasing and
+    stripping spaces, commas, semicolons, and hyphens before comparison.
+
+    UG       : academic_program_type → 'btech'  | status → 'onroll' | 'slowpaced'
+    PG       : academic_program_type → 'pg'     | status → 'onroll' | 'slowpaced'
+    Research : academic_program_type → 'phd'    | status → 'onroll' | 'slowpaced'
+                                                          | 'thesissubmitted'
+                                                          | 'vivavocecompleted'
+    Total    : sum of the three counts above.
+    """
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({'message': 'Database connection failed!'}), 500
+
+        query = f"""
+            SELECT
+                COUNT(*) FILTER (
+                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'btech'
+                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
+                          IN ('onroll', 'slowpaced')
+                ) AS ug_onroll,
+
+                COUNT(*) FILTER (
+                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'pg'
+                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
+                          IN ('onroll', 'slowpaced')
+                ) AS pg_onroll,
+
+                COUNT(*) FILTER (
+                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'phd'
+                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
+                          IN ('onroll', 'slowpaced', 'thesissubmitted', 'vivavocecompleted')
+                ) AS research_onroll
+
+            FROM {STUDENT_TABLE};
+        """
+
+        cur = conn.cursor()
+        cur.execute(query)
+        row = cur.fetchone()
+
+        ug_onroll       = int(row['ug_onroll']       or 0)
+        pg_onroll       = int(row['pg_onroll']       or 0)
+        research_onroll = int(row['research_onroll'] or 0)
+        total_onroll    = ug_onroll + pg_onroll + research_onroll
+
+        return jsonify({
+            'total_onroll':    total_onroll,
+            'ug_onroll':       ug_onroll,
+            'pg_onroll':       pg_onroll,
+            'research_onroll': research_onroll,
+        }), 200
+
+    except Exception as e:
+        import traceback
+        print(f"Error fetching on-roll summary: {e}\n{traceback.format_exc()}")
+        return jsonify({'message': 'An error occurred while fetching on-roll summary.'}), 500
     finally:
         if cur:
             cur.close()
