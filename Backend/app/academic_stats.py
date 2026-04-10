@@ -508,14 +508,11 @@ def get_student_summary(current_user_id):
 def get_onroll_summary(current_user_id):
     """
     Returns on-roll student counts by program type.
-    Normalises academic_program_type and student_status by lowercasing and
-    stripping spaces, commas, semicolons, and hyphens before comparison.
+    Uses direct string comparisons for academic_program_type and student_status.
 
-    UG       : academic_program_type → 'btech'  | status → 'onroll' | 'slowpaced'
-    PG       : academic_program_type → 'pg'     | status → 'onroll' | 'slowpaced'
-    Research : academic_program_type → 'phd'    | status → 'onroll' | 'slowpaced'
-                                                          | 'thesissubmitted'
-                                                          | 'vivavocecompleted'
+    UG       : academic_program_type = 'btech' | status IN ('On Roll', 'Slow-pace')
+    PG       : academic_program_type = 'pg'    | status IN ('On Roll', 'Slow-pace')
+    Research : academic_program_type = 'phd'   | status IN ('On Roll', 'Slow-pace', 'Viva Voce Completed', 'Thesis Submitted')
     Total    : sum of the three counts above.
     """
     conn = None
@@ -525,30 +522,39 @@ def get_onroll_summary(current_user_id):
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
+        # First, debug: check actual values in database
+        debug_query = f"""
+            SELECT DISTINCT academic_program_type, student_status
+            FROM {STUDENT_TABLE}
+            LIMIT 20;
+        """
+        cur = conn.cursor()
+        cur.execute(debug_query)
+        debug_results = cur.fetchall()
+        print("DEBUG - Sample data from database:")
+        for row in debug_results:
+            print(f"  academic_program_type: '{row['academic_program_type']}' | student_status: '{row['student_status']}'")
+
         query = f"""
             SELECT
                 COUNT(*) FILTER (
-                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'btech'
-                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
-                          IN ('onroll', 'slowpaced')
+                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'UG'
+                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS ug_onroll,
 
                 COUNT(*) FILTER (
-                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'pg'
-                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
-                          IN ('onroll', 'slowpaced')
+                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'PG'
+                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS pg_onroll,
 
                 COUNT(*) FILTER (
-                    WHERE REGEXP_REPLACE(LOWER(COALESCE(academic_program_type, '')), '[\\s,;\\-]+', '', 'g') = 'phd'
-                      AND REGEXP_REPLACE(LOWER(COALESCE(student_status, '')), '[\\s,;\\-]+', '', 'g')
-                          IN ('onroll', 'slowpaced', 'thesissubmitted', 'vivavocecompleted')
+                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'RESEARCH'
+                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
                 ) AS research_onroll
 
             FROM {STUDENT_TABLE};
         """
 
-        cur = conn.cursor()
         cur.execute(query)
         row = cur.fetchone()
 
