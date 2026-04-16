@@ -54,6 +54,7 @@ function IcsrSection({ user, isPublicView = false }) {
 
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('yearly'); // 'yearly' | 'eventTypes' | 'eventsDirectory'
+  const [chartMode, setChartMode] = useState('bar'); // 'bar' | 'trend'
 
   const [filters, setFilters] = useState({
     event_type: 'All',
@@ -613,6 +614,17 @@ function IcsrSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
+              {/* Bar / Trend toggle */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                {['bar', 'trend'].map((mode) => (
+                  <button key={mode} onClick={() => setChartMode(mode)} style={{
+                    padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600,
+                    background: chartMode === mode ? '#667eea' : '#e9ecef',
+                    color: chartMode === mode ? '#fff' : '#555',
+                  }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                ))}
+              </div>
+
               {loading ? (
                 <div className="loading-container" style={{ textAlign: 'center', padding: '40px' }}>
                   <div className="loading-spinner" />
@@ -622,46 +634,76 @@ function IcsrSection({ user, isPublicView = false }) {
                 <>
                   {yearlyChartData.length > 0 ? (
                     <div className="chart-container">
-                      <ResponsiveContainer width="100%" height={400}>
-                        <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis
-                            dataKey="year"
-                            stroke="#666"
-                            tick={{ fill: '#666', fontSize: 12 }}
-                            label={{
-                              value: 'Year',
-                              position: 'insideBottom',
-                              offset: -10,
-                              style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                            }}
-                          />
-                          <YAxis
-                            stroke="#666"
-                            tick={{ fill: '#666', fontSize: 12 }}
-                            label={{
-                              value: 'Number of Events',
-                              angle: -90,
-                              position: 'insideLeft',
-                              style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                            }}
-                          />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend
-                            wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
-                            iconType="circle"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="events"
-                            name="Events"
-                            stroke="#667eea"
-                            strokeWidth={3}
-                            dot={{ r: 6, fill: '#667eea', strokeWidth: 2 }}
-                            activeDot={{ r: 8 }}
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
+                      <div className={`chart-wrapper ${chartMode === 'bar' ? 'active' : 'inactive'}`}>
+                        <ResponsiveContainer width="100%" height={400}>
+                          <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis
+                              dataKey="year"
+                              stroke="#666"
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              label={{
+                                value: 'Year',
+                                position: 'insideBottom',
+                                offset: -10,
+                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                              }}
+                            />
+                            <YAxis
+                              stroke="#666"
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              label={{
+                                value: 'Number of Events',
+                                angle: -90,
+                                position: 'insideLeft',
+                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                              }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                            <Bar dataKey="events" name="Events" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className={`chart-wrapper ${chartMode === 'trend' ? 'active' : 'inactive'}`}>
+                        <ResponsiveContainer width="100%" height={400}>
+                          <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis
+                              dataKey="year"
+                              stroke="#666"
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              label={{
+                                value: 'Year',
+                                position: 'insideBottom',
+                                offset: -10,
+                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                              }}
+                            />
+                            <YAxis
+                              stroke="#666"
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              label={{
+                                value: 'Number of Events',
+                                angle: -90,
+                                position: 'insideLeft',
+                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                              }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="circle" />
+                            <Line
+                              type="monotone"
+                              dataKey="events"
+                              name="Events"
+                              stroke="#667eea"
+                              strokeWidth={3}
+                              dot={{ r: 6, fill: '#667eea', strokeWidth: 2 }}
+                              activeDot={{ r: 8 }}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
 
                       {/* Chart Statistics */}
                       <div style={{
