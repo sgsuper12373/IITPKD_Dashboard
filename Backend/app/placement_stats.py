@@ -116,7 +116,7 @@ def get_filter_options(current_user_id):
             SELECT
                 ARRAY(SELECT DISTINCT placement_year FROM placement_summary ORDER BY placement_year DESC) AS years,
                 ARRAY(SELECT DISTINCT program FROM placement_summary ORDER BY program) AS programs,
-                ARRAY(SELECT DISTINCT gender FROM placement_summary ORDER BY gender) AS genders,
+                ARRAY(SELECT DISTINCT gender::text FROM placement_summary ORDER BY gender::text) AS genders,
                 ARRAY(
                     SELECT DISTINCT sector FROM placement_companies
                     WHERE sector IS NOT NULL AND sector <> ''
@@ -159,8 +159,13 @@ def get_placement_summary(current_user_id):
         'gender': request.args.get('gender'),
     }
 
-    where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender'},
+    summary_where, summary_params = build_where_clause(
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+        filters
+    )
+    # placement_packages has year and program but no gender column
+    pkg_where, pkg_params = build_where_clause(
+        {'year': 'placement_year', 'program': 'program'},
         filters
     )
 
@@ -175,9 +180,9 @@ def get_placement_summary(current_user_id):
             f"""
             SELECT SUM(registered) AS registered, SUM(placed) AS placed
             FROM {PLACEMENT_SUMMARY_TABLE}
-            {where_clause}
+            {summary_where}
             """,
-            params
+            summary_params
         )
         row = cur.fetchone() or {'registered': 0, 'placed': 0}
         total_registered = row.get('registered') or 0
@@ -190,9 +195,9 @@ def get_placement_summary(current_user_id):
                 MIN(lowest_package) AS lowest_package,
                 AVG(average_package) AS average_package
             FROM {PLACEMENT_PACKAGES_TABLE}
-            {where_clause}
+            {pkg_where}
             """,
-            params
+            pkg_params
         )
         package_row = cur.fetchone() or {}
         summary = {
@@ -223,11 +228,12 @@ def get_percentage_trend(current_user_id):
         return jsonify({'message': 'Placement tables are missing.'}), 500
 
     filters = {
+        'year': request.args.get('year'),
         'program': request.args.get('program'),
         'gender': request.args.get('gender'),
     }
     where_clause, params = build_where_clause(
-        {'program': 'program', 'gender': 'gender'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
         filters
     )
 
@@ -281,9 +287,10 @@ def get_gender_breakdown(current_user_id):
     filters = {
         'year': request.args.get('year'),
         'program': request.args.get('program'),
+        'gender': request.args.get('gender'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
         filters
     )
 
@@ -296,11 +303,11 @@ def get_gender_breakdown(current_user_id):
         cur = conn.cursor()
         cur.execute(
             f"""
-            SELECT gender, SUM(registered) AS registered, SUM(placed) AS placed
+            SELECT gender::text AS gender, SUM(registered) AS registered, SUM(placed) AS placed
             FROM {PLACEMENT_SUMMARY_TABLE}
             {where_clause}
-            GROUP BY gender
-            ORDER BY gender
+            GROUP BY gender::text
+            ORDER BY gender::text
             """,
             params
         )

@@ -4,6 +4,8 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  BarChart,
+  Bar,
   CartesianGrid,
   XAxis,
   YAxis,
@@ -33,6 +35,17 @@ function TechinSection({ user, isPublicView = false }) {
 
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('programs'); // programs, skillDev, startups
+
+  // Bar / Trend chart mode
+  const [chartMode, setChartMode] = useState('bar'); // 'bar' | 'trend'
+
+  // Repo/directory mode: true = show only table with back button
+  const [repoMode, setRepoMode] = useState(false);
+
+  const openRepo = (view) => {
+    setViewType(view);
+    setRepoMode(true);
+  };
 
   // Independent filter states for each view
   const [programFilters, setProgramFilters] = useState({ type: 'All', association: 'All' });
@@ -325,16 +338,20 @@ function TechinSection({ user, isPublicView = false }) {
           gap: '24px',
           marginBottom: '30px'
         }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '20px',
-            padding: '28px',
-            boxShadow: '0 15px 30px rgba(102, 126, 234, 0.25)',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.3s ease'
-          }}>
+          <div
+            onClick={() => openRepo('programs')}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 15px 30px rgba(102, 126, 234, 0.25)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+          >
             <div style={{
               position: 'absolute',
               top: '-30px',
@@ -350,23 +367,24 @@ function TechinSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Total Programs</span>
               </div>
               <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px' }}>{formatNumber(summary.total_programs)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '12px', opacity: 0.8 }}>Active programs</span>
-              </div>
+              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
             </div>
           </div>
 
-          <div style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            borderRadius: '20px',
-            padding: '28px',
-            boxShadow: '0 15px 30px rgba(240, 147, 251, 0.25)',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.3s ease'
-          }}>
+          <div
+            onClick={() => openRepo('skillDev')}
+            style={{
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 15px 30px rgba(240, 147, 251, 0.25)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+          >
             <div style={{
               position: 'absolute',
               top: '-30px',
@@ -382,23 +400,24 @@ function TechinSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Skill Dev Programs</span>
               </div>
               <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px' }}>{formatNumber(summary.total_skill_dev_programs)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '12px', opacity: 0.8 }}>Active programs</span>
-              </div>
+              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
             </div>
           </div>
 
-          <div style={{
-            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-            borderRadius: '20px',
-            padding: '28px',
-            boxShadow: '0 15px 30px rgba(67, 233, 123, 0.25)',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.3s ease'
-          }}>
+          <div
+            onClick={() => openRepo('startups')}
+            style={{
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              borderRadius: '20px',
+              padding: '28px',
+              boxShadow: '0 15px 30px rgba(67, 233, 123, 0.25)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease',
+              cursor: 'pointer'
+            }}
+          >
             <div style={{
               position: 'absolute',
               top: '-30px',
@@ -414,10 +433,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Total Startups</span>
               </div>
               <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px' }}>{formatNumber(summary.total_startups)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '12px', opacity: 0.8 }}>Active startups</span>
-              </div>
+              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
             </div>
           </div>
         </div>
@@ -572,6 +588,21 @@ function TechinSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <>
+            {/* Repo mode back button */}
+            {repoMode && (
+              <div style={{ marginBottom: '16px' }}>
+                <button
+                  onClick={() => setRepoMode(false)}
+                  style={{
+                    padding: '8px 16px', backgroundColor: '#667eea', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500'
+                  }}
+                >
+                  ← Back to Dashboard
+                </button>
+              </div>
+            )}
+
             {/* Dynamic View with Filters Inside */}
             <div style={{
               marginBottom: '30px',
@@ -731,10 +762,10 @@ function TechinSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              {/* Trend Chart */}
-              {trendData.length > 0 ? (
+              {/* Bar/Trend Toggle + Chart */}
+              {!repoMode && trendData.length > 0 && (
                 <div style={{ marginBottom: '40px' }}>
-                  <div className="chart-header" style={{ marginBottom: '20px' }}>
+                  <div className="chart-header" style={{ marginBottom: '12px' }}>
                     <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}>
                       <span style={{ fontSize: '28px' }}>
                         {viewType === 'programs' ? '📊' : viewType === 'skillDev' ? '🎯' : '🚀'}
@@ -745,23 +776,30 @@ function TechinSection({ user, isPublicView = false }) {
                       Yearly trend of {viewType === 'programs' ? 'programs' : viewType === 'skillDev' ? 'skill development programs' : 'startups'} over time.
                     </p>
                   </div>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? getViewColor() : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
+                    <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? getViewColor() : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
+                  </div>
                   <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 12 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Line
-                        type="monotone"
-                        dataKey="count"
-                        name="Count"
-                        stroke={getViewColor()}
-                        strokeWidth={3}
-                        dot={{ r: 6, fill: getViewColor(), strokeWidth: 2, stroke: '#fff' }}
-                        activeDot={{ r: 8 }}
-                      />
-                    </LineChart>
+                    {chartMode === 'bar' ? (
+                      <BarChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
+                        <Bar dataKey="count" name="Count" fill={getViewColor()} radius={[4, 4, 0, 0]} barSize={28} />
+                      </BarChart>
+                    ) : (
+                      <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
+                        <Line type="monotone" dataKey="count" name="Count" stroke={getViewColor()} strokeWidth={3} dot={{ r: 6, fill: getViewColor(), strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+                      </LineChart>
+                    )}
                   </ResponsiveContainer>
 
                   {/* Chart Statistics */}
@@ -795,7 +833,9 @@ function TechinSection({ user, isPublicView = false }) {
                     </div>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              {!repoMode && trendData.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '60px', color: '#666', backgroundColor: '#f8f9fa', borderRadius: '12px' }}>
                   <span style={{ fontSize: '64px', display: 'block', marginBottom: '16px' }}>📈</span>
                   <p style={{ fontSize: '16px' }}>No trend data available for the selected filters.</p>

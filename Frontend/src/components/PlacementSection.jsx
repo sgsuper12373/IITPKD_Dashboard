@@ -77,6 +77,9 @@ function PlacementSection({ user, isPublicView = false }) {
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('placementTrend');
 
+  // Bar / Trend chart mode for Placement Trend
+  const [trendChartMode, setTrendChartMode] = useState('bar');
+
   // Independent filter states for each view
   const [trendFilters, setTrendFilters] = useState({
     year: 'All',
@@ -240,10 +243,11 @@ function PlacementSection({ user, isPublicView = false }) {
       }
       try {
         const options = await fetchPlacementFilterOptions(token);
+        const rawGenders = Array.isArray(options?.genders) ? options.genders : [];
         setFilterOptions({
           years: Array.isArray(options?.years) ? options.years : [],
           programs: Array.isArray(options?.programs) ? options.programs : [],
-          genders: Array.isArray(options?.genders) ? options.genders : [],
+          genders: rawGenders.length > 0 ? rawGenders : ['Male', 'Female', 'Transgender'],
           sectors: Array.isArray(options?.sectors) ? options.sectors : []
         });
       } catch (err) {
@@ -445,6 +449,15 @@ function PlacementSection({ user, isPublicView = false }) {
       value: row.placement_percentage || 0,
       registered: row.registered || 0,
       placed: row.placed || 0
+    }));
+  }, [genderData]);
+
+  const genderBarData = useMemo(() => {
+    if (!genderData.length) return [];
+    return genderData.map((row) => ({
+      gender: row.gender,
+      registered: row.registered || 0,
+      placed: row.placed || 0,
     }));
   }, [genderData]);
 
@@ -926,17 +939,39 @@ function PlacementSection({ user, isPublicView = false }) {
                       </div>
                     ) : (
                       <div className="chart-container">
+                        {/* Bar / Trend toggle */}
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                          {['bar', 'trend'].map((mode) => (
+                            <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
+                              padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
+                              backgroundColor: trendChartMode === mode ? '#6366f1' : '#f1f5f9',
+                              color: trendChartMode === mode ? '#fff' : '#555'
+                            }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                          ))}
+                        </div>
                         <ResponsiveContainer width="100%" height={350}>
-                          <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ fontSize: '11px' }} />
-                            <Line type="monotone" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }} />
-                            <Line type="monotone" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} />
-                            <Line type="monotone" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} />
-                          </LineChart>
+                          {trendChartMode === 'bar' ? (
+                            <BarChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                              <Tooltip content={<CustomTooltip />} />
+                              <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
+                              <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16} />
+                              <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16} />
+                            </BarChart>
+                          ) : (
+                            <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                              <Tooltip content={<CustomTooltip />} />
+                              <Legend wrapperStyle={{ fontSize: '11px' }} />
+                              <Line type="monotone" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }} />
+                              <Line type="monotone" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} />
+                              <Line type="monotone" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} />
+                            </LineChart>
+                          )}
                         </ResponsiveContainer>
 
                         {/* Chart Statistics */}
@@ -1070,13 +1105,13 @@ function PlacementSection({ user, isPublicView = false }) {
                     </div>
 
                     <div className="chart-header">
-                      <h2>Gender-wise Placement Share</h2>
+                      <h2>Gender-wise Placement Breakdown</h2>
                       <p className="chart-description">
-                        Understand gender balance in placement outcomes.
+                        Registered vs Placed counts per gender.
                       </p>
                     </div>
 
-                    {!genderPieData.length ? (
+                    {!genderBarData.length ? (
                       <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                         <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>👥</span>
                         <p style={{ color: '#666', fontSize: '16px' }}>No gender-wise data available.</p>
@@ -1084,23 +1119,15 @@ function PlacementSection({ user, isPublicView = false }) {
                     ) : (
                       <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
-                          <PieChart>
-                            <Pie
-                              data={genderPieData}
-                              dataKey="value"
-                              nameKey="name"
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={120}
-                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                              labelLine={false}
-                            >
-                              {genderPieData.map((entry, index) => (
-                                <Cell key={entry.name} fill={GENDER_COLORS[index % GENDER_COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <Tooltip formatter={(value) => formatPercentage(value)} />
-                          </PieChart>
+                          <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ fontSize: '12px' }} iconType="rect" />
+                            <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32} />
+                            <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[4, 4, 0, 0]} barSize={32} />
+                          </BarChart>
                         </ResponsiveContainer>
 
                         {/* Gender Statistics */}
@@ -1115,13 +1142,13 @@ function PlacementSection({ user, isPublicView = false }) {
                           gap: '40px',
                           flexWrap: 'wrap'
                         }}>
-                          {genderPieData.map((item, index) => (
-                            <div key={item.name} style={{ textAlign: 'center', minWidth: '120px' }}>
+                          {genderBarData.map((item, index) => (
+                            <div key={item.gender} style={{ textAlign: 'center', minWidth: '120px' }}>
                               <div style={{ color: GENDER_COLORS[index % GENDER_COLORS.length], fontWeight: 'bold', fontSize: '20px' }}>
                                 {item.registered} / {item.placed}
                               </div>
                               <div style={{ color: '#666', fontSize: '12px' }}>
-                                {item.name} (Reg/Placed)
+                                {item.gender} (Reg/Placed)
                               </div>
                             </div>
                           ))}

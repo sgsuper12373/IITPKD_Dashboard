@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 import './Page.css';
@@ -8,6 +8,7 @@ import './PeopleCampus.css';
 import ResearchPublicView from './ResearchPublicView';
 
 function Research({ user }) {
+  const navigate = useNavigate();
 
   // 🔹 ADDITION: get role_id safely
   const roleId = user?.role_id;
@@ -20,21 +21,25 @@ function Research({ user }) {
       title: 'ICSR Section',
       route: '/research/icsr',
       description: 'Industrial consultancy & sponsored research metrics',
-      // 🔹 ADDITION
+      allowedRoles: [3]
+    },
+    {
+      title: 'MoU Section',
+      route: '/research/icsr',
+      state: { view: 'mousTable' },
+      description: 'MoU directory — all signed memoranda of understanding',
       allowedRoles: [3]
     },
     {
       title: 'Administrative Section',
       route: '/research/administrative-section',
       description: 'Faculty industry externships and collaborations',
-      // 🔹 ADDITION
       allowedRoles: [3, 2]
     },
     {
       title: 'Library',
       route: '/research/library',
       description: 'Research publications and scholarly outputs',
-      // 🔹 ADDITION
       allowedRoles: [3]
     }
   ];
@@ -93,6 +98,7 @@ function Research({ user }) {
               <Link
                 key={index}
                 to={section.route}
+                state={section.state}
                 className="people-campus-card"
               >
                 <div className="card-icon">

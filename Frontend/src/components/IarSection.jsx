@@ -632,26 +632,43 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   ) : (
                     <div className="chart-container">
-                      <ResponsiveContainer width="100%" height={380}>
-                        <PieChart>
-                          <Pie
-                            data={countryTop10}
-                            dataKey="count"
-                            nameKey="country"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={130}
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            labelLine={false}
-                          >
-                            {countryTop10.map((entry, index) => (
-                              <Cell key={entry.country} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      {/* Side-by-side: pie left, custom HTML legend right */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+                        <div style={{ flex: '0 0 280px' }}>
+                          <ResponsiveContainer width={280} height={280}>
+                            <PieChart>
+                              <Pie
+                                data={countryTop10}
+                                dataKey="count"
+                                nameKey="country"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={120}
+                                labelLine={false}
+                              >
+                                {countryTop10.map((entry, index) => (
+                                  <Cell key={entry.country} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {countryTop10.map((entry, index) => {
+                            const total = countryTop10.reduce((s, i) => s + i.count, 0);
+                            const pct = total ? ((entry.count / total) * 100).toFixed(1) : '0.0';
+                            return (
+                              <div key={entry.country} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ width: 12, height: 12, borderRadius: '50%', background: PIE_COLORS[index % PIE_COLORS.length], flexShrink: 0 }} />
+                                <span style={{ fontSize: '13px', fontWeight: 600, color: '#333', flex: 1 }}>{entry.country}</span>
+                                <span style={{ fontSize: '12px', color: '#666' }}>{entry.count} alumni</span>
+                                <span style={{ fontSize: '11px', color: '#999', width: '40px', textAlign: 'right' }}>{pct}%</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
 
                       {/* Chart Statistics */}
                       <div style={{
@@ -724,13 +741,13 @@ function IarSection({ user, isPublicView = false }) {
                       </div>
                       <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
-                          <BarChart data={sortedOutcomeBreakdown} margin={{ top: 10, right: 20, left: 40, bottom: 80 }}>
+                          <BarChart data={sortedOutcomeBreakdown} margin={{ top: 10, right: 20, left: 40, bottom: 80 }} barCategoryGap="20%">
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Bar dataKey="higher" name="Higher Studies" stackId="a" fill={HIGHER_BAR_COLOR} radius={[0, 0, 0, 0]} barSize={24} />
-                            <Bar dataKey="corporate" name="Corporate" stackId="a" fill={CORPORATE_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={24} />
+                            <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12} />
+                            <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12} />
                           </BarChart>
                         </ResponsiveContainer>
 

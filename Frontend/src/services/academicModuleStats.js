@@ -98,6 +98,20 @@ export const fetchProgrammeBreakdown = async (filters, token) => {
  * @param {string} token - The auth token.
  * @returns {Promise<Object>} Paginated courses.
  */
+/**
+ * Retrieves active/inactive counts for all courses and industry courses.
+ * @param {string} token - The auth token.
+ * @returns {Promise<Object>} Course counts.
+ */
+export const fetchCourseCounts = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/course-counts`, authHeaders(token));
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to fetch course counts');
+  }
+};
+
 export const fetchCourses = async (filters, search = '', page = 1, perPage = 20, token) => {
   try {
     const queryParams = new URLSearchParams();

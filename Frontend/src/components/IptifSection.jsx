@@ -4,6 +4,8 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  BarChart,
+  Bar,
   CartesianGrid,
   XAxis,
   YAxis,
@@ -34,6 +36,17 @@ function IptifSection({ user, isPublicView = false }) {
 
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('projects'); // projects, programs, startups, facilities
+
+  // Bar / Trend chart mode (shared across all views)
+  const [chartMode, setChartMode] = useState('bar'); // 'bar' | 'trend'
+
+  // Repo/directory mode: true = show only table with back button
+  const [repoMode, setRepoMode] = useState(false);
+
+  const openRepo = (view) => {
+    setViewType(view);
+    setRepoMode(true);
+  };
 
   const [summary, setSummary] = useState({
     total_projects: 0,
@@ -210,26 +223,41 @@ function IptifSection({ user, isPublicView = false }) {
           gap: '24px',
           marginBottom: '40px'
         }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)', color: 'white'
-          }}>
+          <div
+            onClick={() => openRepo('projects')}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)', color: 'white',
+              cursor: 'pointer', transition: 'transform 0.2s'
+            }}
+          >
             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>Total Projects</h3>
             <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{formatNumber(summary.total_projects)}</div>
+            <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
           </div>
-          <div style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(240, 147, 251, 0.2)', color: 'white'
-          }}>
+          <div
+            onClick={() => openRepo('programs')}
+            style={{
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(240, 147, 251, 0.2)', color: 'white',
+              cursor: 'pointer', transition: 'transform 0.2s'
+            }}
+          >
             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>Total Programs</h3>
             <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{formatNumber(summary.total_programs)}</div>
+            <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
           </div>
-          <div style={{
-            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-            borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)', color: 'white'
-          }}>
+          <div
+            onClick={() => openRepo('startups')}
+            style={{
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              borderRadius: '20px', padding: '24px', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)', color: 'white',
+              cursor: 'pointer', transition: 'transform 0.2s'
+            }}
+          >
             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>Total Startups</h3>
             <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{formatNumber(summary.total_startups)}</div>
+            <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
           </div>
         </div>
 
@@ -339,6 +367,21 @@ function IptifSection({ user, isPublicView = false }) {
             </div>
           ) : (
             <>
+              {/* Repo mode back button */}
+              {repoMode && (
+                <div style={{ marginBottom: '16px' }}>
+                  <button
+                    onClick={() => setRepoMode(false)}
+                    style={{
+                      padding: '8px 16px', backgroundColor: '#667eea', color: '#fff',
+                      border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500'
+                    }}
+                  >
+                    ← Back to Dashboard
+                  </button>
+                </div>
+              )}
+
               {/* Projects View */}
               {viewType === 'projects' && (
                 <div>
@@ -440,26 +483,33 @@ function IptifSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Trend Chart */}
-                  {trendData.length > 0 && (
+                  {/* Bar/Trend Toggle + Chart */}
+                  {!repoMode && trendData.length > 0 && (
                     <div style={{ marginBottom: '40px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? '#667eea' : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
+                        <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? '#667eea' : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
+                      </div>
                       <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-                          <YAxis stroke="#666" />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="count"
-                            name="Projects Count"
-                            stroke="#667eea"
-                            strokeWidth={3}
-                            dot={{ r: 6, fill: '#667eea', strokeWidth: 2, stroke: '#fff' }}
-                            activeDot={{ r: 8 }}
-                          />
-                        </LineChart>
+                        {chartMode === 'bar' ? (
+                          <BarChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Bar dataKey="count" name="Projects Count" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28} />
+                          </BarChart>
+                        ) : (
+                          <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Line type="monotone" dataKey="count" name="Projects Count" stroke="#667eea" strokeWidth={3} dot={{ r: 6, fill: '#667eea', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+                          </LineChart>
+                        )}
                       </ResponsiveContainer>
                     </div>
                   )}
@@ -624,26 +674,33 @@ function IptifSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Trend Chart */}
-                  {trendData.length > 0 && (
+                  {/* Bar/Trend Toggle + Chart */}
+                  {!repoMode && trendData.length > 0 && (
                     <div style={{ marginBottom: '40px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? '#f093fb' : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
+                        <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? '#f093fb' : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
+                      </div>
                       <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-                          <YAxis stroke="#666" />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="count"
-                            name="Programs Count"
-                            stroke="#f093fb"
-                            strokeWidth={3}
-                            dot={{ r: 6, fill: '#f093fb', strokeWidth: 2, stroke: '#fff' }}
-                            activeDot={{ r: 8 }}
-                          />
-                        </LineChart>
+                        {chartMode === 'bar' ? (
+                          <BarChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Bar dataKey="count" name="Programs Count" fill="#f093fb" radius={[4, 4, 0, 0]} barSize={28} />
+                          </BarChart>
+                        ) : (
+                          <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Line type="monotone" dataKey="count" name="Programs Count" stroke="#f093fb" strokeWidth={3} dot={{ r: 6, fill: '#f093fb', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+                          </LineChart>
+                        )}
                       </ResponsiveContainer>
                     </div>
                   )}
@@ -799,26 +856,33 @@ function IptifSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Trend Chart */}
-                  {trendData.length > 0 && (
+                  {/* Bar/Trend Toggle + Chart */}
+                  {!repoMode && trendData.length > 0 && (
                     <div style={{ marginBottom: '40px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? '#43e97b' : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
+                        <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? '#43e97b' : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
+                      </div>
                       <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-                          <YAxis stroke="#666" />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="count"
-                            name="Startups Count"
-                            stroke="#43e97b"
-                            strokeWidth={3}
-                            dot={{ r: 6, fill: '#43e97b', strokeWidth: 2, stroke: '#fff' }}
-                            activeDot={{ r: 8 }}
-                          />
-                        </LineChart>
+                        {chartMode === 'bar' ? (
+                          <BarChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Bar dataKey="count" name="Startups Count" fill="#43e97b" radius={[4, 4, 0, 0]} barSize={28} />
+                          </BarChart>
+                        ) : (
+                          <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Line type="monotone" dataKey="count" name="Startups Count" stroke="#43e97b" strokeWidth={3} dot={{ r: 6, fill: '#43e97b', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+                          </LineChart>
+                        )}
                       </ResponsiveContainer>
                     </div>
                   )}
@@ -962,26 +1026,33 @@ function IptifSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Trend Chart */}
-                  {trendData.length > 0 && (
+                  {/* Bar/Trend Toggle + Chart */}
+                  {!repoMode && trendData.length > 0 && (
                     <div style={{ marginBottom: '40px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                        <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? '#f97316' : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
+                        <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? '#f97316' : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
+                      </div>
                       <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-                          <YAxis stroke="#666" />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend />
-                          <Line
-                            type="monotone"
-                            dataKey="count"
-                            name="Revenue (₹)"
-                            stroke="#f97316"
-                            strokeWidth={3}
-                            dot={{ r: 6, fill: '#f97316', strokeWidth: 2, stroke: '#fff' }}
-                            activeDot={{ r: 8 }}
-                          />
-                        </LineChart>
+                        {chartMode === 'bar' ? (
+                          <BarChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Bar dataKey="count" name="Revenue (₹)" fill="#f97316" radius={[4, 4, 0, 0]} barSize={28} />
+                          </BarChart>
+                        ) : (
+                          <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+                            <YAxis stroke="#666" />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
+                            <Line type="monotone" dataKey="count" name="Revenue (₹)" stroke="#f97316" strokeWidth={3} dot={{ r: 6, fill: '#f97316', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+                          </LineChart>
+                        )}
                       </ResponsiveContainer>
                     </div>
                   )}

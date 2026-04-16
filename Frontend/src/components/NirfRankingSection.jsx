@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './Page.css';
 import './EwdSection.css'; // Use EWD styles for cards
 import axios from 'axios';
@@ -84,10 +84,19 @@ const NirfRankingSection = ({ user }) => {
     }
 
     const latestStats = data[data.length - 1];
+    const firstStats = data[0];
+
+    const metrics = [
+        { key: 'tlr', label: 'TLR', fullName: 'Teaching, Learning & Resources', color: '#8884d8', fill: '#ede9fe' },
+        { key: 'rpc', label: 'RPC', fullName: 'Research & Professional Practice', color: '#22c55e', fill: '#dcfce7' },
+        { key: 'go',  label: 'GO',  fullName: 'Graduation Outcomes',             color: '#f59e0b', fill: '#fef3c7' },
+        { key: 'oi',  label: 'OI',  fullName: 'Outreach & Inclusivity',          color: '#f97316', fill: '#ffedd5' },
+        { key: 'pr',  label: 'PR',  fullName: 'Perception',                      color: '#0ea5e9', fill: '#e0f2fe' },
+    ];
 
     return (
         <div className="content-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ margin: 0, color: '#1a237e' }}>NIRF Ranking Overview</h2>
                 {canUpload && (
                     <button
@@ -107,67 +116,70 @@ const NirfRankingSection = ({ user }) => {
                 )}
             </div>
 
-            {/* Latest Stats Cards */}
-            <h3 style={{ fontSize: '1.2rem', color: '#444', marginBottom: '1rem' }}>Latest Rankings (FY {latestStats.year})</h3>
-            <div className="indicator-grid" style={{ marginTop: '0', marginBottom: '3rem' }}>
-                <div className="indicator-card">
-                    <p className="indicator-title">TLR</p>
-                    <p className="indicator-value" style={{ color: '#8884d8' }}>{latestStats.tlr}</p>
-                    <span className="indicator-subtitle">Teaching, Learning & Resources</span>
-                </div>
-                <div className="indicator-card">
-                    <p className="indicator-title">RPC</p>
-                    <p className="indicator-value" style={{ color: '#82ca9d' }}>{latestStats.rpc}</p>
-                    <span className="indicator-subtitle">Research & Professional Practice</span>
-                </div>
-                <div className="indicator-card">
-                    <p className="indicator-title">GO</p>
-                    <p className="indicator-value" style={{ color: '#ffc658' }}>{latestStats.go}</p>
-                    <span className="indicator-subtitle">Graduation Outcomes</span>
-                </div>
-                <div className="indicator-card">
-                    <p className="indicator-title">OI</p>
-                    <p className="indicator-value" style={{ color: '#ff8042' }}>{latestStats.oi}</p>
-                    <span className="indicator-subtitle">Outreach & Inclusivity</span>
-                </div>
-                <div className="indicator-card">
-                    <p className="indicator-title">PR</p>
-                    <p className="indicator-value" style={{ color: '#0088fe' }}>{latestStats.pr}</p>
-                    <span className="indicator-subtitle">Perception</span>
-                </div>
-            </div>
+            <h3 style={{ fontSize: '1rem', color: '#555', marginBottom: '16px', fontWeight: 600 }}>
+                Per-Metric Trend Cards (2022–2025)
+            </h3>
 
-            <h3 style={{ fontSize: '1.2rem', color: '#444', marginBottom: '1rem' }}>Ranking Trends (2022-2025)</h3>
-            <div style={{ width: '100%', height: 400 }}>
-                <ResponsiveContainer>
-                    <BarChart
-                        data={data}
-                        margin={{
-                            top: 20,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                        }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="year" />
-                        <YAxis domain={[0, 100]} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-                        />
-                        <Legend />
-                        <Bar dataKey="tlr" name="TLR" fill="#8884d8" />
-                        <Bar dataKey="rpc" name="RPC" fill="#82ca9d" />
-                        <Bar dataKey="go" name="GO" fill="#ffc658" />
-                        <Bar dataKey="oi" name="OI" fill="#ff8042" />
-                        <Bar dataKey="pr" name="PR" fill="#0088fe" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-
-            <div style={{ marginTop: '20px', fontSize: '0.9rem', color: '#666' }}>
-                <p><strong>TLR:</strong> Teaching, Learning & Resources | <strong>RPC:</strong> Research and Professional Practice</p>
-                <p><strong>GO:</strong> Graduation Outcomes | <strong>OI:</strong> Outreach and Inclusivity | <strong>PR:</strong> Perception</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                {metrics.map(({ key, label, fullName, color, fill }) => {
+                    const latest = Number(latestStats[key] ?? 0);
+                    const first  = Number(firstStats[key] ?? 0);
+                    const delta  = latest - first;
+                    return (
+                        <div key={key} style={{
+                            background: '#fff',
+                            border: `1px solid ${fill}`,
+                            borderRadius: '14px',
+                            padding: '16px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                <div>
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#555' }}>{label}</div>
+                                    <div style={{ fontSize: '11px', color: '#888' }}>{fullName}</div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '26px', fontWeight: 'bold', color }}>{latest}</div>
+                                    <div style={{
+                                        fontSize: '11px',
+                                        fontWeight: 600,
+                                        color: delta >= 0 ? '#22c55e' : '#ef4444'
+                                    }}>
+                                        {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)} since {firstStats.year}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ height: 80 }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={data} margin={{ top: 4, right: 4, left: -30, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor={color} stopOpacity={0.25} />
+                                                <stop offset="95%" stopColor={color} stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                        <XAxis dataKey="year" tick={{ fontSize: 9 }} />
+                                        <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+                                        <Tooltip
+                                            contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                            formatter={(v) => [v, label]}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey={key}
+                                            stroke={color}
+                                            strokeWidth={2}
+                                            fill={`url(#grad-${key})`}
+                                            dot={{ r: 3, fill: color }}
+                                            activeDot={{ r: 5 }}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             <DataUploadModal

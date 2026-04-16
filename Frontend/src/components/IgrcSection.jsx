@@ -2,13 +2,9 @@ import { useEffect, useState } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
+  BarChart, Bar,
+  LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
 
 import { fetchIgrcSummary, fetchIgrcYearly } from '../services/grievanceStats';
@@ -41,6 +37,7 @@ function IgrcSection({ user, isPublicView = false }) {
     resolved: 0,
     pending: 0
   });
+  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -348,52 +345,73 @@ function IgrcSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
+              {/* Bar / Trend toggle */}
+              <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
+                {['Bar', 'Trend'].map(mode => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setChartType(mode)}
+                    style={{
+                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                      color: chartType === mode ? '#fff' : '#333',
+                      fontWeight: chartType === mode ? '600' : '400',
+                      fontSize: '13px', transition: 'all 0.2s'
+                    }}
+                  >
+                    {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                  </button>
+                ))}
+              </div>
+
               {yearlyData.length === 0 ? (
                 <div className="no-data">No grievance records available.</div>
-              ) : (
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={420}>
-                    <BarChart
-                      data={
-                        selectedYear === 'All'
-                          ? yearlyData
-                          : yearlyData.filter((row) => String(row.year) === String(selectedYear))
-                      }
-                      margin={{ top: 20, right: 30, left: 60, bottom: 60 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                      <XAxis
-                        dataKey="year"
-                        stroke="#000000"
-                        tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }}
-                        label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }}
-                      />
-                      <YAxis
-                        stroke="#000000"
-                        tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }}
-                        label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }}
-                      />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: '#2a2a2a', borderColor: '#555' }}
-                        cursor={{ fill: 'rgba(102, 126, 234, 0.1)' }}
-                      />
-                      <Legend
-                        wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
-                        iconType="rect"
-                      />
-                      {visibleMetrics.filed && (
-                        <Bar dataKey="filed" name="Filed" fill={BAR_COLORS.filed} />
-                      )}
-                      {visibleMetrics.resolved && (
-                        <Bar dataKey="resolved" name="Resolved" fill={BAR_COLORS.resolved} />
-                      )}
-                      {visibleMetrics.pending && (
-                        <Bar dataKey="pending" name="Pending" fill={BAR_COLORS.pending} />
-                      )}
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
+              ) : (() => {
+                const chartData = selectedYear === 'All'
+                  ? yearlyData
+                  : yearlyData.filter((row) => String(row.year) === String(selectedYear));
+                const sharedAxisProps = {
+                  xAxis: <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
+                  yAxis: <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
+                  tooltip: <Tooltip contentStyle={{ backgroundColor: '#2a2a2a', borderColor: '#555' }} />,
+                  legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />,
+                  grid: <CartesianGrid strokeDasharray="3 3" stroke="#444" />,
+                };
+                return (
+                  <div className="chart-container">
+                    {/* Bar chart */}
+                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={420}>
+                        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
+                          {sharedAxisProps.grid}
+                          {sharedAxisProps.xAxis}
+                          {sharedAxisProps.yAxis}
+                          {sharedAxisProps.tooltip}
+                          {sharedAxisProps.legend}
+                          {visibleMetrics.filed && <Bar dataKey="filed" name="Filed" fill={BAR_COLORS.filed} />}
+                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={BAR_COLORS.resolved} />}
+                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={BAR_COLORS.pending} />}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Trend (Line) chart — complaints filed only */}
+                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={420}>
+                        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
+                          {sharedAxisProps.grid}
+                          {sharedAxisProps.xAxis}
+                          {sharedAxisProps.yAxis}
+                          {sharedAxisProps.tooltip}
+                          {sharedAxisProps.legend}
+                          <Line type="monotone" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 5, fill: BAR_COLORS.filed, strokeWidth: 0 }} activeDot={{ r: 7 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </>
         )}

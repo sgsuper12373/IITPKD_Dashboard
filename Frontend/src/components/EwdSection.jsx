@@ -54,6 +54,7 @@ function EwdSection({ user, isPublicView = false }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeView, setActiveView] = useState('electricity'); // 'electricity' | 'perCapita' | 'environment'
+  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
 
   const token = localStorage.getItem('authToken');
 
@@ -559,19 +560,25 @@ function EwdSection({ user, isPublicView = false }) {
             </div>
 
             {activeView === 'electricity' && (
-              <div className="chart-section" style={{
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>
-                    Annual Electricity Consumption
-                  </h2>
-                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                    Institution-wide electricity usage (kWh) recorded by EWD each financial year.
-                  </p>
+              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+                <div className="chart-header" style={{ marginBottom: '12px' }}>
+                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Annual Electricity Consumption</h2>
+                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Institution-wide electricity usage (kWh) recorded by EWD each financial year.</p>
+                </div>
+
+                {/* Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  {['Bar', 'Trend'].map(mode => (
+                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
+                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                      color: chartType === mode ? '#fff' : '#333',
+                      fontWeight: chartType === mode ? '600' : '400',
+                      fontSize: '13px', transition: 'all 0.2s'
+                    }}>
+                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
@@ -584,50 +591,57 @@ function EwdSection({ user, isPublicView = false }) {
                     <div style={{ textAlign: 'center', marginBottom: '10px', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
                       Scale: 1 unit = 1,000 kWh
                     </div>
-                    <ResponsiveContainer width="100%" height={380}>
-                      <BarChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                          }}
-                          formatter={(value) => {
-                            const actualValue = value * 1000;
-                            return [formatNumber(actualValue), 'kWh'];
-                          }}
-                        />
-                        <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                        <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#667eea" radius={[4, 4, 0, 0]} barSize={30} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    {/* Bar chart */}
+                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={380}>
+                        <BarChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value) => [formatNumber(value * 1000), 'kWh']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#667eea" radius={[4, 4, 0, 0]} barSize={30} isAnimationActive animationDuration={700} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {/* Trend chart */}
+                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={380}>
+                        <LineChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value) => [formatNumber(value * 1000), 'kWh']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Line type="monotone" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#667eea" strokeWidth={3} dot={{ r: 5, fill: '#667eea', strokeWidth: 0 }} activeDot={{ r: 7 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
             {activeView === 'perCapita' && (
-              <div className="chart-section" style={{
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>
-                    Per Capita Consumption Trends
-                  </h2>
-                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                    Electricity and water consumption metrics normalised per capita.
-                  </p>
+              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+                <div className="chart-header" style={{ marginBottom: '12px' }}>
+                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Per Capita Consumption Trends</h2>
+                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Electricity and water consumption metrics normalised per capita.</p>
+                </div>
+
+                {/* Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  {['Bar', 'Trend'].map(mode => (
+                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
+                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                      color: chartType === mode ? '#fff' : '#333',
+                      fontWeight: chartType === mode ? '600' : '400',
+                      fontSize: '13px', transition: 'all 0.2s'
+                    }}>
+                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
@@ -637,52 +651,61 @@ function EwdSection({ user, isPublicView = false }) {
                   </div>
                 ) : (
                   <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={400}>
-                      <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                          }}
-                          formatter={(value, name) => {
-                            const suffix = name.includes('Electricity') ? 'kWh' : 'litres';
-                            return [formatDecimal(value), suffix];
-                          }}
-                        />
-                        <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                        <Line type="monotone" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 3 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    {/* Bar chart */}
+                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value, name) => [formatDecimal(value), name.includes('Electricity') ? 'kWh' : 'litres']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
+                          <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
+                          <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {/* Trend chart */}
+                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value, name) => [formatDecimal(value), name.includes('Electricity') ? 'kWh' : 'litres']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Line type="monotone" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                          <Line type="monotone" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 4, fill: '#43e97b', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                          <Line type="monotone" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 4, fill: '#fa709a', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
             {activeView === 'environment' && (
-              <div className="chart-section" style={{
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>
-                    Environmental Summary
-                  </h2>
-                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                    Green coverage (sq.m) illustrates campus sustainability efforts over time.
-                  </p>
+              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+                <div className="chart-header" style={{ marginBottom: '12px' }}>
+                  <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Environmental Summary</h2>
+                  <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Green coverage (sq.m) illustrates campus sustainability efforts over time.</p>
+                </div>
+
+                {/* Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  {['Bar', 'Trend'].map(mode => (
+                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
+                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                      color: chartType === mode ? '#fff' : '#333',
+                      fontWeight: chartType === mode ? '600' : '400',
+                      fontSize: '13px', transition: 'all 0.2s'
+                    }}>
+                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
@@ -692,42 +715,38 @@ function EwdSection({ user, isPublicView = false }) {
                   </div>
                 ) : (
                   <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={370}>
-                      <AreaChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
-                        <defs>
-                          <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }}
-                          label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                          }}
-                          formatter={(value) => [formatDecimal(value), 'sq.m']}
-                        />
-                        <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                        <Area
-                          type="monotone"
-                          dataKey="greenCoverage"
-                          name="Green Coverage (sq.m)"
-                          stroke="#34d399"
-                          fill="url(#colorGreenCoverage)"
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                    {/* Bar chart */}
+                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={370}>
+                        <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value) => [formatDecimal(value), 'sq.m']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    {/* Trend (Area) chart */}
+                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={370}>
+                        <AreaChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                          <defs>
+                            <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
+                              <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} formatter={(value) => [formatDecimal(value), 'sq.m']} />
+                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                          <Area type="monotone" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" fill="url(#colorGreenCoverage)" strokeWidth={2} dot={{ r: 4, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 )}
               </div>

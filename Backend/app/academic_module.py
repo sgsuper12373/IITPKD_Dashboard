@@ -69,6 +69,7 @@ def get_filter_options(current_user_id):
 
         # Normalise helper: lowercase + strip spaces and commas
         NORM = "REGEXP_REPLACE(LOWER({col}), '[\\s,]+', '', 'g')"
+        norm_coalesce_proposal = NORM.format(col="COALESCE(proposal_type,'')")
 
         cur.execute(f"""
             SELECT
@@ -94,7 +95,7 @@ def get_filter_options(current_user_id):
                 ARRAY(
                     SELECT DISTINCT
                         CASE
-                            WHEN COALESCE(TRIM({NORM.format(col='COALESCE(proposal_type,\'\')')}), '') = ''
+                            WHEN COALESCE(TRIM({norm_coalesce_proposal}), '') = ''
                             THEN 'old'
                             ELSE {NORM.format(col='proposal_type')}
                         END
@@ -310,6 +311,12 @@ def get_courses(current_user_id):
         'status': request.args.get('status'),
         'proposal_type': request.args.get('proposal_type'),
     }
+    # course_type: 'all' (default) or 'industry'
+    course_type = request.args.get('course_type', 'industry')
+    # active_only: 'true' shows only active courses
+    active_only_raw = request.args.get('active_only', 'false').lower()
+    active_only = active_only_raw in ('true', '1', 'yes')
+
     search = request.args.get('search', '', type=str).strip()
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
@@ -324,8 +331,16 @@ def get_courses(current_user_id):
 
         # Build WHERE conditions with normalised matching
         NORM = "REGEXP_REPLACE(LOWER(COALESCE({col}, '')), '[\\s,]+', '', 'g')"
-        conditions = ["UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')"]
+        conditions = []
         params = []
+
+        # Filter by course type
+        if course_type == 'industry':
+            conditions.append("UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')")
+
+        # Filter by active_only
+        if active_only:
+            conditions.append("UPPER(COALESCE(industry_course_status_currentay, '')) IN ('ACTIVE', 'RUNNING')")
 
         category = filters.get('category')
         if category not in (None, '', 'All'):
@@ -355,17 +370,13 @@ def get_courses(current_user_id):
                 conditions.append(f"{norm_col} = %s")
                 params.append(proposal_type)
 
-        where_clause = "WHERE " + " AND ".join(conditions)
-
-        # Add search
         if search:
             search_cond = "(course_code ILIKE %s OR course_name ILIKE %s OR proposing_faculty_name ILIKE %s)"
             pattern = f'%{search}%'
-            if where_clause:
-                where_clause += f" AND {search_cond}"
-            else:
-                where_clause = f"WHERE {search_cond}"
+            conditions.append(search_cond)
             params.extend([pattern, pattern, pattern])
+
+        where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
 
         # Total count
         cur.execute(f"SELECT COUNT(*) AS total FROM {COURSES_TABLE} {where_clause}", params)
@@ -415,6 +426,54 @@ def get_courses(current_user_id):
     except Exception as exc:
         print(f"Course list error: {exc}")
         return jsonify({'message': 'Failed to fetch course list.'}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+# ===================== Course Counts =====================
+
+@academic_module_bp.route('/course-counts', methods=['GET'])
+@token_required
+def get_course_counts(current_user_id):
+    """Active/inactive counts for all courses and industry courses."""
+    if not module_tables_available():
+        return jsonify({'message': 'Academic module tables are missing.'}), 500
+
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({'message': 'Database connection failed.'}), 500
+        cur = conn.cursor()
+
+        cur.execute(f"""
+            SELECT
+                COUNT(*) AS total_all,
+                COUNT(CASE WHEN UPPER(COALESCE(industry_course_status_currentay, '')) IN ('ACTIVE', 'RUNNING') THEN 1 END) AS active_all,
+                COUNT(CASE WHEN UPPER(COALESCE(industry_course_status_currentay, '')) = 'INACTIVE' THEN 1 END) AS inactive_all,
+                COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') THEN 1 END) AS total_industry,
+                COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                           AND UPPER(COALESCE(industry_course_status_currentay, '')) IN ('ACTIVE', 'RUNNING') THEN 1 END) AS active_industry,
+                COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
+                           AND UPPER(COALESCE(industry_course_status_currentay, '')) = 'INACTIVE' THEN 1 END) AS inactive_industry
+            FROM {COURSES_TABLE}
+        """)
+        row = cur.fetchone() or {}
+        return jsonify({
+            'total_all': int(row.get('total_all') or 0),
+            'active_all': int(row.get('active_all') or 0),
+            'inactive_all': int(row.get('inactive_all') or 0),
+            'total_industry': int(row.get('total_industry') or 0),
+            'active_industry': int(row.get('active_industry') or 0),
+            'inactive_industry': int(row.get('inactive_industry') or 0),
+        }), 200
+    except Exception as exc:
+        print(f"Course counts error: {exc}")
+        return jsonify({'message': 'Failed to fetch course counts.'}), 500
     finally:
         if cur:
             cur.close()

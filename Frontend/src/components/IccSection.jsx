@@ -2,13 +2,9 @@ import { useEffect, useState } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
+  BarChart, Bar,
+  LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
 
 import { fetchIccSummary, fetchIccYearly } from '../services/grievanceStats';
@@ -41,6 +37,7 @@ function IccSection({ user, isPublicView = false }) {
     resolved: 0,
     pending: 0
   });
+  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -384,6 +381,26 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
                 </div>
 
+                {/* Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
+                  {['Bar', 'Trend'].map(mode => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setChartType(mode)}
+                      style={{
+                        padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                        backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                        color: chartType === mode ? '#fff' : '#333',
+                        fontWeight: chartType === mode ? '600' : '400',
+                        fontSize: '13px', transition: 'all 0.2s'
+                      }}
+                    >
+                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
+                </div>
+
                 {yearlyData.length === 0 ? (
                   <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                     <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
@@ -391,69 +408,35 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
                 ) : (
                   <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={350}>
-                      <AreaChart
-                        data={yearlyData}
-                        margin={{ top: 10, right: 20, left: 40, bottom: 30 }}
-                      >
-                        <defs>
-                          <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={AREA_COLORS.total} stopOpacity={0.8} />
-                            <stop offset="95%" stopColor={AREA_COLORS.total} stopOpacity={0} />
-                          </linearGradient>
-                          <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={AREA_COLORS.resolved} stopOpacity={0.8} />
-                            <stop offset="95%" stopColor={AREA_COLORS.resolved} stopOpacity={0} />
-                          </linearGradient>
-                          <linearGradient id="colorPending" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={AREA_COLORS.pending} stopOpacity={0.8} />
-                            <stop offset="95%" stopColor={AREA_COLORS.pending} stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                          }}
-                        />
-                        <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                        {visibleMetrics.total && (
-                          <Area
-                            type="monotone"
-                            dataKey="total"
-                            name="Total"
-                            stroke={AREA_COLORS.total}
-                            fill="url(#colorTotal)"
-                            strokeWidth={2}
-                          />
-                        )}
-                        {visibleMetrics.resolved && (
-                          <Area
-                            type="monotone"
-                            dataKey="resolved"
-                            name="Resolved"
-                            stroke={AREA_COLORS.resolved}
-                            fill="url(#colorResolved)"
-                            strokeWidth={2}
-                          />
-                        )}
-                        {visibleMetrics.pending && (
-                          <Area
-                            type="monotone"
-                            dataKey="pending"
-                            name="Pending"
-                            stroke={AREA_COLORS.pending}
-                            fill="url(#colorPending)"
-                            strokeWidth={2}
-                          />
-                        )}
-                      </AreaChart>
-                    </ResponsiveContainer>
+                    {/* Bar chart — Complaints, Resolved, Pending */}
+                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <BarChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                          <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                          {visibleMetrics.total && <Bar dataKey="total" name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
+                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
+                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Trend (Line) chart — complaints only */}
+                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <LineChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                          <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                          <Line type="monotone" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 )}
               </div>

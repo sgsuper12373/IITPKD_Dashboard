@@ -57,6 +57,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('trend'); // 'trend' | 'department' | 'type' | 'publicationsTable'
 
+  // Bar / Trend chart mode for Publication Trend
+  const [trendChartMode, setTrendChartMode] = useState('bar');
+
   const [filters, setFilters] = useState({
     department: 'All',
     publication_year: 'All',
@@ -586,16 +589,38 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
                 </div>
 
+                {/* Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  {['bar', 'trend'].map((mode) => (
+                    <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
+                      padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
+                      backgroundColor: trendChartMode === mode ? '#6366f1' : '#f1f5f9',
+                      color: trendChartMode === mode ? '#fff' : '#555'
+                    }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                  ))}
+                </div>
+
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="monotone" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
-                    </LineChart>
+                    {trendChartMode === 'bar' ? (
+                      <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
+                        <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28} />
+                      </BarChart>
+                    ) : (
+                      <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
+                        <Line type="monotone" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
+                      </LineChart>
+                    )}
                   </ResponsiveContainer>
                 </div>
               </section>

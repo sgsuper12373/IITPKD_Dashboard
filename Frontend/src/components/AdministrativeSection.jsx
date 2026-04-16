@@ -120,19 +120,6 @@ const StackedBarTooltip = ({ active, payload, total }) => {
   );
 };
 
-const PieTooltip = ({ active, payload, total }) => {
-  if (!active || !payload?.length) return null;
-  const pct = total > 0 ? ((payload[0].value / total) * 100).toFixed(1) : 0;
-  return (
-    <div className="custom-tooltip">
-      <p className="tooltip-label">{payload[0].name}</p>
-      <p style={{ margin: '0.2rem 0', fontSize: '0.85rem', color: payload[0].payload.fill }}>
-        {payload[0].value} ({pct}%)
-      </p>
-    </div>
-  );
-};
-
 // ── Main component ─────────────────────────────────────────────────────────
 
 function AdministrativeSection({ isPublicView = false }) {
@@ -170,6 +157,7 @@ function AdministrativeSection({ isPublicView = false }) {
   const [nonTeachingYearwise, setNonTeachingYearwise] = useState([]);
   const [selectedYear, setSelectedYear] = useState('');
 
+  const [yearwiseChartType, setYearwiseChartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
@@ -461,42 +449,39 @@ function AdministrativeSection({ isPublicView = false }) {
           <div style={CHART_BOX}>
             {filterPanel}
 
-            {/* Chart header: title (left) + metric toggle buttons (right) — mirrors ICC */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '20px',
-              flexWrap: 'wrap',
-              gap: '15px'
-            }}>
+            {/* Bar / Trend toggle */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              {['Bar', 'Trend'].map(mode => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setYearwiseChartType(mode)}
+                  style={{
+                    padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                    backgroundColor: yearwiseChartType === mode ? '#667eea' : '#e9ecef',
+                    color: yearwiseChartType === mode ? '#fff' : '#333',
+                    fontWeight: yearwiseChartType === mode ? '600' : '400',
+                    fontSize: '13px', transition: 'all 0.2s'
+                  }}
+                >
+                  {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                </button>
+              ))}
+            </div>
+
+            {/* Chart header: title (left) + series visibility toggles (right) */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
               <div>
-                <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>
-                  Year-wise Employee Strength
-                </h2>
-                <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                  Overview of total employees and gender-wise breakdown year over year.
-                </p>
+                <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>Year-wise Employee Strength</h2>
+                <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Overview of total employees and gender-wise breakdown year over year.</p>
               </div>
-              {/* Toggle buttons — identical style to ICC's Total / Resolved / Pending */}
               <div style={{ display: 'flex', gap: '8px' }}>
                 {SERIES_META.map(({ key, color, label }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => toggleSeries(key)}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: visibleSeries[key] ? color : '#f0f0f0',
-                      color: visibleSeries[key] ? 'white' : '#666',
-                      border: 'none',
-                      borderRadius: '20px',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
+                  <button key={key} type="button" onClick={() => toggleSeries(key)} style={{
+                    padding: '6px 12px', backgroundColor: visibleSeries[key] ? color : '#f0f0f0',
+                    color: visibleSeries[key] ? 'white' : '#666', border: 'none', borderRadius: '20px',
+                    cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s ease'
+                  }}>
                     {label}
                   </button>
                 ))}
@@ -515,37 +500,51 @@ function AdministrativeSection({ isPublicView = false }) {
                   <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No employee records match the current filters.</p>
                 </div>
               )}
-              <ResponsiveContainer width="100%" height={350}>
-                <AreaChart
-                  data={yearwiseData}
-                  margin={{ top: 10, right: 20, left: 40, bottom: 30 }}
-                >
-                  <defs>
-                    {SERIES_META.map(({ gradientId, color }) => (
-                      <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={color} stopOpacity={0.8} />
-                        <stop offset="95%" stopColor={color} stopOpacity={0} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                  <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#fff', border: '1px solid #ccc',
-                      borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                    }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                  {SERIES_META.map(({ key, color, gradientId, label }) =>
-                    visibleSeries[key] ? (
-                      <Area key={key} type="monotone" dataKey={key} name={label}
-                        stroke={color} fill={`url(#${gradientId})`} strokeWidth={2} />
-                    ) : null
-                  )}
-                </AreaChart>
-              </ResponsiveContainer>
+
+              {/* Bar chart */}
+              <div className={`chart-wrapper ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                    {SERIES_META.map(({ key, color, label }) =>
+                      visibleSeries[key] ? (
+                        <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                      ) : null
+                    )}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Trend (Area) chart */}
+              <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
+                <ResponsiveContainer width="100%" height={350}>
+                  <AreaChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                    <defs>
+                      {SERIES_META.map(({ gradientId, color }) => (
+                        <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+                          <stop offset="95%" stopColor={color} stopOpacity={0} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                    {SERIES_META.map(({ key, color, gradientId, label }) =>
+                      visibleSeries[key] ? (
+                        <Area key={key} type="monotone" dataKey={key} name={label}
+                          stroke={color} fill={`url(#${gradientId})`} strokeWidth={2} />
+                      ) : null
+                    )}
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         )}
@@ -638,7 +637,7 @@ function AdministrativeSection({ isPublicView = false }) {
                       <Cell key={entry.name} fill={entry.fill} />
                     ))}
                   </Pie>
-                  {genderData.length > 0 && <Tooltip content={<PieTooltip total={genderTotal} />} />}
+                  {genderData.length > 0 && <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }} />}
                   {genderData.length > 0 && (
                     <Legend verticalAlign="bottom" align="center"
                       formatter={(value) => (
