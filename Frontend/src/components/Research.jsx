@@ -25,8 +25,7 @@ function Research({ user }) {
     },
     {
       title: 'MoU Section',
-      route: '/research/icsr',
-      state: { view: 'mousTable' },
+      route: '/research/mou',
       description: 'MoU directory — all signed memoranda of understanding',
       allowedRoles: [3]
     },

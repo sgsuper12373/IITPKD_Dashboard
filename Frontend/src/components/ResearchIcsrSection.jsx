@@ -19,8 +19,6 @@ import {
   fetchIcsrProjectTrend,
   fetchConsultancyTrend,
   fetchIcsrProjectList,
-  fetchMouTrend,
-  fetchMouList,
   fetchPatentStats,
   fetchPatentList
 } from '../services/researchStats';
@@ -90,18 +88,6 @@ const formatScaledCurrency = (value) => {
   }
 };
 
-const formatDate = (value) => {
-  if (!value) return '–';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '–';
-  }
-  return date.toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'short'
-  });
-};
-
 const buildPatentBreakdown = (source = {}) => ({
   Filed: Number(source?.Filed) || 0,
   Granted: Number(source?.Granted) || 0,
@@ -119,7 +105,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
     project_years: [],
     project_statuses: [],
     project_types: [],
-    mou_years: [],
     patent_years: [],
     patent_statuses: []
   });
@@ -129,7 +114,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
 
   // Bar / Trend chart mode per section
   const [projectsChartMode, setProjectsChartMode] = useState('bar');
-  const [mousChartMode, setMousChartMode] = useState('bar');
   const [patentsChartMode, setPatentsChartMode] = useState('bar');
 
   const [filters, setFilters] = useState({
@@ -137,7 +121,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
     project_year: 'All',
     project_type: 'All',
     status: 'All',
-    mou_year: 'All',
     patent_year: 'All',
     patent_status: 'All'
   });
@@ -147,7 +130,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
     consultancy_projects: 0,
     sanctioned_projects: 0,
     total_projects: 0,
-    total_mous: 0,
     total_patents: 0,
     consultancy_revenue: 0,
     patent_breakdown: buildPatentBreakdown()
@@ -156,8 +138,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
   const [projectTrend, setProjectTrend] = useState([]);
   const [consultancyTrend, setConsultancyTrend] = useState([]);
   const [projectList, setProjectList] = useState([]);
-  const [mouTrend, setMouTrend] = useState([]);
-  const [mouList, setMouList] = useState([]);
   const [patentStats, setPatentStats] = useState({ overall: buildPatentBreakdown(), yearly: [] });
   const [patentList, setPatentList] = useState([]);
 
@@ -209,8 +189,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
           projectTrendResp,
           consultancyTrendResp,
           projectListResp,
-          mouTrendResp,
-          mouListResp,
           patentStatsResp,
           patentListResp
         ] = await Promise.all([
@@ -218,8 +196,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
           fetchIcsrProjectTrend(filters, token),
           fetchConsultancyTrend(filters, token),
           fetchIcsrProjectList(filters, token),
-          fetchMouTrend(token),
-          fetchMouList({ mou_year: filters.mou_year }, token),
           fetchPatentStats(
             {
               patent_year: filters.patent_year,
@@ -242,7 +218,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
           sanctioned_projects:
             summaryResp?.sanctioned_projects ?? summaryResp?.total_projects ?? 0,
           total_projects: summaryResp?.total_projects ?? summaryResp?.sanctioned_projects ?? 0,
-          total_mous: summaryResp?.total_mous || 0,
           total_patents: summaryResp?.total_patents || 0,
           consultancy_revenue: summaryResp?.total_sanctioned_revenue || summaryResp?.consultancy_revenue || 0,
           patent_breakdown: buildPatentBreakdown(summaryResp?.patent_breakdown)
@@ -251,8 +226,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
         setProjectTrend(projectTrendResp?.data || []);
         setConsultancyTrend(consultancyTrendResp?.data || []);
         setProjectList(projectListResp?.data || []);
-        setMouTrend(mouTrendResp?.data || []);
-        setMouList(mouListResp?.data || []);
         setPatentStats({
           overall: buildPatentBreakdown(patentStatsResp?.overall),
           yearly: Array.isArray(patentStatsResp?.yearly) ? patentStatsResp.yearly : []
@@ -287,14 +260,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
     }));
   }, [consultancyTrend]);
 
-  const mouTrendChartData = useMemo(() => {
-    if (!mouTrend.length) return [];
-    return mouTrend.map((row) => ({
-      year: row.year,
-      total: Number(row.total) || 0
-    }));
-  }, [mouTrend]);
-
   const patentTrendChartData = useMemo(() => {
     if (!patentStats.yearly.length) return [];
     return patentStats.yearly.map((row) => {
@@ -320,7 +285,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
       project_year: 'All',
       project_type: 'All',
       status: 'All',
-      mou_year: 'All',
       patent_year: 'All',
       patent_status: 'All'
     });
@@ -368,9 +332,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
                   </button>
                   <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}>
                     <span>📤</span> Sponsored
-                  </button>
-                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_mous'); setIsUploadModalOpen(true); }}>
-                    <span>📤</span> MoUs
                   </button>
                   <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}>
                     <span>📤</span> Patents
@@ -536,39 +497,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Partnership MoUs Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(168, 85, 247, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🤝</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>MoUs Signed</span>
-              </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                {formatNumber(summary.total_mous)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Collaborations</span>
-              </div>
-            </div>
-          </div>
-
           {/* Patents Card */}
           <div style={{
             background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
@@ -629,22 +557,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
             📊 Projects Trend
           </button>
           <button
-            onClick={() => setViewType('mous')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: viewType === 'mous' ? '#a855f7' : 'transparent',
-              color: viewType === 'mous' ? 'white' : '#333',
-              border: viewType === 'mous' ? '2px solid #a855f7' : '2px solid #dee2e6',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: viewType === 'mous' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            🤝 MoUs Trend
-          </button>
-          <button
             onClick={() => setViewType('patents')}
             style={{
               padding: '12px 24px',
@@ -675,22 +587,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
             }}
           >
             📋 Projects Directory
-          </button>
-          <button
-            onClick={() => setViewType('mousTable')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: viewType === 'mousTable' ? '#ec4899' : 'transparent',
-              color: viewType === 'mousTable' ? 'white' : '#333',
-              border: viewType === 'mousTable' ? '2px solid #ec4899' : '2px solid #dee2e6',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: viewType === 'mousTable' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            📋 MoUs Directory
           </button>
         </div>
 
@@ -867,128 +763,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
                         <Line type="monotone" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
                         <Line type="monotone" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }} />
-                      </LineChart>
-                    )}
-                  </ResponsiveContainer>
-                </div>
-              </section>
-            )}
-
-            {/* MoUs Trend Section */}
-            {viewType === 'mous' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>🤝</span> MoUs Trend
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                    Yearly trend of Memorandum of Understanding signed.
-                  </p>
-                </div>
-
-                {/* Filters inside MoUs view */}
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>MoU Year</label>
-                      <select
-                        value={filters.mou_year}
-                        onChange={(e) => handleFilterChange('mou_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.mou_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.mou_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.mou_year}</span>}
-                    {filters.mou_year === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
-                </div>
-
-                {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                  {['bar', 'trend'].map((mode) => (
-                    <button key={mode} onClick={() => setMousChartMode(mode)} style={{
-                      padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
-                      backgroundColor: mousChartMode === mode ? '#a855f7' : '#f1f5f9',
-                      color: mousChartMode === mode ? '#fff' : '#555'
-                    }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
-                  ))}
-                </div>
-
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={350}>
-                    {mousChartMode === 'bar' ? (
-                      <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                        <Bar dataKey="total" name="MoUs Signed" fill="#a855f7" radius={[4, 4, 0, 0]} barSize={28} />
-                      </BarChart>
-                    ) : (
-                      <LineChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                        <Line type="monotone" dataKey="total" name="MoUs Signed" stroke="#a855f7" strokeWidth={3} dot={{ r: 6, fill: '#a855f7' }} activeDot={{ r: 8 }} />
                       </LineChart>
                     )}
                   </ResponsiveContainer>
@@ -1296,115 +1070,6 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
               </section>
             )}
 
-            {/* MoUs Directory Table */}
-            {viewType === 'mousTable' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '15px' }}>
-                  <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>🤝</span> MoUs Directory
-                  </h2>
-                  <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
-                    {mouList.length} MoUs found
-                  </p>
-                </div>
-
-                {/* Filters inside MoUs table view */}
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>MoU Year</label>
-                      <select
-                        value={filters.mou_year}
-                        onChange={(e) => handleFilterChange('mou_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.mou_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Active Filters Summary */}
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    fontSize: '12px'
-                  }}>
-                    <strong>Active Filters:</strong>{' '}
-                    {filters.mou_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.mou_year}</span>}
-                    {filters.mou_year === 'All' &&
-                      <span>No filters applied</span>
-                    }
-                  </div>
-                </div>
-
-                <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#ec4899', color: 'white' }}>
-                      <tr>
-                        <th style={{ padding: '10px' }}>Partner</th>
-                        <th style={{ padding: '10px' }}>Focus</th>
-                        <th style={{ padding: '10px' }}>Signed</th>
-                        <th style={{ padding: '10px' }}>Valid Till</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mouList.map((m, i) => (
-                        <tr key={m.mou_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                          <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                          <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
           </>
         )}
       </div>
