@@ -93,6 +93,7 @@ function IarSection({ user, isPublicView = false }) {
 
   // UI state to control which visualization block is visible
   const [activeView, setActiveView] = useState('trend'); // 'trend' | 'state' | 'country' | 'outcome'
+  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
 
   const token = localStorage.getItem('authToken');
 
@@ -468,6 +469,19 @@ function IarSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
+              {/* Bar / Trend toggle — only for Outcome Trend view */}
+              {activeView === 'trend' && (
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                  {['Bar', 'Trend'].map(type => (
+                    <button key={type} onClick={() => setChartType(type)} style={{
+                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600,
+                      background: chartType === type ? '#667eea' : '#e9ecef',
+                      color: chartType === type ? '#fff' : '#555',
+                    }}>{type}</button>
+                  ))}
+                </div>
+              )}
+
               {activeView === 'trend' && (
                 <div>
                   <div className="chart-header" style={{ marginBottom: '20px' }}>
@@ -486,18 +500,34 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   ) : (
                     <div className="chart-container">
-                      <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          <Line type="monotone" dataKey="total" name="Total alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }} />
-                          <Line type="monotone" dataKey="higher" name="Higher studies" stroke={TREND_HIGHER_COLOR} strokeWidth={2} dot={{ r: 3 }} />
-                          <Line type="monotone" dataKey="corporate" name="Corporate" stroke={TREND_CORPORATE_COLOR} strokeWidth={2} dot={{ r: 3 }} />
-                        </LineChart>
-                      </ResponsiveContainer>
+                      <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                        <ResponsiveContainer width="100%" height={350}>
+                          <BarChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ fontSize: '11px' }} />
+                            <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[4, 4, 0, 0]} barSize={14} />
+                            <Bar dataKey="higher" name="Higher Studies" fill={TREND_HIGHER_COLOR} radius={[4, 4, 0, 0]} barSize={14} />
+                            <Bar dataKey="corporate" name="Corporate" fill={TREND_CORPORATE_COLOR} radius={[4, 4, 0, 0]} barSize={14} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                        <ResponsiveContainer width="100%" height={350}>
+                          <LineChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ fontSize: '11px' }} />
+                            <Line type="monotone" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }} />
+                            <Line type="monotone" dataKey="higher" name="Higher Studies" stroke={TREND_HIGHER_COLOR} strokeWidth={2} dot={{ r: 3 }} />
+                            <Line type="monotone" dataKey="corporate" name="Corporate" stroke={TREND_CORPORATE_COLOR} strokeWidth={2} dot={{ r: 3 }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
 
                       {/* Chart Statistics */}
                       <div style={{
@@ -567,7 +597,7 @@ function IarSection({ user, isPublicView = false }) {
                             cx="50%"
                             cy="50%"
                             outerRadius={130}
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            label={false}
                             labelLine={false}
                           >
                             {stateTop10.map((entry, index) => (
