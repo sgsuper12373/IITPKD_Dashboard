@@ -423,6 +423,25 @@ def _preprocess_outreach_typed(reader, csv_headers, program_name):
     return _rebuild_stream(csv_headers, processed)
 
 
+def _preprocess_faculty_engagement(reader, csv_headers):
+    """
+    For the 'faculty_engagement' table:
+    Strips 'created_at' if present in the CSV to ensure the database auto-generates it.
+    """
+    rows = list(reader)
+    if not rows:
+        return None, None, 'CSV file is empty.'
+
+    new_headers = [h for h in csv_headers if h.lower() != 'created_at']
+    
+    processed = []
+    for row in rows:
+        new_row = {k: v for k, v in row.items() if k.lower() != 'created_at'}
+        processed.append(new_row)
+
+    return _rebuild_stream(new_headers, processed)
+
+
 # ---------------------------------------------------------------------------
 # Upload route
 # ---------------------------------------------------------------------------
@@ -508,6 +527,8 @@ def upload_csv(current_user_id):
             reader, csv_headers, error = _preprocess_nptel_enrollments(reader, csv_headers, conn)
         elif table_name == 'research_publications':
             reader, csv_headers, error = _preprocess_research_publications(reader, csv_headers)
+        elif table_name == 'faculty_engagement':
+            reader, csv_headers, error = _preprocess_faculty_engagement(reader, csv_headers)
         elif table_name == 'outreach' or table_name in _OUTREACH_PROGRAM_NAMES:
             p_name = _OUTREACH_PROGRAM_NAMES.get(table_name) # None if table_name is exactly 'outreach'
             reader, csv_headers, error = _preprocess_outreach_typed(reader, csv_headers, p_name)

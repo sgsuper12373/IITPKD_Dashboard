@@ -14,7 +14,7 @@ def get_nirf_metrics():
             
         cur = conn.cursor()
         cur.execute("""
-            SELECT year, tlr_score, rpc_score, go_score, oi_score, pr_score 
+            SELECT year, tlr_score, rpc_score, go_score, oi_score, pr_score, rank
             FROM nirf_ranking 
             ORDER BY year ASC;
         """)
@@ -29,7 +29,8 @@ def get_nirf_metrics():
                 'rpc': float(row['rpc_score']) if row['rpc_score'] else 0,
                 'go': float(row['go_score']) if row['go_score'] else 0,
                 'oi': float(row['oi_score']) if row['oi_score'] else 0,
-                'pr': float(row['pr_score']) if row['pr_score'] else 0
+                'pr': float(row['pr_score']) if row['pr_score'] else 0,
+                'rank': int(row['rank']) if row['rank'] else None
             })
             
         return jsonify(data), 200

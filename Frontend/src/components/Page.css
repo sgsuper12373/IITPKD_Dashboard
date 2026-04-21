@@ -153,7 +153,12 @@
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0.65rem 1.6rem;
-  transition: all 0.2s ease;
+  transition:
+    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 180ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .toggle-button.active {
@@ -183,23 +188,20 @@
 /* FORCE LIGHT SUMMARY CARDS – INNOVATION PAGE */
 /* ===================================================== */
 
-/* Card container with proper overflow handling */
 .page-content .summary-card {
   background-color: #fffaf0 !important;
-  /* off-white */
   border: 1px solid rgba(247, 166, 0, 0.35);
   border-radius: 14px;
-
   padding: 1.5rem 1.75rem;
-
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   color: #111111 !important;
-  
-  /* FIX: Prevent overflow */
   overflow: hidden;
   word-wrap: break-word;
   overflow-wrap: break-word;
   box-sizing: border-box;
+  transition:
+    transform 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* Remove any dark overlays or gradients */
@@ -445,7 +447,6 @@
   padding-top: 4px;
 }
 
-/* ===== Back Button ===== */
 .page-back-btn {
   display: inline-flex;
   align-items: center;
@@ -458,10 +459,15 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease;
   text-decoration: none;
   margin-bottom: 1rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 220ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .page-back-btn:hover {
@@ -472,7 +478,6 @@
   transform: translateX(-3px);
 }
 
-/* ===== Upload Button (green) ===== */
 .page-upload-btn {
   display: inline-flex;
   align-items: center;
@@ -485,9 +490,12 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.25s ease;
   box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
   white-space: nowrap;
+  transition:
+    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 180ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .page-upload-btn:hover {

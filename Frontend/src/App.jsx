@@ -25,7 +25,6 @@ import PlacementSection from './components/PlacementSection';
 import EducationAcademicSection from './components/EducationAcademicSection';
 import EducationAdministrativeSection from './components/EducationAdministrativeSection';
 import ResearchIcsrSection from './components/ResearchIcsrSection';
-import MouSection from './components/MouSection';
 import ResearchAdministrativeSection from './components/ResearchAdministrativeSection';
 import ResearchLibrarySection from './components/ResearchLibrarySection';
 import InnovationSection from './components/InnovationSection';
@@ -129,7 +128,6 @@ function App() {
           <Route path="people-campus/iar" element={<IarSection user={user} />} />
           <Route path="research" element={<Research user={user} />} />
           <Route path="research/icsr" element={<ResearchIcsrSection user={user} />} />
-          <Route path="research/mou" element={<MouSection user={user} />} />
           <Route path="research/administrative-section" element={<ResearchAdministrativeSection user={user} />} />
           <Route path="research/library" element={<ResearchLibrarySection user={user} />} />
           <Route path="education" element={<Education user={user} />} />

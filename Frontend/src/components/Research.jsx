@@ -24,12 +24,6 @@ function Research({ user }) {
       allowedRoles: [3]
     },
     {
-      title: 'MoU Section',
-      route: '/research/mou',
-      description: 'MoU directory — all signed memoranda of understanding',
-      allowedRoles: [3]
-    },
-    {
       title: 'Administrative Section',
       route: '/research/administrative-section',
       description: 'Faculty industry externships and collaborations',

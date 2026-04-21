@@ -223,13 +223,10 @@ function IarSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner" />
-            <p>Fetching alumni insights...</p>
-          </div>
-        ) : (
-          <>
+        <div style={{ position: 'relative', minHeight: '600px' }}>
+
+
+          {/* ... Summary Cards ... */}
             {/* Modern Summary Cards */}
             <div style={{
               display: 'grid',
@@ -469,8 +466,9 @@ function IarSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              {/* Bar / Trend toggle — only for Outcome Trend view */}
-              {activeView === 'trend' && (
+              {/* Outcome Trend View */}
+              <div style={{ display: activeView === 'trend' ? 'block' : 'none' }}>
+                {/* Bar / Trend toggle — only for Outcome Trend view */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
                   {['Bar', 'Trend'].map(type => (
                     <button key={type} onClick={() => setChartType(type)} style={{
@@ -480,9 +478,6 @@ function IarSection({ user, isPublicView = false }) {
                     }}>{type}</button>
                   ))}
                 </div>
-              )}
-
-              {activeView === 'trend' && (
                 <div>
                   <div className="chart-header" style={{ marginBottom: '20px' }}>
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -493,12 +488,13 @@ function IarSection({ user, isPublicView = false }) {
                     </p>
                   </div>
 
-                  {trendData.length === 0 ? (
-                    <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📈</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No trend data available for the selected filters.</p>
-                    </div>
-                  ) : (
+                  <div style={{ position: 'relative' }}>
+                    {trendData.length === 0 && (
+                      <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
+                        <span style={{ fontSize: '40px', marginBottom: '10px' }}>📈</span>
+                        <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No trend data available for the selected filters.</p>
+                      </div>
+                    )}
                     <div className="chart-container">
                       <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                         <ResponsiveContainer width="100%" height={350}>
@@ -530,47 +526,19 @@ function IarSection({ user, isPublicView = false }) {
                       </div>
 
                       {/* Chart Statistics */}
-                      <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
-                        gap: '10px'
-                      }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
-                            {trendData.reduce((sum, item) => sum + item.total, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#22d3ee', fontWeight: 'bold', fontSize: '20px' }}>
-                            {trendData.reduce((sum, item) => sum + item.higher, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
-                            {trendData.reduce((sum, item) => sum + item.corporate, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Corporate</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#a855f7', fontWeight: 'bold', fontSize: '20px' }}>
-                            {trendData.length}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Years Covered</div>
-                        </div>
+                      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#22d3ee', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Corporate</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#a855f7', fontWeight: 'bold', fontSize: '20px' }}>{trendData.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Years Covered</div></div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
+              </div>
 
-              {activeView === 'state' && (
+              {/* State Distribution View */}
+              <div style={{ display: activeView === 'state' ? 'block' : 'none' }}>
                 <div>
                   <div className="chart-header" style={{ marginBottom: '20px' }}>
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -581,70 +549,39 @@ function IarSection({ user, isPublicView = false }) {
                     </p>
                   </div>
 
-                  {stateDistribution.length === 0 ? (
-                    <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🗺️</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No state distribution data to display.</p>
-                    </div>
-                  ) : (
+                  <div style={{ position: 'relative' }}>
+                    {stateDistribution.length === 0 && (
+                      <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
+                        <span style={{ fontSize: '40px', marginBottom: '10px' }}>🗺️</span>
+                        <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No state distribution data to display.</p>
+                      </div>
+                    )}
                     <div className="chart-container">
                       <ResponsiveContainer width="100%" height={380}>
                         <PieChart>
-                          <Pie
-                            data={stateTop10}
-                            dataKey="count"
-                            nameKey="state"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={130}
-                            label={false}
-                            labelLine={false}
-                          >
-                            {stateTop10.map((entry, index) => (
-                              <Cell key={entry.state} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                          <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                            {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
+                              <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
                             ))}
                           </Pie>
-                          <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />
-                          <Legend />
+                          {stateTop10.length > 0 && <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />}
+                          {stateTop10.length > 0 && <Legend />}
                         </PieChart>
                       </ResponsiveContainer>
 
                       {/* Chart Statistics */}
-                      <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '10px'
-                      }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#67e8f9', fontWeight: 'bold', fontSize: '20px' }}>
-                            {stateDistribution.reduce((sum, item) => sum + item.count, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
-                            {stateDistribution.length}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>States Represented</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
-                            {stateDistribution.length > 0 ? Math.max(...stateDistribution.map(item => item.count)) : 0}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div>
-                        </div>
+                      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#67e8f9', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.reduce((sum, item) => sum + item.count, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.length}</div><div style={{ color: '#666', fontSize: '11px' }}>States Represented</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.length > 0 ? Math.max(...stateDistribution.map(item => item.count)) : 0}</div><div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div></div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
+              </div>
 
-              {activeView === 'country' && (
+              {/* Country Distribution View */}
+              <div style={{ display: activeView === 'country' ? 'block' : 'none' }}>
                 <div>
                   <div className="chart-header" style={{ marginBottom: '20px' }}>
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -655,32 +592,24 @@ function IarSection({ user, isPublicView = false }) {
                     </p>
                   </div>
 
-                  {countryDistribution.length === 0 ? (
-                    <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🌍</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No country distribution data to display.</p>
-                    </div>
-                  ) : (
+                  <div style={{ position: 'relative' }}>
+                    {countryDistribution.length === 0 && (
+                      <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
+                        <span style={{ fontSize: '40px', marginBottom: '10px' }}>🌍</span>
+                        <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No country distribution data to display.</p>
+                      </div>
+                    )}
                     <div className="chart-container">
-                      {/* Side-by-side: pie left, custom HTML legend right */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
                         <div style={{ flex: '0 0 280px' }}>
                           <ResponsiveContainer width={280} height={280}>
                             <PieChart>
-                              <Pie
-                                data={countryTop10}
-                                dataKey="count"
-                                nameKey="country"
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={120}
-                                labelLine={false}
-                              >
-                                {countryTop10.map((entry, index) => (
-                                  <Cell key={entry.country} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                              <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1 }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={120} labelLine={false}>
+                                {(countryTop10.length > 0 ? countryTop10 : [{ country: '' }]).map((entry, index) => (
+                                  <Cell key={index} fill={countryTop10.length > 0 ? PIE_COLORS[index % PIE_COLORS.length] : '#f0f0f0'} />
                                 ))}
                               </Pie>
-                              <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />
+                              {countryTop10.length > 0 && <Tooltip formatter={(value, name) => [`${value} alumni`, name]} />}
                             </PieChart>
                           </ResponsiveContainer>
                         </div>
@@ -699,43 +628,18 @@ function IarSection({ user, isPublicView = false }) {
                           })}
                         </div>
                       </div>
-
-                      {/* Chart Statistics */}
-                      <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '10px'
-                      }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
-                            {countryDistribution.length}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Countries</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '20px' }}>
-                            {countryDistribution.reduce((sum, item) => sum + item.count, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
-                            {countryDistribution.length > 0 ? Math.max(...countryDistribution.map(item => item.count)) : 0}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div>
-                        </div>
+                      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Countries</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.reduce((sum, item) => sum + item.count, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
+                        <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.length > 0 ? Math.max(...countryDistribution.map(item => item.count)) : 0}</div><div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div></div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )}
+              </div>
 
-              {activeView === 'outcome' && (
+              {/* Outcome by Department View */}
+              <div style={{ display: activeView === 'outcome' ? 'block' : 'none' }}>
                 <div>
                   <div className="chart-header" style={{ marginBottom: '20px' }}>
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -746,12 +650,13 @@ function IarSection({ user, isPublicView = false }) {
                     </p>
                   </div>
 
-                  {outcomeBreakdown.length === 0 ? (
-                    <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No departmental breakdown to display.</p>
-                    </div>
-                  ) : (
+                  <div style={{ position: 'relative' }}>
+                    {outcomeBreakdown.length === 0 && (
+                      <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
+                        <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
+                        <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No departmental breakdown to display.</p>
+                      </div>
+                    )}
                     <>
                       {/* Custom legend — clean pill badges above the chart */}
                       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', justifyContent: 'flex-end' }}>
@@ -856,22 +761,21 @@ function IarSection({ user, isPublicView = false }) {
                         </div>
                       </div>
                     </>
-                  )}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
-          </>
-        )}
-      </div>
+          </div>
 
-      {/* Upload Modal */}
-      <DataUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        tableName="alumni"
-        token={token}
-      />
-    </div>
+          {/* Upload Modal */}
+          <DataUploadModal
+            isOpen={isUploadModalOpen}
+            onClose={() => setIsUploadModalOpen(false)}
+            tableName="alumni"
+            token={token}
+          />
+        </div>
+      </div>
   );
 }
 

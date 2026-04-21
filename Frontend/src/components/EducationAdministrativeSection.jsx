@@ -120,11 +120,16 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   });
   const [error, setError] = useState(null);
 
+  // Drill-down states
+  const [selectedCardType, setSelectedCardType] = useState(null);
+  const [cardDetailsData, setCardDetailsData] = useState([]);
+  const [isCardDetailsLoading, setIsCardDetailsLoading] = useState(false);
+
   const token = localStorage.getItem('authToken');
 
   // Get current filters based on view type
   const getCurrentFilters = () => {
-    switch(viewType) {
+    switch (viewType) {
       case 'summary': return summaryFilters;
       case 'department': return departmentFilters;
       case 'trend': return trendFilters;
@@ -137,7 +142,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
   // Handle filter change for current view
   const handleFilterChange = (field, value) => {
-    switch(viewType) {
+    switch (viewType) {
       case 'summary':
         setSummaryFilters(prev => ({ ...prev, [field]: value }));
         break;
@@ -161,13 +166,14 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
   // Clear filters for current view
   const handleClearFilters = () => {
+    const latestYear = filterOptions.years.length > 0 ? filterOptions.years[0].toString() : 'All';
     const defaultFilters = {
-      year: 'All',
+      year: latestYear,
       department: 'All',
       engagement_type: 'All'
     };
-    
-    switch(viewType) {
+
+    switch (viewType) {
       case 'summary':
         setSummaryFilters(defaultFilters);
         break;
@@ -198,11 +204,24 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
       }
       try {
         const options = await fetchFilterOptions(token);
+        const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
         setFilterOptions({
-          years: Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [],
+          years: fetchedYears,
           departments: Array.isArray(options?.departments) ? options.departments : [],
           engagement_types: Array.isArray(options?.engagement_types) ? options.engagement_types : []
         });
+        
+        // Automatically set the latest year as default if currently 'All'
+        if (fetchedYears.length > 0) {
+          const latestYear = fetchedYears[0].toString();
+          setSummaryFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+          setDepartmentFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+          setTrendFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+          setDistributionFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+          setDetailsFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+          setHonoraryFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
+        }
+        
         setError(null);
       } catch (err) {
         console.error('Failed to fetch filter options:', err);
@@ -245,6 +264,31 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
       loadSummaryData();
     }
   }, [summaryFilters, token, viewType, uploadVersion]);
+
+  // Fetch drill-down details for summary cards
+  useEffect(() => {
+    const loadCardDetails = async () => {
+      if (!token || !selectedCardType) return;
+      try {
+        setIsCardDetailsLoading(true);
+        const filterParams = {
+          engagement_type: selectedCardType
+        };
+        if (summaryFilters.year !== 'All') {
+          filterParams.year = summaryFilters.year;
+        }
+
+        const response = await fetchFacultyEngagementList(filterParams, token);
+        setCardDetailsData(Array.isArray(response?.data) ? response.data : []);
+      } catch (err) {
+        console.error('Failed to load card details:', err);
+      } finally {
+        setIsCardDetailsLoading(false);
+      }
+    };
+
+    loadCardDetails();
+  }, [selectedCardType, summaryFilters.year, token]);
 
   // Fetch department data
   useEffect(() => {
@@ -344,7 +388,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
         if (currentFilters.year !== 'All') filterParams.year = currentFilters.year;
         if (currentFilters.department !== 'All') filterParams.department = currentFilters.department;
-        
+
         // Force Honorary if in honorary view and type is All
         if (viewType === 'honorary') {
           filterParams.engagement_type = currentFilters.engagement_type === 'All' ? 'Honorary' : currentFilters.engagement_type;
@@ -436,7 +480,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
   // Get loading state for current view
   const isLoading = () => {
-    switch(viewType) {
+    switch (viewType) {
       case 'summary': return loading.summary;
       case 'department': return loading.department;
       case 'trend': return loading.trend;
@@ -599,7 +643,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           }}>
             <input
               type="radio"
-              name="viewType" 
+              name="viewType"
               value="details"
               checked={viewType === 'details'}
               onChange={(e) => setViewType(e.target.value)}
@@ -614,695 +658,904 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
         </div>
 
         <div style={{ position: 'relative', minHeight: '400px' }}>
-          {isLoading() && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.7)',
-              zIndex: 100,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: '12px',
-              backdropFilter: 'blur(2px)',
-              transition: 'all 0.3s ease'
-            }}>
-              <div className="loading-spinner"></div>
-              <p style={{ marginTop: '1rem', fontWeight: '600', color: 'var(--text-main)' }}>Updating data...</p>
-            </div>
-          )}
+
 
           {/* Summary Indicators View */}
           <div style={{ display: viewType === 'summary' ? 'block' : 'none' }}>
-              <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Summary View */}
-                <div className="filter-panel" style={{ 
-                  marginBottom: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e9ecef' 
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              {/* Filters for Summary View */}
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div className="filter-header" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginBottom: '15px' 
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Summary View</h4>
-                    <button 
-                      className="clear-filters-btn" 
-                      onClick={handleClearFilters}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#dc3545', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
-                      <select
-                        value={summaryFilters.year}
-                        onChange={(e) => handleFilterChange('year', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Summary View</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
                 </div>
 
-                <div className="chart-header">
-                  <h2>Summary Indicators</h2>
-                  <p className="chart-description">
-                    Total counts by faculty engagement type
-                  </p>
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={summaryFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '1.5rem',
-                  marginTop: '1.5rem'
-                }}>
-                  {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
-                    <div
-                      key={card.type}
-                      style={{
-                        backgroundColor: '#fff',
-                        padding: '1.5rem',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border-light)',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                        textAlign: 'center'
-                      }}
-                    >
-                      <div style={{
-                        fontSize: '0.9rem',
-                        color: 'var(--text-muted)',
-                        marginBottom: '0.5rem',
-                        fontWeight: '600'
-                      }}>
-                        {ENGAGEMENT_LABELS[card.type] || card.type}
-                      </div>
-                      <div style={{
-                        fontSize: '2rem',
-                        fontWeight: 'bold',
-                        color: ENGAGEMENT_COLORS[card.type] || '#667eea',
-                        marginBottom: '0.25rem'
-                      }}>
-                        {formatNumber(card.total)}
-                      </div>
-                      <div style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--text-muted)'
-                      }}>
-                        Active: {formatNumber(card.active)}
-                      </div>
-                    </div>
-                  ))}
-                  {summaryCards.length === 0 && (
-                    <div style={{
-                      gridColumn: '1 / -1',
+              </div>
+
+              <div className="chart-header">
+                <h2>Summary Indicators</h2>
+                <p className="chart-description">
+                  Total counts by faculty engagement type
+                </p>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '1.5rem',
+                marginTop: '1.5rem'
+              }}>
+                {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
+                  <div
+                    key={card.type}
+                    onClick={() => setSelectedCardType(card.type)}
+                    style={{
+                      backgroundColor: '#fff',
+                      padding: '1.5rem',
+                      borderRadius: '12px',
+                      border: selectedCardType === card.type
+                        ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}`
+                        : '1px solid var(--border-light)',
+                      boxShadow: selectedCardType === card.type
+                        ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20`
+                        : '0 4px 12px rgba(0, 0, 0, 0.08)',
                       textAlign: 'center',
-                      padding: '2rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      transform: selectedCardType === card.type ? 'translateY(-4px)' : 'none',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedCardType !== card.type) {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedCardType !== card.type) {
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                      }
+                    }}
+                  >
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: 'var(--text-muted)',
+                      marginBottom: '0.5rem',
+                      fontWeight: '600'
+                    }}>
+                      {ENGAGEMENT_LABELS[card.type] || card.type}
+                    </div>
+                    <div style={{
+                      fontSize: '2rem',
+                      fontWeight: 'bold',
+                      color: ENGAGEMENT_COLORS[card.type] || '#667eea',
+                      marginBottom: '0.25rem'
+                    }}>
+                      {formatNumber(card.total)}
+                    </div>
+                    <div style={{
+                      fontSize: '0.85rem',
                       color: 'var(--text-muted)'
                     }}>
-                      No data available
+                      Active: {formatNumber(card.active)}
                     </div>
-                  )}
-                </div>
-
-                {summary.overall_total > 0 && (
+                    {selectedCardType === card.type && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: '4px',
+                        backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea'
+                      }} />
+                    )}
+                  </div>
+                ))}
+                {summaryCards.length === 0 && (
                   <div style={{
-                    marginTop: '1.5rem',
-                    padding: '1rem',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    textAlign: 'center'
+                    gridColumn: '1 / -1',
+                    textAlign: 'center',
+                    padding: '2rem',
+                    color: 'var(--text-muted)'
                   }}>
-                    <strong style={{ fontSize: '1.1rem' }}>
-                      Overall Total: {formatNumber(summary.overall_total)} | 
-                      Active: {formatNumber(summary.overall_active)}
-                    </strong>
+                    No data available
                   </div>
                 )}
               </div>
+
+              {summary.overall_total > 0 && (
+                <div style={{
+                  marginTop: '1.5rem',
+                  padding: '1rem',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '8px',
+                  textAlign: 'center'
+                }}>
+                  <strong style={{ fontSize: '1.1rem' }}>
+                    Overall Total: {formatNumber(summary.overall_total)} |
+                    Active: {formatNumber(summary.overall_active)}
+                  </strong>
+                </div>
+              )}
+
+              {/* Drill-down details list */}
+              {selectedCardType && (
+                <div style={{
+                  marginTop: '2rem',
+                  backgroundColor: '#fff',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-light)',
+                  padding: '1.5rem',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                  animation: 'fadeIn 0.3s ease'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1.5rem',
+                    paddingBottom: '1rem',
+                    borderBottom: '1px solid #eee'
+                  }}>
+                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: ENGAGEMENT_COLORS[selectedCardType] || '#667eea'
+                      }} />
+                      {ENGAGEMENT_LABELS[selectedCardType] || selectedCardType} Faculty List
+                      <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal', marginLeft: '10px' }}>
+                        ({summaryFilters.year === 'All' ? 'All Years' : `Year: ${summaryFilters.year}`})
+                      </span>
+                    </h3>
+                    <button
+                      onClick={() => setSelectedCardType(null)}
+                      style={{
+                        background: '#f1f5f9',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        color: '#475569',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => { e.target.style.backgroundColor = '#e2e8f0'; }}
+                      onMouseLeave={(e) => { e.target.style.backgroundColor = '#f1f5f9'; }}
+                    >
+                      ✕ Close
+                    </button>
+                  </div>
+
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                          <tr style={{ backgroundColor: '#f8fafc' }}>
+                            <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
+                            <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cardDetailsData.length > 0 ? (
+                            cardDetailsData.map((faculty, idx) => (
+                              <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }}>
+                                <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{faculty.faculty_name}</td>
+                                <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{faculty.department}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                No faculty found for this category and year.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Department-wise Breakdown View */}
           <div style={{ display: viewType === 'department' ? 'block' : 'none' }}>
-              <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Department View */}
-                <div className="filter-panel" style={{ 
-                  marginBottom: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e9ecef' 
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              {/* Filters for Department View */}
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div className="filter-header" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginBottom: '15px' 
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Department-wise View</h4>
-                    <button 
-                      className="clear-filters-btn" 
-                      onClick={handleClearFilters}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#dc3545', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Department-wise View</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={departmentFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
                     >
-                      Clear Filters
-                    </button>
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
 
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
-                      <select
-                        value={departmentFilters.year}
-                        onChange={(e) => handleFilterChange('year', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={departmentFilters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
-                      <select
-                        value={departmentFilters.engagement_type}
-                        onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.engagement_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={departmentFilters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
                   </div>
 
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <select
+                      value={departmentFilters.engagement_type}
+                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="chart-header">
-                  <h2>Department-wise Breakdown</h2>
-                  <p className="chart-description">
-                    Distribution of external academic engagement by department
-                  </p>
-                </div>
+              </div>
 
-                {departmentChartData.length > 0 ? (
-                  <div className="bar-chart-container">
-                    <ResponsiveContainer width="100%" height={400}>
-                      <BarChart data={departmentChartData} margin={{ top: 20, right: 30, left: 60, bottom: 80 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                        <XAxis
-                          dataKey="department"
-                          angle={-45}
-                          textAnchor="end"
-                          height={100}
-                          stroke="#000000"
-                          tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                          label={{ value: 'Department', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
-                        />
-                        <YAxis
-                          stroke="#000000"
-                          tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                          label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend
-                          wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
-                          iconType="rect"
-                        />
-                        {summary.summary.map((item, index) => {
-                          const type = item.engagement_type;
-                          return (
-                            <Bar
-                              key={type}
-                              dataKey={type}
-                              name={ENGAGEMENT_LABELS[type] || type}
-                              stackId="a"
-                              fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
-                              radius={index === summary.summary.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
-                            />
-                          );
-                        })}
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="no-data">
+              <div className="chart-header">
+                <h2>Department-wise Breakdown</h2>
+                <p className="chart-description">
+                  Distribution of external academic engagement by department
+                </p>
+              </div>
+
+              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+                {departmentChartData.length === 0 && !loading.department && (
+                  <div className="no-data-overlay" style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
+                  }}>
                     <p>No department data available for the selected filters.</p>
                   </div>
                 )}
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={departmentChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                    <XAxis
+                      dataKey="department"
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      stroke="#000000"
+                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
+                      label={{ value: 'Department', position: 'insideBottom', offset: -70, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                    />
+                    <YAxis
+                      stroke="#000000"
+                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
+                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      verticalAlign="top"
+                      align="center"
+                      wrapperStyle={{ paddingBottom: '20px', fontWeight: 'bold' }}
+                      iconType="rect"
+                    />
+                    {summary.summary.map((item, index) => {
+                      const type = item.engagement_type;
+                      if (type === 'FacultyFellow') return null;
+                      return (
+                        <Bar
+                          key={type}
+                          dataKey={type}
+                          name={ENGAGEMENT_LABELS[type] || type}
+                          fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
+                          animationDuration={800}
+                          radius={[4, 4, 0, 0]}
+                        />
+                      );
+                    })}
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
+            </div>
           </div>
 
           {/* Year-wise Trends View */}
           <div style={{ display: viewType === 'trend' ? 'block' : 'none' }}>
-              <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Trend View */}
-                <div className="filter-panel" style={{ 
-                  marginBottom: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e9ecef' 
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              {/* Filters for Trend View */}
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div className="filter-header" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginBottom: '15px' 
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Year-wise Trends</h4>
-                    <button 
-                      className="clear-filters-btn" 
-                      onClick={handleClearFilters}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#dc3545', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Year-wise Trends</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={trendFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
                     >
-                      Clear Filters
-                    </button>
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
 
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
-                      <select
-                        value={trendFilters.year}
-                        onChange={(e) => handleFilterChange('year', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={trendFilters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
-                      <select
-                        value={trendFilters.engagement_type}
-                        onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.engagement_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={trendFilters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
                   </div>
 
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <select
+                      value={trendFilters.engagement_type}
+                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="chart-header">
-                  <h2>Year-wise Trends</h2>
-                  <p className="chart-description">
-                    Growth in external academic engagement over time
-                  </p>
-                </div>
+              </div>
 
-                {yearTrendChartData.length > 0 ? (
-                  <div className="bar-chart-container">
-                    <ResponsiveContainer width="100%" height={400}>
-                      <LineChart data={yearTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                        <XAxis
-                          dataKey="year"
-                          stroke="#000000"
-                          tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                          label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
-                        />
-                        <YAxis
-                          stroke="#000000"
-                          tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                          label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend
-                          wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
-                          iconType="line"
-                        />
-                        {summary.summary.map((item, index) => {
-                          const type = item.engagement_type;
-                          return (
-                            <Line
-                              key={type}
-                              type="monotone"
-                              dataKey={type}
-                              stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
-                              strokeWidth={2}
-                              dot={{ r: 4 }}
-                              activeDot={{ r: 6 }}
-                            />
-                          );
-                        })}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="no-data">
-                    <p>No year trend data available for the selected filters.</p>
+              <div className="chart-header">
+                <h2>Year-wise Trends</h2>
+                <p className="chart-description">
+                  Faculty engagement trends over multiple years
+                </p>
+              </div>
+
+              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+                {yearTrendChartData.length === 0 && !loading.trend && (
+                  <div className="no-data-overlay" style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
+                  }}>
+                    <p>No trend data available for the selected filters.</p>
                   </div>
                 )}
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={yearTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                    <XAxis
+                      dataKey="year"
+                      stroke="#000000"
+                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
+                      label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                    />
+                    <YAxis
+                      stroke="#000000"
+                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
+                      label={{ value: 'Total Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
+                      iconType="rect"
+                    />
+                    {summary.summary.map((item, index) => {
+                      const type = item.engagement_type;
+                      if (type === 'FacultyFellow') return null;
+                      return (
+                        <Line
+                          key={type}
+                          type="monotone"
+                          dataKey={type}
+                          name={ENGAGEMENT_LABELS[type] || type}
+                          stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
+                          strokeWidth={3}
+                          dot={{ r: 5 }}
+                          activeDot={{ r: 8 }}
+                          animationDuration={800}
+                        />
+                      );
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
+            </div>
           </div>
 
           {/* Type Distribution View */}
           <div style={{ display: viewType === 'distribution' ? 'block' : 'none' }}>
-              <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Distribution View */}
-                <div className="filter-panel" style={{ 
-                  marginBottom: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e9ecef' 
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              {/* Filters for Distribution View */}
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div className="filter-header" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginBottom: '15px' 
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Type Distribution</h4>
-                    <button 
-                      className="clear-filters-btn" 
-                      onClick={handleClearFilters}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#dc3545', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Type Distribution</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={distributionFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
                     >
-                      Clear Filters
-                    </button>
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
 
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
-                      <select
-                        value={distributionFilters.year}
-                        onChange={(e) => handleFilterChange('year', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={distributionFilters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
-                      <select
-                        value={distributionFilters.engagement_type}
-                        onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.engagement_types.map((type) => (
-                          <option key={type} value={type}>{ENGAGEMENT_LABELS[type] || type}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={distributionFilters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
                   </div>
 
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <select
+                      value={distributionFilters.engagement_type}
+                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{ENGAGEMENT_LABELS[type] || type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="chart-header">
-                  <h2>Distribution by Faculty Type</h2>
-                  <p className="chart-description">
-                    Proportion of each engagement type
-                  </p>
-                </div>
+              </div>
 
-                {pieChartData.length > 0 ? (
-                  <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={400}>
-                      <PieChart>
-                        <Pie
-                          data={pieChartData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${ENGAGEMENT_LABELS[name] || name}: ${(percent * 100).toFixed(1)}%`}
-                          outerRadius={120}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {pieChartData.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={ENGAGEMENT_COLORS[entry.name] || COLORS[index % COLORS.length]}
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend formatter={(value) => ENGAGEMENT_LABELS[value] || value} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="no-data">
+              <div className="chart-header">
+                <h2>Type Distribution</h2>
+                <p className="chart-description">
+                  Proportional breakdown by faculty engagement type
+                </p>
+              </div>
+
+              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+                {pieChartData.length === 0 && !loading.distribution && (
+                  <div className="no-data-overlay" style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
+                  }}>
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={pieChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      outerRadius={150}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      animationDuration={800}
+                    >
+                      {pieChartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={ENGAGEMENT_COLORS[entry.name] || COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatNumber(value)} />
+                    <Legend
+                      wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
+            </div>
           </div>
 
           {/* Engagement Details View */}
           <div style={{ display: viewType === 'details' ? 'block' : 'none' }}>
-              <div className="chart-section" style={{ marginTop: '0' }}>
-                {/* Filters for Details View */}
-                <div className="filter-panel" style={{ 
-                  marginBottom: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '8px', 
-                  border: '1px solid #e9ecef' 
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div className="filter-header" style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    marginBottom: '15px' 
-                  }}>
-                    <h4 style={{ margin: '0', color: '#333' }}>Filters for Engagement Details</h4>
-                    <button 
-                      className="clear-filters-btn" 
-                      onClick={handleClearFilters}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#dc3545', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Engagement Details</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={detailsFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
                     >
-                      Clear Filters
-                    </button>
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
-
-                  <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
-                      <select
-                        value={detailsFilters.year}
-                        onChange={(e) => handleFilterChange('year', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={detailsFilters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
-                      <select
-                        value={detailsFilters.engagement_type}
-                        onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                        style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.engagement_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={detailsFilters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
                   </div>
-
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <select
+                      value={detailsFilters.engagement_type}
+                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+              </div>
 
-                <div className="chart-header">
-                  <h2>External Academic Engagement Details</h2>
-                  <p className="chart-description">
-                    Detailed list of all external academic engagements
-                  </p>
-                </div>
+              <div className="chart-header">
+                <h2>External Academic Engagement Details</h2>
+                <p className="chart-description">Detailed list of all external academic engagements</p>
+              </div>
 
-                {engagementList.length > 0 ? (
-                  <div className="table-responsive" style={{
-                    height: '400px',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    overflowX: 'auto',
-                    border: '1px solid var(--border-light)',
-                    borderRadius: '8px',
-                    backgroundColor: '#fff'
+              <div className="table-responsive" style={{
+                height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
+                border: '1px solid var(--border-light)', borderRadius: '8px',
+                backgroundColor: '#fff', position: 'relative'
+              }}>
+                {engagementList.length === 0 && !loading.details && (viewType === 'details') && (
+                  <div className="no-data-overlay" style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
                   }}>
-                    <table style={{
-                      width: '100%',
-                      borderCollapse: 'collapse'
-                    }}>
-                      <thead style={{
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 10,
-                        backgroundColor: '#f8f9fa'
-                      }}>
-                        <tr>
-                          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Organisation Name</th>
-                          <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {engagementList.map((item, index) => {
-                          const isAcademia = ['Honorary', 'Adjunct', 'FacultyFellow'].includes(item.std_type);
-                          const sector = isAcademia ? 'Academia' : 'Industry';
-                          const organisationName = item.remarks || `${ENGAGEMENT_LABELS[item.std_type] || item.engagement_type} Faculty`;
-                          
-                          return (
-                            <tr key={item.engagement_code} style={{
-                              borderBottom: '1px solid #f0f0f0',
-                              backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa'
-                            }}>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                              <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{sector}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{organisationName}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="no-data">
                     <p>No engagement data available for the selected filters.</p>
                   </div>
                 )}
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                    <tr>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewType === 'details' && engagementList.map((item, index) => (
+                      <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                        <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+            </div>
+          </div>
+
+          {/* Honorary Professors View */}
+          <div style={{ display: viewType === 'honorary' ? 'block' : 'none' }}>
+            <div className="chart-section" style={{ marginTop: '0' }}>
+              <div className="filter-panel" style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div className="filter-header" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
+                }}>
+                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Honorary Professors</h4>
+                  <button
+                    className="clear-filters-btn"
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <select
+                      value={honoraryFilters.year}
+                      onChange={(e) => handleFilterChange('year', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={honoraryFilters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <select
+                      value={honoraryFilters.engagement_type}
+                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
+                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="chart-header">
+                <h2>Honorary Professors</h2>
+                <p className="chart-description">List of honorary professors for the selected filters</p>
+              </div>
+
+              <div className="table-responsive" style={{
+                height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
+                border: '1px solid var(--border-light)', borderRadius: '8px',
+                backgroundColor: '#fff', position: 'relative'
+              }}>
+                {engagementList.length === 0 && !loading.details && (viewType === 'honorary') && (
+                  <div className="no-data-overlay" style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
+                  }}>
+                    <p>No honorary professors found for the selected filters.</p>
+                  </div>
+                )}
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                    <tr>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {viewType === 'honorary' && engagementList.map((item, index) => (
+                      <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                        <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
+                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
 

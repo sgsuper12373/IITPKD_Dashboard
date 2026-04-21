@@ -69,6 +69,16 @@ def build_filter_query(filters):
             else:
                 conditions.append(f"{column} ILIKE %s")
                 params.append(f"%{value}%")
+        elif key == 'year':
+            try:
+                year_val = int(value)
+                # Overlap logic: startdate should be on or before the end of the selected year,
+                # and enddate should be on or after the beginning of the selected year.
+                # startdate <= Y-12-31 AND (enddate IS NULL OR enddate >= Y-01-01)
+                conditions.append("startdate <= %s AND (enddate IS NULL OR enddate >= %s)")
+                params.extend([f"{year_val}-12-31", f"{year_val}-01-01"])
+            except (ValueError, TypeError):
+                continue
         else:
             conditions.append(f"{column} = %s")
             params.append(value)
@@ -193,10 +203,9 @@ def get_filter_options(current_user_id):
         cur.execute(
             """
             SELECT
-                ARRAY(
-                    SELECT DISTINCT year FROM faculty_engagement
-                    WHERE year IS NOT NULL ORDER BY year DESC
-                ) AS years,
+                MIN(EXTRACT(YEAR FROM startdate))::int AS min_year,
+                MAX(EXTRACT(YEAR FROM enddate))::int AS max_year,
+                MAX(EXTRACT(YEAR FROM startdate))::int AS max_start_year,
                 ARRAY(
                     SELECT DISTINCT department FROM faculty_engagement
                     WHERE department IS NOT NULL AND department <> ''
@@ -206,11 +215,32 @@ def get_filter_options(current_user_id):
                     SELECT DISTINCT engagement_type FROM faculty_engagement
                     ORDER BY engagement_type
                 ) AS engagement_types
+            FROM faculty_engagement
             """
         )
         row = cur.fetchone()
+        
+        years = []
+        if row and row['min_year'] is not None:
+            min_y = row['min_year']
+            max_y = row['max_year']
+            
+            # Check for ongoing engagements to decide if we should extend the range to the current year
+            cur.execute("SELECT EXISTS(SELECT 1 FROM faculty_engagement WHERE enddate IS NULL) AS has_ongoing_flag")
+            ongoing_row = cur.fetchone()
+            has_ongoing = ongoing_row['has_ongoing_flag'] if ongoing_row else False
+            
+            # Upper bound is the max of (max_year, max_start_year, and current year if ongoing)
+            potential_max = [min_y]
+            if max_y is not None: potential_max.append(max_y)
+            if row['max_start_year'] is not None: potential_max.append(row['max_start_year'])
+            if has_ongoing: potential_max.append(date.today().year)
+            
+            max_y = max(potential_max)
+            years = list(range(max_y, min_y - 1, -1))
+
         return jsonify({
-            'years': row['years'] if row and row['years'] else [],
+            'years': years,
             'departments': row['departments'] if row and row['departments'] else [],
             'engagement_types': ENGAGEMENT_TYPES
         }), 200
@@ -520,7 +550,8 @@ def get_faculty_engagement_list(current_user_id):
                 enddate,
                 duration_months,
                 year,
-                remarks
+                remarks,
+                fc_bg_type
             FROM faculty_engagement
             {where_clause}
             ORDER BY year DESC, faculty_name ASC
@@ -541,7 +572,8 @@ def get_faculty_engagement_list(current_user_id):
                 'enddate': row.get('enddate').isoformat() if row.get('enddate') else None,
                 'duration_months': row.get('duration_months'),
                 'year': row.get('year'),
-                'remarks': row.get('remarks')
+                'remarks': row.get('remarks'),
+                'fc_bg_type': row.get('fc_bg_type')
             })
         
         return jsonify({'data': result}), 200
