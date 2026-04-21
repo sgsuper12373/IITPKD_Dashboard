@@ -104,7 +104,7 @@ const buildPatentBreakdown = (source = {}) => ({
   Granted: Number(source?.Granted) || 0,
 });
 
-function ResearchIcsrSection({ user, isPublicView = false }) {
+function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
   const location = useLocation();
@@ -121,7 +121,7 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
   });
 
   // Graph type selection with radio buttons — init from router state if provided
-  const [viewType, setViewType] = useState(location.state?.view || 'projects');
+  const [viewType, setViewType] = useState(mouOnly ? 'mou' : (location.state?.view || 'projects'));
 
   // Bar / Trend chart mode per section
   const [projectsChartMode, setProjectsChartMode] = useState('bar');
@@ -198,7 +198,7 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!token) return;
+      if (!token || mouOnly) return;
       try {
         setLoading(true);
         setError(null);
@@ -371,19 +371,23 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
             </button>
             <div className="page-header-row">
               <div className="page-header-left">
-                <h1>Research · ICSR (Industrial Consultancy & Sponsored Research)</h1>
+                <h1>{mouOnly ? 'IC&SR MoUs' : 'Industrial Consultancy & Sponsored Research'}</h1>
               </div>
               {user && user.role_id === 3 && (
                 <div className="page-header-actions">
-                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}>
-                    <span>📤</span> Consultancy
-                  </button>
-                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}>
-                    <span>📤</span> Sponsored
-                  </button>
-                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}>
-                    <span>📤</span> Patents
-                  </button>
+                  {!mouOnly && (
+                    <>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}>
+                        <span>📤</span> Consultancy
+                      </button>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}>
+                        <span>📤</span> Sponsored
+                      </button>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}>
+                        <span>📤</span> Patents
+                      </button>
+                    </>
+                  )}
                   <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_mous'); setIsUploadModalOpen(true); }}>
                     <span>📤</span> MoUs
                   </button>
@@ -404,10 +408,12 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
         {/* Modern Summary Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateColumns: mouOnly ? '1fr' : 'repeat(3, 1fr)',
           gap: '16px',
           marginBottom: '30px'
         }}>
+          {!mouOnly && (
+            <>
           {/* Total Sanctioned Projects Card */}
           <div style={{
             background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
@@ -580,6 +586,8 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
+            </>
+          )}
 
           {/* MoU Summary Card */}
           <div style={{
@@ -616,6 +624,7 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
         </div>
 
         {/* Radio Buttons - Moved Outside */}
+        {!mouOnly && (
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -689,6 +698,7 @@ function ResearchIcsrSection({ user, isPublicView = false }) {
             🤝 MoUs
           </button>
         </div>
+        )}
 
 
 

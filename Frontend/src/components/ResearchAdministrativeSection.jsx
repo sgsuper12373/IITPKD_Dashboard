@@ -68,6 +68,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
 
   // View type selection with radio buttons
   const [viewType, setViewType] = useState('yearly'); // 'yearly' | 'department' | 'externshipTable'
+  const [deptChartType, setDeptChartType] = useState('bar'); // 'bar' | 'trend' for department view
 
   const [filters, setFilters] = useState({
     department: 'All',
@@ -183,13 +184,26 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
     const trendData = summary.yearly.map((yearData) => {
       const yearItem = { year: yearData.year };
       departments.forEach((dept) => {
-        yearItem[dept] = Number(yearData[dept]) || 0;
+        const cleanDept = dept.replace(/^Department of /i, '');
+        yearItem[cleanDept] = Number(yearData[dept]) || 0;
       });
       return yearItem;
     });
 
-    return { trendData, departments: Array.from(departments) };
+    return { 
+      trendData, 
+      departments: Array.from(departments).map(d => d.replace(/^Department of /i, '')) 
+    };
   }, [summary.yearly]);
+
+  // Comparison data for Department Bar Chart (X-axis = Department)
+  const departmentComparisonData = useMemo(() => {
+    if (!summary.department.length) return [];
+    return summary.department.map(item => ({
+      department: item.department.replace(/^Department of /i, ''),
+      count: Number(item.total) || 0
+    }));
+  }, [summary.department]);
 
   const typeTotals = useMemo(() => {
     const totals = {};
@@ -267,7 +281,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
             </button>
             <div className="page-header-row">
               <div className="page-header-left">
-                <h1>Research · Administrative (Industry Externships)</h1>
+                <h1>Administrative Section (Industry Externships)</h1>
               </div>
               {user && user.role_id === 3 && (
                 <div className="page-header-actions">
@@ -428,448 +442,396 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
           </div>
         </div>
 
-        {/* Radio Buttons */}
+        {/* View Type Selector */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '20px',
-          marginBottom: '30px',
-          padding: '20px',
-          borderRadius: '12px'
+          gap: '16px',
+          marginBottom: '24px',
+          padding: '8px',
+          background: '#f8fafc',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0'
         }}>
           <button
             onClick={() => setViewType('yearly')}
             style={{
-              padding: '12px 24px',
+              padding: '10px 20px',
               backgroundColor: viewType === 'yearly' ? '#6366f1' : 'transparent',
-              color: viewType === 'yearly' ? 'white' : '#333',
-              border: viewType === 'yearly' ? '2px solid #6366f1' : '2px solid #dee2e6',
+              color: viewType === 'yearly' ? 'white' : '#475569',
+              border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: viewType === 'yearly' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}
           >
-            📊 Year-wise Externships
+            <span>📊</span> Year-wise
           </button>
           <button
             onClick={() => setViewType('department')}
             style={{
-              padding: '12px 24px',
+              padding: '10px 20px',
               backgroundColor: viewType === 'department' ? '#22c55e' : 'transparent',
-              color: viewType === 'department' ? 'white' : '#333',
-              border: viewType === 'department' ? '2px solid #22c55e' : '2px solid #dee2e6',
+              color: viewType === 'department' ? 'white' : '#475569',
+              border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: viewType === 'department' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}
           >
-            🏢 Department-wise
+            <span>🏢</span> Department-wise
           </button>
           <button
             onClick={() => setViewType('externshipTable')}
             style={{
-              padding: '12px 24px',
+              padding: '10px 20px',
               backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent',
-              color: viewType === 'externshipTable' ? 'white' : '#333',
-              border: viewType === 'externshipTable' ? '2px solid #f97316' : '2px solid #dee2e6',
+              color: viewType === 'externshipTable' ? 'white' : '#475569',
+              border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: viewType === 'externshipTable' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}
           >
-            📋 Externship Directory
+            <span>📋</span> Directory
           </button>
         </div>
 
-        {loading && (
-          <div className="loading-state">
-            <div className="loading-spinner" />
-            <p>Loading externship analytics…</p>
+        {/* Common Filters Section */}
+        <div style={{
+          marginBottom: '20px',
+          padding: '15px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          border: '1px solid #e9ecef',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '15px'
+          }}>
+            <h4 style={{ margin: 0, color: '#333', fontSize: '14px', fontWeight: '600' }}>Dashboard Filters</h4>
+            <button
+              onClick={handleClearFilters}
+              style={{
+                padding: '6px 12px',
+                backgroundColor: '#ef4444',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '500',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
+            >
+              Clear All Filters
+            </button>
           </div>
-        )}
 
-        {!loading && (
-          <>
-            {/* Single View Section based on radio selection */}
-            <section className="chart-section" style={{
-              marginBottom: '30px',
-              padding: '20px',
-              backgroundColor: '#fff',
-              borderRadius: '10px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}>
-              {/* Year-wise Externships Chart */}
-              {viewType === 'yearly' && (
+          <div className="filter-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '12px'
+          }}>
+            <div className="filter-group">
+              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Department</label>
+              <select
+                className="filter-select"
+                value={filters.department}
+                onChange={(e) => handleFilterChange('department', e.target.value)}
+                style={{
+                  padding: '8px',
+                  fontSize: '13px',
+                  width: '100%',
+                  borderRadius: '6px',
+                  border: '1px solid #ddd',
+                  outline: 'none'
+                }}
+              >
+                <option value="All">All Departments</option>
+                {filterOptions.externship_departments.map((dept) => (
+                  <option key={dept} value={dept}>{dept}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Externship Year</label>
+              <select
+                className="filter-select"
+                value={filters.externship_year}
+                onChange={(e) => handleFilterChange('externship_year', e.target.value)}
+                style={{
+                  padding: '8px',
+                  fontSize: '13px',
+                  width: '100%',
+                  borderRadius: '6px',
+                  border: '1px solid #ddd',
+                  outline: 'none'
+                }}
+              >
+                <option value="All">All Years</option>
+                {filterOptions.externship_years.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+            </div>
+        </div>
+
+        <div style={{
+          position: 'relative',
+          minHeight: '520px',
+          transition: 'opacity 0.3s ease'
+        }}>
+          {/* Main Chart Section - Persistently Mounted */}
+          <section className="chart-section" style={{
+            marginBottom: '30px',
+            backgroundColor: '#fff',
+            borderRadius: '16px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+            border: '1px solid #f0f0f0',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* 1. Year-wise Externships (Always Mounted) */}
+            <div className={`chart-view ${viewType === 'yearly' ? 'active' : 'inactive'}`}>
+              <div className="chart-header" style={{ marginBottom: '20px' }}>
+                <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
+                  <span style={{ fontSize: '28px' }}>📊</span> Year-wise Externships
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                  Distribution by externship type across the chosen timeframe
+                </p>
+              </div>
+
+              <div className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                    <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                    {externshipTypeKeys.map((type, index) => (
+                      <Bar
+                        key={type}
+                        dataKey={type}
+                        stackId="a"
+                        fill={TYPE_COLORS[index % TYPE_COLORS.length]}
+                        radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                        isAnimationActive={true}
+                        animationDuration={1000}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* 2. Department-wise Analysis (Always Mounted) */}
+            <div className={`chart-view ${viewType === 'department' ? 'active' : 'inactive'}`}>
+              <div className="chart-header" style={{
+                marginBottom: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                flexWrap: 'wrap',
+                gap: '16px'
+              }}>
                 <div>
-                  <div className="chart-header" style={{ marginBottom: '15px' }}>
-                    <h2 style={{ margin: '0 0 5px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '22px' }}>📊</span> Year-wise Externships
-                    </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                      Distribution by type over time
-                    </p>
-                  </div>
+                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
+                    <span style={{ fontSize: '28px' }}>🏢</span> Department-wise Analysis
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                    {deptChartType === 'bar' ? 'Distribution across departments' : 'Yearly trend per department'}
+                  </p>
+                </div>
 
-                  {/* Filters inside the yearly view */}
-                  <div style={{
-                    marginBottom: '20px',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '15px'
-                    }}>
-                      <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                      <button
-                        onClick={handleClearFilters}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#dc3545',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
+                <div style={{ display: 'flex', gap: '8px', background: '#f0f0f0', padding: '4px', borderRadius: '8px' }}>
+                  {['bar', 'trend'].map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setDeptChartType(mode)}
+                      style={{
+                        padding: '6px 16px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        backgroundColor: deptChartType === mode ? '#fff' : 'transparent',
+                        color: deptChartType === mode ? '#22c55e' : '#666',
+                        boxShadow: deptChartType === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                    <div className="filter-grid" style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gap: '12px'
-                    }}>
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                        <select
-                          className="filter-select"
-                          value={filters.department}
-                          onChange={(e) => handleFilterChange('department', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Departments</option>
-                          {filterOptions.externship_departments.map((dept) => (
-                            <option key={dept} value={dept}>{dept}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Externship Year</label>
-                        <select
-                          className="filter-select"
-                          value={filters.externship_year}
-                          onChange={(e) => handleFilterChange('externship_year', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Years</option>
-                          {filterOptions.externship_years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Active Filters Summary */}
-                    <div style={{
-                      marginTop: '12px',
-                      padding: '8px',
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '4px',
-                      fontSize: '12px'
-                    }}>
-                      <strong>Active Filters:</strong>{' '}
-                      {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                      {filters.externship_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.externship_year}</span>}
-                      {filters.department === 'All' && filters.externship_year === 'All' &&
-                        <span>No filters applied</span>
-                      }
-                    </div>
-                  </div>
-
-                  <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={yearlyChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+              <div className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+                {/* Department Bar Chart (X = Department) */}
+                <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
+                  {departmentComparisonData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart data={departmentComparisonData} margin={{ top: 10, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                        <XAxis
+                          dataKey="department"
+                          stroke="#888"
+                          tick={{ fontSize: 10 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                          interval={0}
+                        />
+                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        {externshipTypeKeys.map((type, index) => (
-                          <Bar key={type} dataKey={type} stackId="a" fill={TYPE_COLORS[index % TYPE_COLORS.length]} radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]} />
-                        ))}
+                        <Bar
+                          dataKey="count"
+                          name="Externships"
+                          fill="#22c55e"
+                          radius={[4, 4, 0, 0]}
+                          isAnimationActive={true}
+                          animationDuration={1000}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
-                  </div>
-                </div>
-              )}
-
-              {/* Department-wise Yearly Trend Line Graph */}
-              {viewType === 'department' && (
-                <div>
-                  <div className="chart-header" style={{ marginBottom: '15px' }}>
-                    <h2 style={{ margin: '0 0 5px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '22px' }}>🏢</span> Department-wise Yearly Trend
-                    </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                      Yearly trend of externships by department
-                    </p>
-                  </div>
-
-                  {/* Filters inside the department view */}
-                  <div style={{
-                    marginBottom: '20px',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '15px'
-                    }}>
-                      <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                      <button
-                        onClick={handleClearFilters}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#dc3545',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
-
-                    <div className="filter-grid" style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gap: '12px'
-                    }}>
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                        <select
-                          className="filter-select"
-                          value={filters.department}
-                          onChange={(e) => handleFilterChange('department', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Departments</option>
-                          {filterOptions.externship_departments.map((dept) => (
-                            <option key={dept} value={dept}>{dept}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Externship Year</label>
-                        <select
-                          className="filter-select"
-                          value={filters.externship_year}
-                          onChange={(e) => handleFilterChange('externship_year', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Years</option>
-                          {filterOptions.externship_years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Active Filters Summary */}
-                    <div style={{
-                      marginTop: '12px',
-                      padding: '8px',
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '4px',
-                      fontSize: '12px'
-                    }}>
-                      <strong>Active Filters:</strong>{' '}
-                      {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                      {filters.externship_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.externship_year}</span>}
-                      {filters.department === 'All' && filters.externship_year === 'All' &&
-                        <span>No filters applied</span>
-                      }
-                    </div>
-                  </div>
-
-                  {/* Department-wise Yearly Trend Line Graph */}
-                  {departmentYearlyTrendData.trendData.length > 0 && (
-                    <div className="chart-container">
-                      <ResponsiveContainer width="100%" height={400}>
-                        <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          {departmentYearlyTrendData.departments.map((dept, index) => (
-                            <Line
-                              key={dept}
-                              type="monotone"
-                              dataKey={dept}
-                              stroke={TYPE_COLORS[index % TYPE_COLORS.length]}
-                              strokeWidth={2}
-                              dot={{ r: 4 }}
-                              activeDot={{ r: 6 }}
-                            />
-                          ))}
-                        </LineChart>
-                      </ResponsiveContainer>
+                  ) : (
+                    <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                      No department data available
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Externship Directory Table */}
-              {viewType === 'externshipTable' && (
-                <div>
-                  <div className="chart-header" style={{ marginBottom: '15px' }}>
-                    <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>📋</span> Externship Directory
-                    </h2>
-                    <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
-                      {externshipList.length} records found
-                    </p>
-                  </div>
-
-                  {/* Filters inside the table view */}
-                  <div style={{
-                    marginBottom: '20px',
-                    padding: '15px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    border: '1px solid #e9ecef'
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '15px'
-                    }}>
-                      <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                      <button
-                        onClick={handleClearFilters}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: '#dc3545',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
-
-                    <div className="filter-grid" style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gap: '12px'
-                    }}>
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                        <select
-                          className="filter-select"
-                          value={filters.department}
-                          onChange={(e) => handleFilterChange('department', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Departments</option>
-                          {filterOptions.externship_departments.map((dept) => (
-                            <option key={dept} value={dept}>{dept}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="filter-group">
-                        <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Externship Year</label>
-                        <select
-                          className="filter-select"
-                          value={filters.externship_year}
-                          onChange={(e) => handleFilterChange('externship_year', e.target.value)}
-                          style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                        >
-                          <option value="All">All Years</option>
-                          {filterOptions.externship_years.map((year) => (
-                            <option key={year} value={year}>{year}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Active Filters Summary */}
-                    <div style={{
-                      marginTop: '12px',
-                      padding: '8px',
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '4px',
-                      fontSize: '12px'
-                    }}>
-                      <strong>Active Filters:</strong>{' '}
-                      {filters.department !== 'All' && <span style={{ marginRight: '8px' }}>🏢 {filters.department}</span>}
-                      {filters.externship_year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.externship_year}</span>}
-                      {filters.department === 'All' && filters.externship_year === 'All' &&
-                        <span>No filters applied</span>
-                      }
-                    </div>
-                  </div>
-
-                  <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                    <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                      <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f97316', color: 'white' }}>
-                        <tr>
-                          <th style={{ padding: '10px' }}>Faculty</th>
-                          <th style={{ padding: '10px' }}>Dept</th>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Type</th>
-                          <th style={{ padding: '10px' }}>Duration</th>
-                          <th style={{ padding: '10px' }}>Start</th>
-                          <th style={{ padding: '10px' }}>End</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {externshipList.map((e, i) => (
-                          <tr key={e.externship_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                            <td style={{ padding: '8px' }}>{e.faculty_name}</td>
-                            <td style={{ padding: '8px' }}>{e.department}</td>
-                            <td style={{ padding: '8px' }}>{e.industry_name}</td>
-                            <td style={{ padding: '8px' }}>{e.type}</td>
-                            <td style={{ padding: '8px' }}>{formatDuration(e.duration_days)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(e.startdate)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(e.enddate)}</td>
-                          </tr>
+                {/* Department Trend Chart (X = Year) */}
+                <div className={`chart-wrapper ${deptChartType === 'trend' ? 'active' : 'inactive'}`}>
+                  {departmentYearlyTrendData.trendData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        {departmentYearlyTrendData.departments.map((dept, index) => (
+                          <Line
+                            key={dept}
+                            type="monotone"
+                            dataKey={dept}
+                            stroke={TYPE_COLORS[index % TYPE_COLORS.length]}
+                            strokeWidth={3}
+                            dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                            activeDot={{ r: 6, strokeWidth: 0 }}
+                            isAnimationActive={true}
+                            animationDuration={1000}
+                          />
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                      No trend data available
+                    </div>
+                  )}
                 </div>
-              )}
-            </section>
-          </>
-        )}
+              </div>
+            </div>
+
+            {/* 3. Externship Directory Table (Always Mounted) */}
+            <div className={`chart-view ${viewType === 'externshipTable' ? 'active' : 'inactive'}`}>
+              <div className="chart-header" style={{ marginBottom: '20px' }}>
+                <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📋</span> Externship Directory
+                </h2>
+                <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
+                  Displaying {externshipList.length} total records
+                </p>
+              </div>
+
+              <div className="table-responsive" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
+                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
+                  <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                    <tr style={{ backgroundColor: '#f97316' }}>
+                      {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
+                        <th key={header} style={{
+                          padding: '16px 12px',
+                          textAlign: 'left',
+                          color: 'white',
+                          fontWeight: '600',
+                          borderBottom: '2px solid rgba(0,0,0,0.1)'
+                        }}>
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {externshipList.length > 0 ? (
+                      externshipList.map((e, i) => (
+                        <tr key={e.externship_id} style={{
+                          backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa',
+                          transition: 'background-color 0.2s'
+                        }} className="table-row-hover">
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                            <span style={{
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              backgroundColor: '#fef3c7',
+                              color: '#92400e',
+                              fontSize: '11px',
+                              fontWeight: '600'
+                            }}>
+                              {e.type}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
+                          <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+                          No externship records found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
         <DataUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}

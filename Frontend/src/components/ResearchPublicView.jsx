@@ -33,6 +33,14 @@ function ResearchPublicView({ user }) {
       expandedTitle: 'Advancing knowledge through publications and research contributions',
       icon: '📚',
       component: ResearchLibrarySection
+    },
+    {
+      id: 'icsr-mous',
+      title: 'IC&SR MoUs',
+      subtitle: '',
+      expandedTitle: 'Track and manage collaborative IC&SR MoUs',
+      icon: '🤝',
+      component: (props) => <ResearchIcsrSection {...props} mouOnly={true} />
     }
   ];
 

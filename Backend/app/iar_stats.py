@@ -264,3 +264,96 @@ def get_outcome_breakdown(current_user_id):
 
     formatted = sorted(breakdown.values(), key=lambda x: x['department'])
     return jsonify({'data': formatted}), 200
+
+
+# ---------------------------------------------------------------------------
+# IAR MOUs
+# ---------------------------------------------------------------------------
+
+@iar_bp.route('/mous/filter-options', methods=['GET'])
+@token_required
+def get_mou_filter_options(current_user_id):
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed'}), 500
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT DISTINCT EXTRACT(YEAR FROM date_signed) as year
+            FROM iar_mous
+            WHERE date_signed IS NOT NULL
+            ORDER BY year DESC
+        """)
+        years = [str(int(row['year'])) for row in cur.fetchall()]
+        return jsonify({'mou_years': years}), 200
+    except Exception as e:
+        print(f"IAR MoU filter options error: {e}")
+        return jsonify({'message': 'Failed to fetch MoU filter options'}), 500
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+
+
+@iar_bp.route('/mous/trend', methods=['GET'])
+@token_required
+def get_mou_trend(current_user_id):
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed'}), 500
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT EXTRACT(YEAR FROM date_signed) as year, COUNT(*) as total
+            FROM iar_mous
+            WHERE date_signed IS NOT NULL
+            GROUP BY year
+            ORDER BY year ASC
+        """)
+        trend = [{'year': str(int(row['year'])), 'total': row['total']} for row in cur.fetchall()]
+        return jsonify({'data': trend}), 200
+    except Exception as e:
+        print(f"IAR MoU trend error: {e}")
+        return jsonify({'message': 'Failed to fetch MoU trend'}), 500
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+
+
+@iar_bp.route('/mous/list', methods=['GET'])
+@token_required
+def get_mou_list(current_user_id):
+    mou_year = request.args.get('mou_year')
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed'}), 500
+        cur = conn.cursor()
+        
+        query = "SELECT * FROM iar_mous"
+        params = []
+        if mou_year and mou_year != 'All':
+            query += " WHERE EXTRACT(YEAR FROM date_signed) = %s"
+            params.append(mou_year)
+        query += " ORDER BY date_signed DESC NULLS LAST"
+        
+        cur.execute(query, params)
+        rows = [dict(row) for row in cur.fetchall()]
+        for r in rows:
+            if r.get('date_signed'):
+                r['date_signed'] = r['date_signed'].isoformat()
+            if r.get('validity_end'):
+                r['validity_end'] = r['validity_end'].isoformat()
+                
+        return jsonify({'data': rows}), 200
+    except Exception as e:
+        print(f"IAR MoU list error: {e}")
+        return jsonify({'message': 'Failed to fetch MoU records'}), 500
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()

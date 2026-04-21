@@ -114,7 +114,7 @@ function AcademicSection({ user, isPublicView = false }) {
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
 
-  const [selectedGender, setSelectedGender] = useState('Total');
+  const [selectedGender, setSelectedGender] = useState('All');
   const [chartType, setChartType] = useState('Bar');
   const [trendYears, setTrendYears] = useState(5);
   const [genderTrendData, setGenderTrendData] = useState([]);
@@ -185,9 +185,9 @@ function AcademicSection({ user, isPublicView = false }) {
         setOnrollLoading(true);
         const result = await fetchOnrollSummary(token);
         setOnrollSummary({
-          total_onroll:    result.total_onroll    || 0,
-          ug_onroll:       result.ug_onroll       || 0,
-          pg_onroll:       result.pg_onroll       || 0,
+          total_onroll: result.total_onroll || 0,
+          ug_onroll: result.ug_onroll || 0,
+          pg_onroll: result.pg_onroll || 0,
           research_onroll: result.research_onroll || 0,
         });
       } catch (err) {
@@ -291,15 +291,15 @@ function AcademicSection({ user, isPublicView = false }) {
         {error && <div className="error-message">{error}</div>}
 
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
-        <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '30px' }}>
+        <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
           Students On Roll
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {[
             {
-              label: 'Total Studnets On Roll', icon: '🎯', value: onrollSummary.total_onroll,
+              label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll,
               grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)',
-              subtitle: 'Cumulative students on roll'
+              subtitle: 'Total on roll students'
             },
             {
               label: 'UG', icon: '📘', value: onrollSummary.ug_onroll,
@@ -314,7 +314,7 @@ function AcademicSection({ user, isPublicView = false }) {
             {
               label: 'Research', icon: '🔬', value: onrollSummary.research_onroll,
               grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',
-              subtitle: 'PhD + MSe By Research) — On Roll'
+              subtitle: 'PhD + MSc (By Research) — On Roll'
             },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = onrollLoading ? 0 : idx * 55;
@@ -561,129 +561,129 @@ function AcademicSection({ user, isPublicView = false }) {
 
             {/* ── Gender breakdown charts ── */}
             {programChartMode === 'gender' && (
-            <div className={`bar-chart-container trend-chart ${hasTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
-              <div className={`trend-empty-state ${hasTrendData ? 'hidden' : ''}`}>
-                <p>No information available for the selected filter</p>
-              </div>
+              <div className={`bar-chart-container trend-chart ${hasTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
+                <div className={`trend-empty-state ${hasTrendData ? 'hidden' : ''}`}>
+                  <p>No information available for the selected filter</p>
+                </div>
 
-              {/* ── Area Chart (Trend mode) ── */}
-              <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                <ResponsiveContainer width="100%" height={340}>
-                  <AreaChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
-                    <AreaGradients />
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                    <XAxis
-                      dataKey="year"
-                      interval={0}
-                      angle={-40}
-                      textAnchor="end"
-                      height={65}
-                      tick={TICK_STYLE}
-                      tickLine={false}
-                      axisLine={{ stroke: '#ddd' }}
-                      label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }}
-                    />
-                    <YAxis
-                      domain={[0, 'dataMax + 10']}
-                      allowDecimals={false}
-                      tick={TICK_STYLE}
-                      tickLine={false}
-                      axisLine={{ stroke: '#ddd' }}
-                      width={45}
-                      label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }}
-                    />
-                    <Tooltip {...tooltipStyle} />
-                    <Legend
-                      verticalAlign="top" align="center"
-                      content={(props) => <InlineLegend {...props} />}
-                    />
-                    {areaKeys.map(key => (
-                      <Area
-                        key={key} type="monotone" dataKey={key}
-                        stroke={AREA_COLORS[key]?.stroke || '#667eea'}
-                        fill={AREA_COLORS[key]?.fill || 'url(#colorTotal)'}
-                        strokeWidth={2.5}
-                        dot={{ fill: AREA_COLORS[key]?.stroke || '#667eea', r: 4, strokeWidth: 0 }}
-                        activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
-                        animationDuration={800} animationEasing="ease-in-out"
+                {/* ── Area Chart (Trend mode) ── */}
+                <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                  <ResponsiveContainer width="100%" height={340}>
+                    <AreaChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
+                      <AreaGradients />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                      <XAxis
+                        dataKey="year"
+                        interval={0}
+                        angle={-40}
+                        textAnchor="end"
+                        height={65}
+                        tick={TICK_STYLE}
+                        tickLine={false}
+                        axisLine={{ stroke: '#ddd' }}
+                        label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }}
                       />
-                    ))}
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+                      <YAxis
+                        domain={[0, 'dataMax + 10']}
+                        allowDecimals={false}
+                        tick={TICK_STYLE}
+                        tickLine={false}
+                        axisLine={{ stroke: '#ddd' }}
+                        width={45}
+                        label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }}
+                      />
+                      <Tooltip {...tooltipStyle} />
+                      <Legend
+                        verticalAlign="top" align="center"
+                        content={(props) => <InlineLegend {...props} />}
+                      />
+                      {areaKeys.map(key => (
+                        <Area
+                          key={key} type="monotone" dataKey={key}
+                          stroke={AREA_COLORS[key]?.stroke || '#667eea'}
+                          fill={AREA_COLORS[key]?.fill || 'url(#colorTotal)'}
+                          strokeWidth={2.5}
+                          dot={{ fill: AREA_COLORS[key]?.stroke || '#667eea', r: 4, strokeWidth: 0 }}
+                          activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+                          animationDuration={800} animationEasing="ease-in-out"
+                        />
+                      ))}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
 
-              {/* ── Bar Chart ── */}
-              <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                <ResponsiveContainer width="100%" height={340}>
-                  <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                    <XAxis
-                      dataKey="year" interval={0} angle={-40} textAnchor="end" height={65}
-                      tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }}
-                      label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }}
-                    />
-                    <YAxis
-                      domain={[0, 'dataMax + 10']} allowDecimals={false}
-                      tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }}
-                      width={45}
-                      label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }}
-                    />
-                    <Tooltip {...tooltipStyle} />
-                    <Legend
-                      verticalAlign="top" align="center"
-                      content={(props) => <InlineLegend {...props} />}
-                    />
-                    {selectedGender === 'Total' && <Bar dataKey="Total" fill="#667eea" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                    {selectedGender === 'All' && <><Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /></>}
-                    {selectedGender === 'Male' && <Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                    {selectedGender === 'Female' && <Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                    {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                  </BarChart>
-                </ResponsiveContainer>
+                {/* ── Bar Chart ── */}
+                <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                  <ResponsiveContainer width="100%" height={340}>
+                    <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                      <XAxis
+                        dataKey="year" interval={0} angle={-40} textAnchor="end" height={65}
+                        tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }}
+                        label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }}
+                      />
+                      <YAxis
+                        domain={[0, 'dataMax + 10']} allowDecimals={false}
+                        tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }}
+                        width={45}
+                        label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }}
+                      />
+                      <Tooltip {...tooltipStyle} />
+                      <Legend
+                        verticalAlign="top" align="center"
+                        content={(props) => <InlineLegend {...props} />}
+                      />
+                      {selectedGender === 'Total' && <Bar dataKey="Total" fill="#667eea" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
+                      {selectedGender === 'All' && <><Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /></>}
+                      {selectedGender === 'Male' && <Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
+                      {selectedGender === 'Female' && <Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
+                      {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
             )}
 
             {/* ── UG / PG / Research chart ── */}
             {programChartMode === 'program' && (
-            <div className={`bar-chart-container trend-chart ${hasProgramTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
-              <h3 className="chart-heading">Student Strength — UG / PG / Research / Total</h3>
-              <div className={`trend-empty-state ${hasProgramTrendData ? 'hidden' : ''}`}><p>No information available for the selected filter</p></div>
+              <div className={`bar-chart-container trend-chart ${hasProgramTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
+                <h3 className="chart-heading">Student Strength — UG / PG / Research / Total</h3>
+                <div className={`trend-empty-state ${hasProgramTrendData ? 'hidden' : ''}`}><p>No information available for the selected filter</p></div>
 
-              {/* ── Bar chart ── */}
-              <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                <ResponsiveContainer width="100%" height={420}>
-                  <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                    <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                    <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
-                    <Tooltip {...tooltipStyle} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
-                    <Bar dataKey="UG" name="UG" fill={GROUP_COLORS.UG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                    <Bar dataKey="PG" name="PG" fill={GROUP_COLORS.PG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                    <Bar dataKey="Research" name="Research" fill={GROUP_COLORS.Research} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                    <Bar dataKey="Total" name="Total" fill={GROUP_COLORS.Total} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+                {/* ── Bar chart ── */}
+                <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                  <ResponsiveContainer width="100%" height={420}>
+                    <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                      <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
+                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <Tooltip {...tooltipStyle} />
+                      <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
+                      <Bar dataKey="UG" name="UG" fill={GROUP_COLORS.UG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                      <Bar dataKey="PG" name="PG" fill={GROUP_COLORS.PG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                      <Bar dataKey="Research" name="Research" fill={GROUP_COLORS.Research} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                      <Bar dataKey="Total" name="Total" fill={GROUP_COLORS.Total} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
 
-              {/* ── Trend chart ── */}
-              <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                <ResponsiveContainer width="100%" height={420}>
-                  <LineChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                    <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                    <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
-                    <Tooltip {...tooltipStyle} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
-                    <Line type="monotone" dataKey="UG" name="UG" stroke={GROUP_COLORS.UG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                    <Line type="monotone" dataKey="PG" name="PG" stroke={GROUP_COLORS.PG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                    <Line type="monotone" dataKey="Research" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                    <Line type="monotone" dataKey="Total" name="Total" stroke={GROUP_COLORS.Total} strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {/* ── Trend chart ── */}
+                <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                  <ResponsiveContainer width="100%" height={420}>
+                    <LineChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                      <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
+                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <Tooltip {...tooltipStyle} />
+                      <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
+                      <Line type="monotone" dataKey="UG" name="UG" stroke={GROUP_COLORS.UG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
+                      <Line type="monotone" dataKey="PG" name="PG" stroke={GROUP_COLORS.PG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
+                      <Line type="monotone" dataKey="Research" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
+                      <Line type="monotone" dataKey="Total" name="Total" stroke={GROUP_COLORS.Total} strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
             )}
           </div>
 

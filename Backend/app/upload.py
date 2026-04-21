@@ -69,6 +69,8 @@ UPDATABLE_TABLES = {
     'nptel_courses':                ['id'],
     # Rankings
     'nirf_ranking':                 ['year'],
+    # IAR
+    'iar_mous':                     ['id'],
 }
 
 
@@ -442,6 +444,59 @@ def _preprocess_faculty_engagement(reader, csv_headers):
     return _rebuild_stream(new_headers, processed)
 
 
+def _preprocess_iar_mous(reader, csv_headers):
+    """
+    For the 'iar_mous' table:
+    Auto-generates a deterministic `id` (MD5 hex) from the concatenation of:
+        partner_name | framework | country | collaboration_nature | date_signed | validity_end
+    Also converts dates to YYYY-MM-DD if needed.
+    """
+    from datetime import datetime
+    rows = list(reader)
+    if not rows:
+        return None, None, 'CSV file is empty.'
+
+    DATE_COLS = {'date_signed', 'validity_end'}
+    DATE_FMTS = ('%d-%m-%Y', '%d/%m/%Y', '%Y-%m-%d', '%m/%d/%Y')
+
+    def _parse_date(val):
+        if not val or not str(val).strip():
+            return val
+        s = str(val).strip()
+        for fmt in DATE_FMTS:
+            try:
+                return datetime.strptime(s, fmt).strftime('%Y-%m-%d')
+            except ValueError:
+                continue
+        return s
+
+    lower_headers = [h.lower() for h in csv_headers]
+    new_headers = ['id'] + [h for h in csv_headers if h.lower() != 'id']
+
+    processed = []
+    for row in rows:
+        new_row = {k: v for k, v in row.items() if k.lower() != 'id'}
+        
+        # Parse Dates
+        for col in DATE_COLS:
+            key_exact = next((k for k in new_row.keys() if k.lower() == col), None)
+            if key_exact:
+                new_row[key_exact] = _parse_date(new_row[key_exact])
+
+        pn = (new_row.get(next((k for k in new_row if k.lower() == 'partner_name'), '')) or '').strip().lower()
+        fw = (new_row.get(next((k for k in new_row if k.lower() == 'framework'), '')) or '').strip().lower()
+        cy = (new_row.get(next((k for k in new_row if k.lower() == 'country'), '')) or '').strip().lower()
+        cn = (new_row.get(next((k for k in new_row if k.lower() == 'collaboration_nature'), '')) or '').strip().lower()
+        ds = (new_row.get(next((k for k in new_row if k.lower() == 'date_signed'), '')) or '').strip()
+        ve = (new_row.get(next((k for k in new_row if k.lower() == 'validity_end'), '')) or '').strip()
+
+        hash_input = f"{pn}|{fw}|{cy}|{cn}|{ds}|{ve}"
+        new_row['id'] = hashlib.md5(hash_input.encode('utf-8')).hexdigest()
+        processed.append(new_row)
+
+    return _rebuild_stream(new_headers, processed)
+
+
 # ---------------------------------------------------------------------------
 # Upload route
 # ---------------------------------------------------------------------------
@@ -527,6 +582,8 @@ def upload_csv(current_user_id):
             reader, csv_headers, error = _preprocess_nptel_enrollments(reader, csv_headers, conn)
         elif table_name == 'research_publications':
             reader, csv_headers, error = _preprocess_research_publications(reader, csv_headers)
+        elif table_name == 'iar_mous':
+            reader, csv_headers, error = _preprocess_iar_mous(reader, csv_headers)
         elif table_name == 'faculty_engagement':
             reader, csv_headers, error = _preprocess_faculty_engagement(reader, csv_headers)
         elif table_name == 'outreach' or table_name in _OUTREACH_PROGRAM_NAMES:

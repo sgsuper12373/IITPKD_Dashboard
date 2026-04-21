@@ -5,6 +5,7 @@ import './EducationMinimal.css';
 import PlacementSection from './PlacementSection';
 import EducationAdministrativeSection from './EducationAdministrativeSection';
 import EducationAcademicSection from './EducationAcademicSection';
+import EducationIarSection from './EducationIarSection';
 
 function EducationPublicView({ user }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -33,6 +34,14 @@ function EducationPublicView({ user }) {
       expandedTitle: 'Advancing academic excellence through innovative programs.',
       icon: '🎓',
       component: EducationAcademicSection
+    },
+    {
+      id: 'iar',
+      title: 'IAR MoUs',
+      subtitle: '',
+      expandedTitle: 'Track and manage collaborative IAR MoUs.',
+      icon: '🤝',
+      component: EducationIarSection
     }
   ];
 

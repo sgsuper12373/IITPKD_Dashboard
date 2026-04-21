@@ -90,19 +90,12 @@ function EducationAcademicSection({ user, isPublicView = false }) {
   // View mode: 'all' = Courses Repository, 'industry' = Industry Linked Courses
   const [viewMode, setViewMode] = useState('all');
 
-  // Active/Inactive tab within "Courses Repository"
-  const [activeTab, setActiveTab] = useState('active');
-
   // Course data
   const [allCourses, setAllCourses] = useState([]);
   const [industryCourses, setIndustryCourses] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Split all courses into active / inactive
-  const activeCourses = useMemo(() => allCourses.filter(c => c.status === 'Active'), [allCourses]);
-  const inactiveCourses = useMemo(() => allCourses.filter(c => c.status !== 'Active'), [allCourses]);
 
   // Load summary counts on mount
   useEffect(() => {
@@ -117,7 +110,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
     if (!token || viewMode !== 'all') return;
     setLoading(true);
     setError(null);
-    fetchCourses({ course_type: 'all' }, '', 1, 1000, token)
+    fetchCourses({ course_type: 'all', active_only: true }, '', 1, 1000, token)
       .then(resp => setAllCourses(resp?.data || []))
       .catch(err => setError(err.message || 'Failed to load courses'))
       .finally(() => setLoading(false));
@@ -128,7 +121,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
     if (!token || viewMode !== 'industry') return;
     setLoading(true);
     setError(null);
-    fetchCourses({ course_type: 'industry' }, '', 1, 1000, token)
+    fetchCourses({ course_type: 'industry', active_only: true }, '', 1, 1000, token)
       .then(resp => setIndustryCourses(resp?.data || []))
       .catch(err => setError(err.message || 'Failed to load industry courses'))
       .finally(() => setLoading(false));
@@ -167,7 +160,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
           {/* Active Courses */}
           <div
-            onClick={() => { setViewMode('all'); setActiveTab('active'); }}
+            onClick={() => setViewMode('all')}
             style={{
               background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
               borderRadius: '20px', padding: '28px',
@@ -183,7 +176,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Active Courses</span>
               </div>
               <div style={{ fontSize: '52px', fontWeight: 'bold', marginBottom: '6px' }}>{formatNumber(courseCounts.active_all)}</div>
-              <div style={{ fontSize: '12px', opacity: 0.7 }}>of {formatNumber(courseCounts.total_all)} total · Click to browse →</div>
+              <div style={{ fontSize: '12px', opacity: 0.7 }}>Courses running in current AY · Click to browse →</div>
             </div>
           </div>
 
@@ -202,10 +195,10 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '10px', borderRadius: '12px' }}>🏭</span>
-                <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Industry Linked Courses</span>
+                <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Active Industry Linked Courses</span>
               </div>
-              <div style={{ fontSize: '52px', fontWeight: 'bold', marginBottom: '6px' }}>{formatNumber(courseCounts.total_industry)}</div>
-              <div style={{ fontSize: '12px', opacity: 0.7 }}>{formatNumber(courseCounts.active_industry)} active · Click to browse →</div>
+              <div style={{ fontSize: '52px', fontWeight: 'bold', marginBottom: '6px' }}>{formatNumber(courseCounts.active_industry)}</div>
+              <div style={{ fontSize: '12px', opacity: 0.7 }}>Courses running in current AY · Click to browse →</div>
             </div>
           </div>
         </div>
@@ -243,57 +236,31 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         </div>
 
         {/* Content Area */}
-        <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '60px' }}>
+        <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', position: 'relative', minHeight: '500px' }}>
+          
+          {loading && (
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.6)', zIndex: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '16px' }}>
               <div className="loading-spinner" />
-              <p>Loading data...</p>
             </div>
-          ) : viewMode === 'all' ? (
-            <>
-              {/* Active / Inactive Tabs */}
-              <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderBottom: '2px solid #e9ecef' }}>
-                <button
-                  onClick={() => setActiveTab('active')}
-                  style={{
-                    padding: '10px 24px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px',
-                    fontWeight: activeTab === 'active' ? '700' : '400',
-                    color: activeTab === 'active' ? '#6366f1' : '#666',
-                    borderBottom: activeTab === 'active' ? '3px solid #6366f1' : '3px solid transparent',
-                    marginBottom: '-2px', transition: 'all 0.2s'
-                  }}
-                >
-                  Active ({activeCourses.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('inactive')}
-                  style={{
-                    padding: '10px 24px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px',
-                    fontWeight: activeTab === 'inactive' ? '700' : '400',
-                    color: activeTab === 'inactive' ? '#6366f1' : '#666',
-                    borderBottom: activeTab === 'inactive' ? '3px solid #6366f1' : '3px solid transparent',
-                    marginBottom: '-2px', transition: 'all 0.2s'
-                  }}
-                >
-                  Inactive ({inactiveCourses.length})
-                </button>
-              </div>
-              <CourseTable
-                courses={activeTab === 'active' ? activeCourses : inactiveCourses}
-                headerColor="#6366f1"
-              />
-            </>
-          ) : (
-            <>
-              <div style={{ marginBottom: '16px' }}>
-                <h3 style={{ margin: '0 0 4px 0', color: '#333' }}>Industry Linked Courses</h3>
-                <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-                  {industryCourses.length} courses collaborating with industry partners
-                </p>
-              </div>
-              <CourseTable courses={industryCourses} headerColor="#f97316" />
-            </>
           )}
+
+          <div style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.3s ease' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <h3 style={{ margin: '0 0 4px 0', color: '#333', transition: 'color 0.3s' }}>
+                {viewMode === 'all' ? 'Active Courses Repository' : 'Industry Linked Courses'}
+              </h3>
+              <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+                {viewMode === 'all' 
+                  ? `${allCourses.length} courses currently running` 
+                  : `${industryCourses.length} courses collaborating with industry partners`}
+              </p>
+            </div>
+            
+            <CourseTable
+              courses={viewMode === 'all' ? allCourses : industryCourses}
+              headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
+            />
+          </div>
         </div>
       </div>
 

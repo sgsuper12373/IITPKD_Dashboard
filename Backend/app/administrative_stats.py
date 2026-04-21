@@ -466,6 +466,9 @@ def get_gender_distribution(current_user_id):
         else:
             where_clause = f"WHERE {active_condition}"
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
+        
+        # Explicitly exclude Director from gender ratio pie charts
+        where_clause += " AND COALESCE(designation, '') != 'Director'"
 
         query = f"""
             SELECT gender, COUNT(*) AS count

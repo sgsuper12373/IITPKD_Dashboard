@@ -141,37 +141,37 @@ function Header({ user, onLogout }) {
             <nav className={`main-navbar ${showNavbar ? '' : 'navbar-hidden'}`}>
                 <Link
                     to="/people-campus"
-                    className={`nav-link ${location.pathname === '/people-campus' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/people-campus') ? 'active' : ''}`}
                 >
                     People and Campus
                 </Link>
                 <Link
                     to="/research"
-                    className={`nav-link ${location.pathname === '/research' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/research') ? 'active' : ''}`}
                 >
                     Research
                 </Link>
                 <Link
                     to="/education"
-                    className={`nav-link ${location.pathname === '/education' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/education') ? 'active' : ''}`}
                 >
                     Education
                 </Link>
                 <Link
                     to="/industry-connect"
-                    className={`nav-link ${location.pathname === '/industry-connect' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/industry-connect') ? 'active' : ''}`}
                 >
                     Industry Connect
                 </Link>
                 <Link
                     to="/innovation-entrepreneurship"
-                    className={`nav-link ${location.pathname === '/innovation-entrepreneurship' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/innovation-entrepreneurship') ? 'active' : ''}`}
                 >
                     Innovation and Entrepreneurship
                 </Link>
                 <Link
                     to="/outreach-extension"
-                    className={`nav-link ${location.pathname === '/outreach-extension' ? 'active' : ''}`}
+                    className={`nav-link ${location.pathname.startsWith('/outreach-extension') ? 'active' : ''}`}
                 >
                     Outreach and Extension
                 </Link>

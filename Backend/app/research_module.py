@@ -222,7 +222,6 @@ def get_filter_options(current_user_id):
         filters['project_years'] = sorted(years, reverse=True)
         filters['project_statuses'] = sorted(statuses)
         filters['project_types'] = ['Funded', 'Consultancy']  # Fixed list — each table is a type
-        filters['externship_departments'] = filters['project_departments']
 
         if _table_exists(conn, 'research_mous'):
             cur.execute(
@@ -278,6 +277,16 @@ def get_filter_options(current_user_id):
                 """
             )
             filters['externship_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
+            
+            cur.execute(
+                """
+                SELECT DISTINCT department
+                FROM externship_info
+                WHERE department IS NOT NULL
+                ORDER BY department
+                """
+            )
+            filters['externship_departments'] = [row['department'] for row in cur.fetchall()]
 
         return jsonify(filters)
     except Exception as exc:

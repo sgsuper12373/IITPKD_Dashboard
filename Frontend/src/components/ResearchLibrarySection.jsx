@@ -254,7 +254,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             </button>
           </div>
         )}
-        {!isPublicView && <h1>Research · Library & Scholarly Outputs</h1>}
+        {!isPublicView && <h1>Library & Scholarly Outputs</h1>}
         {error && <div className="error-message" style={{
           padding: '10px',
           backgroundColor: '#f8d7da',

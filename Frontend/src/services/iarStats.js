@@ -75,3 +75,32 @@ export const fetchOutcomeBreakdown = async (filters, token) => {
   }
 };
 
+export const fetchIarMouFilterOptions = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/mous/filter-options`, authHeaders(token));
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to fetch IAR MoU filter options');
+  }
+};
+
+export const fetchIarMouTrend = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/mous/trend`, authHeaders(token));
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to fetch IAR MoU trend');
+  }
+};
+
+export const fetchIarMouList = async (filters, token) => {
+  try {
+    const query = buildQueryParams(filters);
+    const response = await axios.get(`${API_BASE_URL}/mous/list?${query}`, authHeaders(token));
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to fetch IAR MoU records');
+  }
+};
+
+

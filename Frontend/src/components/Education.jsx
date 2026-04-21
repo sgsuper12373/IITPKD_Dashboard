@@ -29,6 +29,13 @@ const EDUCATION_SECTIONS = [
     route: '/education/academic-section',
     // 🔹 ADDITION
     allowedRoles: [3, 4]
+  },
+  {
+    code: 'I',
+    title: 'IAR',
+    description: 'International & Alumni Relations MoUs',
+    route: '/education/iar',
+    allowedRoles: [3]
   }
 ];
 
