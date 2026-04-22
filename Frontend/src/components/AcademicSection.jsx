@@ -315,7 +315,7 @@ function AcademicSection({ user, isPublicView = false }) {
             {
               label: 'Research', icon: '🔬', value: onrollSummary.research_onroll,
               grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',
-              subtitle: 'PhD + MSc (By Research) — On Roll'
+              subtitle: 'PhD + MS (By Research) — On Roll'
             },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = onrollLoading ? 0 : idx * 55;
