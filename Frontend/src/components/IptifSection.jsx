@@ -213,7 +213,7 @@ function IptifSection({ user, isPublicView = false }) {
           ].map(({ view, bg, shadow, label, value }) => (
             <div key={view} onClick={() => openRepo(view)} style={{ background: bg, borderRadius: '20px', padding: '24px', boxShadow: shadow, color: 'white', cursor: 'pointer', transition: 'transform 0.2s' }}>
               <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
-              <div style={{ fontSize: '40px', fontWeight: 'bold' }}>{formatNumber(value)}</div>
+              <div className="metric-value">{formatNumber(value)}</div>
               <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
             </div>
           ))}

@@ -435,9 +435,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>📊</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Total Projects</span>
+                <span className="metric-value-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>Total Projects</span>
               </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+              <div className="metric-value" style={{ color: 'white', marginBottom: '4px' }}>
                 {formatNumber(summary.total_projects)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -534,9 +534,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>💰</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Revenue</span>
+                <span className="metric-value-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>Revenue</span>
               </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+              <div className="metric-value" style={{ color: 'white', marginBottom: '4px' }}>
                 {(() => {
                   const scaled = formatScaledCurrency(summary.consultancy_revenue);
                   return (

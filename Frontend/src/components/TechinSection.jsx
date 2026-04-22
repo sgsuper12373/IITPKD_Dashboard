@@ -27,6 +27,16 @@ import '../DesignSystem.css';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
+const formatCompactCurrency = (value) => {
+  if (value === undefined || value === null) return '₹0';
+  if (value >= 10000000) {
+    return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  } else if (value >= 100000) {
+    return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
+  }
+  return '₹' + formatNumber(value);
+};
+
 function TechinSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
@@ -291,7 +301,7 @@ function TechinSection({ user, isPublicView = false }) {
                   <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '10px', borderRadius: '12px' }}>{icon}</span>
                   <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>{label}</span>
                 </div>
-                <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px' }}>{formatNumber(value)}</div>
+                <div className="metric-value" style={{ marginBottom: '8px' }}>{formatNumber(value)}</div>
                 <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
               </div>
             </div>
@@ -300,18 +310,38 @@ function TechinSection({ user, isPublicView = false }) {
 
         {/* Revenue Cards – Row 2 */}
         <h3 style={{ marginTop: '0', marginBottom: '20px', color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: '20px', 
+          marginBottom: '40px' 
+        }}>
           {[
-            { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: `₹${formatNumber(summary.total_startup_revenue)}` },
-            { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: `₹${formatNumber(summary.highest_revenue)}` },
-            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: `₹${formatNumber(summary.average_revenue)}` },
-            { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', shadow: '0 8px 20px rgba(239,68,68,0.2)', label: 'Lowest Revenue', value: `₹${formatNumber(summary.lowest_revenue)}` },
+            { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
+            { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
+            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue },
+            { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', shadow: '0 8px 20px rgba(239,68,68,0.2)', label: 'Lowest Revenue', value: summary.lowest_revenue },
           ].map(({ bg, shadow, label, value }) => (
-            <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+            <div key={label} style={{ 
+              background: bg, 
+              borderRadius: '16px', 
+              padding: '24px 16px', 
+              boxShadow: shadow, 
+              color: 'white', 
+              textAlign: 'center', 
+              position: 'relative', 
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              minHeight: '140px'
+            }}>
               <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '12px' }}>{label}</div>
-                <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{value}</div>
+                <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
+                <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>
+                  {formatCompactCurrency(value)}
+                </div>
               </div>
             </div>
           ))}

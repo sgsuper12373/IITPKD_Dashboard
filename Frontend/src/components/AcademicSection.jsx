@@ -333,8 +333,8 @@ function AcademicSection({ user, isPublicView = false }) {
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>{icon}</span>
                     <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500' }}>{label}</span>
                   </div>
-                  <div style={{
-                    fontSize: '40px', fontWeight: 'bold', color: 'white', marginBottom: '4px',
+                  <div className="metric-value" style={{
+                    color: 'white', marginBottom: '4px',
                     opacity: onrollLoading ? 0 : 1,
                     transform: onrollLoading ? 'translateY(10px) scale(0.96)' : 'translateY(0) scale(1)',
                     transition: t,

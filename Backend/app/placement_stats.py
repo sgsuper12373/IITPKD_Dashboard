@@ -157,6 +157,7 @@ def get_placement_summary(current_user_id):
         'year': request.args.get('year'),
         'program': request.args.get('program'),
         'gender': request.args.get('gender'),
+        'sector': request.args.get('sector'),
     }
 
     summary_where, summary_params = build_where_clause(
@@ -168,6 +169,14 @@ def get_placement_summary(current_user_id):
         {'year': 'placement_year', 'program': 'program'},
         filters
     )
+
+    # sector filtering for summary/packages (subquery-based as tables lack direct column)
+    if filters.get('sector') and filters.get('sector') != 'All':
+        sector_subquery = "placement_year IN (SELECT DISTINCT placement_year FROM placement_companies WHERE sector = %s)"
+        summary_where += (" AND " if summary_where else "WHERE ") + sector_subquery
+        summary_params.append(filters.get('sector'))
+        pkg_where += (" AND " if pkg_where else "WHERE ") + sector_subquery
+        pkg_params.append(filters.get('sector'))
 
     conn = None
     cur = None
@@ -191,9 +200,9 @@ def get_placement_summary(current_user_id):
         cur.execute(
             f"""
             SELECT
-                MAX(highest_package) AS highest_package,
-                MIN(lowest_package) AS lowest_package,
-                AVG(average_package) AS average_package
+                MAX(NULLIF(highest_package, 0)) AS highest_package,
+                MIN(NULLIF(lowest_package,  0)) AS lowest_package,
+                AVG(NULLIF(average_package, 0)) AS average_package
             FROM {PLACEMENT_PACKAGES_TABLE}
             {pkg_where}
             """,
@@ -343,10 +352,11 @@ def get_program_status(current_user_id):
 
     filters = {
         'year': request.args.get('year'),
+        'program': request.args.get('program'),
         'gender': request.args.get('gender'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'gender': 'gender'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender'},
         filters
     )
 
@@ -402,6 +412,7 @@ def get_recruiter_counts(current_user_id):
 
     filters = {
         'year': request.args.get('year'),
+        'program': request.args.get('program'),
         'sector': request.args.get('sector'),
     }
     where_clause, params = build_where_clause(
@@ -455,9 +466,11 @@ def get_sector_distribution(current_user_id):
 
     filters = {
         'year': request.args.get('year'),
+        'program': request.args.get('program'),
+        'sector': request.args.get('sector'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year'},
+        {'year': 'placement_year', 'sector': 'sector'},
         filters
     )
 
@@ -507,16 +520,42 @@ def get_package_trend(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
 
-    filters = {
-        'program': request.args.get('program'),
-    }
-    where_clause, params = build_where_clause(
-        {'program': 'program'},
-        filters
+    year    = request.args.get('year')
+    program = request.args.get('program')
+    sector  = request.args.get('sector')
+
+    # Build WHERE conditions manually so we can alias the table and use a sector subquery
+    conditions: List[str] = []
+    params: List[Any] = []
+
+    if year not in (None, '', 'All'):
+        conditions.append("pp.placement_year = %s")
+        params.append(year)
+
+    if program not in (None, '', 'All'):
+        conditions.append("pp.program = %s")
+        params.append(program)
+
+    # Exclude rows where all three package columns are zero or null
+    conditions.append(
+        "(pp.highest_package IS NOT NULL AND pp.highest_package <> 0"
+        " OR pp.lowest_package  IS NOT NULL AND pp.lowest_package  <> 0"
+        " OR pp.average_package IS NOT NULL AND pp.average_package <> 0)"
     )
 
+    if sector not in (None, '', 'All'):
+        # Filter to placement years that have at least one company in the chosen sector
+        conditions.append(
+            "pp.placement_year IN ("
+            "  SELECT DISTINCT placement_year FROM placement_companies WHERE sector = %s"
+            ")"
+        )
+        params.append(sector)
+
+    where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+
     conn = None
-    cur = None
+    cur  = None
     try:
         conn = get_db_connection()
         if conn is None:
@@ -524,25 +563,31 @@ def get_package_trend(current_user_id):
         cur = conn.cursor()
         cur.execute(
             f"""
-            SELECT placement_year,
-                   MAX(highest_package) AS highest_package,
-                   MIN(lowest_package) AS lowest_package,
-                   AVG(average_package) AS average_package
-            FROM {PLACEMENT_PACKAGES_TABLE}
+            SELECT pp.placement_year,
+                   MAX(NULLIF(pp.highest_package, 0)) AS highest_package,
+                   MIN(NULLIF(pp.lowest_package,  0)) AS lowest_package,
+                   AVG(NULLIF(pp.average_package, 0)) AS average_package
+            FROM {PLACEMENT_PACKAGES_TABLE} pp
             {where_clause}
-            GROUP BY placement_year
-            ORDER BY placement_year
+            GROUP BY pp.placement_year
+            ORDER BY pp.placement_year
             """,
             params
         )
         rows = cur.fetchall() or []
         data = []
         for row in rows:
+            highest = row.get('highest_package')
+            lowest  = row.get('lowest_package')
+            average = row.get('average_package')
+            # Skip years where everything is still null after aggregation
+            if not any([highest, lowest, average]):
+                continue
             data.append({
-                'year': row.get('placement_year'),
-                'highest': row.get('highest_package'),
-                'lowest': row.get('lowest_package'),
-                'average': row.get('average_package'),
+                'year':    row.get('placement_year'),
+                'highest': float(highest) if highest is not None else None,
+                'lowest':  float(lowest)  if lowest  is not None else None,
+                'average': float(average) if average is not None else None,
             })
         return jsonify({'data': data}), 200
     except UndefinedTable:
@@ -565,6 +610,7 @@ def get_top_recruiters(current_user_id):
 
     filters = {
         'year': request.args.get('year'),
+        'program': request.args.get('program'),
         'sector': request.args.get('sector'),
     }
     where_clause, params = build_where_clause(

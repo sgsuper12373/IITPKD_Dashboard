@@ -32,6 +32,16 @@ const EVENT_TYPE_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7'
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
+const formatCompactCurrency = (value) => {
+  if (value === undefined || value === null) return '₹0';
+  if (value >= 10000000) {
+    return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  } else if (value >= 100000) {
+    return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
+  }
+  return '₹' + formatNumber(value);
+};
+
 function IcsrSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
@@ -328,13 +338,7 @@ function IcsrSection({ user, isPublicView = false }) {
                   fontWeight: '500'
                 }}>Total Industry Events</h3>
               </div>
-              <div style={{
-                fontSize: '48px',
-                fontWeight: 'bold',
-                color: 'white',
-                marginBottom: '8px',
-                lineHeight: '1.2'
-              }}>
+              <div className="metric-value">
                 {formatNumber(summary.total_events)}
               </div>
               <div style={{
@@ -409,14 +413,8 @@ function IcsrSection({ user, isPublicView = false }) {
                   fontWeight: '500'
                 }}>Total Funding Generated</h3>
               </div>
-              <div style={{
-                fontSize: '48px',
-                fontWeight: 'bold',
-                color: 'white',
-                marginBottom: '8px',
-                lineHeight: '1.2'
-              }}>
-                ₹{formatNumber(summary.total_funding)}
+              <div className="metric-value" title={`₹${formatNumber(summary.total_funding)}`}>
+                {formatCompactCurrency(summary.total_funding)}
               </div>
               <div style={{
                 display: 'flex',
@@ -717,19 +715,19 @@ function IcsrSection({ user, isPublicView = false }) {
                         gap: '15px'
                       }}>
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '24px' }}>
+                          <div className="metric-value-sm" style={{ color: '#667eea' }}>
                             {yearlyChartData.reduce((sum, item) => sum + item.events, 0)}
                           </div>
                           <div style={{ color: '#666', fontSize: '12px' }}>Total Events</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>
+                          <div className="metric-value-sm" style={{ color: '#22c55e' }}>
                             {yearlyChartData.length > 0 ? Math.max(...yearlyChartData.map(item => item.events)) : 0}
                           </div>
                           <div style={{ color: '#666', fontSize: '12px' }}>Peak Events in Year</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>
+                          <div className="metric-value-sm" style={{ color: '#f97316' }}>
                             {yearlyChartData.length}
                           </div>
                           <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>

@@ -257,7 +257,7 @@ function IarSection({ user, isPublicView = false }) {
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>👥</span>
                     <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Alumni</span>
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                  <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
                     {summary.total_alumni}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -290,7 +290,7 @@ function IarSection({ user, isPublicView = false }) {
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🎓</span>
                     <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Higher Studies</span>
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                  <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
                     {summary.higher_studies}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -323,7 +323,7 @@ function IarSection({ user, isPublicView = false }) {
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
                     <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Corporate Careers</span>
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                  <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
                     {summary.corporate}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -527,10 +527,10 @@ function IarSection({ user, isPublicView = false }) {
 
                       {/* Chart Statistics */}
                       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                        <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
-                        <div style={{ textAlign: 'center' }}><div style={{ color: '#22d3ee', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
-                        <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Corporate</div></div>
-                        <div style={{ textAlign: 'center' }}><div style={{ color: '#a855f7', fontWeight: 'bold', fontSize: '20px' }}>{trendData.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Years Covered</div></div>
+                        <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#667eea' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
+                        <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#22d3ee' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
+                        <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#f97316' }}>{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Corporate</div></div>
+                        <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#a855f7' }}>{trendData.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Years Covered</div></div>
                       </div>
                     </div>
                   </div>

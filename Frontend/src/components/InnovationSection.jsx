@@ -361,9 +361,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 fontWeight: '500'
               }}>Total Incubatees</h3>
             </div>
-            <div style={{
-              fontSize: '40px',
-              fontWeight: 'bold',
+            <div className="metric-value" style={{
               color: 'white',
               marginBottom: '8px',
               lineHeight: '1.2'
@@ -442,9 +440,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 fontWeight: '500'
               }}>Total Startups</h3>
             </div>
-            <div style={{
-              fontSize: '40px',
-              fontWeight: 'bold',
+            <div className="metric-value" style={{
               color: 'white',
               marginBottom: '8px',
               lineHeight: '1.2'
@@ -523,9 +519,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 fontWeight: '500'
               }}>Innovation Projects</h3>
             </div>
-            <div style={{
-              fontSize: '40px',
-              fontWeight: 'bold',
+            <div className="metric-value" style={{
               color: 'white',
               marginBottom: '8px',
               lineHeight: '1.2'
@@ -604,9 +598,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 fontWeight: '500'
               }}>IITPKD Startups</h3>
             </div>
-            <div style={{
-              fontSize: '40px',
-              fontWeight: 'bold',
+            <div className="metric-value" style={{
               color: 'white',
               marginBottom: '8px',
               lineHeight: '1.2'

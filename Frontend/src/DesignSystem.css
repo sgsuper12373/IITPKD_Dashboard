@@ -101,6 +101,27 @@
   box-shadow: var(--shadow-lg);
 }
 
+/* 📊 SUMMARY CARD UTILITIES */
+.metric-value {
+  font-size: clamp(1.2rem, 3.8vw, 2.6rem); 
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  display: block;
+  width: 100%;
+}
+
+/* For cards with 4 columns, we need a smaller cap to prevent overflow */
+.metric-value-sm {
+  font-size: clamp(0.9rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 /* 🚦 PERSISTENT LOADING STATES */
 
 .data-content-wrapper {
