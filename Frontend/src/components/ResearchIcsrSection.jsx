@@ -62,41 +62,15 @@ const formatCurrency = (value) => {
   }).format(numeric);
 };
 
-const formatScaledCurrency = (value) => {
+const formatCompactCurrency = (value) => {
   const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric === 0) {
-    return { value: '0', unit: '' };
+  if (!Number.isFinite(numeric) || numeric === 0) return '₹0';
+  if (numeric >= 10000000) {
+    return '₹' + (numeric / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  } else if (numeric >= 100000) {
+    return '₹' + (numeric / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
   }
-
-  const crore = 10000000;
-  const lakh = 100000;
-
-  if (numeric >= crore) {
-    const crores = numeric / crore;
-    return {
-      value: new Intl.NumberFormat('en-IN', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: crores % 1 === 0 ? 0 : 2
-      }).format(crores),
-      unit: crores === 1 ? 'Crore' : 'Crores'
-    };
-  } else if (numeric >= lakh) {
-    const lakhs = numeric / lakh;
-    return {
-      value: new Intl.NumberFormat('en-IN', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: lakhs % 1 === 0 ? 0 : 2
-      }).format(lakhs),
-      unit: lakhs === 1 ? 'Lakh' : 'Lakhs'
-    };
-  } else {
-    return {
-      value: new Intl.NumberFormat('en-IN', {
-        maximumFractionDigits: 0
-      }).format(numeric),
-      unit: ''
-    };
-  }
+  return '₹' + formatNumber(numeric);
 };
 
 const buildPatentBreakdown = (source = {}) => ({
@@ -408,217 +382,155 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         {/* Modern Summary Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: mouOnly ? '1fr' : 'repeat(3, 1fr)',
-          gap: '16px',
-          marginBottom: '30px'
+          gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '24px',
+          marginBottom: '40px'
         }}>
           {!mouOnly && (
             <>
-          {/* Total Sanctioned Projects Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(79, 70, 229, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>📊</span>
-                <span className="metric-value-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>Total Projects</span>
+              {/* Total Sanctioned Projects Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+                borderRadius: '20px',
+                padding: '24px',
+                boxShadow: '0 10px 25px rgba(79, 70, 229, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📊</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Projects</h3>
+                  </div>
+                  <div className="metric-value" style={{ color: 'white' }}>
+                    {formatNumber(summary.total_projects)}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Funded + Consultancy</span>
+                  </div>
+                </div>
               </div>
-              <div className="metric-value" style={{ color: 'white', marginBottom: '4px' }}>
-                {formatNumber(summary.total_projects)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Funded + Consultancy</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Externally Funded Projects Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(59, 130, 246, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🎯</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Funded Projects</span>
+              {/* Externally Funded Projects Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                borderRadius: '20px',
+                padding: '24px',
+                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎯</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Funded Projects</h3>
+                  </div>
+                  <div className="metric-value" style={{ color: 'white' }}>
+                    {formatNumber(summary.funded_projects)}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + completed</span>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                {formatNumber(summary.funded_projects)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Active + completed</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Consultancy Projects Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(249, 115, 22, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>💼</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Consultancy</span>
+              {/* Consultancy Projects Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                borderRadius: '20px',
+                padding: '24px',
+                boxShadow: '0 10px 25px rgba(249, 115, 22, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Consultancy</h3>
+                  </div>
+                  <div className="metric-value" style={{ color: 'white' }}>
+                    {formatNumber(summary.consultancy_projects)}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Client engagements</span>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                {formatNumber(summary.consultancy_projects)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Client engagements</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Consultancy Revenue Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(20, 184, 166, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>💰</span>
-                <span className="metric-value-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>Revenue</span>
+              {/* Consultancy Revenue Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+                borderRadius: '20px',
+                padding: '24px',
+                boxShadow: '0 10px 25px rgba(20, 184, 166, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💰</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Revenue</h3>
+                  </div>
+                  <div className="metric-value-sm" style={{ color: 'white' }} title={`₹${formatNumber(summary.consultancy_revenue)}`}>
+                    {formatCompactCurrency(summary.consultancy_revenue)}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Sanctioned amount</span>
+                  </div>
+                </div>
               </div>
-              <div className="metric-value" style={{ color: 'white', marginBottom: '4px' }}>
-                {(() => {
-                  const scaled = formatScaledCurrency(summary.consultancy_revenue);
-                  return (
-                    <>
-                      ₹{scaled.value}
-                      {scaled.unit && <span style={{ fontSize: '12px', marginLeft: '2px' }}>{scaled.unit}</span>}
-                    </>
-                  );
-                })()}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Sanctioned amount</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Patents Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(236, 72, 153, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>📝</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Patents</span>
+              {/* Patents Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                borderRadius: '20px',
+                padding: '24px',
+                boxShadow: '0 10px 25px rgba(236, 72, 153, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Patents</h3>
+                  </div>
+                  <div className="metric-value-sm" style={{ color: 'white' }}>
+                    {formatNumber(summary.patent_breakdown.Filed)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Filed</span> / {formatNumber(summary.patent_breakdown.Granted)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Granted</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP stats</span>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                {formatNumber(summary.patent_breakdown.Filed)} / {formatNumber(summary.patent_breakdown.Granted)}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Filed / Granted</span>
-              </div>
-            </div>
-          </div>
             </>
           )}
 
-          {/* MoU Summary Card - Hidden in Public ICSR View */}
+          {/* MoU Summary Card */}
           {(!isPublicView || mouOnly) && (
             <div style={{
               background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-              borderRadius: '14px',
-              padding: '16px',
-              boxShadow: '0 8px 16px rgba(168, 85, 247, 0.2)',
+              borderRadius: '20px',
+              padding: '24px',
+              boxShadow: '0 10px 25px rgba(168, 85, 247, 0.2)',
               position: 'relative',
               overflow: 'hidden'
             }}>
-              <div style={{
-                position: 'absolute',
-                top: '-15px',
-                right: '-15px',
-                width: '70px',
-                height: '70px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🤝</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Total MoUs</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🤝</span>
+                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total MoUs</h3>
                 </div>
-                <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+                <div className="metric-value" style={{ color: 'white' }}>
                   {formatNumber(totalMous)}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Signed collaborations</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>External collaborations</span>
                 </div>
               </div>
             </div>

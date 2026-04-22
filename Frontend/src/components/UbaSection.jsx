@@ -100,51 +100,21 @@ function UbaSection({ user, isPublicView = false }) {
       {!isPublicView && <h1>UBA (Unnat Bharat Abhiyan)</h1>}
 
       {isPublicView ? null : (user && user.role_id === 3 && (
-        <div style={{ 
-          display: 'flex', 
-          gap: '1rem', 
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
           marginBottom: '2rem',
           flexWrap: 'wrap'
         }}>
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_projects'); setIsUploadModalOpen(true); }}
-            style={{ 
-              padding: '10px 20px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 5px rgba(40, 167, 69, 0.3)'
-            }}
           >
             <span>📤</span> Upload Projects
           </button>
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_events'); setIsUploadModalOpen(true); }}
-            style={{ 
-              padding: '10px 20px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 5px rgba(40, 167, 69, 0.3)'
-            }}
           >
             <span>📅</span> Upload Events
           </button>
@@ -188,7 +158,7 @@ function UbaSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -270,7 +240,7 @@ function UbaSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',

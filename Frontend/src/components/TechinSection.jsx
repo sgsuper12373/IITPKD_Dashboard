@@ -278,9 +278,9 @@ function TechinSection({ user, isPublicView = false }) {
           <div>{!isPublicView && <h1 style={{ margin: 0 }}>TechIn</h1>}</div>
           {user && user.role_id === 3 && (
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => { setActiveUploadTable('techin_program_table'); setIsUploadModalOpen(true); }} style={{ padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Programs</button>
-              <button onClick={() => { setActiveUploadTable('techin_skill_development_program'); setIsUploadModalOpen(true); }} style={{ padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Skill Dev</button>
-              <button onClick={() => { setActiveUploadTable('techin_startup_table'); setIsUploadModalOpen(true); }} style={{ padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Startups</button>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_program_table'); setIsUploadModalOpen(true); }} >📤 Upload Programs</button>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_skill_development_program'); setIsUploadModalOpen(true); }} >📤 Upload Skill Dev</button>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_startup_table'); setIsUploadModalOpen(true); }} >📤 Upload Startups</button>
             </div>
           )}
         </div>
@@ -310,11 +310,11 @@ function TechinSection({ user, isPublicView = false }) {
 
         {/* Revenue Cards – Row 2 */}
         <h3 style={{ marginTop: '0', marginBottom: '20px', color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-          gap: '20px', 
-          marginBottom: '40px' 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '20px',
+          marginBottom: '40px'
         }}>
           {[
             { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
@@ -322,14 +322,14 @@ function TechinSection({ user, isPublicView = false }) {
             { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue },
             { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', shadow: '0 8px 20px rgba(239,68,68,0.2)', label: 'Lowest Revenue', value: summary.lowest_revenue },
           ].map(({ bg, shadow, label, value }) => (
-            <div key={label} style={{ 
-              background: bg, 
-              borderRadius: '16px', 
-              padding: '24px 16px', 
-              boxShadow: shadow, 
-              color: 'white', 
-              textAlign: 'center', 
-              position: 'relative', 
+            <div key={label} style={{
+              background: bg,
+              borderRadius: '16px',
+              padding: '24px 16px',
+              boxShadow: shadow,
+              color: 'white',
+              textAlign: 'center',
+              position: 'relative',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',

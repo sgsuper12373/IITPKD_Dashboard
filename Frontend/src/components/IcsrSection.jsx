@@ -623,15 +623,12 @@ function IcsrSection({ user, isPublicView = false }) {
                 ))}
               </div>
 
-              {loading ? (
-                <div className="loading-container" style={{ textAlign: 'center', padding: '40px' }}>
-                  <div className="loading-spinner" />
-                  <p>Loading chart data...</p>
-                </div>
-              ) : (
-                <>
-                  {yearlyChartData.length > 0 ? (
-                    <div className="chart-container">
+              <div className="data-content-wrapper">
+
+                <div className={`chart-container ${yearlyChartData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                  <div className={`section-empty-state ${yearlyChartData.length > 0 ? 'hidden' : ''}`}>
+                    <p>No yearly distribution data available for the selected filters</p>
+                  </div>
                       <div className={`chart-wrapper ${chartMode === 'bar' ? 'active' : 'inactive'}`}>
                         <ResponsiveContainer width="100%" height={400}>
                           <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
@@ -732,21 +729,9 @@ function IcsrSection({ user, isPublicView = false }) {
                           </div>
                           <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>
                         </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="no-data" style={{
-                      textAlign: 'center',
-                      padding: '60px',
-                      backgroundColor: '#f8f9fa',
-                      borderRadius: '8px'
-                    }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📈</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No yearly distribution data available.</p>
-                    </div>
-                  )}
-                </>
-              )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -841,28 +826,26 @@ function IcsrSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              {loading ? (
-                <div className="loading-container" style={{ textAlign: 'center', padding: '40px' }}>
-                  <div className="loading-spinner" />
-                  <p>Loading event types data...</p>
-                </div>
-              ) : (
-                <>
-                  {eventTypesPieData.length > 0 ? (
+              <div className="data-content-wrapper">
+
+                <div className={`chart-container ${eventTypesPieData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                  <div className={`section-empty-state ${eventTypesPieData.length > 0 ? 'hidden' : ''}`}>
+                    <p>No event distribution data available for the selected filters</p>
+                  </div>
+                  {eventTypesPieData.length > 0 && (
                     <div>
                       {/* Pie Chart for Top 5 + Others */}
                       <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <ResponsiveContainer width="100%" height={450}>
-                          <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
+                          <PieChart margin={{ top: 40, right: 20, left: 20, bottom: 20 }}>
                             <Pie
                               data={eventTypesPieData}
                               dataKey="value"
                               nameKey="name"
                               cx="50%"
                               cy="50%"
-                              outerRadius={150}
-                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                              labelLine={{ stroke: '#666', strokeWidth: 1 }}
+                              outerRadius={120}
+                              label={false} // Disable direct labels to prevent overlapping
                             >
                               {eventTypesPieData.map((entry, index) => (
                                 <Cell
@@ -883,15 +866,19 @@ function IcsrSection({ user, isPublicView = false }) {
                               }}
                             />
                             <Legend
-                              layout="vertical"
-                              align="right"
-                              verticalAlign="middle"
+                              layout="horizontal"
+                              align="center"
+                              verticalAlign="top"
                               wrapperStyle={{
-                                paddingLeft: '20px',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                paddingBottom: '30px',
                                 fontWeight: 'bold',
-                                fontSize: '12px'
+                                fontSize: '11px'
                               }}
                               iconType="circle"
+                              iconSize={10}
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -930,19 +917,9 @@ function IcsrSection({ user, isPublicView = false }) {
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className="no-data" style={{
-                      textAlign: 'center',
-                      padding: '60px',
-                      backgroundColor: '#f8f9fa',
-                      borderRadius: '8px'
-                    }}>
-                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🥧</span>
-                      <p style={{ color: '#666', fontSize: '16px' }}>No event types data available.</p>
-                    </div>
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -1042,7 +1019,6 @@ function IcsrSection({ user, isPublicView = false }) {
                   borderRadius: '4px',
                   fontSize: '12px'
                 }}>
-                  <strong>Active Filters:</strong>{' '}
                   {filters.event_type !== 'All' && <span style={{ marginRight: '8px' }}>📌 {filters.event_type}</span>}
                   {filters.year !== 'All' && <span style={{ marginRight: '8px' }}>📅 {filters.year}</span>}
                   {filters.search && <span style={{ marginRight: '8px' }}>🔍 "{filters.search}"</span>}
@@ -1052,179 +1028,179 @@ function IcsrSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              {/* Fixed Frame with Scrollable Events Table */}
-              <div style={{
-                border: '1px solid #e0e0e0',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                backgroundColor: '#fff'
-              }}>
-                {eventsList.length > 0 ? (
-                  <>
-                    {/* Table Header - Fixed */}
-                    <div style={{
-                      backgroundColor: '#f97316',
-                      color: 'white',
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 1.2fr 1.8fr 1.2fr 1fr 1.2fr',
-                      gap: '8px',
-                      padding: '12px',
-                      fontWeight: 'bold',
-                      fontSize: '13px',
-                      position: 'sticky',
-                      top: 0,
-                      zIndex: 10
-                    }}>
-                      <div>Event Title</div>
-                      <div>Type</div>
-                      <div>Industry Partner</div>
-                      <div>Date</div>
-                      <div>Duration (hrs)</div>
-                      <div>Department</div>
-                    </div>
+              <div className="data-content-wrapper">
 
-                    {/* Scrollable Table Body */}
-                    <div style={{
-                      maxHeight: '500px',
-                      overflowY: 'auto',
-                      overflowX: 'auto'
-                    }}>
-                      {eventsList.map((event, index) => (
-                        <div
-                          key={event.event_id}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '2fr 1.2fr 1.8fr 1.2fr 1fr 1.2fr',
-                            gap: '8px',
-                            padding: '12px',
-                            backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                            borderBottom: '1px solid #e0e0e0',
-                            fontSize: '13px',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <div style={{ fontWeight: '500' }}>{event.event_title}</div>
-                          <div>
-                            <span style={{
-                              backgroundColor: '#e0e7ff',
-                              color: '#4f46e5',
-                              padding: '4px 8px',
-                              borderRadius: '4px',
-                              fontSize: '11px',
-                              fontWeight: 'bold',
-                              display: 'inline-block'
-                            }}>
-                              {event.event_type}
-                            </span>
-                          </div>
-                          <div>{event.industry_partner || '—'}</div>
-                          <div>{event.event_date ? new Date(event.event_date).toLocaleDateString() : '—'}</div>
-                          <div>{event.duration_hours ? `${event.duration_hours}` : '—'}</div>
-                          <div>{event.department || '—'}</div>
+                {/* Fixed Frame with Scrollable Events Table */}
+                <div style={{
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  backgroundColor: '#fff',
+                  position: 'relative'
+                }}>
+                  {eventsList.length > 0 ? (
+                    <>
+                      {/* Table Header - Fixed */}
+                        <div style={{
+                          backgroundColor: '#f97316',
+                          color: 'white',
+                          display: 'grid',
+                          gridTemplateColumns: '1.8fr 1fr 1.5fr 1fr 1.2fr 1.2fr',
+                          gap: '12px',
+                          padding: '12px',
+                          fontWeight: 'bold',
+                          fontSize: '13px',
+                          position: 'sticky',
+                          top: 0,
+                          zIndex: 10
+                        }}>
+                          <div>Event Name</div>
+                          <div>Type</div>
+                          <div>Hosted By</div>
+                          <div>Date</div>
+                          <div>Target Audience</div>
+                          <div>Funding By</div>
                         </div>
-                      ))}
-                    </div>
 
-                    {/* Table Statistics */}
-                    <div style={{
-                      padding: '15px',
-                      backgroundColor: '#f8f9fa',
-                      borderTop: '1px solid #e0e0e0',
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(4, 1fr)',
-                      gap: '15px'
-                    }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
-                          {eventsList.length}
-                        </div>
-                        <div style={{ color: '#666', fontSize: '12px' }}>Showing</div>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
-                          {new Set(eventsList.map(e => e.event_type)).size}
-                        </div>
-                        <div style={{ color: '#666', fontSize: '12px' }}>Event Types</div>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '20px' }}>
-                          {new Set(eventsList.map(e => e.department).filter(Boolean)).size}
-                        </div>
-                        <div style={{ color: '#666', fontSize: '12px' }}>Departments</div>
-                      </div>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ color: '#a855f7', fontWeight: 'bold', fontSize: '20px' }}>
-                          {eventsList.reduce((sum, e) => sum + (e.duration_hours || 0), 0)}
-                        </div>
-                        <div style={{ color: '#666', fontSize: '12px' }}>Total Hours</div>
-                      </div>
-                    </div>
-
-                    {/* Pagination */}
-                    {pagination.total_pages > 1 && (
+                      {/* Scrollable Table Body */}
                       <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        padding: '15px',
-                        backgroundColor: '#fff',
-                        borderTop: '1px solid #e0e0e0'
+                        maxHeight: '500px',
+                        overflowY: 'auto',
+                        overflowX: 'auto'
                       }}>
-                        <button
-                          onClick={() => handlePageChange(pagination.page - 1)}
-                          disabled={pagination.page === 1}
-                          style={{
-                            padding: '8px 16px',
-                            backgroundColor: pagination.page === 1 ? '#ccc' : '#f97316',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: pagination.page === 1 ? 'not-allowed' : 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            transition: 'all 0.3s ease'
-                          }}
-                        >
-                          ← Previous
-                        </button>
-                        <span style={{ color: '#666', fontSize: '14px' }}>
-                          Page <strong>{pagination.page}</strong> of <strong>{pagination.total_pages}</strong>
-                          <span style={{ marginLeft: '8px', color: '#999' }}>
-                            ({formatNumber(pagination.total)} total events)
-                          </span>
-                        </span>
-                        <button
-                          onClick={() => handlePageChange(pagination.page + 1)}
-                          disabled={pagination.page >= pagination.total_pages}
-                          style={{
-                            padding: '8px 16px',
-                            backgroundColor: pagination.page >= pagination.total_pages ? '#ccc' : '#f97316',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: pagination.page >= pagination.total_pages ? 'not-allowed' : 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            transition: 'all 0.3s ease'
-                          }}
-                        >
-                          Next →
-                        </button>
+                        {eventsList.map((event, index) => (
+                          <div
+                            key={event.project_id || index}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '1.8fr 1fr 1.5fr 1fr 1.2fr 1.2fr',
+                              gap: '12px',
+                              padding: '12px',
+                              backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
+                              borderBottom: '1px solid #e0e0e0',
+                              fontSize: '13px',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <div style={{ fontWeight: '500' }}>{event.event_name}</div>
+                            <div>
+                              <span style={{
+                                color: '#333',
+                                fontSize: '11px',
+                                fontWeight: '600',
+                                display: 'inline-block'
+                              }}>
+                                {event.event_type}
+                              </span>
+                            </div>
+                            <div>{event.hosted_by || '—'}</div>
+                            <div>{event.date_of_event ? new Date(event.date_of_event).toLocaleDateString() : '—'}</div>
+                            <div title={event.target_audience}>{event.target_audience || '—'}</div>
+                            <div>{event.funding_by || '—'}</div>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="no-data" style={{
-                    textAlign: 'center',
-                    padding: '60px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px'
-                  }}>
-                    <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
-                    <p style={{ color: '#666', fontSize: '16px' }}>No events found for the selected filters.</p>
-                  </div>
-                )}
+
+                      <div style={{
+                        padding: '15px',
+                        backgroundColor: '#f8f9fa',
+                        borderTop: '1px solid #e0e0e0',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gap: '15px'
+                      }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
+                            {eventsList.length}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '12px' }}>Showing</div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
+                            {new Set(eventsList.map(e => e.event_type)).size}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '12px' }}>Event Types</div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '20px' }}>
+                            {new Set(eventsList.map(e => e.hosted_by).filter(Boolean)).size}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '12px' }}>Distinct Hosts</div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ color: '#a855f7', fontWeight: 'bold', fontSize: '20px' }}>
+                            {formatCompactCurrency(eventsList.reduce((sum, e) => sum + (e.amount || 0), 0))}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '12px' }}>Total Sanctioned</div>
+                        </div>
+                      </div>
+
+                      {/* Pagination */}
+                      {pagination.total_pages > 1 && (
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          gap: '1rem',
+                          padding: '15px',
+                          backgroundColor: '#fff',
+                          borderTop: '1px solid #e0e0e0'
+                        }}>
+                          <button
+                            onClick={() => handlePageChange(pagination.page - 1)}
+                            disabled={pagination.page === 1}
+                            style={{
+                              padding: '8px 16px',
+                              backgroundColor: pagination.page === 1 ? '#ccc' : '#f97316',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: pagination.page === 1 ? 'not-allowed' : 'pointer',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            ← Previous
+                          </button>
+                          <span style={{ color: '#666', fontSize: '14px' }}>
+                            Page <strong>{pagination.page}</strong> of <strong>{pagination.total_pages}</strong>
+                            <span style={{ marginLeft: '8px', color: '#999' }}>
+                              ({formatNumber(pagination.total)} total events)
+                            </span>
+                          </span>
+                          <button
+                            onClick={() => handlePageChange(pagination.page + 1)}
+                            disabled={pagination.page >= pagination.total_pages}
+                            style={{
+                              padding: '8px 16px',
+                              backgroundColor: pagination.page >= pagination.total_pages ? '#ccc' : '#f97316',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: pagination.page >= pagination.total_pages ? 'not-allowed' : 'pointer',
+                              fontSize: '14px',
+                              fontWeight: '500',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            Next →
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="no-data" style={{
+                      textAlign: 'center',
+                      padding: '60px',
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '8px'
+                    }}>
+                      <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
+                      <p style={{ color: '#666', fontSize: '16px' }}>No events found for the selected filters.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}

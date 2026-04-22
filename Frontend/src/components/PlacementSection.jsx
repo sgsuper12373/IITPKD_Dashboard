@@ -594,100 +594,73 @@ function PlacementSection({ user, isPublicView = false }) {
         {/* Modern Summary Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '20px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '24px',
           marginBottom: '40px'
         }}>
-          {/* Total Registered Card */}
+          {/* Registered Students Card */}
           <div style={{
             background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            borderRadius: '16px',
-            padding: '20px',
-            boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)',
+            borderRadius: '20px',
+            padding: '24px',
+            boxShadow: '0 10px 25px rgba(99, 102, 241, 0.2)',
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '80px',
-              height: '80px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📋</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Registered</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered</h3>
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+              <div className="metric-value" style={{ color: 'white' }}>
                 {formatNumber(summary.registered)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Total students</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Eligible students</span>
               </div>
             </div>
           </div>
 
-          {/* Total Placed Card */}
+          {/* Placed Students Card */}
           <div style={{
-            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-            borderRadius: '16px',
-            padding: '20px',
-            boxShadow: '0 10px 20px rgba(34, 197, 94, 0.2)',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            borderRadius: '20px',
+            padding: '24px',
+            boxShadow: '0 10px 25px rgba(16, 185, 129, 0.2)',
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '80px',
-              height: '80px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🎯</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Placed</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed</h3>
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+              <div className="metric-value" style={{ color: 'white' }}>
                 {formatNumber(summary.placed)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Successful placements</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successful outcomes</span>
               </div>
             </div>
           </div>
 
           {/* Placement Percentage Card */}
           <div style={{
-            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-            borderRadius: '16px',
-            padding: '20px',
-            boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)',
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            borderRadius: '20px',
+            padding: '24px',
+            boxShadow: '0 10px 25px rgba(245, 158, 11, 0.2)',
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '80px',
-              height: '80px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📊</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Placement %</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📈</span>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement %</h3>
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+              <div className="metric-value" style={{ color: 'white' }}>
                 {formatPercentage(summary.placement_percentage)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

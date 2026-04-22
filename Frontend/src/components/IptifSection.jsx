@@ -195,10 +195,10 @@ function IptifSection({ user, isPublicView = false }) {
         {/* Upload Buttons */}
         {user && user.role_id === 3 && (
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            <button onClick={() => { setActiveUploadTable('iptif_projects_table'); setIsUploadModalOpen(true); }} style={{ padding: '8px 16px', backgroundColor: '#667eea', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Projects</button>
-            <button onClick={() => { setActiveUploadTable('iptif_program_table'); setIsUploadModalOpen(true); }} style={{ padding: '8px 16px', backgroundColor: '#f093fb', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Programs</button>
-            <button onClick={() => { setActiveUploadTable('iptif_startup_table'); setIsUploadModalOpen(true); }} style={{ padding: '8px 16px', backgroundColor: '#43e97b', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Startups</button>
-            <button onClick={() => { setActiveUploadTable('iptif_facilities_table'); setIsUploadModalOpen(true); }} style={{ padding: '8px 16px', backgroundColor: '#f97316', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>📤 Upload Facilities</button>
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('iptif_projects_table'); setIsUploadModalOpen(true); }}>📤 Upload Projects</button>
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('iptif_program_table'); setIsUploadModalOpen(true); }} >📤 Upload Programs</button>
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('iptif_startup_table'); setIsUploadModalOpen(true); }} >📤 Upload Startups</button>
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('iptif_facilities_table'); setIsUploadModalOpen(true); }}>📤 Upload Facilities</button>
           </div>
         )}
 

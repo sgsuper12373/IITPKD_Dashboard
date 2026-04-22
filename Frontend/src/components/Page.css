@@ -26,13 +26,8 @@
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.4px;
-
-  color: #111111;
-  /* Professional near-black */
-
-  /* Very subtle lift */
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-
+  color: #1a0800;
+  /* Deep Espresso Brown */
   margin: 0 0 10px 0;
 }
 
@@ -217,7 +212,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   margin-bottom: 0.4rem;
-  
+
   /* FIX: Ensure label wraps properly */
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -230,7 +225,7 @@
   color: #111111 !important;
   font-size: 1.9rem;
   font-weight: 700;
-  
+
   /* FIX: Prevent value overflow */
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -242,7 +237,7 @@
   font-size: 0.85rem;
   color: #6b7280;
   margin-top: 0.3rem;
-  
+
   /* FIX: Wrap subtitle */
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -276,11 +271,11 @@
   .page-content .summary-card {
     padding: 1.25rem 1.5rem;
   }
-  
+
   .page-content .summary-card-label {
     font-size: 0.875rem;
   }
-  
+
   .page-content .summary-card-value {
     font-size: 1.5rem;
   }
@@ -388,9 +383,9 @@
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.4px;
-  color: #111111;
+  color: #1a0800;
+  /* Deep Espresso Brown */
   margin: 0 0 10px 0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 /* Reduce visual weight when h1 is inside a flex header (Innovation page) */
@@ -448,60 +443,65 @@
 }
 
 .page-back-btn {
+  background: rgba(255, 248, 236, 0.45);
+  color: #1a0800;
+  border: 1.5px solid rgba(255, 248, 236, 0.70);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 18px;
-  background-color: #ffffff;
-  color: #333;
-  border: 1px solid #d6d4ce;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
   margin-bottom: 1rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  transition:
-    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    border-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    transform 220ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(10px) saturate(1.6);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 236, 0.60);
+  transition: all 0.25s ease;
 }
 
 .page-back-btn:hover {
-  background-color: var(--accent, #f7a600);
-  color: #ffffff;
-  border-color: var(--accent, #f7a600);
-  box-shadow: 0 4px 12px rgba(247, 166, 0, 0.25);
-  transform: translateX(-3px);
+  background: rgba(255, 248, 236, 0.72);
+  color: #1a0800;
+  border-color: rgba(255, 248, 236, 0.95);
+  transform: translateX(-2px);
+  backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80);
 }
 
 .page-upload-btn {
+  background: rgba(255, 248, 236, 0.45);
+  color: #1a0800;
+  border: 1.5px solid rgba(255, 248, 236, 0.70);
+  border-radius: 8px;
+  padding: 9px 22px;
+  font-size: 13px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
   white-space: nowrap;
-  transition:
-    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    transform 180ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+  backdrop-filter: blur(10px) saturate(1.6);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 236, 0.60);
+  transition: all 0.25s ease;
 }
 
 .page-upload-btn:hover {
-  background-color: #218838;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-  transform: translateY(-1px);
+  background: rgba(255, 248, 236, 0.72);
+  color: #1a0800;
+  border-color: rgba(255, 248, 236, 0.95);
+  backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80);
 }
 
 /* ===== Mobile: Stack header ===== */

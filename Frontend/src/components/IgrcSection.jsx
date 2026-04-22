@@ -101,15 +101,13 @@ function IgrcSection({ user, isPublicView = false }) {
         {!isPublicView && <h1>Internal Grievance Resolution Cell (IGRC)</h1>}
 
         {isPublicView ? null : user && user.role_id === 3 && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <button
-              className="upload-data-btn"
-              onClick={() => setIsUploadModalOpen(true)}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-            >
-              Upload Data
-            </button>
-          </div>
+          <button
+            className="page-upload-btn"
+            onClick={() => setIsUploadModalOpen(true)}
+            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+          >
+            Upload Data
+          </button>
         )}
 
         {error && <div className="error-message">{error}</div>}

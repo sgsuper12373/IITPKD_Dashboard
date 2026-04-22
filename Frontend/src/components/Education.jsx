@@ -52,7 +52,7 @@ function Education({ user }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(false)}
             style={{ marginBottom: '1rem' }}
           >
@@ -69,7 +69,7 @@ function Education({ user }) {
       <div className="page-content">
         {roleId === 3 && (
           <div style={{ marginBottom: '2rem' }}>
-            <button className="upload-data-btn" onClick={() => setShowPublicView(true)}>
+            <button className="page-upload-btn" onClick={() => setShowPublicView(true)}>
               View Public Page
             </button>
           </div>

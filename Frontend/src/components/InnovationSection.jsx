@@ -56,7 +56,7 @@ function InnovationSection({ user, isPublicView }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(false)}
             style={{ marginBottom: '1rem' }}
           >
@@ -83,7 +83,7 @@ function InnovationSection({ user, isPublicView }) {
 
           <div>
             <button
-              className="upload-data-btn"
+              className="page-upload-btn"
               onClick={() => setShowPublicView(true)}
             >
               View Public Page
@@ -296,12 +296,12 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   return (
     <div style={contentStyle}>
-      {error && <div className="error-message" style={{ 
-        padding: '10px', 
-        backgroundColor: '#f8d7da', 
-        color: '#721c24', 
-        borderRadius: '4px', 
-        marginBottom: '20px' 
+      {error && <div className="error-message" style={{
+        padding: '10px',
+        backgroundColor: '#f8d7da',
+        color: '#721c24',
+        borderRadius: '4px',
+        marginBottom: '20px'
       }}>{error}</div>}
 
       {/* Modern Summary Cards */}
@@ -340,7 +340,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -419,7 +419,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -498,7 +498,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -577,7 +577,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -629,30 +629,30 @@ function InnovationSectionContent({ user, isPublicView }) {
       </div>
 
       {/* Filter Panel with Radio Buttons for View Selection */}
-      <div className="filter-panel" style={{ 
-        marginBottom: '20px', 
-        padding: '20px', 
-        backgroundColor: '#f8f9fa', 
-        borderRadius: '8px', 
-        border: '1px solid #e9ecef' 
+      <div className="filter-panel" style={{
+        marginBottom: '20px',
+        padding: '20px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px',
+        border: '1px solid #e9ecef'
       }}>
-        <div className="filter-header" style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '15px' 
+        <div className="filter-header" style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px'
         }}>
           <h3 style={{ margin: '0', color: '#333' }}>Filters & Visualization Options</h3>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button 
-              className="clear-filters-btn" 
+            <button
+              className="clear-filters-btn"
               onClick={handleClearFilters}
-              style={{ 
-                padding: '8px 16px', 
-                backgroundColor: '#dc3545', 
-                color: '#fff', 
-                border: 'none', 
-                borderRadius: '4px', 
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#dc3545',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
                 cursor: 'pointer',
                 fontSize: '14px'
               }}
@@ -662,14 +662,14 @@ function InnovationSectionContent({ user, isPublicView }) {
             {/* Only Super Admin can upload and only in admin view */}
             {isSuperAdmin && !isPublicView && (
               <button
-                className="upload-data-btn"
+                className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
-                style={{ 
-                  padding: '8px 16px', 
-                  backgroundColor: '#28a745', 
-                  color: '#fff', 
-                  border: 'none', 
-                  borderRadius: '4px', 
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#28a745',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px'
                 }}
@@ -679,32 +679,32 @@ function InnovationSectionContent({ user, isPublicView }) {
             )}
           </div>
         </div>
-        
+
         {/* View Type Selection - Radio Buttons */}
-        <div style={{ 
-          marginBottom: '20px', 
-          padding: '15px', 
-          backgroundColor: '#e9ecef', 
+        <div style={{
+          marginBottom: '20px',
+          padding: '15px',
+          backgroundColor: '#e9ecef',
           borderRadius: '6px',
           border: '1px solid #dee2e6'
         }}>
-          <label style={{ 
-            display: 'block', 
-            marginBottom: '10px', 
-            fontWeight: '600', 
+          <label style={{
+            display: 'block',
+            marginBottom: '10px',
+            fontWeight: '600',
             color: '#333',
             fontSize: '14px'
           }}>
             Select View Type:
           </label>
-          <div style={{ 
-            display: 'grid', 
+          <div style={{
+            display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: '12px'
           }}>
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
               padding: '8px 12px',
@@ -720,7 +720,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 value="yearlyGrowth"
                 checked={viewType === 'yearlyGrowth'}
                 onChange={(e) => setViewType(e.target.value)}
-                style={{ 
+                style={{
                   accentColor: '#667eea',
                   width: '16px',
                   height: '16px',
@@ -732,9 +732,9 @@ function InnovationSectionContent({ user, isPublicView }) {
               </span>
             </label>
 
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
               padding: '8px 12px',
@@ -750,7 +750,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 value="sectorDistribution"
                 checked={viewType === 'sectorDistribution'}
                 onChange={(e) => setViewType(e.target.value)}
-                style={{ 
+                style={{
                   accentColor: '#4f46e5',
                   width: '16px',
                   height: '16px',
@@ -762,9 +762,9 @@ function InnovationSectionContent({ user, isPublicView }) {
               </span>
             </label>
 
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
               padding: '8px 12px',
@@ -780,7 +780,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 value="startupsDirectory"
                 checked={viewType === 'startupsDirectory'}
                 onChange={(e) => setViewType(e.target.value)}
-                style={{ 
+                style={{
                   accentColor: '#f97316',
                   width: '16px',
                   height: '16px',
@@ -794,10 +794,10 @@ function InnovationSectionContent({ user, isPublicView }) {
           </div>
         </div>
 
-        <div className="filter-grid" style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '15px' 
+        <div className="filter-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '15px'
         }}>
           <div className="filter-group">
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600', color: '#555' }}>
@@ -878,10 +878,10 @@ function InnovationSectionContent({ user, isPublicView }) {
         </div>
 
         {/* Active Filters Summary */}
-        <div style={{ 
-          marginTop: '15px', 
-          padding: '10px', 
-          backgroundColor: '#e9ecef', 
+        <div style={{
+          marginTop: '15px',
+          padding: '10px',
+          backgroundColor: '#e9ecef',
           borderRadius: '4px',
           fontSize: '14px'
         }}>
@@ -891,19 +891,19 @@ function InnovationSectionContent({ user, isPublicView }) {
           {filters.year !== 'All' && <span style={{ marginRight: '10px' }}>📅 Year: {filters.year}</span>}
           {filters.iitpkd_only && <span style={{ marginRight: '10px' }}>🎓 IITPKD Only</span>}
           {filters.search && <span style={{ marginRight: '10px' }}>🔍 Search: "{filters.search}"</span>}
-          {filters.status === 'All' && filters.sector === 'All' && filters.year === 'All' && !filters.iitpkd_only && !filters.search && 
+          {filters.status === 'All' && filters.sector === 'All' && filters.year === 'All' && !filters.iitpkd_only && !filters.search &&
             <span>No filters applied (showing all data)</span>
           }
         </div>
       </div>
 
       {/* Single View Section based on radio selection */}
-      <div className="chart-section" style={{ 
-        marginBottom: '30px', 
-        padding: '20px', 
-        backgroundColor: '#fff', 
-        borderRadius: '10px', 
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)' 
+      <div className="chart-section" style={{
+        marginBottom: '30px',
+        padding: '20px',
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         {/* Yearly Growth Chart */}
         {viewType === 'yearlyGrowth' && (
@@ -922,23 +922,23 @@ function InnovationSectionContent({ user, isPublicView }) {
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis 
-                      dataKey="year" 
+                    <XAxis
+                      dataKey="year"
                       stroke="#666"
                       tick={{ fill: '#666', fontSize: 12 }}
-                      label={{ 
-                        value: 'Year', 
-                        position: 'insideBottom', 
+                      label={{
+                        value: 'Year',
+                        position: 'insideBottom',
                         offset: -10,
                         style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
                       }}
                     />
-                    <YAxis 
+                    <YAxis
                       stroke="#666"
                       tick={{ fill: '#666', fontSize: 12 }}
-                      label={{ 
-                        value: 'Count', 
-                        angle: -90, 
+                      label={{
+                        value: 'Count',
+                        angle: -90,
                         position: 'insideLeft',
                         style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
                       }}
@@ -946,39 +946,39 @@ function InnovationSectionContent({ user, isPublicView }) {
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                    <Line 
-                      type="monotone" 
-                      dataKey="incubatees" 
-                      name="Incubatees" 
-                      stroke="#667eea" 
-                      strokeWidth={3} 
+                    <Line
+                      type="monotone"
+                      dataKey="incubatees"
+                      name="Incubatees"
+                      stroke="#667eea"
+                      strokeWidth={3}
                       dot={{ r: 6, fill: '#667eea' }}
                       activeDot={{ r: 8 }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="startups" 
-                      name="Startups" 
-                      stroke="#764ba2" 
-                      strokeWidth={2} 
+                    <Line
+                      type="monotone"
+                      dataKey="startups"
+                      name="Startups"
+                      stroke="#764ba2"
+                      strokeWidth={2}
                       dot={{ r: 4 }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="innovationProjects" 
-                      name="Innovation Projects" 
-                      stroke="#43e97b" 
-                      strokeWidth={2} 
+                    <Line
+                      type="monotone"
+                      dataKey="innovationProjects"
+                      name="Innovation Projects"
+                      stroke="#43e97b"
+                      strokeWidth={2}
                       dot={{ r: 4 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
 
                 {/* Chart Statistics */}
-                <div style={{ 
-                  marginTop: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
+                <div style={{
+                  marginTop: '20px',
+                  padding: '15px',
+                  backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
                   display: 'grid',
@@ -1047,27 +1047,27 @@ function InnovationSectionContent({ user, isPublicView }) {
                       labelLine={{ stroke: '#666', strokeWidth: 1 }}
                     >
                       {sectorPieData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
+                        <Cell
+                          key={`cell-${index}`}
                           fill={SECTOR_COLORS[index % SECTOR_COLORS.length]}
                           stroke="#fff"
                           strokeWidth={2}
                         />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value, name, props) => {
                         if (name === 'value') return `${value} total`;
                         return value;
                       }}
-                      contentStyle={{ 
-                        backgroundColor: '#fff', 
-                        border: '1px solid #ccc', 
+                      contentStyle={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #ccc',
                         borderRadius: '4px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                       }}
                     />
-                    <Legend 
+                    <Legend
                       layout="vertical"
                       align="right"
                       verticalAlign="middle"
@@ -1082,10 +1082,10 @@ function InnovationSectionContent({ user, isPublicView }) {
                 </ResponsiveContainer>
 
                 {/* Sector Statistics */}
-                <div style={{ 
-                  marginTop: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
+                <div style={{
+                  marginTop: '20px',
+                  padding: '15px',
+                  backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
                   display: 'grid',
@@ -1113,7 +1113,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 </div>
 
                 {/* Sector Details Cards */}
-                <div style={{ 
+                <div style={{
                   marginTop: '20px',
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
@@ -1162,8 +1162,8 @@ function InnovationSectionContent({ user, isPublicView }) {
             {startupsList.length > 0 ? (
               <div>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="grievance-table" style={{ 
-                    width: '100%', 
+                  <table className="grievance-table" style={{
+                    width: '100%',
                     borderCollapse: 'collapse',
                     backgroundColor: '#fff',
                     borderRadius: '8px',
@@ -1183,9 +1183,9 @@ function InnovationSectionContent({ user, isPublicView }) {
                     </thead>
                     <tbody>
                       {startupsList.map((startup, index) => (
-                        <tr 
+                        <tr
                           key={startup.startup_id}
-                          style={{ 
+                          style={{
                             backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
                             borderBottom: '1px solid #e0e0e0'
                           }}
@@ -1195,7 +1195,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                           <td style={{ padding: '12px' }}>{startup.innovation_focus_area || '—'}</td>
                           <td style={{ padding: '12px' }}>{startup.year_of_incubation}</td>
                           <td style={{ padding: '12px' }}>
-                            <span style={{ 
+                            <span style={{
                               backgroundColor: startup.status === 'Active' ? '#dcfce7' : '#fee2e2',
                               color: startup.status === 'Active' ? '#166534' : '#991b1b',
                               padding: '4px 8px',
@@ -1208,7 +1208,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                           </td>
                           <td style={{ padding: '12px' }}>
                             {startup.sector && (
-                              <span style={{ 
+                              <span style={{
                                 backgroundColor: '#e0e7ff',
                                 color: '#3730a3',
                                 padding: '4px 8px',
@@ -1221,7 +1221,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                             )}
                           </td>
                           <td style={{ padding: '12px', textAlign: 'center' }}>
-                            <span style={{ 
+                            <span style={{
                               backgroundColor: startup.is_from_iitpkd ? '#dcfce7' : '#f3f4f6',
                               color: startup.is_from_iitpkd ? '#166534' : '#6b7280',
                               padding: '4px 8px',
@@ -1239,10 +1239,10 @@ function InnovationSectionContent({ user, isPublicView }) {
                 </div>
 
                 {/* Table Statistics */}
-                <div style={{ 
-                  marginTop: '20px', 
-                  padding: '15px', 
-                  backgroundColor: '#f8f9fa', 
+                <div style={{
+                  marginTop: '20px',
+                  padding: '15px',
+                  backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
                   display: 'grid',
@@ -1302,7 +1302,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                       ← Previous
                     </button>
                     <span style={{ color: '#666', fontSize: '14px' }}>
-                      Page <strong>{pagination.page}</strong> of <strong>{pagination.total_pages}</strong> 
+                      Page <strong>{pagination.page}</strong> of <strong>{pagination.total_pages}</strong>
                       <span style={{ marginLeft: '8px', color: '#999' }}>
                         ({formatNumber(pagination.total)} total)
                       </span>

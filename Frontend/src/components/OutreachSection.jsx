@@ -9,27 +9,27 @@ import './OutreachMinimal.css';
 // ─── Field definitions ───────────────────────────────────────────────────────
 
 const COMMON_FIELDS = [
-  { key: 'id',                label: 'ID' },
-  { key: 'academic_year',     label: 'Academic Year' },
-  { key: 'program_name',      label: 'Program Name' },
-  { key: 'program_type',      label: 'Program Type' },
-  { key: 'engagement_type',   label: 'Engagement Type' },
-  { key: 'association',       label: 'Association' },
-  { key: 'start_date',        label: 'Start Date' },
-  { key: 'end_date',          label: 'End Date' },
+  { key: 'id', label: 'ID' },
+  { key: 'academic_year', label: 'Academic Year' },
+  { key: 'program_name', label: 'Program Name' },
+  { key: 'program_type', label: 'Program Type' },
+  { key: 'engagement_type', label: 'Engagement Type' },
+  { key: 'association', label: 'Association' },
+  { key: 'start_date', label: 'Start Date' },
+  { key: 'end_date', label: 'End Date' },
   { key: 'targeted_audience', label: 'Targeted Audience' },
-  { key: 'num_attendees',     label: 'No. of Attendees' },
-  { key: 'num_schools',       label: 'No. of Schools' },
-  { key: 'num_colleges',      label: 'No. of Colleges' },
-  { key: 'geographic_reach',  label: 'Geographic Reach' },
-  { key: 'remarks',           label: 'Remarks' },
-  { key: 'created_by',        label: 'Created By' },
-  { key: 'created_at',        label: 'Created At' },
+  { key: 'num_attendees', label: 'No. of Attendees' },
+  { key: 'num_schools', label: 'No. of Schools' },
+  { key: 'num_colleges', label: 'No. of Colleges' },
+  { key: 'geographic_reach', label: 'Geographic Reach' },
+  { key: 'remarks', label: 'Remarks' },
+  { key: 'created_by', label: 'Created By' },
+  { key: 'created_at', label: 'Created At' },
 ];
 
 const NSS_FIELDS = [
-  { key: 'nss_activity_type',     label: 'NSS Activity Type' },
-  { key: 'nss_volunteer_count',   label: 'NSS Volunteer Count' },
+  { key: 'nss_activity_type', label: 'NSS Activity Type' },
+  { key: 'nss_volunteer_count', label: 'NSS Volunteer Count' },
   { key: 'nss_community_reached', label: 'NSS Community Reached' },
 ];
 
@@ -42,10 +42,10 @@ const PROGRAM_CONFIGS = [
     description: 'Science outreach and laboratory programmes for school students',
     match: (name) => name?.toLowerCase().includes('science quest'),
     specificFields: [
-      { key: 'sq_stipend_provided',    label: 'Stipend Provided' },
-      { key: 'sq_travel_allowance',    label: 'Travel Allowance' },
-      { key: 'sq_num_lab_sessions',    label: 'No. of Lab Sessions' },
-      { key: 'sq_districts_covered',   label: 'Districts Covered' },
+      { key: 'sq_stipend_provided', label: 'Stipend Provided' },
+      { key: 'sq_travel_allowance', label: 'Travel Allowance' },
+      { key: 'sq_num_lab_sessions', label: 'No. of Lab Sessions' },
+      { key: 'sq_districts_covered', label: 'Districts Covered' },
     ],
   },
   {
@@ -58,9 +58,9 @@ const PROGRAM_CONFIGS = [
       name?.toLowerCase().includes('math circle') ||
       name?.toLowerCase().includes('palakkad math'),
     specificFields: [
-      { key: 'pmc_target_class',      label: 'Target Class' },
+      { key: 'pmc_target_class', label: 'Target Class' },
       { key: 'pmc_mathematician_led', label: 'Mathematicians' },
-      { key: 'pmc_num_sessions',      label: 'No. of Sessions' },
+      { key: 'pmc_num_sessions', label: 'No. of Sessions' },
     ],
   },
   {
@@ -71,9 +71,9 @@ const PROGRAM_CONFIGS = [
     description: 'Astronomy and space science public lecture series',
     match: (name) => name?.toLowerCase().includes('pale blue dot'),
     specificFields: [
-      { key: 'pbd_lecture_topic',        label: 'Lecture Topic' },
-      { key: 'pbd_speaker_name',         label: 'Speaker Name' },
-      { key: 'pbd_speaker_affiliation',  label: 'Speaker Affiliation' },
+      { key: 'pbd_lecture_topic', label: 'Lecture Topic' },
+      { key: 'pbd_speaker_name', label: 'Speaker Name' },
+      { key: 'pbd_speaker_affiliation', label: 'Speaker Affiliation' },
     ],
   },
   {
@@ -84,9 +84,9 @@ const PROGRAM_CONFIGS = [
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     match: (name) => name?.toLowerCase().includes('institute visit'),
     specificFields: [
-      { key: 'iv_visiting_institution',      label: 'Visiting Institution' },
+      { key: 'iv_visiting_institution', label: 'Visiting Institution' },
       { key: 'iv_visiting_institution_type', label: 'Institution Type' },
-      { key: 'iv_num_groups',                label: 'No. of Groups' },
+      { key: 'iv_num_groups', label: 'No. of Groups' },
     ],
   },
   {
@@ -182,66 +182,66 @@ function ExtraDataSection({ data }) {
 
 function GridRecordCard({ record, slNo, onClick }) {
   return (
-    <div 
-        onClick={onClick}
-        style={{
-          background: '#f5f5f7',
-          border: '1px solid rgba(0,0,0,0.05)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 8px rgba(0,0,0,0.8)',
-          padding: '1.5rem',
-          cursor: 'pointer',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          height: '100%',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-        onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-6px)';
-            e.currentTarget.style.background = '#ffffff';
-            e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.8)';
-            e.currentTarget.style.borderColor = 'rgba(64, 61, 248, 0.73)';
-        }}
-        onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'none';
-            e.currentTarget.style.background = '#f5f5f7';
-            e.currentTarget.style.boxShadow = '0 8px 8px rgba(0,0,0,0.8)';
-            e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
-        }}
+    <div
+      onClick={onClick}
+      style={{
+        background: '#f5f5f7',
+        border: '1px solid rgba(0,0,0,0.05)',
+        borderRadius: '16px',
+        boxShadow: '0 8px 8px rgba(0,0,0,0.8)',
+        padding: '1.5rem',
+        cursor: 'pointer',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-6px)';
+        e.currentTarget.style.background = '#ffffff';
+        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.8)';
+        e.currentTarget.style.borderColor = 'rgba(64, 61, 248, 0.73)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.background = '#f5f5f7';
+        e.currentTarget.style.boxShadow = '0 8px 8px rgba(0,0,0,0.8)';
+        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+      }}
     >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{
-                width: '36px', height: '36px', borderRadius: '10px',
-                background: 'rgba(247,166,0,0.12)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.85rem', fontWeight: '700', color: '#f7a600',
-            }}>
-                {slNo}
-            </div>
-            <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: '500', background: '#f5f5f7', padding: '0.2rem 0.6rem', borderRadius: '20px' }}>
-                {record.academic_year || 'N/A'}
-            </span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          width: '36px', height: '36px', borderRadius: '10px',
+          background: 'rgba(247,166,0,0.12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '0.85rem', fontWeight: '700', color: '#f7a600',
+        }}>
+          {slNo}
         </div>
-        
-        <div style={{ flexGrow: 1 }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#1d1d1f', margin: '0 0 0.5rem 0', lineHeight: '1.3' }}>
-                {record.program_name || 'Outreach Record'}
-            </h3>
-            <p style={{ fontSize: '0.85rem', color: '#6e6e73', margin: 0, lineHeight: '1.4' }}>
-                {[record.engagement_type, record.program_type].filter(Boolean).join(' · ')}
-            </p>
-        </div>
+        <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: '500', background: '#f5f5f7', padding: '0.2rem 0.6rem', borderRadius: '20px' }}>
+          {record.academic_year || 'N/A'}
+        </span>
+      </div>
 
-        {(record.start_date || record.end_date) && (
-            <div style={{ fontSize: '0.85rem', color: '#555', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1rem' }}>📅</span> 
-                {record.start_date ? new Date(record.start_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
-                {record.end_date && record.start_date !== record.end_date && ` - ${new Date(record.end_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`}
-            </div>
-        )}
+      <div style={{ flexGrow: 1 }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#1d1d1f', margin: '0 0 0.5rem 0', lineHeight: '1.3' }}>
+          {record.program_name || 'Outreach Record'}
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: '#6e6e73', margin: 0, lineHeight: '1.4' }}>
+          {[record.engagement_type, record.program_type].filter(Boolean).join(' · ')}
+        </p>
+      </div>
+
+      {(record.start_date || record.end_date) && (
+        <div style={{ fontSize: '0.85rem', color: '#555', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '1rem' }}>📅</span>
+          {record.start_date ? new Date(record.start_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+          {record.end_date && record.start_date !== record.end_date && ` - ${new Date(record.end_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`}
+        </div>
+      )}
     </div>
   );
 }
@@ -253,42 +253,42 @@ function RecordExpandedView({ record, programConfig, onBack }) {
     NSS_FIELDS.some(({ key }) => isNonNull(record[key]));
 
   return (
-    <div style={{ 
-      background: '#fff', 
-      borderRadius: '20px', 
-      border: '1px solid rgba(0,0,0,0.08)', 
+    <div style={{
+      background: '#fff',
+      borderRadius: '20px',
+      border: '1px solid rgba(0,0,0,0.08)',
       overflow: 'hidden',
       boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
       animation: 'cardFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      <div style={{ 
-        padding: '1.2rem 2rem', 
-        borderBottom: '1px solid rgba(0,0,0,0.06)', 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        padding: '1.2rem 2rem',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        display: 'flex',
+        alignItems: 'center',
         background: '#fafafa',
         gap: '1.5rem'
       }}>
-         <button onClick={onBack} style={{
-             background: '#fff', border: '1px solid #e0e0e0', borderRadius: '100px',
-             padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.9rem',
-             display: 'flex', alignItems: 'center', gap: '0.5rem',
-             fontWeight: '500', color: '#1d1d1f', transition: 'all 0.2s',
-             boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-         }}
-         onMouseEnter={(e) => { e.currentTarget.style.background = '#f0f0f0'; }}
-         onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; }}
-         >
-             <span style={{ fontSize: '1.1rem' }}>←</span> Back 
-         </button>
-         <div>
-            <h2 style={{ margin: '0 0 0.2rem 0', fontSize: '1.3rem', color: '#1d1d1f' }}>
-                {record.program_name || 'Record Details'}
-            </h2>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#6e6e73' }}>
-                {record.academic_year} · {record.engagement_type}
-            </p>
-         </div>
+        <button onClick={onBack} style={{
+          background: '#fff', border: '1px solid #e0e0e0', borderRadius: '100px',
+          padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.9rem',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          fontWeight: '500', color: '#1d1d1f', transition: 'all 0.2s',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+        }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#f0f0f0'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; }}
+        >
+          <span style={{ fontSize: '1.1rem' }}>←</span> Back
+        </button>
+        <div>
+          <h2 style={{ margin: '0 0 0.2rem 0', fontSize: '1.3rem', color: '#1d1d1f' }}>
+            {record.program_name || 'Record Details'}
+          </h2>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#6e6e73' }}>
+            {record.academic_year} · {record.engagement_type}
+          </p>
+        </div>
       </div>
 
       <div style={{ padding: '2rem' }}>
@@ -357,7 +357,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
           </span>
           {user?.role_id >= 2 && (
             <button
-              className="upload-data-btn"
+              className="page-upload-btn"
               style={{ flexShrink: 0 }}
               onClick={() => setIsUploadOpen(true)}
             >
@@ -383,16 +383,16 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
               )}
             </div>
           ) : selectedRecord ? (
-            <RecordExpandedView 
+            <RecordExpandedView
               record={selectedRecord}
               programConfig={programConfig}
               onBack={() => setSelectedRecord(null)}
             />
           ) : (
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                gap: '1.5rem' 
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.5rem'
             }}>
               {matching.map((record, idx) => (
                 <GridRecordCard
@@ -454,10 +454,10 @@ function OutreachSection({ user, isPublicView = false }) {
       <div className="page-container">
         <div className="page-content">
           {!isPublicView && (
-          <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-            ← Back to Outreach Extension
-          </button>
-        )}
+            <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
+              ← Back to Outreach Extension
+            </button>
+          )}
           <ProgramDetailView
             programConfig={selectedProgram}
             records={records}

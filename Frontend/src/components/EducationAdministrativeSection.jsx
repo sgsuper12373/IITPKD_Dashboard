@@ -505,9 +505,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
             <h1>Administrative Section - External Academic Engagement</h1>
             {user && user.role_id === 3 && (
               <button
-                className="upload-data-btn"
+                className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
-                style={{ padding: '0.65rem 1.4rem', fontSize: '0.9rem' }}
               >
                 Upload Data
               </button>

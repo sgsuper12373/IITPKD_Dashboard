@@ -238,17 +238,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             marginBottom: '0px'
           }}>
             <button
+              className="page-upload-btn"
               onClick={() => setIsUploadModalOpen(true)}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#28a745',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500'
-              }}
             >
               📤 Upload Publications
             </button>

@@ -147,30 +147,15 @@ function OpenHouseSection({ user, isPublicView = false }) {
       {!isPublicView && <h1>Open House</h1>}
 
       {isPublicView ? null : (user && user.role_id === 3 && (
-        <div style={{ 
-          display: 'flex', 
-          gap: '1rem', 
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
           marginBottom: '2rem',
           flexWrap: 'wrap'
         }}>
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setIsUploadModalOpen(true)}
-            style={{ 
-              padding: '10px 20px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 5px rgba(40, 167, 69, 0.3)'
-            }}
           >
             <span>📤</span> Upload Open House Data
           </button>
@@ -214,7 +199,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -295,7 +280,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -376,7 +361,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -448,7 +433,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             fontWeight: '600',
             color: '#333'
           }}>Select Chart View:</span>
-          
+
           <label style={{
             display: 'flex',
             alignItems: 'center',
@@ -546,28 +531,28 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#fff',
                     border: '1px solid #ccc',
                     borderRadius: '4px',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }} 
+                  }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                <Line 
-                  type="monotone" 
-                  dataKey="event_count" 
-                  stroke="#4f46e5" 
-                  name="Events" 
+                <Line
+                  type="monotone"
+                  dataKey="event_count"
+                  stroke="#4f46e5"
+                  name="Events"
                   strokeWidth={3}
                   dot={{ r: 6, fill: '#4f46e5' }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="total_visitors" 
-                  stroke="#22c55e" 
-                  name="Visitors" 
+                <Line
+                  type="monotone"
+                  dataKey="total_visitors"
+                  stroke="#22c55e"
+                  name="Visitors"
                   strokeWidth={3}
                   dot={{ r: 6, fill: '#22c55e' }}
                 />
@@ -603,24 +588,24 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff', 
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#fff',
                     border: '1px solid #ccc',
                     borderRadius: '4px',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }} 
+                  }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                <Bar 
-                  dataKey="avg_departments" 
-                  fill="#0ea5e9" 
+                <Bar
+                  dataKey="avg_departments"
+                  fill="#0ea5e9"
                   name="Avg. Departments"
                   radius={[4, 4, 0, 0]}
                 />
-                <Bar 
-                  dataKey="total_visitors" 
-                  fill="#f97316" 
+                <Bar
+                  dataKey="total_visitors"
+                  fill="#f97316"
                   name="Total Visitors"
                   radius={[4, 4, 0, 0]}
                 />
@@ -683,9 +668,9 @@ function OpenHouseSection({ user, isPublicView = false }) {
         </div>
 
         {/* Filters */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '1rem', 
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
           marginBottom: '1.5rem',
           flexWrap: 'wrap',
           alignItems: 'center'
@@ -773,8 +758,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
             <tbody>
               {eventsList.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ 
-                    textAlign: 'center', 
+                  <td colSpan="8" style={{
+                    textAlign: 'center',
                     padding: '40px',
                     color: '#666',
                     fontSize: '14px'
@@ -785,7 +770,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 </tr>
               ) : (
                 eventsList.map((event, index) => (
-                  <tr 
+                  <tr
                     key={event.event_id}
                     style={{
                       backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
@@ -824,9 +809,9 @@ function OpenHouseSection({ user, isPublicView = false }) {
                     </td>
                     <td style={{ padding: '16px' }}>
                       {event.photos_url ? (
-                        <a 
-                          href={event.photos_url} 
-                          target="_blank" 
+                        <a
+                          href={event.photos_url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           style={{
                             color: '#667eea',

@@ -112,16 +112,8 @@ const NirfRankingSection = ({ user }) => {
                 <h2 style={{ margin: 0, color: '#1a237e' }}>NIRF Ranking Overview</h2>
                 {canUpload && (
                     <button
+                        className='page-upload-btn'
                         onClick={() => setIsUploadModalOpen(true)}
-                        style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#28a745',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '0.9rem'
-                        }}
                     >
                         Upload Data
                     </button>

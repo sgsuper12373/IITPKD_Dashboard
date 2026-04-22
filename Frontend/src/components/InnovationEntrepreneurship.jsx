@@ -32,7 +32,7 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(false)}
             style={{ marginBottom: '1rem' }}
           >
@@ -50,7 +50,7 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
         {/* Public view button for non-public users */}
         <div style={{ marginBottom: '1rem' }}>
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(true)}
           >
             View Public Page

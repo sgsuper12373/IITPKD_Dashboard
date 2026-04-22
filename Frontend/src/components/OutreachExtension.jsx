@@ -79,7 +79,7 @@ function OutreachExtension({ user }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(false)}
             style={{ marginBottom: '1rem' }}
           >
@@ -97,7 +97,7 @@ function OutreachExtension({ user }) {
         {/* Public view button for non-public users */}
         <div style={{ marginBottom: '1rem' }}>
           <button
-            className="upload-data-btn"
+            className="page-upload-btn"
             onClick={() => setShowPublicView(true)}
           >
             View Public Page

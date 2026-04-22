@@ -102,29 +102,12 @@ function IccSection({ user, isPublicView = false }) {
         )}
         {!isPublicView && <h1>Internal Complaints Committee (ICC)</h1>}
         {isPublicView ? null : user && user.role_id === 3 && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <button
-              className="upload-data-btn"
-              onClick={() => setIsUploadModalOpen(true)}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 5px rgba(40, 167, 69, 0.3)'
-              }}
-            >
-              <span>📤</span> Upload Data
-            </button>
-          </div>
+          <button
+            className="page-upload-btn"
+            onClick={() => setIsUploadModalOpen(true)}
+          >
+            <span>📤</span> Upload Data
+          </button>
         )}
 
         {error && <div className="error-message" style={{

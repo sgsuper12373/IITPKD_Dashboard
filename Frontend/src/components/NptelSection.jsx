@@ -93,23 +93,8 @@ function NptelSection({ user, isPublicView = false }) {
         {!isPublicView && user && user.role_id === 3 && (
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
-              className="upload-data-btn"
+              className="page-upload-btn"
               onClick={() => { setActiveUploadTable('nptel_courses'); setIsUploadModalOpen(true); }}
-              style={{ 
-                padding: '10px 20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 5px rgba(40, 167, 69, 0.3)'
-              }}
             >
               <span>📖</span> Upload NPTEL Courses
             </button>
@@ -158,7 +143,7 @@ function NptelSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -243,7 +228,7 @@ function NptelSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.05)',
             borderRadius: '50%'
           }} />
-          
+
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
@@ -322,38 +307,38 @@ function NptelSection({ user, isPublicView = false }) {
             </label>
           ))}
         </div>
-        
+
         <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-            {trendData.length > 0 ? (
-              <div style={{ marginBottom: '40px' }}>
-                <h3 style={{ marginBottom: '20px', color: '#333' }}>
-                  {viewType === 'courses_trend' ? 'Courses Trend' : 'Enrollments Trend'}
-                </h3>
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-                    <YAxis stroke="#666" />
-                    <Tooltip />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'} 
-                      name={viewType === 'courses_trend' ? 'Courses' : 'Enrollments'} 
-                      stroke={viewType === 'courses_trend' ? '#667eea' : '#f093fb'} 
-                      strokeWidth={3} 
-                      dot={{ r: 6, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb', strokeWidth: 2, stroke: '#fff' }} 
-                      activeDot={{ r: 8 }} 
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                <span style={{ fontSize: '32px', display: 'block', marginBottom: '10px' }}>📈</span>
-                No trend data available.
-              </div>
-            )}
+          {trendData.length > 0 ? (
+            <div style={{ marginBottom: '40px' }}>
+              <h3 style={{ marginBottom: '20px', color: '#333' }}>
+                {viewType === 'courses_trend' ? 'Courses Trend' : 'Enrollments Trend'}
+              </h3>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+                  <YAxis stroke="#666" />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'}
+                    name={viewType === 'courses_trend' ? 'Courses' : 'Enrollments'}
+                    stroke={viewType === 'courses_trend' ? '#667eea' : '#f093fb'}
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb', strokeWidth: 2, stroke: '#fff' }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              <span style={{ fontSize: '32px', display: 'block', marginBottom: '10px' }}>📈</span>
+              No trend data available.
+            </div>
+          )}
         </div>
       </div>
 

@@ -187,13 +187,13 @@ function Profile({ user }) {
               <div className="profile-actions">
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   <button
-                    className="upload-data-btn"
+                    className="page-upload-btn"
                     onClick={handleCreateUserClick}
                   >
                     👤 Create User
                   </button>
                   <button
-                    className="upload-data-btn"
+                    className="page-upload-btn"
                     onClick={() => setShowRoles(prev => !prev)}
                     style={{
                       backgroundColor: showRoles ? '#f7a600' : undefined,
