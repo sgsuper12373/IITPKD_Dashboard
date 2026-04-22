@@ -1,0 +1,199 @@
+/* DesignSystem.css - Centralized design tokens and performance utilities */
+
+:root {
+  --primary-indigo: #6366f1;
+  --primary-indigo-dark: #4f46e5;
+  --success-green: #22c55e;
+  --success-green-dark: #16a34a;
+  --warning-orange: #f97316;
+  --warning-orange-dark: #ea580c;
+  --error-red: #ef4444;
+  --bg-light: #f8fafc;
+  --border-light: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+/* ✨ AESTHETIC ENHANCEMENTS */
+
+@keyframes premium-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply to all primary page headers */
+.page-content h1,
+.page-header-row h1,
+.section-header h1,
+.academic-section-header h1 {
+  animation: premium-fade-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Helper class for manually animating other sections */
+.fade-in-up {
+  animation: premium-fade-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+
+/* 🚀 PERFORMANCE UTILITIES */
+
+/* Content visibility: auto skips rendering for off-screen elements */
+.performance-render-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px; /* Placeholder size to prevent scrollbar jumping */
+}
+
+/* Accelerated scrolling for fixed-height containers */
+.accelerated-scroll {
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0); /* Force GPU layer */
+  will-change: transform;
+}
+
+/* Layout containment to prevent global repaints */
+.contain-layout {
+  contain: layout style;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+/* Standardized Table Styles */
+.performance-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  isolation: isolate;
+}
+
+.performance-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: white;
+}
+
+.performance-table tr {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 48px;
+}
+
+/* Card hover effects that don't trigger layout shifts */
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 🚦 PERSISTENT LOADING STATES */
+
+.data-content-wrapper {
+  position: relative;
+  transition: opacity 0.3s ease;
+  min-height: 200px;
+}
+
+.data-content-wrapper.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading-indicator-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 24px;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  backdrop-filter: blur(4px);
+}
+
+.subtle-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(99, 102, 241, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-indigo);
+  animation: subtle-spin 1s ease-in-out infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes subtle-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================= SHARED EMPTY STATE OVERLAY ================= */
+
+.chart-has-empty {
+  position: relative;
+}
+
+.chart-has-empty .recharts-wrapper {
+  transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: blur(2px);
+  opacity: 0.4;
+}
+
+.section-empty-state {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #6c757d;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0s;
+}
+
+.section-empty-state.hidden {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+              visibility 0s linear 0.6s;
+}
+
+.section-empty-state p {
+  margin: 0;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

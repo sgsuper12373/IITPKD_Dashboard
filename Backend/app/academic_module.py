@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 academic_module_bp = Blueprint('academic_module', __name__)
 
@@ -44,7 +44,7 @@ def table_exists(table_name: str) -> bool:
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 def module_tables_available() -> bool:
@@ -131,7 +131,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Summary =====================
@@ -205,7 +205,7 @@ def get_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Category Breakdown =====================
@@ -249,7 +249,7 @@ def get_category_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Programme Breakdown =====================
@@ -293,7 +293,7 @@ def get_programme_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Course List =====================
@@ -433,7 +433,7 @@ def get_courses(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Course Counts =====================
@@ -483,7 +483,7 @@ def get_course_counts(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ===================== Legacy endpoint stubs =====================

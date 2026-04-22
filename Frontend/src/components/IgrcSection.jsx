@@ -12,6 +12,7 @@ import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
+import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 
 const BAR_COLORS = {
@@ -119,7 +120,7 @@ function IgrcSection({ user, isPublicView = false }) {
             <p>Loading IGRC data...</p>
           </div>
         ) : (
-          <>
+          <div className="performance-render-auto">
             <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
               Internal Grievance Resolution Cell (IGRC)
             </h2>
@@ -413,7 +414,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 );
               })()}
             </div>
-          </>
+          </div>
         )}
       </div>
 

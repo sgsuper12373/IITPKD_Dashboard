@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 
 research_bp = Blueprint('research_module', __name__)
@@ -295,7 +295,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/summary', methods=['GET'])
@@ -398,7 +398,7 @@ def get_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/projects/trend', methods=['GET'])
@@ -458,7 +458,7 @@ def funded_project_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/projects/list', methods=['GET'])
@@ -549,7 +549,7 @@ def project_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/consultancy/revenue-trend', methods=['GET'])
@@ -609,7 +609,7 @@ def consultancy_revenue_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/mous/list', methods=['GET'])
@@ -656,7 +656,7 @@ def mou_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/mous/trend', methods=['GET'])
@@ -665,21 +665,32 @@ def mou_trend(current_user_id):
     conn = None
     cur = None
     try:
+        mou_year = request.args.get('mou_year')
+        
         conn = get_db_connection()
         if not _table_exists(conn, 'research_mous'):
             return jsonify({'data': []}), 200
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+        where_clause, params = _build_year_filter('date_signed', mou_year)
+        
+        # If no where clause, we still need the 'WHERE date_signed IS NOT NULL'
+        if not where_clause:
+            where_clause = "WHERE date_signed IS NOT NULL"
+        else:
+            where_clause += " AND date_signed IS NOT NULL"
+
         cur.execute(
-            """
+            f"""
             SELECT
                 EXTRACT(YEAR FROM date_signed)::INT AS year,
                 COUNT(*) AS total
             FROM research_mous
-            WHERE date_signed IS NOT NULL
+            {where_clause}
             GROUP BY year
             ORDER BY year
-            """
+            """,
+            params
         )
         data = [
             {'year': int(row['year']), 'total': int(row['total'])}
@@ -692,7 +703,7 @@ def mou_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/patents/stats', methods=['GET'])
@@ -752,7 +763,7 @@ def patent_stats(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/patents/list', methods=['GET'])
@@ -815,12 +826,13 @@ def patent_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
-@research_bp.route('/externships/summary', methods=['GET'])
+@research_bp.route('/externships/analytics', methods=['GET'])
 @token_required
-def externship_summary(current_user_id):
+def externship_analytics(current_user_id):
+    """Combined summary and list data for externships to reduce API calls."""
     conn = None
     cur = None
     try:
@@ -829,10 +841,9 @@ def externship_summary(current_user_id):
 
         conn = get_db_connection()
         if not _table_exists(conn, 'externship_info'):
-            return jsonify({'total': 0, 'yearly': [], 'department': []})
+            return jsonify({'total': 0, 'yearly': [], 'department': [], 'data': []})
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-
         conditions: List[str] = []
         params: List[Any] = []
 
@@ -852,6 +863,7 @@ def externship_summary(current_user_id):
         if conditions:
             where_clause = "WHERE " + " AND ".join(conditions)
 
+        # 1. Fetch Summary Data
         query_yearly = f"""
             SELECT
                 EXTRACT(YEAR FROM startdate)::INT AS year,
@@ -863,106 +875,43 @@ def externship_summary(current_user_id):
             ORDER BY year
         """
         cur.execute(query_yearly, params)
-        yearly_map: Dict[int, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        yearly_map = defaultdict(lambda: defaultdict(int))
         total_externships = 0
         for row in cur.fetchall():
-            year_value = row['year']
-            if year_value is None:
-                continue
+            y_val = row['year']
+            if y_val is None: continue
             ext_type = row['externship_type'] or 'Unknown'
             count = int(row['total'])
-            yearly_map[year_value][ext_type] += count
-            yearly_map[year_value]['total'] += count
+            yearly_map[y_val][ext_type] += count
+            yearly_map[y_val]['total'] += count
             total_externships += count
 
         yearly_data = []
-        for year_value in sorted(yearly_map.keys()):
-            entry = {'year': int(year_value), 'total': int(yearly_map[year_value]['total'])}
-            for key, value in yearly_map[year_value].items():
-                if key != 'total':
-                    entry[key] = int(value)
+        for y_val in sorted(yearly_map.keys()):
+            entry = {'year': int(y_val), 'total': int(yearly_map[y_val]['total'])}
+            for key, val in yearly_map[y_val].items():
+                if key != 'total': entry[key] = int(val)
             yearly_data.append(entry)
 
-        query_department = f"""
-            SELECT department,
-                   COUNT(*) AS total
-            FROM externship_info
-            {where_clause}
-            GROUP BY department
-            ORDER BY total DESC
-        """
-        cur.execute(query_department, params)
-        department_data = []
-        for row in cur.fetchall():
-            department_data.append({
-                'department': row['department'],
-                'total': int(row['total']),
-            })
+        query_dept = f'SELECT department, COUNT(*) AS total FROM externship_info {where_clause} GROUP BY department ORDER BY total DESC'
+        cur.execute(query_dept, params)
+        dept_data = [{'department': r['department'], 'total': int(r['total'])} for r in cur.fetchall()]
 
-        return jsonify({'total': int(total_externships), 'yearly': yearly_data, 'department': department_data})
-    except Exception as exc:
-        return jsonify({'message': f'Failed to fetch externship summary: {exc}'}), 500
-    finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
-
-
-@research_bp.route('/externships/list', methods=['GET'])
-@token_required
-def externship_list(current_user_id):
-    conn = None
-    cur = None
-    try:
-        department = request.args.get('department')
-        year = request.args.get('externship_year')
-
-        conn = get_db_connection()
-        if not _table_exists(conn, 'externship_info'):
-            return jsonify({'data': []})
-
-        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        conditions: List[str] = []
-        params: List[Any] = []
-
-        if department and department != 'All':
-            conditions.append("department = %s")
-            params.append(department)
-
-        if year and year != 'All':
-            try:
-                year_int = int(year)
-                conditions.append("EXTRACT(YEAR FROM startdate)::INT = %s")
-                params.append(year_int)
-            except ValueError:
-                pass
-
-        where_clause = ""
-        if conditions:
-            where_clause = "WHERE " + " AND ".join(conditions)
-
-        query = f"""
+        # 2. Fetch List Data
+        query_list = f"""
             SELECT
-                externid AS externship_id,
-                empname AS faculty_name,
-                department,
-                industry_name,
-                "type" AS externship_type,
-                startdate,
-                enddate,
-                CASE
-                    WHEN enddate IS NOT NULL THEN (enddate - startdate)
-                    ELSE NULL
-                END AS duration_days
+                externid AS externship_id, empname AS faculty_name,
+                department, industry_name, "type" AS externship_type,
+                startdate, enddate,
+                CASE WHEN enddate IS NOT NULL THEN (enddate - startdate) ELSE NULL END AS duration_days
             FROM externship_info
             {where_clause}
             ORDER BY startdate DESC NULLS LAST, empname
         """
-        cur.execute(query, params)
-        rows = []
+        cur.execute(query_list, params)
+        list_data = []
         for row in cur.fetchall():
-            rows.append({
+            list_data.append({
                 'externship_id': row['externship_id'],
                 'faculty_name': row['faculty_name'],
                 'department': row['department'],
@@ -972,14 +921,32 @@ def externship_list(current_user_id):
                 'enddate': _serialize_date(row['enddate']),
                 'duration_days': int(row['duration_days']) if row['duration_days'] is not None else None,
             })
-        return jsonify({'data': rows})
+
+        return jsonify({
+            'total': int(total_externships),
+            'yearly': yearly_data,
+            'department': dept_data,
+            'data': list_data
+        })
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch externships: {exc}'}), 500
+        return jsonify({'message': f'Failed to fetch combined externship info: {exc}'}), 500
     finally:
-        if cur:
-            cur.close()
-        if conn:
-            conn.close()
+        if cur: cur.close()
+        if conn: release_db_connection(conn)
+
+
+@research_bp.route('/externships/summary', methods=['GET'])
+@token_required
+def externship_summary(current_user_id):
+    # Keep for backward compatibility, but we should use /analytics
+    return externship_analytics(current_user_id)
+
+
+@research_bp.route('/externships/list', methods=['GET'])
+@token_required
+def externship_list(current_user_id):
+    # Keep for backward compatibility
+    return externship_analytics(current_user_id)
 
 
 @research_bp.route('/publications/summary', methods=['GET'])
@@ -1053,7 +1020,7 @@ def publication_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/publications/trend', methods=['GET'])
@@ -1089,7 +1056,7 @@ def publication_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/publications/department', methods=['GET'])
@@ -1125,7 +1092,7 @@ def publication_by_department(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/publications/type-distribution', methods=['GET'])
@@ -1159,7 +1126,7 @@ def publication_type_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @research_bp.route('/publications/list', methods=['GET'])
@@ -1210,4 +1177,4 @@ def publication_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)

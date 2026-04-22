@@ -589,15 +589,8 @@ function PlacementSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
-        {loading.trend && viewType === 'placementTrend' ? (
-          <div className="loading-container">
-            <div className="loading-spinner" />
-            <p>Compiling placement performance metrics...</p>
-          </div>
-        ) : (
-          <>
-            {/* Modern Summary Cards */}
-            <div style={{
+        {/* Modern Summary Cards */}
+          <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(5, 1fr)',
               gap: '20px',
@@ -823,13 +816,7 @@ function PlacementSection({ user, isPublicView = false }) {
               ))}
             </div>
 
-            {isLoading() ? (
-              <div className="loading-container">
-                <div className="loading-spinner" />
-                <p>Loading data...</p>
-              </div>
-            ) : (
-              <>
+
                 {/* Placement Trend View */}
                 {viewType === 'placementTrend' && (
                   <div className="chart-section" style={{ marginTop: '0' }}>
@@ -932,13 +919,10 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!placementTrendChartData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📈</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No placement trend data available.</p>
+                    <div className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${placementTrendChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         {/* Bar / Trend toggle */}
                         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                           {['bar', 'trend'].map((mode) => (
@@ -1005,7 +989,6 @@ function PlacementSection({ user, isPublicView = false }) {
                           </div>
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1111,13 +1094,10 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!genderBarData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>👥</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No gender-wise data available.</p>
+                    <div className={`chart-container ${!genderBarData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${genderBarData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
                           <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1154,7 +1134,6 @@ function PlacementSection({ user, isPublicView = false }) {
                           ))}
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1260,13 +1239,10 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!programStatusChartData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🎓</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No program-wise data available.</p>
+                    <div className={`chart-container ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${programStatusChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
                           <BarChart data={programStatusChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1279,30 +1255,15 @@ function PlacementSection({ user, isPublicView = false }) {
                         </ResponsiveContainer>
 
                         {/* Program Statistics */}
-                        <div style={{
-                          marginTop: '20px',
-                          padding: '15px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e0e0e0',
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          justifyContent: 'center',
-                          gap: '30px'
-                        }}>
+                        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px' }}>
                           {programStatusChartData.map((item) => (
                             <div key={item.program} style={{ textAlign: 'center', minWidth: '80px' }}>
-                              <div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '18px' }}>
-                                {formatPercentage(item.percentage)}
-                              </div>
-                              <div style={{ color: '#666', fontSize: '12px' }}>
-                                {item.program}
-                              </div>
+                              <div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '18px' }}>{formatPercentage(item.percentage)}</div>
+                              <div style={{ color: '#666', fontSize: '12px' }}>{item.program}</div>
                             </div>
                           ))}
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1408,13 +1369,10 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!recruiterChartData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🏢</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No recruiter statistics available.</p>
+                    <div className={`chart-container ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${recruiterChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
                           <BarChart data={recruiterChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1425,39 +1383,12 @@ function PlacementSection({ user, isPublicView = false }) {
                             <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30} />
                           </BarChart>
                         </ResponsiveContainer>
-
-                        {/* Recruiter Statistics */}
-                        <div style={{
-                          marginTop: '20px',
-                          padding: '15px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e0e0e0',
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(3, 1fr)',
-                          gap: '15px'
-                        }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>
-                              {recruiterChartData.reduce((sum, item) => sum + item.companies, 0)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>
-                              {recruiterChartData.reduce((sum, item) => sum + item.offers, 0)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '24px' }}>
-                              {recruiterChartData.length}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Years Active</div>
-                          </div>
+                        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((sum, item) => sum + item.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((sum, item) => sum + item.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Years Active</div></div>
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1563,90 +1494,35 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!sectorPieData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No sector-wise data available.</p>
+                    <div className={`chart-container ${!sectorPieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${sectorPieData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         {/* Get top 5 sectors for pie chart */}
                         {(() => {
-                          const top5Sectors = [...sectorPieData]
-                            .sort((a, b) => b.companies - a.companies)
-                            .slice(0, 5);
+                          const top5Sectors = [...sectorPieData].sort((a, b) => b.companies - a.companies).slice(0, 5);
                           const otherSectors = sectorPieData.slice(5);
                           const otherTotal = otherSectors.reduce((sum, s) => sum + s.companies, 0);
-
                           const pieData = [...top5Sectors];
-                          if (otherTotal > 0) {
-                            pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal });
-                          }
-
+                          if (otherTotal > 0) { pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal }); }
                           return (
                             <ResponsiveContainer width="100%" height={350}>
                               <PieChart>
-                                <Pie
-                                  data={pieData}
-                                  dataKey="companies"
-                                  nameKey="sector"
-                                  cx="50%"
-                                  cy="50%"
-                                  outerRadius={120}
-                                  label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`}
-                                  labelLine={false}
-                                >
-                                  {pieData.map((entry, index) => (
-                                    <Cell
-                                      key={entry.sector}
-                                      fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'}
-                                    />
-                                  ))}
+                                <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                                  {pieData.map((entry, index) => (<Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />))}
                                 </Pie>
                                 <Tooltip formatter={(value) => formatNumber(value)} />
-                                <Legend
-                                  layout="vertical"
-                                  align="right"
-                                  verticalAlign="middle"
-                                  wrapperStyle={{ fontSize: '12px' }}
-                                />
+                                <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
                               </PieChart>
                             </ResponsiveContainer>
                           );
                         })()}
-
-                        {/* Sector Statistics */}
-                        <div style={{
-                          marginTop: '20px',
-                          padding: '15px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e0e0e0',
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(3, 1fr)',
-                          gap: '15px'
-                        }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: '24px' }}>
-                              {sectorPieData.length}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Total Sectors</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>
-                              {sectorPieData.reduce((sum, item) => sum + item.companies, 0)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>
-                              {sectorPieData.reduce((sum, item) => sum + item.offers, 0)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div>
-                          </div>
+                        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Sectors</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((sum, item) => sum + item.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((sum, item) => sum + item.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1752,13 +1628,10 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!packageTrendChartData.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>💰</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No package trend data available.</p>
+                    <div className={`chart-container ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${packageTrendChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
                       </div>
-                    ) : (
-                      <div className="chart-container">
                         <ResponsiveContainer width="100%" height={350}>
                           <LineChart data={packageTrendChartData} margin={{ top: 10, right: 20, left: 50, bottom: 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1770,39 +1643,12 @@ function PlacementSection({ user, isPublicView = false }) {
                             <Line type="monotone" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
                           </LineChart>
                         </ResponsiveContainer>
-
-                        {/* Package Statistics */}
-                        <div style={{
-                          marginTop: '20px',
-                          padding: '15px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e0e0e0',
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(3, 1fr)',
-                          gap: '15px'
-                        }}>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>
-                              {formatCurrency(summary.average_package)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>
-                              {formatCurrency(summary.highest_package)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div>
-                          </div>
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '20px' }}>
-                              {formatCurrency(summary.lowest_package)}
-                            </div>
-                            <div style={{ color: '#666', fontSize: '12px' }}>Overall Lowest</div>
-                          </div>
+                        <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.average_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.highest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div></div>
+                          <div style={{ textAlign: 'center' }}><div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.lowest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Lowest</div></div>
                         </div>
                       </div>
-                    )}
                   </div>
                 )}
 
@@ -1908,23 +1754,9 @@ function PlacementSection({ user, isPublicView = false }) {
                       </p>
                     </div>
 
-                    {!topRecruiters.length ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>⭐</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No top recruiter information available.</p>
-                      </div>
-                    ) : (
-                      <div>
+                    <div>
                         <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-                          <table className="grievance-table" style={{
-                            width: '100%',
-                            borderCollapse: 'collapse',
-                            backgroundColor: '#fff',
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            border: '1px solid #e0e0e0',
-                            minWidth: '600px'
-                          }}>
+                          <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
                             <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                               <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
                                 <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
@@ -1937,89 +1769,43 @@ function PlacementSection({ user, isPublicView = false }) {
                             </thead>
                             <tbody>
                               {topRecruiters.map((row, index) => (
-                                <tr
-                                  key={`${row.year}-${row.company_name}`}
-                                  style={{
-                                    backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                                    borderBottom: '1px solid #e0e0e0'
-                                  }}
-                                >
+                                <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
                                   <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
                                   <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
                                   <td style={{ padding: '10px', fontSize: '13px' }}>
-                                    {row.sector && (
-                                      <span style={{
-                                        backgroundColor: '#e0e7ff',
-                                        color: '#3730a3',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '11px',
-                                        fontWeight: '500'
-                                      }}>
-                                        {row.sector}
-                                      </span>
-                                    )}
+                                    {row.sector && (<span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>{row.sector}</span>)}
                                   </td>
                                   <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
                                   <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
                                   <td style={{ padding: '10px', fontSize: '13px' }}>
-                                    <span style={{
-                                      backgroundColor: row.is_top_recruiter ? '#dcfce7' : '#fee2e2',
-                                      color: row.is_top_recruiter ? '#166534' : '#991b1b',
-                                      padding: '4px 8px',
-                                      borderRadius: '4px',
-                                      fontSize: '11px',
-                                      fontWeight: '500'
-                                    }}>
+                                    <span style={{ backgroundColor: row.is_top_recruiter ? '#dcfce7' : '#fee2e2', color: row.is_top_recruiter ? '#166534' : '#991b1b', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
                                       {row.is_top_recruiter ? 'Yes' : 'No'}
                                     </span>
                                   </td>
                                 </tr>
                               ))}
+                              {!topRecruiters.length && (
+                                <tr>
+                                  <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                                    No information available for the selected filter
+                                  </td>
+                                </tr>
+                              )}
                             </tbody>
                           </table>
                         </div>
 
                         {/* Recruiter Statistics */}
                         {topRecruiters.length > 0 && (
-                          <div style={{
-                            marginTop: '20px',
-                            padding: '15px',
-                            backgroundColor: '#f8f9fa',
-                            borderRadius: '8px',
-                            border: '1px solid #e0e0e0',
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '15px'
-                          }}>
-                            <div style={{ textAlign: 'center' }}>
-                              <div style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '24px' }}>
-                                {topRecruiters.length}
-                              </div>
-                              <div style={{ color: '#666', fontSize: '12px' }}>Total Entries</div>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                              <div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>
-                                {new Set(topRecruiters.map(r => r.company_name)).size}
-                              </div>
-                              <div style={{ color: '#666', fontSize: '12px' }}>Unique Companies</div>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                              <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>
-                                {topRecruiters.reduce((sum, r) => sum + (r.offers || 0), 0)}
-                              </div>
-                              <div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div>
-                            </div>
+                          <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                            <div style={{ textAlign: 'center' }}><div style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Entries</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{new Set(topRecruiters.map(r => r.company_name)).size}</div><div style={{ color: '#666', fontSize: '12px' }}>Unique Companies</div></div>
+                            <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.reduce((sum, r) => sum + (r.offers || 0), 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
                           </div>
                         )}
                       </div>
-                    )}
                   </div>
                 )}
-              </>
-            )}
-          </>
-        )}
       </div>
 
       <DataUploadModal

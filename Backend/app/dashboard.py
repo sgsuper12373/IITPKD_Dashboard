@@ -1,6 +1,6 @@
 """Dashboard: returns the authenticated user's profile."""
 from flask import Blueprint, jsonify
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 from .auth import token_required
 
 dashboard_bp = Blueprint('api', __name__)
@@ -35,4 +35,4 @@ def protected_dashboard(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)

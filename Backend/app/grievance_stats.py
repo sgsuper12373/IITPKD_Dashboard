@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 grievance_bp = Blueprint('grievance', __name__)
 
@@ -25,7 +25,7 @@ def _fetch_yearly_data(query):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 def _fetch_summary(query):
@@ -47,7 +47,7 @@ def _fetch_summary(query):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @grievance_bp.route('/igrc/yearly', methods=['GET'])

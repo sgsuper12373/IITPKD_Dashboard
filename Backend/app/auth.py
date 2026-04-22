@@ -7,7 +7,7 @@ import jwt
 import psycopg2.errors
 from flask import Blueprint, jsonify, request, current_app
 
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 from . import bcrypt
 
 auth_bp = Blueprint('auth', __name__)
@@ -110,7 +110,7 @@ def signup():
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -148,7 +148,7 @@ def login():
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 # ---------------------------------------------------------------------------
@@ -177,7 +177,7 @@ def get_roles(current_user_id):
         return jsonify(cur.fetchall()), 200
     finally:
         cur.close()
-        conn.close()
+        release_db_connection(conn)
 
 
 @auth_bp.route('/roles/<int:role_id>', methods=['PUT'])
@@ -207,7 +207,7 @@ def update_role(current_user_id, role_id):
         return jsonify({'message': str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        release_db_connection(conn)
 
 
 @auth_bp.route('/roles', methods=['POST'])
@@ -240,7 +240,7 @@ def create_role(current_user_id):
         return jsonify({'message': str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        release_db_connection(conn)
 
 
 @auth_bp.route('/roles/<int:role_id>', methods=['DELETE'])
@@ -270,7 +270,7 @@ def delete_role(current_user_id, role_id):
         return jsonify({'message': str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        release_db_connection(conn)
 
 
 @auth_bp.route('/create-user', methods=['POST'])

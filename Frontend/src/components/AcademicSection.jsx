@@ -5,6 +5,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
+import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
@@ -272,7 +273,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
-      <div className={isPublicView ? "" : "page-content"}>
+      <div className="page-content performance-render-auto">
 
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/people-campus')}>

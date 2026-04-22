@@ -23,6 +23,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
+import '../DesignSystem.css';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -256,7 +257,7 @@ function TechinSection({ user, isPublicView = false }) {
 
   return (
     <div className={isPublicView ? '' : 'page-container'}>
-      <div className={isPublicView ? '' : 'page-content'}>
+      <div className="page-content performance-render-auto">
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/innovation-entrepreneurship')}>
             ← Back to Innovation &amp; Entrepreneurship

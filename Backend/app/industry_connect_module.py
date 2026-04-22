@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 
 industry_connect_bp = Blueprint('industry_connect', __name__)
@@ -52,7 +52,7 @@ def _data_available() -> bool:
             and _table_exists(conn, INDUSTRY_CONCLAVE_TABLE)
         )
     finally:
-        conn.close()
+        release_db_connection(conn)
 
 
 def _build_events_where_clause(filters: dict) -> tuple[str, list]:
@@ -124,7 +124,7 @@ def get_icsr_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @industry_connect_bp.route('/icsr/yearly-distribution', methods=['GET'])
@@ -176,7 +176,7 @@ def get_icsr_yearly_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @industry_connect_bp.route('/icsr/event-types', methods=['GET'])
@@ -225,7 +225,7 @@ def get_icsr_event_types(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @industry_connect_bp.route('/icsr/events', methods=['GET'])
@@ -315,7 +315,7 @@ def get_icsr_events(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @industry_connect_bp.route('/icsr/filter-options', methods=['GET'])
@@ -359,7 +359,7 @@ def get_icsr_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ========== Industry-Academia Conclave Endpoints ==========
@@ -400,7 +400,7 @@ def get_conclave_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @industry_connect_bp.route('/conclave/list', methods=['GET'])
@@ -464,4 +464,4 @@ def get_conclave_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)

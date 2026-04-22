@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 from .auth import token_required
 import psycopg2.extras
 from datetime import date
@@ -163,7 +163,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/employee-overview', methods=['GET'])
@@ -234,7 +234,7 @@ def get_employee_overview(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/faculty-gender-last-five-years', methods=['GET'])
@@ -317,7 +317,7 @@ def get_faculty_gender_last_five_years(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/faculty-by-department-designation', methods=['GET'])
@@ -385,7 +385,7 @@ def get_faculty_by_department_designation(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/staff-count', methods=['GET'])
@@ -440,7 +440,7 @@ def get_staff_count(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/gender-distribution', methods=['GET'])
@@ -507,7 +507,7 @@ def get_gender_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/category-distribution', methods=['GET'])
@@ -566,7 +566,7 @@ def get_category_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/data-summary', methods=['GET'])
@@ -623,7 +623,7 @@ def get_data_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/department-breakdown', methods=['GET'])
@@ -697,7 +697,7 @@ def get_department_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/yearwise-strength', methods=['GET'])
@@ -827,7 +827,7 @@ def get_yearwise_strength(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @administrative_bp.route('/stats/faculty-expertise-matrix', methods=['GET'])
@@ -915,4 +915,4 @@ def get_faculty_expertise_matrix(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)

@@ -3,7 +3,7 @@ from decimal import Decimal
 from flask import Blueprint, jsonify
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 ewd_bp = Blueprint('ewd', __name__)
 
@@ -39,7 +39,7 @@ def _fetch_all_rows():
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 def _convert_decimal(row):

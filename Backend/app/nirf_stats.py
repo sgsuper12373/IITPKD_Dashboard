@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 nirf_bp = Blueprint('nirf', __name__)
 
@@ -41,4 +41,4 @@ def get_nirf_metrics():
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)

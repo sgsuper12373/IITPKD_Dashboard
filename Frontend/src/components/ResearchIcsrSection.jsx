@@ -267,7 +267,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
       if (!token) return;
       try {
         const [trendResp, listResp] = await Promise.all([
-          fetchMouTrend(token),
+          fetchMouTrend({ mou_year: mouFilters.mou_year }, token),
           fetchMouList({ mou_year: mouFilters.mou_year }, token),
         ]);
         const trend = trendResp?.data || [];
@@ -589,38 +589,40 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             </>
           )}
 
-          {/* MoU Summary Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-            borderRadius: '14px',
-            padding: '16px',
-            boxShadow: '0 8px 16px rgba(168, 85, 247, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
+          {/* MoU Summary Card - Hidden in Public ICSR View */}
+          {(!isPublicView || mouOnly) && (
             <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              width: '70px',
-              height: '70px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🤝</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Total MoUs</span>
-              </div>
-              <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
-                {totalMous}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Signed collaborations</span>
+              background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+              borderRadius: '14px',
+              padding: '16px',
+              boxShadow: '0 8px 16px rgba(168, 85, 247, 0.2)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '-15px',
+                right: '-15px',
+                width: '70px',
+                height: '70px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%'
+              }} />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🤝</span>
+                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Total MoUs</span>
+                </div>
+                <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+                  {formatNumber(totalMous)}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>Signed collaborations</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Radio Buttons - Moved Outside */}
@@ -681,36 +683,30 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
           >
             📋 Projects Directory
           </button>
-          <button
-            onClick={() => setViewType('mou')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: viewType === 'mou' ? MOU_COLOR : 'transparent',
-              color: viewType === 'mou' ? 'white' : '#333',
-              border: viewType === 'mou' ? `2px solid ${MOU_COLOR}` : '2px solid #dee2e6',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: viewType === 'mou' ? 'bold' : 'normal',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            🤝 MoUs
-          </button>
+          {(!isPublicView || mouOnly) && (
+            <button
+              onClick={() => setViewType('mou')}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: viewType === 'mou' ? MOU_COLOR : 'transparent',
+                color: viewType === 'mou' ? 'white' : '#333',
+                border: viewType === 'mou' ? `2px solid ${MOU_COLOR}` : '2px solid #dee2e6',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: viewType === 'mou' ? 'bold' : 'normal',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              🤝 MoUs
+            </button>
+          )}
         </div>
         )}
 
 
 
-        {loading && (
-          <div className="loading-state">
-            <div className="loading-spinner" />
-            <p>Loading research analytics…</p>
-          </div>
-        )}
-
-        {!loading && (
-          <>
+        <>
             {/* Projects Trend Section */}
             {viewType === 'projects' && (
               <section className="chart-section" style={{
@@ -852,7 +848,10 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   ))}
                 </div>
 
-                <div className="chart-container">
+                <div className={`chart-container ${!projectTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                  <div className={`section-empty-state ${projectTrendChartData.length ? 'hidden' : ''}`}>
+                    <p>No information available for the selected filter</p>
+                  </div>
                   <ResponsiveContainer width="100%" height={350}>
                     {projectsChartMode === 'bar' ? (
                       <BarChart data={projectTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
@@ -991,7 +990,10 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   ))}
                 </div>
 
-                <div className="chart-container">
+                <div className={`chart-container ${!patentTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                  <div className={`section-empty-state ${patentTrendChartData.length ? 'hidden' : ''}`}>
+                    <p>No information available for the selected filter</p>
+                  </div>
                   <ResponsiveContainer width="100%" height={350}>
                     {patentsChartMode === 'bar' ? (
                       <BarChart data={patentTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
@@ -1174,6 +1176,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <td style={{ padding: '8px' }}>{p.status}</td>
                         </tr>
                       ))}
+                      {!projectList.length && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                            No information available for the selected filter
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1262,7 +1271,10 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                       ))}
                     </div>
-                    <div className="chart-container">
+                    <div className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                      <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
+                      </div>
                       <ResponsiveContainer width="100%" height={350} minWidth={0}>
                         {mouChartMode === 'bar' ? (
                           <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -1313,6 +1325,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                               <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
                             </tr>
                           ))}
+                          {!mouList.length && (
+                            <tr>
+                              <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                                No information available for the selected filter
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -1322,7 +1341,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             )}
 
           </>
-        )}
       </div>
 
       {/* Upload Modal */}

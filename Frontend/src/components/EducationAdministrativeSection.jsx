@@ -23,6 +23,7 @@ import {
   fetchFacultyEngagementList
 } from '../services/educationStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import '../DesignSystem.css';
 import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
@@ -1397,43 +1398,46 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 <p className="chart-description">Detailed list of all external academic engagements</p>
               </div>
 
-              <div className="table-responsive" style={{
-                height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
-                border: '1px solid var(--border-light)', borderRadius: '8px',
-                backgroundColor: '#fff', position: 'relative'
-              }}>
-                {engagementList.length === 0 && !loading.details && (viewType === 'details') && (
-                  <div className="no-data-overlay" style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
-                  }}>
-                    <p>No engagement data available for the selected filters.</p>
-                  </div>
-                )}
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
-                    <tr>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {viewType === 'details' && engagementList.map((item, index) => (
-                      <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                        <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+              {/* Directory Table - Conditionally Mounted for Performance */}
+              {viewType === 'details' && (
+                <div className="table-responsive accelerated-scroll" style={{
+                  height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
+                  border: '1px solid var(--border-light)', borderRadius: '8px',
+                  backgroundColor: '#fff', position: 'relative'
+                }}>
+                  {engagementList.length === 0 && !loading.details && (
+                    <div className="no-data-overlay" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      display: 'flex', justifyContent: 'center', alignItems: 'center',
+                      backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
+                    }}>
+                      <p>No engagement data available for the selected filters.</p>
+                    </div>
+                  )}
+                  <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                    <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                      <tr>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {engagementList.map((item, index) => (
+                        <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1518,43 +1522,46 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 <p className="chart-description">List of honorary professors for the selected filters</p>
               </div>
 
-              <div className="table-responsive" style={{
-                height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
-                border: '1px solid var(--border-light)', borderRadius: '8px',
-                backgroundColor: '#fff', position: 'relative'
-              }}>
-                {engagementList.length === 0 && !loading.details && (viewType === 'honorary') && (
-                  <div className="no-data-overlay" style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
-                  }}>
-                    <p>No honorary professors found for the selected filters.</p>
-                  </div>
-                )}
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
-                    <tr>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {viewType === 'honorary' && engagementList.map((item, index) => (
-                      <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                        <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+              {/* Honorary Table - Conditionally Mounted for Performance */}
+              {viewType === 'honorary' && (
+                <div className="table-responsive accelerated-scroll" style={{
+                  height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
+                  border: '1px solid var(--border-light)', borderRadius: '8px',
+                  backgroundColor: '#fff', position: 'relative'
+                }}>
+                  {engagementList.length === 0 && !loading.details && (
+                    <div className="no-data-overlay" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      display: 'flex', justifyContent: 'center', alignItems: 'center',
+                      backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
+                    }}>
+                      <p>No honorary professors found for the selected filters.</p>
+                    </div>
+                  )}
+                  <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                    <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                      <tr>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {engagementList.map((item, index) => (
+                        <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
+                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
 

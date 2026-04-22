@@ -84,9 +84,10 @@ export const fetchIarMouFilterOptions = async (token) => {
   }
 };
 
-export const fetchIarMouTrend = async (token) => {
+export const fetchIarMouTrend = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/mous/trend`, authHeaders(token));
+    const query = buildQueryParams(filters);
+    const response = await axios.get(`${API_BASE_URL}/mous/trend?${query}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch IAR MoU trend');

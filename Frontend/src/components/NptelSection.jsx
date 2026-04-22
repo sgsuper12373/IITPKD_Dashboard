@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 import './Page.css';
 import './AcademicSection.css';
+import '../DesignSystem.css';
 import DataUploadModal from './DataUploadModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -423,7 +424,7 @@ function NptelSection({ user, isPublicView = false }) {
 
   // If not public view, wrap in page-container and page-content
   return (
-    <div className="page-container">
+    <div className="page-container performance-render-auto">
       <div className="page-content">
         {content}
       </div>

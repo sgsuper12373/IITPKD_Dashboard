@@ -8,7 +8,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2.errors import UndefinedTable
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 placement_bp = Blueprint('placement', __name__)
 
@@ -57,7 +57,7 @@ def table_exists(table_name: str) -> bool:
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 def placement_data_available() -> bool:
@@ -144,7 +144,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/summary', methods=['GET'])
@@ -218,7 +218,7 @@ def get_placement_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/percentage-trend', methods=['GET'])
@@ -275,7 +275,7 @@ def get_percentage_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/gender-breakdown', methods=['GET'])
@@ -332,7 +332,7 @@ def get_gender_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/program-status', methods=['GET'])
@@ -391,7 +391,7 @@ def get_program_status(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/recruiters', methods=['GET'])
@@ -444,7 +444,7 @@ def get_recruiter_counts(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/sector-distribution', methods=['GET'])
@@ -498,7 +498,7 @@ def get_sector_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/package-trend', methods=['GET'])
@@ -554,7 +554,7 @@ def get_package_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @placement_bp.route('/top-recruiters', methods=['GET'])
@@ -613,4 +613,4 @@ def get_top_recruiters(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)

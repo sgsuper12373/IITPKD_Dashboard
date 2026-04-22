@@ -15,6 +15,7 @@ import {
 
 import {
   fetchResearchFilterOptions,
+  fetchExternshipAnalytics,
   fetchExternshipSummary,
   fetchExternshipList
 } from '../services/researchStats';
@@ -26,6 +27,7 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
+import '../DesignSystem.css';
 
 const TYPE_COLORS = ['#6366f1', '#22c55e', '#f97316', '#a855f7', '#14b8a6', '#0ea5e9', '#facc15'];
 
@@ -120,17 +122,14 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
         setLoading(true);
         setError(null);
 
-        const [summaryResp, listResp] = await Promise.all([
-          fetchExternshipSummary(filters, token),
-          fetchExternshipList(filters, token)
-        ]);
+        const analyticsResp = await fetchExternshipAnalytics(filters, token);
 
         setSummary({
-          total: summaryResp?.total || 0,
-          yearly: Array.isArray(summaryResp?.yearly) ? summaryResp.yearly : [],
-          department: Array.isArray(summaryResp?.department) ? summaryResp.department : []
+          total: analyticsResp?.total || 0,
+          yearly: Array.isArray(analyticsResp?.yearly) ? analyticsResp.yearly : [],
+          department: Array.isArray(analyticsResp?.department) ? analyticsResp.department : []
         });
-        setExternshipList(listResp?.data || []);
+        setExternshipList(analyticsResp?.data || []);
       } catch (err) {
         console.error('Failed to load externship analytics:', err);
         setError(err.message || 'Failed to load externship analytics.');
@@ -599,7 +598,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
             </div>
         </div>
 
-        <div style={{
+        <div className="contain-layout" style={{
           position: 'relative',
           minHeight: '520px',
           transition: 'opacity 0.3s ease'
@@ -764,19 +763,20 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* 3. Externship Directory Table (Always Mounted) */}
-            <div className={`chart-view ${viewType === 'externshipTable' ? 'active' : 'inactive'}`}>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📋</span> Externship Directory
-                </h2>
-                <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
-                  Displaying {externshipList.length} total records
-                </p>
-              </div>
+            {/* 3. Externship Directory Table - Conditionally Mounted for Performance */}
+            {viewType === 'externshipTable' && (
+              <div className="chart-view active performance-render-auto">
+                <div className="chart-header" style={{ marginBottom: '20px' }}>
+                  <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span>📋</span> Externship Directory
+                  </h2>
+                  <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
+                    Displaying {externshipList.length} total records
+                  </p>
+                </div>
 
-              <div className="table-responsive" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
+                <div className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
+                  <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
                   <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                     <tr style={{ backgroundColor: '#f97316' }}>
                       {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
@@ -827,9 +827,10 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                       </tr>
                     )}
                   </tbody>
-                </table>
+                  </table>
+                </div>
               </div>
-            </div>
+            )}
           </section>
         </div>
         <DataUploadModal

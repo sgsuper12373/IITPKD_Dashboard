@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 from .auth import token_required
 
 academic_bp = Blueprint('academic', __name__)
@@ -29,7 +29,7 @@ def get_latest_year():
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 def build_filter_query(filters):
@@ -135,7 +135,7 @@ def get_filter_options(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/gender-distribution-filtered', methods=['GET'])
@@ -222,7 +222,7 @@ def get_gender_distribution_filtered(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/student-strength', methods=['GET'])
@@ -310,7 +310,7 @@ def get_student_strength(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/gender-trends', methods=['GET'])
@@ -379,7 +379,7 @@ def get_gender_trends(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/program-trends', methods=['GET'])
@@ -445,7 +445,7 @@ def get_program_trends(current_user_id):
     finally:
         if conn:
             cur.close()
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/student-summary', methods=['GET'])
@@ -500,7 +500,7 @@ def get_student_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @academic_bp.route('/stats/onroll-summary', methods=['GET'])
@@ -578,4 +578,4 @@ def get_onroll_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)

@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 
 outreach_extension_bp = Blueprint('outreach_extension', __name__)
@@ -42,7 +42,7 @@ def _data_available() -> bool:
             _table_exists(conn, UBA_EVENTS_TABLE)
         )
     finally:
-        conn.close()
+        release_db_connection(conn)
 
 
 
@@ -115,7 +115,7 @@ def get_open_house_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @outreach_extension_bp.route('/open-house/list', methods=['GET'])
@@ -202,7 +202,7 @@ def get_open_house_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @outreach_extension_bp.route('/open-house/timeline', methods=['GET'])
@@ -244,7 +244,7 @@ def get_open_house_timeline(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 
@@ -271,7 +271,7 @@ def get_nptel_summary(current_user_id):
         return jsonify({'message': 'Failed to fetch NPTEL summary.'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)
 
 @outreach_extension_bp.route('/nptel/trend', methods=['GET'])
 @token_required
@@ -304,7 +304,7 @@ def get_nptel_trend(current_user_id):
         return jsonify({'message': 'Failed to fetch NPTEL trend.'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)
 
 @outreach_extension_bp.route('/nptel/list', methods=['GET'])
 @token_required
@@ -338,7 +338,7 @@ def get_nptel_list(current_user_id):
         return jsonify({'message': 'Failed to fetch NPTEL list.'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)
 
 
 
@@ -378,7 +378,7 @@ def get_uba_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @outreach_extension_bp.route('/uba/projects', methods=['GET'])
@@ -423,7 +423,7 @@ def get_uba_projects(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @outreach_extension_bp.route('/outreach/list', methods=['GET'])
@@ -476,7 +476,7 @@ def get_outreach_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @outreach_extension_bp.route('/uba/events', methods=['GET'])
@@ -532,5 +532,5 @@ def get_uba_events(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 

@@ -479,489 +479,494 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           </button>
         </div>
 
+        <>
+          {/* Publication Trend Section */}
+          {viewType === 'trend' && (
+            <section className="chart-section" style={{
+              marginBottom: '30px',
+              padding: '20px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="chart-header" style={{ marginBottom: '20px' }}>
+                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>📈</span> Publication Trend
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                  Year-wise publication count
+                </p>
+              </div>
 
-
-        {loading && (
-          <div className="loading-state">
-            <div className="loading-spinner" />
-            <p>Loading publication analytics…</p>
-          </div>
-        )}
-
-        {!loading && (
-          <>
-            {/* Publication Trend Section */}
-            {viewType === 'trend' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              {/* Filters inside trend view */}
+              <div style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
               }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📈</span> Publication Trend
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                    Year-wise publication count
-                  </p>
-                </div>
-
-                {/* Filters inside trend view */}
                 <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={filters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.publication_departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
-                      <select
-                        value={filters.publication_year}
-                        onChange={(e) => handleFilterChange('publication_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.publication_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
-                      <select
-                        value={filters.publication_type}
-                        onChange={(e) => handleFilterChange('publication_type', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.publication_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
+                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+                  <button
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
                 </div>
 
-                {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                  {['bar', 'trend'].map((mode) => (
-                    <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
-                      padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
-                      backgroundColor: trendChartMode === mode ? '#6366f1' : '#f1f5f9',
-                      color: trendChartMode === mode ? '#fff' : '#555'
-                    }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
-                  ))}
-                </div>
-
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={300}>
-                    {trendChartMode === 'bar' ? (
-                      <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
-                        <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28} />
-                      </BarChart>
-                    ) : (
-                      <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                        <Line type="monotone" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
-                      </LineChart>
-                    )}
-                  </ResponsiveContainer>
-                </div>
-              </section>
-            )}
-
-            {/* Department-wise Publications Section */}
-            {viewType === 'department' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>🏢</span> Department-wise Publications
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                    Publications by department
-                  </p>
-                </div>
-
-                {/* Filters inside department view */}
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
+                <div className="filter-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '12px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={filters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
                     >
-                      Clear Filters
-                    </button>
+                      <option value="All">All Departments</option>
+                      {filterOptions.publication_departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
                   </div>
 
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
-                      <select
-                        value={filters.publication_year}
-                        onChange={(e) => handleFilterChange('publication_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.publication_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
-                      <select
-                        value={filters.publication_type}
-                        onChange={(e) => handleFilterChange('publication_type', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.publication_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
+                    <select
+                      value={filters.publication_year}
+                      onChange={(e) => handleFilterChange('publication_year', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.publication_years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
 
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
+                    <select
+                      value={filters.publication_type}
+                      onChange={(e) => handleFilterChange('publication_type', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.publication_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
+              </div>
+
+              {/* Bar / Trend toggle */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                {['bar', 'trend'].map((mode) => (
+                  <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
+                    padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
+                    backgroundColor: trendChartMode === mode ? '#6366f1' : '#f1f5f9',
+                    color: trendChartMode === mode ? '#fff' : '#555'
+                  }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                ))}
+              </div>
+
+              <div className={`chart-container ${!trendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div className={`section-empty-state ${trendChartData.length ? 'hidden' : ''}`}>
+                  <p>No information available for the selected filter</p>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  {trendChartMode === 'bar' ? (
+                    <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="department" angle={-30} textAnchor="end" height={60} tick={{ fontSize: 10 }} interval={0} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} />
+                      <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
+                      <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28} />
                     </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </section>
-            )}
+                  ) : (
+                    <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
+                      <Line type="monotone" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
+                    </LineChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
 
-            {/* Publication Type Distribution Section */}
-            {viewType === 'type' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          {/* Department-wise Publications Section */}
+          {viewType === 'department' && (
+            <section className="chart-section" style={{
+              marginBottom: '30px',
+              padding: '20px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="chart-header" style={{ marginBottom: '20px' }}>
+                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>🏢</span> Department-wise Publications
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                  Publications by department
+                </p>
+              </div>
+
+              {/* Filters inside department view */}
+              <div style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
               }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📊</span> Publication Types
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                    Distribution by format
-                  </p>
-                </div>
-
-                {/* Filters inside type distribution view */}
                 <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={filters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.publication_departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
-                      <select
-                        value={filters.publication_year}
-                        onChange={(e) => handleFilterChange('publication_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.publication_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
+                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+                  <button
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
                 </div>
 
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={typePieData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        labelLine={false}
-                      >
-                        {typePieData.map((e, i) => <Cell key={e.name} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />)}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </section>
-            )}
-
-            {/* Publications Directory Table Section */}
-            {viewType === 'publicationsTable' && (
-              <section className="chart-section" style={{
-                marginBottom: '30px',
-                padding: '20px',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-              }}>
-                <div className="chart-header" style={{ marginBottom: '15px' }}>
-                  <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>📋</span> Publications Directory
-                  </h2>
-                  <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
-                    {publicationList.length} publications found
-                  </p>
-                </div>
-
-                {/* Filters inside publications table view */}
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e9ecef'
+                <div className="filter-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px'
-                  }}>
-                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                    <button
-                      onClick={handleClearFilters}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
+                    <select
+                      value={filters.publication_year}
+                      onChange={(e) => handleFilterChange('publication_year', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
                     >
-                      Clear Filters
-                    </button>
-                  </div>
-
-                  <div className="filter-grid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '12px'
-                  }}>
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
-                      <select
-                        value={filters.department}
-                        onChange={(e) => handleFilterChange('department', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Departments</option>
-                        {filterOptions.publication_departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
-                      <select
-                        value={filters.publication_year}
-                        onChange={(e) => handleFilterChange('publication_year', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Years</option>
-                        {filterOptions.publication_years.map((year) => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="filter-group">
-                      <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
-                      <select
-                        value={filters.publication_type}
-                        onChange={(e) => handleFilterChange('publication_type', e.target.value)}
-                        style={{ padding: '6px', fontSize: '13px', width: '100%' }}
-                      >
-                        <option value="All">All Types</option>
-                        {filterOptions.publication_types.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
-                      <tr>
-                        <th style={{ padding: '10px' }}>Title</th>
-                        <th style={{ padding: '10px' }}>Faculty</th>
-                        <th style={{ padding: '10px' }}>Dept</th>
-                        <th style={{ padding: '10px' }}>Type</th>
-                        <th style={{ padding: '10px' }}>Year</th>
-                        <th style={{ padding: '10px' }}>Journal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {publicationList.map((p, i) => (
-                        <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                          <td style={{ padding: '8px' }}>{p.publication_title}</td>
-                          <td style={{ padding: '8px' }}>{p.faculty_name}</td>
-                          <td style={{ padding: '8px' }}>{p.department}</td>
-                          <td style={{ padding: '8px' }}>{p.publication_type}</td>
-                          <td style={{ padding: '8px' }}>{p.publication_year}</td>
-                          <td style={{ padding: '8px' }}>{p.journal_name}</td>
-                        </tr>
+                      <option value="All">All Years</option>
+                      {filterOptions.publication_years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
                       ))}
-                    </tbody>
-                  </table>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
+                    <select
+                      value={filters.publication_type}
+                      onChange={(e) => handleFilterChange('publication_type', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.publication_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </section>
-            )}
-          </>
-        )}
+
+              </div>
+
+              <div className={`chart-container ${!departmentChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div className={`section-empty-state ${departmentChartData.length ? 'hidden' : ''}`}>
+                  <p>No information available for the selected filter</p>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="department" angle={-30} textAnchor="end" height={60} tick={{ fontSize: 10 }} interval={0} />
+                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
+
+          {/* Publication Type Distribution Section */}
+          {viewType === 'type' && (
+            <section className="chart-section" style={{
+              marginBottom: '30px',
+              padding: '20px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="chart-header" style={{ marginBottom: '20px' }}>
+                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>📊</span> Publication Types
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                  Distribution by format
+                </p>
+              </div>
+
+              {/* Filters inside type distribution view */}
+              <div style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
+                }}>
+                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+                  <button
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                <div className="filter-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '12px'
+                }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={filters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.publication_departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
+                    <select
+                      value={filters.publication_year}
+                      onChange={(e) => handleFilterChange('publication_year', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.publication_years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className={`chart-container ${!typePieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div className={`section-empty-state ${typePieData.length ? 'hidden' : ''}`}>
+                  <p>No information available for the selected filter</p>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={typePieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {typePieData.map((e, i) => <Cell key={e.name} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
+
+          {/* Publications Directory Table Section */}
+          {viewType === 'publicationsTable' && (
+            <section className="chart-section" style={{
+              marginBottom: '30px',
+              padding: '20px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="chart-header" style={{ marginBottom: '15px' }}>
+                <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>📋</span> Publications Directory
+                </h2>
+                <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
+                  {publicationList.length} publications found
+                </p>
+              </div>
+
+              {/* Filters inside publications table view */}
+              <div style={{
+                marginBottom: '20px',
+                padding: '15px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px'
+                }}>
+                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+                  <button
+                    onClick={handleClearFilters}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                <div className="filter-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '12px'
+                }}>
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <select
+                      value={filters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.publication_departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Year</label>
+                    <select
+                      value={filters.publication_year}
+                      onChange={(e) => handleFilterChange('publication_year', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.publication_years.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Publication Type</label>
+                    <select
+                      value={filters.publication_type}
+                      onChange={(e) => handleFilterChange('publication_type', e.target.value)}
+                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.publication_types.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
+                    <tr>
+                      <th style={{ padding: '10px' }}>Title</th>
+                      <th style={{ padding: '10px' }}>Faculty</th>
+                      <th style={{ padding: '10px' }}>Dept</th>
+                      <th style={{ padding: '10px' }}>Type</th>
+                      <th style={{ padding: '10px' }}>Year</th>
+                      <th style={{ padding: '10px' }}>Journal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {publicationList.map((p, i) => (
+                      <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                        <td style={{ padding: '8px' }}>{p.publication_title}</td>
+                        <td style={{ padding: '8px' }}>{p.faculty_name}</td>
+                        <td style={{ padding: '8px' }}>{p.department}</td>
+                        <td style={{ padding: '8px' }}>{p.publication_type}</td>
+                        <td style={{ padding: '8px' }}>{p.publication_year}</td>
+                        <td style={{ padding: '8px' }}>{p.journal_name}</td>
+                      </tr>
+                    ))}
+                    {!publicationList.length && (
+                      <tr>
+                        <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                          No information available for the selected filter
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+        </>
       </div>
 
       {/* Upload Modal */}

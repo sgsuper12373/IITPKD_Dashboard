@@ -24,6 +24,7 @@ import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
+import '../DesignSystem.css';
 
 const IAR_MOU_COLOR = '#14b8a6'; // Teal color to distinguish from ICSR purple
 
@@ -78,7 +79,7 @@ function EducationIarSection({ user, isPublicView = false }) {
       setError(null);
       try {
         const [trendResp, listResp] = await Promise.all([
-          fetchIarMouTrend(token),
+          fetchIarMouTrend({ mou_year: filters.mou_year }, token),
           fetchIarMouList({ mou_year: filters.mou_year }, token),
         ]);
         const trendData = trendResp?.data || [];
@@ -123,7 +124,7 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   return (
     <div className={`academic-section page-container ${isPublicView ? 'public-view' : ''}`}>
-      <div className="page-content">
+      <div className="page-content performance-render-auto">
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/education')} style={{ marginBottom: '20px' }}>
             ← Back to Education
@@ -153,8 +154,8 @@ function EducationIarSection({ user, isPublicView = false }) {
 
         {error && <div className="error-message" style={{ margin: '20px 0', padding: '15px', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '8px' }}>{error}</div>}
 
-        {!loading && !error && (
-          <>
+          {!error && (
+            <>
             <div style={{ marginBottom: '30px' }}>
               <div style={{
                 background: `linear-gradient(135deg, ${IAR_MOU_COLOR} 0%, #0d9488 100%)`,
@@ -279,7 +280,10 @@ function EducationIarSection({ user, isPublicView = false }) {
                       }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                     ))}
                   </div>
-                  <div className="chart-container">
+                  <div className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                    <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
+                      <p>No information available for the selected filter</p>
+                    </div>
                     <ResponsiveContainer width="100%" height={350} minWidth={0}>
                       {chartMode === 'bar' ? (
                         <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -334,6 +338,13 @@ function EducationIarSection({ user, isPublicView = false }) {
                             <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
                           </tr>
                         ))}
+                        {!mouList.length && (
+                          <tr>
+                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                              No information available for the selected filter
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -342,7 +353,7 @@ function EducationIarSection({ user, isPublicView = false }) {
 
             </section>
           </>
-        )}
+          )}
       </div>
 
       <DataUploadModal

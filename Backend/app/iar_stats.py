@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 iar_bp = Blueprint('iar', __name__)
 
@@ -80,7 +80,7 @@ def apply_filters_and_fetch(where_clause, params,
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 def classify_outcome(row):
@@ -135,7 +135,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @iar_bp.route('/summary', methods=['GET'])
@@ -293,12 +293,13 @@ def get_mou_filter_options(current_user_id):
         return jsonify({'message': 'Failed to fetch MoU filter options'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)
 
 
 @iar_bp.route('/mous/trend', methods=['GET'])
 @token_required
 def get_mou_trend(current_user_id):
+    mou_year = request.args.get('mou_year')
     conn = None
     cur = None
     try:
@@ -306,13 +307,15 @@ def get_mou_trend(current_user_id):
         if not conn:
             return jsonify({'message': 'Database connection failed'}), 500
         cur = conn.cursor()
-        cur.execute("""
-            SELECT EXTRACT(YEAR FROM date_signed) as year, COUNT(*) as total
-            FROM iar_mous
-            WHERE date_signed IS NOT NULL
-            GROUP BY year
-            ORDER BY year ASC
-        """)
+        
+        query = "SELECT EXTRACT(YEAR FROM date_signed) as year, COUNT(*) as total FROM iar_mous WHERE date_signed IS NOT NULL"
+        params = []
+        if mou_year and mou_year != 'All':
+            query += " AND EXTRACT(YEAR FROM date_signed) = %s"
+            params.append(mou_year)
+        query += " GROUP BY year ORDER BY year ASC"
+        
+        cur.execute(query, params)
         trend = [{'year': str(int(row['year'])), 'total': row['total']} for row in cur.fetchall()]
         return jsonify({'data': trend}), 200
     except Exception as e:
@@ -320,7 +323,7 @@ def get_mou_trend(current_user_id):
         return jsonify({'message': 'Failed to fetch MoU trend'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)
 
 
 @iar_bp.route('/mous/list', methods=['GET'])
@@ -356,4 +359,4 @@ def get_mou_list(current_user_id):
         return jsonify({'message': 'Failed to fetch MoU records'}), 500
     finally:
         if cur: cur.close()
-        if conn: conn.close()
+        if conn: release_db_connection(conn)

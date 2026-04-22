@@ -14,7 +14,7 @@ import psycopg2.extras
 from flask import Blueprint, jsonify, request
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -963,6 +963,6 @@ def upload_csv(current_user_id):
     finally:
         if conn:
             try:
-                conn.close()
+                release_db_connection(conn)
             except Exception:
                 pass

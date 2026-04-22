@@ -73,9 +73,9 @@ export const fetchIcsrProjectList = async (filters, token) => {
   }
 };
 
-export const fetchMouTrend = async (token) => {
+export const fetchMouTrend = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/mous/trend`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/mous/trend${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch MoU trend');
@@ -109,25 +109,23 @@ export const fetchPatentList = async (filters, token) => {
   }
 };
 
-export const fetchExternshipSummary = async (filters, token) => {
+export const fetchExternshipAnalytics = async (filters, token) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/externships/summary${buildQuery(filters)}`,
-      authHeaders(token)
-    );
+    const response = await axios.get(`${API_BASE_URL}/externships/analytics${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
-    handleError(error, 'Failed to fetch externship summary');
+    handleError(error, 'Failed to fetch externship analytics');
   }
 };
 
+export const fetchExternshipSummary = async (filters, token) => {
+  // Deprecated: use fetchExternshipAnalytics instead
+  return fetchExternshipAnalytics(filters, token);
+};
+
 export const fetchExternshipList = async (filters, token) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/externships/list${buildQuery(filters)}`, authHeaders(token));
-    return response.data;
-  } catch (error) {
-    handleError(error, 'Failed to fetch externship records');
-  }
+  // Deprecated: use fetchExternshipAnalytics instead
+  return fetchExternshipAnalytics(filters, token);
 };
 
 export const fetchPublicationSummary = async (filters, token) => {

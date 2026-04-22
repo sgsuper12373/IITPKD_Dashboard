@@ -11,7 +11,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 
 innovation_bp = Blueprint('innovation', __name__)
@@ -67,7 +67,7 @@ def _data_available() -> bool:
             _table_exists(conn, INNOVATION_PROJECTS_TABLE)
         )
     finally:
-        conn.close()
+        release_db_connection(conn)
 
 
 def _iptif_data_available() -> bool:
@@ -83,7 +83,7 @@ def _iptif_data_available() -> bool:
             _table_exists(conn, IPTIF_FACILITIES_TABLE)
         )
     finally:
-        conn.close()
+        release_db_connection(conn)
 
 
 def _techin_data_available() -> bool:
@@ -98,7 +98,7 @@ def _techin_data_available() -> bool:
             _table_exists(conn, TECHIN_STARTUP_TABLE)
         )
     finally:
-        conn.close()
+        release_db_connection(conn)
 
 
 def build_where_clause(filter_mapping: Dict[str, str], filters: Dict[str, Any]) -> Tuple[str, List]:
@@ -163,7 +163,7 @@ def get_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/yearly-growth', methods=['GET'])
@@ -245,7 +245,7 @@ def get_yearly_growth(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/sector-distribution', methods=['GET'])
@@ -321,7 +321,7 @@ def get_sector_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/startups', methods=['GET'])
@@ -436,7 +436,7 @@ def get_startups(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/filter-options', methods=['GET'])
@@ -489,7 +489,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ==========================================
@@ -534,7 +534,7 @@ def get_iptif_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/iptif/trends/projects', methods=['GET'])
@@ -602,7 +602,7 @@ def get_iptif_projects(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/iptif/trends/programs', methods=['GET'])
@@ -664,7 +664,7 @@ def get_iptif_programs(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/iptif/trends/startups', methods=['GET'])
@@ -726,7 +726,7 @@ def get_iptif_startups(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/iptif/trends/facilities', methods=['GET'])
@@ -784,7 +784,7 @@ def get_iptif_facilities_revenue(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/iptif/filter-options', methods=['GET'])
@@ -853,7 +853,7 @@ def get_iptif_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 # ==========================================
@@ -914,7 +914,7 @@ def get_techin_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/techin/trends/programs', methods=['GET'])
@@ -976,7 +976,7 @@ def get_techin_programs(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/techin/trends/skill-dev', methods=['GET'])
@@ -1038,7 +1038,7 @@ def get_techin_skill_dev(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/techin/trends/startups', methods=['GET'])
@@ -1100,7 +1100,7 @@ def get_techin_startups(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @innovation_bp.route('/techin/filter-options', methods=['GET'])
@@ -1159,5 +1159,5 @@ def get_techin_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 

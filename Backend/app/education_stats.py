@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from psycopg2.errors import UndefinedTable
 
 from .auth import token_required
-from .db import get_db_connection
+from .db import get_db_connection, release_db_connection
 
 education_bp = Blueprint('education', __name__)
 
@@ -126,7 +126,7 @@ def fetch_rows(where_clause, params, extra_columns=''):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 def faculty_engagement_table_exists():
     conn = None
     cur = None
@@ -155,7 +155,7 @@ def faculty_engagement_table_exists():
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 def compute_summary(rows):
     today = date.today()
     summary_map = {eng_type: {'total': 0, 'active': 0} for eng_type in ENGAGEMENT_TYPES}
@@ -251,7 +251,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @education_bp.route('/summary', methods=['GET'])
@@ -384,7 +384,7 @@ def get_department_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @education_bp.route('/year-trend', methods=['GET'])
@@ -453,7 +453,7 @@ def get_year_trend(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @education_bp.route('/type-distribution', methods=['GET'])
@@ -510,7 +510,7 @@ def get_type_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
 
 @education_bp.route('/list', methods=['GET'])
@@ -591,5 +591,5 @@ def get_faculty_engagement_list(current_user_id):
         if cur:
             cur.close()
         if conn:
-            conn.close()
+            release_db_connection(conn)
 
