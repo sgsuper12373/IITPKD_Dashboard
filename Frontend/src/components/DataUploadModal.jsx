@@ -142,8 +142,8 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                 };
             case 'courses_table':
                 return {
-                    headers: ["course_code", "course_name", "credit_l_t_p_c", "course_category", "proposing_faculty_name", "faculty_affiliation", "target_programme", "target_discipline", "prerequisite", "date_of_proposal", "proposal_type", "bac_number", "senate_number", "course_proposal_pdf", "is_industry_course", "industry_partner", "industry_coordinator_name", "industry_course_status_currentay", "course_status_history"],
-                    sample: ["Sample course_code", "Sample course_name", "Sample credit_l_t_p_c", "Sample course_category", "Sample proposing_faculty_name", "Sample faculty_affiliation", "Sample target_programme", "Sample target_discipline", "Sample prerequisite", "2023-01-01", "Sample proposal_type", "1", "1", "Sample course_proposal_pdf", "Sample is_industry_course", "Sample industry_partner", "Sample industry_coordinator_name", "Sample industry_course_status_currentay", "Sample course_status_history"]
+                    headers: ["course_code", "course_name", "credit_l_t_p_c", "course_category", "proposing_faculty_name", "faculty_affiliation", "target_programme", "target_discipline", "prerequisite", "date_of_proposal", "proposal_type", "bac_number", "senate_number", "course_proposal_pdf", "is_industry_course", "industry_partner", "industry_coordinator_name", "course_status_currentay", "course_status_history"],
+                    sample: ["Sample course_code", "Sample course_name", "Sample credit_l_t_p_c", "Sample course_category", "Sample proposing_faculty_name", "Sample faculty_affiliation", "Sample target_programme", "Sample target_discipline", "Sample prerequisite", "2023-01-01", "Sample proposal_type", "1", "1", "Sample course_proposal_pdf", "Sample is_industry_course", "Sample industry_partner", "Sample industry_coordinator_name", "Sample course_status_currentay", "Sample course_status_history"]
                 };
             case 'employees':
                 return {
@@ -162,8 +162,8 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                 };
             case 'faculty_engagement':
                 return {
-                    headers: ["engagement_code", "faculty_name", "engagement_type", "department", "startdate", "enddate", "duration_months", "year", "remarks", "created_at"],
-                    sample: ["Sample engagement_code", "Sample faculty_name", "Sample engagement_type", "Sample department", "2023-01-01", "2023-01-01", "1", "1", "Sample remarks", "2023-01-01"]
+                    headers: ["engagement_code", "faculty_name", "engagement_type", "department", "startdate", "enddate", "duration_months", "year", "remarks", "fc_bg_type"],
+                    sample: ["Sample engagement_code", "Sample faculty_name", "Sample engagement_type", "Sample department", "2023-01-01", "2023-01-01", "1", "1", "Sample remarks", "Academia"]
                 };
             case 'icc_yearwise':
                 return {
@@ -182,8 +182,8 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                 };
             case 'nirf_ranking':
                 return {
-                    headers: ["year", "tlr_score", "rpc_score", "go_score", "oi_score", "pr_score"],
-                    sample: ["1", "100.5", "100.5", "100.5", "100.5", "100.5"]
+                    headers: ["year", "tlr_score", "rpc_score", "go_score", "oi_score", "pr_score", "rank"],
+                    sample: ["2024", "100.5", "100.5", "100.5", "100.5", "100.5", "1"]
                 };
             case 'open_house':
                 return {
