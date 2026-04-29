@@ -36,7 +36,7 @@ import ConclaveSection from './components/ConclaveSection';
 import OpenHouseSection from './components/OpenHouseSection';
 import NptelSection from './components/NptelSection';
 import UbaSection from './components/UbaSection';
-import SocialEngagementsSection from './components/SocialEngagements';
+import SocialEngagement from './components/SocialEngagement';
 import StudentsEngagementSection from './components/StudentsEngagement';
 import OutreachSection from './components/OutreachSection';
 
@@ -146,10 +146,21 @@ function App() {
           <Route path="outreach-extension/open-house" element={<OpenHouseSection user={user} />} />
           <Route path="outreach-extension/nptel" element={<NptelSection user={user} />} />
           <Route path="outreach-extension/uba" element={<UbaSection user={user} />} />
-          {/* Add the new Students Engagement route */}
-          <Route path="outreach-extension/social-engagements" element={<SocialEngagementsSection user={user} />} />
+          {/* Admin social/students engagement routes */}
+          <Route path="outreach-extension/social-engagements" element={<SocialEngagement user={user} />} />
           <Route path="outreach-extension/students-engagement" element={<StudentsEngagementSection user={user} />} />
           <Route path="outreach-extension/outreach" element={<OutreachSection user={user} />} />
+          {/* Public view sub-routes — social engagement */}
+          <Route path="outreach-extension/social-engagement" element={<SocialEngagement user={user} />} />
+          <Route path="outreach-extension/social-engagement/UBA" element={<UbaSection user={user} isPublicView={true} />} />
+          <Route path="outreach-extension/social-engagement/OpenHouse" element={<OpenHouseSection user={user} isPublicView={true} />} />
+          <Route path="outreach-extension/social-engagement/InstituteVisits" element={<OutreachSection user={user} isPublicView={true} programKey="institute_visits" />} />
+          <Route path="outreach-extension/social-engagement/NSS" element={<OutreachSection user={user} isPublicView={true} programKey="nss_activities" />} />
+          {/* Public view sub-routes — students engagement */}
+          <Route path="outreach-extension/students-engagement/nptel" element={<NptelSection user={user} isPublicView={true} />} />
+          <Route path="outreach-extension/students-engagement/pmc" element={<OutreachSection user={user} isPublicView={true} programKey="palakkad_math_circle" />} />
+          <Route path="outreach-extension/students-engagement/pbd" element={<OutreachSection user={user} isPublicView={true} programKey="pale_blue_dot" />} />
+          <Route path="outreach-extension/students-engagement/sq" element={<OutreachSection user={user} isPublicView={true} programKey="science_quest" />} />
           <Route path="profile" element={<Profile user={user} />} />
           <Route path="upload" element={<UploadForm token={token} onLogout={handleLogout} />} />
           <Route path="create-user" element={<CreateUser user={user} token={token} />} />

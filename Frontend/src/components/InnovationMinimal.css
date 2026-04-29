@@ -39,6 +39,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -49,7 +50,7 @@
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.5s var(--transition-smooth),
-              transform 0.5s var(--transition-smooth);
+    transform 0.5s var(--transition-smooth);
 }
 
 .innovation-page-header.header-minimized {
@@ -71,7 +72,7 @@
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.5s var(--transition-smooth),
-              transform 0.5s var(--transition-smooth);
+    transform 0.5s var(--transition-smooth);
 }
 
 .innovation-sections-grid.grid-hidden {
@@ -92,16 +93,20 @@
   padding: 2.5rem 2rem;
   min-height: 200px;
 
-  background: #ffffff; /* solid for readability */
+  background: #ffffff;
+  /* solid for readability */
   border-radius: 20px;
 
   /* Glass-like edge depth */
   border: 1px solid rgba(255, 255, 255, 0.9);
 
   box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.8),   /* inner top highlight */
-    inset 0 -1px 1px rgba(0,0,0,0.04),      /* subtle inner depth */
-    0 8px 24px rgba(0,0,0,0.06);            /* base elevation */
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    /* inner top highlight */
+    inset 0 -1px 1px rgba(0, 0, 0, 0.04),
+    /* subtle inner depth */
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  /* base elevation */
 
   cursor: pointer;
   overflow: hidden;
@@ -116,13 +121,11 @@
   border-radius: 20px;
   pointer-events: none;
 
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.9) 0%,
-    rgba(255,255,255,0.4) 30%,
-    rgba(255,255,255,0.1) 60%,
-    rgba(255,255,255,0.8) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.4) 30%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0.8) 100%);
 
   opacity: 0.5;
 }
@@ -132,6 +135,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -142,9 +146,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(247, 166, 0, 0.02) 0%, 
-    rgba(247, 166, 0, 0.06) 100%);
+  background: linear-gradient(135deg,
+      rgba(247, 166, 0, 0.02) 0%,
+      rgba(247, 166, 0, 0.06) 100%);
   opacity: 0;
   transition: opacity 0.3s var(--transition-smooth);
 }
@@ -153,11 +157,12 @@
   transform: translateY(-6px) scale(1.01);
 
   box-shadow:
-    inset 0 2px 4px rgba(255,255,255,0.9),
-    0 20px 50px rgba(0,0,0,0.12),
-    0 0 30px rgba(247,166,0,0.18); /* soft orange aura */
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    0 20px 50px rgba(0, 0, 0, 0.12),
+    0 0 30px rgba(247, 166, 0, 0.18);
+  /* soft orange aura */
 
-  border-color: rgba(247,166,0,0.35);
+  border-color: rgba(247, 166, 0, 0.35);
 }
 
 .innovation-section-card:hover::before {
@@ -181,18 +186,18 @@
   justify-content: center;
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, 
-    rgba(247, 166, 0, 0.1) 0%, 
-    rgba(247, 166, 0, 0.05) 100%);
+  background: linear-gradient(135deg,
+      rgba(247, 166, 0, 0.1) 0%,
+      rgba(247, 166, 0, 0.05) 100%);
   border-radius: 18px;
   transition: all 0.4s var(--transition-spring);
 }
 
 .innovation-section-card:hover .innovation-card-icon {
   transform: scale(1.1) rotate(5deg);
-  background: linear-gradient(135deg, 
-    rgba(247, 166, 0, 0.15) 0%, 
-    rgba(247, 166, 0, 0.08) 100%);
+  background: linear-gradient(135deg,
+      rgba(247, 166, 0, 0.15) 0%,
+      rgba(247, 166, 0, 0.08) 100%);
 }
 
 /* ===================================================== */
@@ -257,6 +262,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -273,7 +279,7 @@
   border-radius: 24px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  padding: 1.2rem;  
+  padding: 1.2rem;
   animation: cardExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center top;
 }
@@ -283,6 +289,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -297,9 +304,10 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 2.5rem;
+  padding: .2rem .5rem;
   border-bottom: 1px solid var(--border-light);
-  background: linear-gradient(to bottom, #ffffff, #fafafa);
+  margin-bottom: 0.75rem;
+  /* background: linear-gradient(to bottom, #ffffff, #fafafa); */
 }
 
 /* Back Button */
@@ -308,19 +316,19 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.65rem 1.25rem;
-  
+
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: 100px;
-  
+
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary);
-  
+
   cursor: pointer;
   transition: all 0.25s var(--transition-smooth);
-  
+
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
 }
@@ -354,12 +362,12 @@
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  background: linear-gradient(135deg, 
-    rgba(247, 166, 0, 0.12) 0%, 
-    rgba(247, 166, 0, 0.06) 100%);
+  background: linear-gradient(135deg,
+      rgba(247, 166, 0, 0.12) 0%,
+      rgba(247, 166, 0, 0.06) 100%);
   border-radius: 14px;
   flex-shrink: 0;
-  
+
   animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
 }
 
@@ -368,6 +376,7 @@
     opacity: 0;
     transform: scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -384,7 +393,7 @@
   line-height: 1.4;
   letter-spacing: -0.01em;
   flex-grow: 1;
-  
+
   animation: textSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.15s backwards;
 }
 
@@ -393,6 +402,7 @@
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -412,13 +422,14 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 /* Remove extra padding from child components */
-.innovation-content-area > div {
+.innovation-content-area>div {
   margin: 0;
 }
 
@@ -432,6 +443,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -440,15 +452,15 @@
 
 /* Hide duplicate headers from child components */
 .innovation-content-area .section-title,
-.innovation-content-area .page-content > h1:first-child,
+.innovation-content-area .page-content>h1:first-child,
 .innovation-content-area h1:first-child,
 .innovation-content-area h2:first-child {
   display: none;
 }
 
 /* Hide the page header description from child components */
-.innovation-content-area .page-content > p:first-of-type,
-.innovation-content-area > div > .page-content > p:first-of-type {
+.innovation-content-area .page-content>p:first-of-type,
+.innovation-content-area>div>.page-content>p:first-of-type {
   display: none;
 }
 
@@ -467,33 +479,33 @@
     gap: 1rem;
     margin-top: 2rem;
   }
-  
+
   .innovation-section-card {
     padding: 2rem 1.5rem;
     min-height: 180px;
   }
-  
+
   .innovation-card-icon {
     width: 64px;
     height: 64px;
     font-size: 2.2rem;
   }
-  
+
   .innovation-card-title {
     font-size: 1.3rem;
   }
-  
+
   .innovation-top-bar {
     padding: 1.5rem;
     gap: 0.75rem;
   }
-  
+
   .innovation-icon-header {
     width: 44px;
     height: 44px;
     font-size: 1.75rem;
   }
-  
+
   .innovation-overview-text {
     font-size: 1rem;
   }
@@ -504,31 +516,31 @@
     padding: 1.5rem;
     min-height: 160px;
   }
-  
+
   .innovation-card-title {
     font-size: 1.2rem;
   }
-  
+
   .innovation-card-subtitle {
     font-size: 0.875rem;
   }
-  
+
   .innovation-top-bar {
     flex-wrap: wrap;
     padding: 1.25rem;
   }
-  
+
   .innovation-back-button {
     width: 100%;
     justify-content: center;
   }
-  
+
   .innovation-icon-header {
     width: 40px;
     height: 40px;
     font-size: 1.5rem;
   }
-  
+
   .innovation-overview-text {
     font-size: 0.95rem;
   }
@@ -543,11 +555,11 @@
     transform: none;
     box-shadow: var(--shadow-md);
   }
-  
+
   .innovation-section-card:active {
     transform: scale(0.97);
   }
-  
+
   .innovation-card-arrow {
     opacity: 0.5;
     transform: translateX(0);
@@ -570,6 +582,7 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

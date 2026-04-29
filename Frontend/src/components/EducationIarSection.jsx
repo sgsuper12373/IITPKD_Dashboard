@@ -10,7 +10,8 @@ import {
   Tooltip,
   Legend,
   BarChart,
-  Bar, LabelList} from 'recharts';
+  Bar, LabelList
+} from 'recharts';
 
 import {
   fetchIarMouFilterOptions,
@@ -49,7 +50,7 @@ function EducationIarSection({ user, isPublicView = false }) {
   const [totalMous, setTotalMous] = useState(0);
   const [mouTrend, setMouTrend] = useState([]);
   const [mouList, setMouList] = useState([]);
-  
+
   const [viewType, setViewType] = useState('trend'); // 'trend' | 'directory'
   const [chartMode, setChartMode] = useState('bar'); // 'bar' | 'trend'
 
@@ -86,7 +87,7 @@ function EducationIarSection({ user, isPublicView = false }) {
         const trendData = trendResp?.data || [];
         setMouTrend(trendData);
         setMouList(listResp?.data || []);
-        
+
         // Sum total from trend data
         setTotalMous(trendData.reduce((sum, row) => sum + (Number(row.total) || 0), 0));
       } catch (err) {
@@ -111,7 +112,7 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   return (
     <div className={`academic-section page-container ${isPublicView ? 'public-view' : ''}`}>
-      <div className="page-content performance-render-auto">
+      <div className={isPublicView ? '' : 'page-content'}>
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/education')} style={{ marginBottom: '20px' }}>
             ← Back to Education
@@ -125,7 +126,7 @@ function EducationIarSection({ user, isPublicView = false }) {
             </h1>
             <p className="page-subtitle">Track and manage collaborative IAR MoUs</p>
           </div>
-          
+
           {!isPublicView && (
             <div className="page-actions-group">
               {user && user.role_id === 3 && (
@@ -141,8 +142,8 @@ function EducationIarSection({ user, isPublicView = false }) {
 
         {error && <div className="error-message" style={{ margin: '20px 0', padding: '15px', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '8px' }}>{error}</div>}
 
-          {!error && (
-            <>
+        {!error && (
+          <>
             <div style={{ marginBottom: '30px' }}>
               <div style={{
                 background: `linear-gradient(135deg, ${IAR_MOU_COLOR} 0%, #0d9488 100%)`,
@@ -234,7 +235,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                     <span style={{ fontSize: '24px' }}>{viewType === 'trend' ? '📈' : '📋'}</span> {viewType === 'trend' ? 'IAR MoUs Trend' : 'IAR MoUs Directory'}
                   </h2>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId={viewType === 'trend' ? "iar-mou-trend-container" : "iar-mou-directory-table"}
                   data={viewType === 'trend' ? mouTrendChartData : mouList}
                   headers={viewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']}
@@ -295,8 +296,8 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
                           <Bar dataKey="total" name="MoUs Signed" fill={IAR_MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
-</Bar>
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+                          </Bar>
                         </BarChart>
                       ) : (
                         <LineChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -308,8 +309,8 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <Line type="linear" dataKey="total" name="MoUs Signed"
                             stroke={IAR_MOU_COLOR} strokeWidth={3}
                             dot={{ r: 6, fill: IAR_MOU_COLOR }} activeDot={{ r: 8 }}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
-</Line>
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+                          </Line>
                         </LineChart>
                       )}
                     </ResponsiveContainer>
@@ -359,7 +360,7 @@ function EducationIarSection({ user, isPublicView = false }) {
 
             </section>
           </>
-          )}
+        )}
       </div>
 
       <DataUploadModal

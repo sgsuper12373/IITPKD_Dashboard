@@ -275,7 +275,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
-      <div className="page-content performance-render-auto">
+      <div className={isPublicView ? '' : 'page-content'}>
 
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
@@ -298,7 +298,7 @@ function AcademicSection({ user, isPublicView = false }) {
           <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
             Students On Roll
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="academic-onroll-cards-container"
             data={[onrollSummary]}
             headers={['Total On Roll', 'UG', 'PG', 'Research']}
@@ -375,7 +375,7 @@ function AcademicSection({ user, isPublicView = false }) {
           <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
             Student Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="academic-summary-cards-container"
             data={[cumulativeSummary]}
             headers={['Total Students', 'UG', 'PG', 'Research']}
@@ -591,7 +591,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
                 {/* ── Area Chart (Trend mode) ── */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId={chartType === 'Bar' ? "academic-gender-bar-chart" : "academic-gender-trend-chart"}
                     data={displayGenderTrendData}
                     headers={['Year', 'Total', 'Male', 'Female', 'Transgender']}
@@ -697,7 +697,7 @@ function AcademicSection({ user, isPublicView = false }) {
               <div className={`bar-chart-container trend-chart ${hasProgramTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                   <h3 className="chart-heading" style={{ margin: 0 }}>Student Strength — UG / PG / Research / Total</h3>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="academic-program-strength-chart"
                     data={ugPgResearchTrend}
                     headers={['Year', 'UG', 'PG', 'Research', 'Total']}

@@ -2,68 +2,70 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Page.css';
 import './PeopleCampusMinimal.css';
-import './StudentsEngagement.css';
+import './SocialEngagement.css';
 
-import NptelSection from './NptelSection';
+import UbaSection from './UbaSection';
+import OpenHouseSection from './OpenHouseSection';
 import OutreachSection from './OutreachSection';
 
 const SECTIONS = [
   {
-    id: 'nptel',
-    icon: '📚',
-    title: 'NPTEL – CCE',
-    subtitle: 'National Programme on Technology Enhanced Learning',
-    expandedTitle: 'Track student participation in NPTEL online learning and certification programmes.',
+    id: 'uba',
+    icon: '🌾',
+    title: 'Unnat Bharat Abhiyan',
+    subtitle: 'Rural Development Initiatives',
+    expandedTitle: 'Engaging with communities through rural development and village adoption programs.',
     description:
-      'Access NPTEL courses, certifications, local chapters, and student enrollment data. Track student participation in online learning and certification programmes.',
-    grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    shadow: 'rgba(102,126,234,0.3)',
-    shadowHover: 'rgba(102,126,234,0.45)',
-    component: NptelSection,
+      'Track UBA projects, community engagement events, village adoption programs, and the impact of rural development initiatives.',
+    grad: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    shadow: 'rgba(240,147,251,0.3)',
+    shadowHover: 'rgba(240,147,251,0.45)',
+    component: UbaSection,
     programKey: null,
   },
   {
-    id: 'pmc',
-    icon: '📐',
-    title: 'Palakkad Math Circle',
-    subtitle: 'Mathematics enrichment sessions',
-    expandedTitle: 'Mathematics enrichment sessions for school students.',
-    description: 'Mathematics enrichment sessions for school students.',
-    grad: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
-    shadow: 'rgba(137,247,254,0.3)',
-    shadowHover: 'rgba(137,247,254,0.45)',
-    component: OutreachSection,
-    programKey: 'palakkad_math_circle',
+    id: 'open-house',
+    icon: '🏛️',
+    title: 'Open House',
+    subtitle: 'Annual Community Showcase',
+    expandedTitle: 'Explore Open House events, visitor statistics, and departmental participation.',
+    description:
+      'Explore Open House events, visitor statistics, departmental participation, and key highlights from each edition of this prestigious annual event.',
+    grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    shadow: 'rgba(102,126,234,0.3)',
+    shadowHover: 'rgba(102,126,234,0.45)',
+    component: OpenHouseSection,
+    programKey: null,
   },
   {
-    id: 'pbd',
-    icon: '🌠',
-    title: 'Pale Blue Dot',
-    subtitle: 'Public lecture series',
-    expandedTitle: 'Astronomy and space science public lecture series.',
-    description: 'Astronomy and space science public lecture series.',
-    grad: 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)',
-    shadow: 'rgba(255,8,68,0.3)',
-    shadowHover: 'rgba(255,8,68,0.45)',
+    id: 'institute-visits',
+    icon: '🏫',
+    title: 'Institute Visits',
+    subtitle: 'Organised institution visits',
+    expandedTitle: 'Organised visits by institutions to the IIT Palakkad campus.',
+    description: 'Organised visits by institutions to the IIT Palakkad campus.',
+    grad: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    shadow: 'rgba(67,233,123,0.3)',
+    shadowHover: 'rgba(67,233,123,0.45)',
     component: OutreachSection,
-    programKey: 'pale_blue_dot',
+    programKey: 'institute_visits',
   },
   {
-    id: 'sq',
-    icon: '🔬',
-    title: 'Science Quest',
-    subtitle: 'Science outreach for school students',
-    expandedTitle: 'Science outreach and laboratory programmes for school students.',
-    description: 'Science outreach and laboratory programmes for school students.',
-    grad: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    shadow: 'rgba(79,172,254,0.3)',
-    shadowHover: 'rgba(79,172,254,0.45)',
+    id: 'nss',
+    icon: '🤝',
+    title: 'NSS Activities',
+    subtitle: 'Community service initiatives',
+    expandedTitle: 'National Service Scheme community service initiatives.',
+    description: 'National Service Scheme community service initiatives.',
+    grad: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    shadow: 'rgba(250,112,154,0.3)',
+    shadowHover: 'rgba(250,112,154,0.45)',
     component: OutreachSection,
-    programKey: 'science_quest',
+    programKey: 'nss_activities',
   },
 ];
 
-function StudentsEngagementSection({ user, isPublicView = false }) {
+function SocialEngagementsSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
 
@@ -72,12 +74,12 @@ function StudentsEngagementSection({ user, isPublicView = false }) {
 
   const grid = (
     <>
-      <div className="page-container-studentsEngagement">
-        <div className='page-content-studentsEngagement'>
+      <div className="page-container-socialEngagement">
+        <div className='page-content-socialEngagement'>
           <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ margin: '0 0 0.5rem 0' }}>Students Engagement</h1>
+            <h1 style={{ margin: '0 0 0.5rem 0' }}>Social Engagements</h1>
             <p style={{ color: '#666', fontSize: '1rem', margin: 0 }}>
-              Student participation in NPTEL courses, certifications, and learning programmes
+              Community outreach: Open House and UBA projects
             </p>
           </div>
 
@@ -97,7 +99,6 @@ function StudentsEngagementSection({ user, isPublicView = false }) {
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
-                  height: '100%',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
@@ -113,7 +114,9 @@ function StudentsEngagementSection({ user, isPublicView = false }) {
 
                 <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '24px' }}>
-                    <span style={{ fontSize: '64px', background: 'rgba(255,255,255,0.2)', padding: '20px', borderRadius: '24px', marginBottom: '16px', display: 'inline-block' }}>{s.icon}</span>
+                    <span style={{ fontSize: '64px', background: 'rgba(255,255,255,0.2)', padding: '20px', borderRadius: '24px', marginBottom: '16px', display: 'inline-block' }}>
+                      {s.icon}
+                    </span>
                     <h2 style={{ margin: 0, color: 'white', fontSize: '32px', fontWeight: 'bold', letterSpacing: '1px' }}>{s.title}</h2>
                     <p style={{ margin: '8px 0 0 0', color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>{s.subtitle}</p>
                   </div>
@@ -174,4 +177,4 @@ function StudentsEngagementSection({ user, isPublicView = false }) {
   );
 }
 
-export default StudentsEngagementSection;
+export default SocialEngagementsSection;

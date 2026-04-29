@@ -357,7 +357,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
           }}>
             {matching.length} {matching.length === 1 ? 'record' : 'records'}
           </span>
-          <ExportMenu 
+          <ExportMenu
             elementId="outreach-program-records-container"
             data={matching}
             headers={['Year', 'Program Name', 'Type', 'Audience', 'Attendees']}
@@ -400,25 +400,25 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
             />
           ) : (
             <div style={{
-              display: 'grid',
+              /*display: 'grid',*/
               gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: '1.5rem'
             }}>
-            <div id="outreach-program-records-container" style={{
-              display: 'grid',
-              gridTemplateColumns: 'inherit',
-              gap: 'inherit',
-              width: '100%'
-            }}>
-              {matching.map((record, idx) => (
-                <GridRecordCard
-                  key={record.id ?? idx}
-                  record={record}
-                  slNo={idx + 1}
-                  onClick={() => setSelectedRecord(record)}
-                />
-              ))}
-            </div>
+              <div id="outreach-program-records-container" style={{
+                display: 'grid',
+                gridTemplateColumns: 'inherit',
+                gap: 'inherit',
+                width: '100%'
+              }}>
+                {matching.map((record, idx) => (
+                  <GridRecordCard
+                    key={record.id ?? idx}
+                    record={record}
+                    slNo={idx + 1}
+                    onClick={() => setSelectedRecord(record)}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -436,7 +436,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-function OutreachSection({ user, isPublicView = false }) {
+function OutreachSection({ user, isPublicView = false, programKey = null }) {
   const navigate = useNavigate();
   const uploadVersion = useUploadRefresh();
   const token = localStorage.getItem('authToken');
@@ -444,16 +444,18 @@ function OutreachSection({ user, isPublicView = false }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedProgram, setSelectedProgram] = useState(
+    programKey ? (PROGRAM_CONFIGS.find((c) => c.key === programKey) ?? null) : null
+  );
 
-  // Auto-select program from URL query param (?program=science_quest)
+  // Auto-select program from prop or URL query param (?program=science_quest)
   useEffect(() => {
-    const programKey = searchParams.get('program');
-    if (programKey) {
-      const found = PROGRAM_CONFIGS.find((c) => c.key === programKey);
+    const key = programKey || searchParams.get('program');
+    if (key) {
+      const found = PROGRAM_CONFIGS.find((c) => c.key === key);
       if (found) setSelectedProgram(found);
     }
-  }, [searchParams]);
+  }, [searchParams, programKey]);
 
   useEffect(() => {
     if (!token) return;
@@ -468,8 +470,8 @@ function OutreachSection({ user, isPublicView = false }) {
 
   if (selectedProgram) {
     return (
-      <div className="page-container">
-        <div className="page-content">
+      <div className={isPublicView ? '' : 'page-container'}>
+        <div className={isPublicView ? '' : 'page-content'}>
           {!isPublicView && (
             <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
               ← Back to Outreach Extension
@@ -488,8 +490,8 @@ function OutreachSection({ user, isPublicView = false }) {
   }
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <div className={isPublicView ? '' : 'page-container'}>
+      <div className={isPublicView ? '' : 'page-content'}>
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
             ← Back to Outreach Extension
@@ -503,7 +505,7 @@ function OutreachSection({ user, isPublicView = false }) {
               Select a programme to explore its records.
             </p>
           </div>
-          <ExportMenu 
+          <ExportMenu
             elementId="outreach-programs-summary-container"
             data={PROGRAM_CONFIGS.map(c => ({ title: c.title, count: getCount(c) }))}
             headers={['Program', 'Record Count']}

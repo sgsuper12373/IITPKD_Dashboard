@@ -254,7 +254,7 @@ function Profile({ user }) {
   };
 
   const toggleTableSelection = (tableName) => {
-    setSelectedTables(prev => 
+    setSelectedTables(prev =>
       prev.includes(tableName) ? prev.filter(t => t !== tableName) : [...prev, tableName]
     );
   };
@@ -265,7 +265,7 @@ function Profile({ user }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`Failed to download ${tableName}`);
-      
+
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -362,12 +362,12 @@ function Profile({ user }) {
                     <h3 className="roles-panel-title">Manage Users</h3>
                     {usersError && <div className="roles-msg roles-msg-error">{usersError}</div>}
                     {usersSuccess && <div className="roles-msg roles-msg-success">{usersSuccess}</div>}
-                    
+
                     {usersLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading users…</p>
                     ) : (
-                      <div style={{overflowX: 'auto'}}>
-                        <table className="roles-table" style={{minWidth: '600px'}}>
+                      <div style={{ overflowX: 'auto' }}>
+                        <table className="roles-table" style={{ minWidth: '600px' }}>
                           <thead>
                             <tr>
                               <th>ID</th>
@@ -390,12 +390,12 @@ function Profile({ user }) {
                                       value={editUserRole}
                                       onChange={(e) => setEditUserRole(e.target.value)}
                                       className="roles-edit-input"
-                                      style={{width: 'auto'}}
+                                      style={{ width: 'auto' }}
                                     >
                                       {roles.map(r => <option key={r.id} value={r.id}>{r.id} - {r.name}</option>)}
                                     </select>
                                   ) : (
-                                    <span style={{fontWeight: 600, color: '#333'}}>{u.role_id}</span>
+                                    <span style={{ fontWeight: 600, color: '#333' }}>{u.role_id}</span>
                                   )}
                                 </td>
                                 <td>
@@ -407,7 +407,7 @@ function Profile({ user }) {
                                         value={editUserPassword}
                                         onChange={(e) => setEditUserPassword(e.target.value)}
                                         className="roles-edit-input"
-                                        style={{width: '100%', minWidth: '140px'}}
+                                        style={{ width: '100%', minWidth: '140px' }}
                                       />
                                       <input
                                         type="password"
@@ -415,11 +415,11 @@ function Profile({ user }) {
                                         value={editUserConfirmPassword}
                                         onChange={(e) => setEditUserConfirmPassword(e.target.value)}
                                         className="roles-edit-input"
-                                        style={{width: '100%', minWidth: '140px'}}
+                                        style={{ width: '100%', minWidth: '140px' }}
                                       />
                                     </div>
                                   ) : (
-                                    <span style={{color: '#999', fontSize: '12px'}}>••••••</span>
+                                    <span style={{ color: '#999', fontSize: '12px' }}>••••••</span>
                                   )}
                                 </td>
                                 <td>
@@ -523,7 +523,7 @@ function Profile({ user }) {
                     <h3 className="roles-panel-title">Export Database Tables</h3>
                     {exportError && <div className="roles-msg roles-msg-error">{exportError}</div>}
                     {exportSuccess && <div className="roles-msg roles-msg-success">{exportSuccess}</div>}
-                    
+
                     {exportLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
                     ) : (
@@ -531,8 +531,8 @@ function Profile({ user }) {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px', marginBottom: '20px' }}>
                           {tables.map(t => (
                             <label key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 checked={selectedTables.includes(t)}
                                 onChange={() => toggleTableSelection(t)}
                               />
@@ -540,23 +540,23 @@ function Profile({ user }) {
                             </label>
                           ))}
                         </div>
-                        <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
-                          <button 
-                            className="roles-btn roles-btn-save" 
-                            style={{padding: '8px 16px', fontSize: '14px'}}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <button
+                            className="roles-btn roles-btn-save"
+                            style={{ padding: '8px 16px', fontSize: '14px' }}
                             onClick={handleExportSelected}
                             disabled={selectedTables.length === 0}
                           >
                             Download Selected as CSV
                           </button>
-                          <button 
-                            className="roles-btn roles-btn-edit" 
+                          <button
+                            className="roles-btn roles-btn-edit"
                             onClick={() => setSelectedTables(tables)}
                           >
                             Select All
                           </button>
-                          <button 
-                            className="roles-btn roles-btn-cancel" 
+                          <button
+                            className="roles-btn roles-btn-cancel"
                             onClick={() => setSelectedTables([])}
                           >
                             Deselect All
@@ -572,7 +572,7 @@ function Profile({ user }) {
         ) : (
           <p>Loading user information...</p>
         )}
-        {!canUploadData && <p className="coming-soon">Full profile page implementation coming soon...</p>}
+        {/* {!canUploadData && <p className="coming-soon">Full profile page implementation coming soon...</p>} */}
       </div>
     </div>
   );

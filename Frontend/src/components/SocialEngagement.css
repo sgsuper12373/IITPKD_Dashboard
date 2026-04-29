@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.page-content-socialEngagement {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2.5rem 3rem;
+    background-color: var(--bg-card);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: #1f1f1f;
+    line-height: 1.6;
+}
+
+/* Title */
+.page-content-socialEngagement>h1 {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+    color: #1a0800;
+    margin: 0 0 10px 0;
+}
+
+/* Subtitle (merged duplicate) */
+.page-content-socialEngagement>p {
+    color: #2d2d2d;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .page-content-socialEngagement {
+        padding: 2rem;
+    }
+
+    .page-content-socialEngagement>h1 {
+        font-size: 26px;
+        -webkit-text-stroke: 0.8px #000000;
+    }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .page-content-socialEngagement h1 {
+        font-size: 2rem;
+    }
+}
+
+/* ===================================================== */
+/* SUMMARY CARDS */
+/* ===================================================== */
+
+.page-content-socialEngagement .summary-card {
+    background-color: #fffaf0 !important;
+    border: 1px solid rgba(247, 166, 0, 0.35);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    color: #111111 !important;
+    overflow-wrap: break-word;
+    transition: transform 320ms, box-shadow 320ms;
+}
+
+/* Remove overlays */
+.page-content-socialEngagement .summary-card::before,
+.page-content-socialEngagement .summary-card::after {
+    background: none !important;
+}
+
+/* Label */
+.page-content-socialEngagement .summary-card-label {
+    color: #92400e !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    overflow-wrap: break-word;
+}
+
+/* Value */
+.page-content-socialEngagement .summary-card-value {
+    color: #111111 !important;
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+/* Subtitle */
+.page-content-socialEngagement .summary-subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.3rem;
+}
+
+/* Accent line */
+.page-content-socialEngagement .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 3px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+/* Hover */
+.page-content-socialEngagement .summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* ===================================================== */
+/* GRIEVANCE TABLE */
+/* ===================================================== */
+
+.page-content-socialEngagement .grievance-table-wrapper {
+    background-color: #fffaf0 !important;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(247, 166, 0, 0.35);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* TABLE */
+.page-content-socialEngagement table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.page-content-socialEngagement th {
+    background-color: #fff7ed;
+    color: #92400e;
+    padding: 0.85rem;
+}
+
+.page-content-socialEngagement td {
+    padding: 0.75rem;
+}
+
+/* ===================================================== */
+/* TITLE ANIMATION */
+/* ===================================================== */
+
+.page-content-socialEngagement>h1,
+.page-content-socialEngagement>p {
+    animation: titleFadeIn 0.5s ease;
+}
+
+@keyframes titleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

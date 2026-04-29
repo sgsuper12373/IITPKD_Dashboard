@@ -10,7 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList} from 'recharts';
+  Legend, LabelList
+} from 'recharts';
 import {
   fetchTechinSummary,
   fetchTechinPrograms,
@@ -23,6 +24,7 @@ import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
+import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -180,16 +182,16 @@ function TechinSection({ user, isPublicView = false }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
             <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
-  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Bar>
+              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Bar>
           </BarChart>
         ) : (
           <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
             <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Line>
+              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Line>
           </LineChart>
         )}
       </ResponsiveContainer>
@@ -270,7 +272,7 @@ function TechinSection({ user, isPublicView = false }) {
 
   return (
     <div className={isPublicView ? '' : 'page-container'}>
-      <div className="page-content performance-render-auto">
+      <div className={isPublicView ? '' : 'page-content'}>
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/innovation-entrepreneurship')}>
             ← Back to Innovation &amp; Entrepreneurship
@@ -294,7 +296,7 @@ function TechinSection({ user, isPublicView = false }) {
           <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
             Techin Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="techin-summary-cards-container"
             data={[summary]}
             headers={['Total Programs', 'Skill Dev Programs', 'Total Startups']}
@@ -327,7 +329,7 @@ function TechinSection({ user, isPublicView = false }) {
         {/* Revenue Cards – Row 2 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ marginTop: '0', marginBottom: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
-          <ExportMenu 
+          <ExportMenu
             elementId="techin-revenue-metrics-container"
             data={[summary]}
             headers={['Total Revenue', 'Highest Revenue', 'Average Revenue', 'Lowest Revenue']}
@@ -424,7 +426,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>📊</span> Programs Trend</h2>
                 <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of programs over time.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="techin-programs-chart-container"
                 data={programsTrend}
                 headers={['Year', 'Count']}
@@ -467,7 +469,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🎯</span> Skill Development Trend</h2>
                 <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of skill development programs over time.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="techin-skilldev-chart-container"
                 data={skillDevTrend}
                 headers={['Year', 'Count']}
@@ -510,7 +512,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🚀</span> Startups Growth</h2>
                 <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of startups over time.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="techin-startups-chart-container"
                 data={startupsTrend}
                 headers={['Year', 'Count']}
