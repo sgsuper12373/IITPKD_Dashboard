@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
 import { fetchFilterOptions, fetchGenderDistributionFiltered, fetchGenderTrends, fetchProgramTrends, fetchCumulativeStudentSummary, fetchOnrollSummary } from '../services/academicStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
@@ -7,6 +7,8 @@ import './Page.css';
 import './AcademicSection.css';
 import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
@@ -292,10 +294,20 @@ function AcademicSection({ user, isPublicView = false }) {
         {error && <div className="error-message">{error}</div>}
 
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
-        <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
-          Students On Roll
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Students On Roll
+          </h2>
+          <ExportMenu 
+            elementId="academic-onroll-cards-container"
+            data={[onrollSummary]}
+            headers={['Total On Roll', 'UG', 'PG', 'Research']}
+            keys={['total_onroll', 'ug_onroll', 'pg_onroll', 'research_onroll']}
+            filename="students_on_roll"
+            title="Students On Roll"
+          />
+        </div>
+        <div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {[
             {
               label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll,
@@ -359,10 +371,20 @@ function AcademicSection({ user, isPublicView = false }) {
         </div>
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
-        <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
-          Student Summary
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Student Summary
+          </h2>
+          <ExportMenu 
+            elementId="academic-summary-cards-container"
+            data={[cumulativeSummary]}
+            headers={['Total Students', 'UG', 'PG', 'Research']}
+            keys={['total_students', 'ug_total', 'pg_total', 'research_total']}
+            filename="student_summary"
+            title="Student Summary"
+          />
+        </div>
+        <div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
 
           {/* Year Filter Card */}
           <div style={{
@@ -503,7 +525,7 @@ function AcademicSection({ user, isPublicView = false }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
                   {[
-                    { label: 'Gender', el: <select value={selectedGender} onChange={e => setSelectedGender(e.target.value)} className="filter-select" style={fs}><option value="Total">Total</option><option value="All">M : F : T</option><option value="Male">Male</option><option value="Female">Female</option><option value="Transgender">Transgender</option></select> },
+                    { label: 'Gender', el: <select value={selectedGender} onChange={e => setSelectedGender(e.target.value)} className="filter-select" style={fs}><option value="Total">Total</option><option value="All">M:F:T</option><option value="Male">Male</option><option value="Female">Female</option><option value="Transgender">Transgender</option></select> },
                     { label: 'Program', el: <select value={genderTrendFilters.program || 'All'} onChange={e => handleGenderTrendFilterChange('program', e.target.value)} className="filter-select" style={fs}><option value="All">All</option>{filterOptions.program.map(p => <option key={p} value={p}>{p}</option>)}</select> },
                     { label: 'Batch', el: <select value={genderTrendFilters.batch || 'All'} onChange={e => handleGenderTrendFilterChange('batch', e.target.value)} className="filter-select" style={fs}><option value="All">All</option>{filterOptions.batch.map(b => <option key={b} value={b}>{b}</option>)}</select> },
                     { label: 'Department', el: <select value={genderTrendFilters.department || 'All'} onChange={e => handleGenderTrendFilterChange('department', e.target.value)} className="filter-select" style={fs}><option value="All">All</option>{filterOptions.department.map(d => <option key={d} value={d}>{d}</option>)}</select> },
@@ -568,9 +590,19 @@ function AcademicSection({ user, isPublicView = false }) {
                 </div>
 
                 {/* ── Area Chart (Trend mode) ── */}
-                <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                  <ExportMenu 
+                    elementId={chartType === 'Bar' ? "academic-gender-bar-chart" : "academic-gender-trend-chart"}
+                    data={displayGenderTrendData}
+                    headers={['Year', 'Total', 'Male', 'Female', 'Transgender']}
+                    keys={['year', 'Total', 'Male', 'Female', 'Transgender']}
+                    filename="academic_gender_trend"
+                    title="Gender Trend"
+                  />
+                </div>
+                <div id="academic-gender-trend-chart" className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={340}>
-                    <AreaChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
+                    <LineChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <AreaGradients />
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis
@@ -593,28 +625,29 @@ function AcademicSection({ user, isPublicView = false }) {
                         width={45}
                         label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }}
                       />
-                      <Tooltip {...tooltipStyle} />
+                      <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top" align="center"
                         content={(props) => <InlineLegend {...props} />}
                       />
                       {areaKeys.map(key => (
-                        <Area
-                          key={key} type="monotone" dataKey={key}
+                        <Line
+                          key={key} type="linear" dataKey={key}
                           stroke={AREA_COLORS[key]?.stroke || '#667eea'}
-                          fill={AREA_COLORS[key]?.fill || 'url(#colorTotal)'}
                           strokeWidth={2.5}
                           dot={{ fill: AREA_COLORS[key]?.stroke || '#667eea', r: 4, strokeWidth: 0 }}
                           activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
                           animationDuration={800} animationEasing="ease-in-out"
-                        />
+                        >
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#667eea' }} />
+                        </Line>
                       ))}
-                    </AreaChart>
+                    </LineChart>
                   </ResponsiveContainer>
                 </div>
 
                 {/* ── Bar Chart ── */}
-                <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                <div id="academic-gender-bar-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={340}>
                     <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
@@ -634,11 +667,25 @@ function AcademicSection({ user, isPublicView = false }) {
                         verticalAlign="top" align="center"
                         content={(props) => <InlineLegend {...props} />}
                       />
-                      {selectedGender === 'Total' && <Bar dataKey="Total" fill="#667eea" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                      {selectedGender === 'All' && <><Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /><Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" /></>}
-                      {selectedGender === 'Male' && <Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                      {selectedGender === 'Female' && <Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
-                      {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out" />}
+                      {selectedGender === 'Total' && <Bar dataKey="Total" fill="#667eea" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey="Total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                      </Bar>}
+                      {selectedGender === 'All' && <><Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey="Male" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[0] }} />
+                      </Bar><Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                          <LabelList dataKey="Female" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[1] }} />
+                        </Bar><Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                          <LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} />
+                        </Bar></>}
+                      {selectedGender === 'Male' && <Bar dataKey="Male" fill={COLORS[0]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey="Male" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[0] }} />
+                      </Bar>}
+                      {selectedGender === 'Female' && <Bar dataKey="Female" fill={COLORS[1]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey="Female" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[1] }} />
+                      </Bar>}
+                      {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} />
+                      </Bar>}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -648,22 +695,40 @@ function AcademicSection({ user, isPublicView = false }) {
             {/* ── UG / PG / Research chart ── */}
             {programChartMode === 'program' && (
               <div className={`bar-chart-container trend-chart ${hasProgramTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
-                <h3 className="chart-heading">Student Strength — UG / PG / Research / Total</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                  <h3 className="chart-heading" style={{ margin: 0 }}>Student Strength — UG / PG / Research / Total</h3>
+                  <ExportMenu 
+                    elementId="academic-program-strength-chart"
+                    data={ugPgResearchTrend}
+                    headers={['Year', 'UG', 'PG', 'Research', 'Total']}
+                    keys={['year', 'UG', 'PG', 'Research', 'Total']}
+                    filename="academic_program_strength"
+                    title="Student Strength Overview"
+                  />
+                </div>
                 <div className={`trend-empty-state ${hasProgramTrendData ? 'hidden' : ''}`}><p>No information available for the selected filter</p></div>
 
                 {/* ── Bar chart ── */}
-                <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                <div id="academic-program-strength-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={420}>
                     <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                       <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
-                      <Tooltip {...tooltipStyle} />
+                      <Tooltip content={<CustomTooltip />} />
                       <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
-                      <Bar dataKey="UG" name="UG" fill={GROUP_COLORS.UG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                      <Bar dataKey="PG" name="PG" fill={GROUP_COLORS.PG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                      <Bar dataKey="Research" name="Research" fill={GROUP_COLORS.Research} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
-                      <Bar dataKey="Total" name="Total" fill={GROUP_COLORS.Total} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                      <Bar dataKey="UG" name="UG" fill={GROUP_COLORS.UG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                        <LabelList dataKey="UG" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.UG }} />
+                      </Bar>
+                      <Bar dataKey="PG" name="PG" fill={GROUP_COLORS.PG} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                        <LabelList dataKey="PG" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.PG }} />
+                      </Bar>
+                      <Bar dataKey="Research" name="Research" fill={GROUP_COLORS.Research} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                        <LabelList dataKey="Research" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Research }} />
+                      </Bar>
+                      <Bar dataKey="Total" name="Total" fill={GROUP_COLORS.Total} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                        <LabelList dataKey="Total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Total }} />
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -675,12 +740,20 @@ function AcademicSection({ user, isPublicView = false }) {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                       <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
-                      <Tooltip {...tooltipStyle} />
+                      <Tooltip content={<CustomTooltip />} />
                       <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }} />
-                      <Line type="monotone" dataKey="UG" name="UG" stroke={GROUP_COLORS.UG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                      <Line type="monotone" dataKey="PG" name="PG" stroke={GROUP_COLORS.PG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                      <Line type="monotone" dataKey="Research" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
-                      <Line type="monotone" dataKey="Total" name="Total" stroke={GROUP_COLORS.Total} strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} />
+                      <Line type="linear" dataKey="UG" name="UG" stroke={GROUP_COLORS.UG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}>
+                        <LabelList dataKey="UG" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.UG }} />
+                      </Line>
+                      <Line type="linear" dataKey="PG" name="PG" stroke={GROUP_COLORS.PG} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}>
+                        <LabelList dataKey="PG" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.PG }} />
+                      </Line>
+                      <Line type="linear" dataKey="Research" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}>
+                        <LabelList dataKey="Research" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Research }} />
+                      </Line>
+                      <Line type="linear" dataKey="Total" name="Total" stroke={GROUP_COLORS.Total} strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}>
+                        <LabelList dataKey="Total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Total }} />
+                      </Line>
                     </LineChart>
                   </ResponsiveContainer>
                 </div>

@@ -10,8 +10,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend
-} from 'recharts';
+  Legend, LabelList} from 'recharts';
 import {
   fetchTechinSummary,
   fetchTechinPrograms,
@@ -180,13 +179,17 @@ function TechinSection({ user, isPublicView = false }) {
           <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
-            <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28} />
+            <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
+  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+</Bar>
           </BarChart>
         ) : (
           <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
-            <Line type="monotone" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }} />
+            <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
+  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+</Line>
           </LineChart>
         )}
       </ResponsiveContainer>
@@ -287,8 +290,21 @@ function TechinSection({ user, isPublicView = false }) {
 
         {error && <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Techin Summary
+          </h2>
+          <ExportMenu 
+            elementId="techin-summary-cards-container"
+            data={[summary]}
+            headers={['Total Programs', 'Skill Dev Programs', 'Total Startups']}
+            keys={['total_programs', 'total_skill_dev_programs', 'total_startups']}
+            filename="techin_summary"
+            title="Techin Summary"
+          />
+        </div>
         {/* Summary Cards – Row 1 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '30px' }}>
+        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '30px' }}>
           {[
             { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 15px 30px rgba(102,126,234,0.25)', icon: '📚', label: 'Total Programs', value: summary.total_programs },
             { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 15px 30px rgba(240,147,251,0.25)', icon: '🎯', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
@@ -309,8 +325,18 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
 
         {/* Revenue Cards – Row 2 */}
-        <h3 style={{ marginTop: '0', marginBottom: '20px', color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
-        <div style={{
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h3 style={{ marginTop: '0', marginBottom: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
+          <ExportMenu 
+            elementId="techin-revenue-metrics-container"
+            data={[summary]}
+            headers={['Total Revenue', 'Highest Revenue', 'Average Revenue', 'Lowest Revenue']}
+            keys={['total_startup_revenue', 'highest_revenue', 'average_revenue', 'lowest_revenue']}
+            filename="techin_revenue_metrics"
+            title="Startup Revenue Metrics"
+          />
+        </div>
+        <div id="techin-revenue-metrics-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '20px',
@@ -393,11 +419,25 @@ function TechinSection({ user, isPublicView = false }) {
               </div>
             </div>
             {/* Chart header */}
-            <div className="chart-header" style={{ marginBottom: '12px' }}>
-              <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>📊</span> Programs Trend</h2>
-              <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of programs over time.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-header">
+                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>📊</span> Programs Trend</h2>
+                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of programs over time.</p>
+              </div>
+              <ExportMenu 
+                elementId="techin-programs-chart-container"
+                data={programsTrend}
+                headers={['Year', 'Count']}
+                keys={['year', 'count']}
+                filename="techin_programs_trend"
+                title="Programs Trend"
+              />
             </div>
-            {!repoMode && barLineChart(programsTrend, '#667eea', 'Count')}
+            {!repoMode && (
+              <div id="techin-programs-chart-container">
+                {barLineChart(programsTrend, '#667eea', 'Count')}
+              </div>
+            )}
             {renderTable(programsTable, 'programs')}
           </div>
 
@@ -422,11 +462,25 @@ function TechinSection({ user, isPublicView = false }) {
                   </select></div>
               </div>
             </div>
-            <div className="chart-header" style={{ marginBottom: '12px' }}>
-              <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🎯</span> Skill Development Trend</h2>
-              <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of skill development programs over time.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-header">
+                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🎯</span> Skill Development Trend</h2>
+                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of skill development programs over time.</p>
+              </div>
+              <ExportMenu 
+                elementId="techin-skilldev-chart-container"
+                data={skillDevTrend}
+                headers={['Year', 'Count']}
+                keys={['year', 'count']}
+                filename="techin_skilldev_trend"
+                title="Skill Development Trend"
+              />
             </div>
-            {!repoMode && barLineChart(skillDevTrend, '#f093fb', 'Count')}
+            {!repoMode && (
+              <div id="techin-skilldev-chart-container">
+                {barLineChart(skillDevTrend, '#f093fb', 'Count')}
+              </div>
+            )}
             {renderTable(skillDevTable, 'skillDev')}
           </div>
 
@@ -451,11 +505,25 @@ function TechinSection({ user, isPublicView = false }) {
                   </select></div>
               </div>
             </div>
-            <div className="chart-header" style={{ marginBottom: '12px' }}>
-              <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🚀</span> Startups Growth</h2>
-              <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of startups over time.</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-header">
+                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🚀</span> Startups Growth</h2>
+                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of startups over time.</p>
+              </div>
+              <ExportMenu 
+                elementId="techin-startups-chart-container"
+                data={startupsTrend}
+                headers={['Year', 'Count']}
+                keys={['year', 'count']}
+                filename="techin_startups_growth"
+                title="Startups Growth"
+              />
             </div>
-            {!repoMode && barLineChart(startupsTrend, '#43e97b', 'Count')}
+            {!repoMode && (
+              <div id="techin-startups-chart-container">
+                {barLineChart(startupsTrend, '#43e97b', 'Count')}
+              </div>
+            )}
             {renderTable(startupsTable, 'startups')}
           </div>
 

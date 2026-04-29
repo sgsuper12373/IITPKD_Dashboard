@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import './Page.css';
 import './EwdSection.css'; // Use EWD styles for cards
 import axios from 'axios';
@@ -13,6 +13,7 @@ const NirfRankingSection = ({ user }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [chartType, setChartType] = useState('bar');
 
     const fetchData = async () => {
         try {
@@ -110,14 +111,42 @@ const NirfRankingSection = ({ user }) => {
         <div className="content-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ margin: 0, color: '#1a237e' }}>NIRF Ranking Overview</h2>
-                {canUpload && (
-                    <button
-                        className='page-upload-btn'
-                        onClick={() => setIsUploadModalOpen(true)}
-                    >
-                        Upload Data
-                    </button>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                            onClick={() => setChartType('bar')}
+                            style={{
+                                padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+                                backgroundColor: chartType === 'bar' ? '#1a237e' : '#e9ecef',
+                                color: chartType === 'bar' ? '#fff' : '#333',
+                                fontWeight: chartType === 'bar' ? '600' : '400',
+                                fontSize: '14px', transition: 'all 0.2s'
+                            }}
+                        >
+                            📊 Bar
+                        </button>
+                        <button
+                            onClick={() => setChartType('trend')}
+                            style={{
+                                padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+                                backgroundColor: chartType === 'trend' ? '#1a237e' : '#e9ecef',
+                                color: chartType === 'trend' ? '#fff' : '#333',
+                                fontWeight: chartType === 'trend' ? '600' : '400',
+                                fontSize: '14px', transition: 'all 0.2s'
+                            }}
+                        >
+                            📈 Trend
+                        </button>
+                    </div>
+                    {canUpload && (
+                        <button
+                            className='page-upload-btn'
+                            onClick={() => setIsUploadModalOpen(true)}
+                        >
+                            Upload Data
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* ── NIRF Overall Rank Trend ── */}
@@ -178,36 +207,47 @@ const NirfRankingSection = ({ user }) => {
                             {/* Right: area chart */}
                             <div style={{ flex: 1, minWidth: '220px', height: 160 }}>
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                                    <AreaChart data={rankData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                                        <defs>
-                                            <linearGradient id="grad-rank" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#1a237e" stopOpacity={0.25} />
-                                                <stop offset="95%" stopColor="#1a237e" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                        <XAxis dataKey="year" tick={{ fontSize: 10 }} />
-                                        {/* reversed so lower rank (better) plots higher */}
-                                        <YAxis
-                                            domain={['auto', 'auto']}
-                                            reversed={true}
-                                            tick={{ fontSize: 10 }}
-                                            tickFormatter={(v) => `#${v}`}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
-                                            formatter={(v) => [`#${v}`, 'Rank']}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="rank"
-                                            stroke="#1a237e"
-                                            strokeWidth={2.5}
-                                            fill="url(#grad-rank)"
-                                            dot={{ r: 4, fill: '#1a237e', strokeWidth: 2, stroke: '#fff' }}
-                                            activeDot={{ r: 6 }}
-                                        />
-                                    </AreaChart>
+                                    {chartType === 'bar' ? (
+                                        <BarChart data={rankData} margin={{ top: 20, right: 8, left: -20, bottom: 0 }} barCategoryGap="15%">
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+                                            <YAxis
+                                                domain={[0, 'auto']}
+                                                tick={{ fontSize: 10 }}
+                                                tickFormatter={(v) => `#${v}`}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                formatter={(v) => [`#${v}`, 'Rank']}
+                                            />
+                                            <Bar dataKey="rank" fill="#1a237e" radius={[4, 4, 0, 0]} barSize={24}>
+                                                <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '11px', fontWeight: 600, fill: '#1a237e' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    ) : (
+                                        <LineChart data={rankData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} padding={{ left: 10, right: 10 }} />
+                                            <YAxis
+                                                domain={['auto', 'auto']}
+                                                reversed={true}
+                                                tick={{ fontSize: 10 }}
+                                                tickFormatter={(v) => `#${v}`}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                formatter={(v) => [`#${v}`, 'Rank']}
+                                            />
+                                            <Line type="linear"
+                                                dataKey="rank"
+                                                stroke="#1a237e"
+                                                strokeWidth={2.5}
+                                                dot={{ r: 4, fill: '#1a237e', strokeWidth: 2, stroke: '#fff' }}
+                                                activeDot={{ r: 6 }}>
+  <LabelList dataKey="rank" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#1a237e" }} />
+</Line>
+                                        </LineChart>
+                                    )}
                                 </ResponsiveContainer>
                             </div>
                         </div>
@@ -251,30 +291,38 @@ const NirfRankingSection = ({ user }) => {
                             </div>
                             <div style={{ height: 80 }}>
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                                    <AreaChart data={recentData} margin={{ top: 4, right: 4, left: -30, bottom: 0 }}>
-                                        <defs>
-                                            <linearGradient id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor={color} stopOpacity={0.25} />
-                                                <stop offset="95%" stopColor={color} stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                        <XAxis dataKey="year" tick={{ fontSize: 9 }} />
-                                        <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
-                                        <Tooltip
-                                            contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
-                                            formatter={(v) => [v, label]}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey={key}
-                                            stroke={color}
-                                            strokeWidth={2}
-                                            fill={`url(#grad-${key})`}
-                                            dot={{ r: 3, fill: color }}
-                                            activeDot={{ r: 5 }}
-                                        />
-                                    </AreaChart>
+                                    {chartType === 'bar' ? (
+                                        <BarChart data={recentData} margin={{ top: 15, right: 4, left: -30, bottom: 0 }} barCategoryGap="15%">
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 9 }} />
+                                            <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+                                            <Tooltip
+                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                formatter={(v) => [v, label]}
+                                            />
+                                            <Bar dataKey={key} fill={color} radius={[4, 4, 0, 0]} barSize={16}>
+                                                <LabelList dataKey={key} position="top" style={{ fontSize: '9px', fontWeight: 600, fill: color }} />
+                                            </Bar>
+                                        </BarChart>
+                                    ) : (
+                                        <LineChart data={recentData} margin={{ top: 4, right: 4, left: -30, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 9 }} padding={{ left: 10, right: 10 }} />
+                                            <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+                                            <Tooltip
+                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                formatter={(v) => [v, label]}
+                                            />
+                                            <Line type="linear"
+                                                dataKey={key}
+                                                stroke={color}
+                                                strokeWidth={2}
+                                                dot={{ r: 3, fill: color }}
+                                                activeDot={{ r: 5 }}>
+  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+</Line>
+                                        </LineChart>
+                                    )}
                                 </ResponsiveContainer>
                             </div>
                         </div>

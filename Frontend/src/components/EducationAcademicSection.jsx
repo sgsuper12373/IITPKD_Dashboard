@@ -11,6 +11,7 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -156,8 +157,21 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           </div>
         )}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Academic Summary
+          </h2>
+          <ExportMenu 
+            elementId="education-academic-summary-cards-container"
+            data={[courseCounts]}
+            headers={['Active Courses', 'Industry Linked Courses']}
+            keys={['active_all', 'active_industry']}
+            filename="education_academic_summary"
+            title="Education Academic Summary"
+          />
+        </div>
         {/* Summary Cards — 2 primary cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
+        <div id="education-academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
           {/* Active Courses */}
           <div
             onClick={() => setViewMode('all')}
@@ -245,21 +259,34 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           )}
 
           <div style={{ opacity: loading ? 0.6 : 1, transition: 'opacity 0.3s ease' }}>
-            <div style={{ marginBottom: '16px' }}>
-              <h3 style={{ margin: '0 0 4px 0', color: '#333', transition: 'color 0.3s' }}>
-                {viewMode === 'all' ? 'Active Courses Repository' : 'Industry Linked Courses'}
-              </h3>
-              <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-                {viewMode === 'all' 
-                  ? `${allCourses.length} courses currently running` 
-                  : `${industryCourses.length} courses collaborating with industry partners`}
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', color: '#333', transition: 'color 0.3s' }}>
+                  {viewMode === 'all' ? 'Active Courses Repository' : 'Industry Linked Courses'}
+                </h3>
+                <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+                  {viewMode === 'all' 
+                    ? `${allCourses.length} courses currently running` 
+                    : `${industryCourses.length} courses collaborating with industry partners`}
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="education-academic-courses-table"
+                data={viewMode === 'all' ? allCourses : industryCourses}
+                headers={['Course Name', 'Category', 'Programme', 'Industry Partner', 'Coordinator', 'Status']}
+                keys={['course_name', 'course_category', 'target_programme', 'industry_partner', 'industry_coordinator_name', 'status']}
+                filename={viewMode === 'all' ? "active_courses_repository" : "industry_linked_courses"}
+                title={viewMode === 'all' ? "Active Courses Repository" : "Industry Linked Courses"}
+                exportType="table"
+              />
             </div>
             
-            <CourseTable
-              courses={viewMode === 'all' ? allCourses : industryCourses}
-              headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
-            />
+            <div id="education-academic-courses-table">
+              <CourseTable
+                courses={viewMode === 'all' ? allCourses : industryCourses}
+                headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
+              />
+            </div>
           </div>
         </div>
       </div>

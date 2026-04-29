@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend,
   AreaChart, Area,
   PieChart, Pie, Cell,
-} from 'recharts';
+  LineChart, Line, LabelList } from 'recharts';
 import {
   fetchFilterOptions,
   fetchFacultyFilterOptions,
@@ -14,6 +14,8 @@ import {
   fetchGenderDistribution,
 } from '../services/administrativeStats';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 
@@ -101,24 +103,7 @@ const CustomLegend = ({ payload, total }) => (
   </div>
 );
 
-const StackedBarTooltip = ({ active, payload, total }) => {
-  if (!active || !payload?.length) return null;
-  const data = payload[0].payload;
-  const deptTotal = (data.Male || 0) + (data.Female || 0) + (data.Transgender || 0) + (data.Other || 0);
-  const pct = total > 0 ? ((deptTotal / total) * 100).toFixed(1) : 0;
-  return (
-    <div className="custom-tooltip">
-      <p className="tooltip-label">{`${data.name}: ${deptTotal}`}</p>
-      <p className="tooltip-percentage">{pct}% of total</p>
-      <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #555' }}>
-        <p style={{ color: '#667eea', margin: '0.2rem 0', fontSize: '0.85rem' }}>Male: {data.Male || 0}</p>
-        <p style={{ color: '#764ba2', margin: '0.2rem 0', fontSize: '0.85rem' }}>Female: {data.Female || 0}</p>
-        <p style={{ color: '#43e97b', margin: '0.2rem 0', fontSize: '0.85rem' }}>Transgender: {data.Transgender || 0}</p>
-        <p style={{ color: '#f093fb', margin: '0.2rem 0', fontSize: '0.85rem' }}>Other: {data.Other || 0}</p>
-      </div>
-    </div>
-  );
-};
+// Using shared CustomTooltip for consistency
 
 // ── Main component ─────────────────────────────────────────────────────────
 
@@ -337,7 +322,24 @@ function AdministrativeSection({ isPublicView = false }) {
 
 
         {/* ══ Row 1: Filter card + Year-filtered data cards ════════════════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ color: '#333', margin: 0, fontSize: '20px' }}>Employee Summary</h2>
+          <ExportMenu 
+            elementId="admin-summary-cards-container"
+            data={[{
+              label: 'Selected Year',
+              year: selectedYear,
+              total: selectedYear === 'All' ? allYearwise.reduce((sum, r) => sum + (r.Total || 0), 0) : (allYearwise.find((r) => String(r.year) === selectedYear)?.Total || 0),
+              faculty: selectedYear === 'All' ? teachingYearwise.reduce((sum, r) => sum + (r.Total || 0), 0) : (teachingYearwise.find((r) => String(r.year) === selectedYear)?.Total || 0),
+              staff: selectedYear === 'All' ? nonTeachingYearwise.reduce((sum, r) => sum + (r.Total || 0), 0) : (nonTeachingYearwise.find((r) => String(r.year) === selectedYear)?.Total || 0)
+            }]}
+            headers={['Year', 'Total Employees', 'Faculty', 'Staff']}
+            keys={['year', 'total', 'faculty', 'staff']}
+            filename="employee_summary"
+            title="Employee Summary"
+          />
+        </div>
+        <div id="admin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
 
           {/* Purple "Filter by Year" card */}
           <div style={{
@@ -475,7 +477,7 @@ function AdministrativeSection({ isPublicView = false }) {
                 <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>Year-wise Employee Strength</h2>
                 <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Overview of total employees and gender-wise breakdown year over year.</p>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 {SERIES_META.map(({ key, color, label }) => (
                   <button key={key} type="button" onClick={() => toggleSeries(key)} style={{
                     padding: '6px 12px', backgroundColor: visibleSeries[key] ? color : '#f0f0f0',
@@ -485,10 +487,18 @@ function AdministrativeSection({ isPublicView = false }) {
                     {label}
                   </button>
                 ))}
+                <ExportMenu 
+                  elementId="admin-yearwise-chart-container"
+                  data={yearwiseData}
+                  headers={['Year', ...SERIES_META.map(s => s.label)]}
+                  keys={['year', ...SERIES_META.map(s => s.key)]}
+                  filename="admin_yearwise_strength"
+                  title="Year-wise Employee Strength"
+                />
               </div>
             </div>
 
-            <div style={{ position: 'relative' }}>
+            <div id="admin-yearwise-chart-container" style={{ position: 'relative' }}>
               {yearwiseData.length === 0 && (
                 <div style={{
                   position: 'absolute', inset: 0, zIndex: 10,
@@ -508,11 +518,13 @@ function AdministrativeSection({ isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                    <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                     {SERIES_META.map(({ key, color, label }) =>
                       visibleSeries[key] ? (
-                        <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                        <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+</Bar>
                       ) : null
                     )}
                   </BarChart>
@@ -522,7 +534,7 @@ function AdministrativeSection({ isPublicView = false }) {
               {/* Trend (Area) chart */}
               <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
                 <ResponsiveContainer width="100%" height={350}>
-                  <AreaChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                  <LineChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                     <defs>
                       {SERIES_META.map(({ gradientId, color }) => (
                         <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -534,15 +546,17 @@ function AdministrativeSection({ isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                    <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                     {SERIES_META.map(({ key, color, gradientId, label }) =>
                       visibleSeries[key] ? (
-                        <Area key={key} type="monotone" dataKey={key} name={label}
-                          stroke={color} fill={`url(#${gradientId})`} strokeWidth={2} />
+                        <Line key={key} type="linear" dataKey={key} name={label}
+                          stroke={color} fill={`url(#${gradientId})`} strokeWidth={2}>
+  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+</Line>
                       ) : null
                     )}
-                  </AreaChart>
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
@@ -577,20 +591,31 @@ function AdministrativeSection({ isPublicView = false }) {
                   <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No active faculty match the current filters.</p>
                 </div>
               )}
-              <ResponsiveContainer width="100%" height={420}>
+                <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
+                  <ResponsiveContainer width="100%" height={420}>
                 <BarChart data={expertiseData} margin={{ top: 5, right: 20, left: 0, bottom: 130 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
                   <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip
-                    formatter={(value) => [value, 'Faculty Count']}
-                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }}
-                  />
-                  <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+</Bar>
                 </BarChart>
               </ResponsiveContainer>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                <ExportMenu 
+                  elementId="admin-expertise-chart-container"
+                  data={expertiseData}
+                  headers={['Department', 'Faculty Count']}
+                  keys={['name', 'count']}
+                  filename="admin_faculty_expertise"
+                  title="Faculty Expertise Matrix"
+                />
+              </div>
             </div>
           </div>
+        </div>
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
@@ -609,7 +634,7 @@ function AdministrativeSection({ isPublicView = false }) {
               </p>
             </div>
 
-            <div style={{ position: 'relative' }}>
+            <div id="admin-gender-chart-container" style={{ position: 'relative', padding: '10px' }}>
               {genderData.length === 0 && (
                 <div style={{
                   position: 'absolute', inset: 0, zIndex: 10,
@@ -637,7 +662,7 @@ function AdministrativeSection({ isPublicView = false }) {
                       <Cell key={entry.name} fill={entry.fill} />
                     ))}
                   </Pie>
-                  {genderData.length > 0 && <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }} />}
+                  <Tooltip content={<CustomTooltip />} />
                   {genderData.length > 0 && (
                     <Legend verticalAlign="bottom" align="center"
                       formatter={(value) => (
@@ -649,8 +674,18 @@ function AdministrativeSection({ isPublicView = false }) {
                   )}
                 </PieChart>
               </ResponsiveContainer>
-              <div style={{ textAlign: 'center', marginTop: '0.25rem', fontSize: '0.82rem', fontWeight: 700, color: '#1a1a1a' }}>
-                {genderData.length > 0 ? `Total Employees: ${genderTotal}` : ''}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1a1a1a' }}>
+                  {genderData.length > 0 ? `Total Employees: ${genderTotal}` : ''}
+                </div>
+                <ExportMenu 
+                  elementId="admin-gender-chart-container"
+                  data={genderData}
+                  headers={['Gender', 'Count']}
+                  keys={['name', 'value']}
+                  filename="admin_gender_distribution"
+                  title="Gender Distribution"
+                />
               </div>
             </div>
           </div>

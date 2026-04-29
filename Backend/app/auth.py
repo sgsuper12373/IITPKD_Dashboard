@@ -302,3 +302,52 @@ def create_user(current_user_id):
     finally:
         cur.close()
         conn.close()
+
+@auth_bp.route('/users', methods=['GET'])
+@token_required
+def get_users(current_user_id):
+    """Returns all existing users. Admin only."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        if not _require_admin(cur, current_user_id):
+            return jsonify({'message': 'Admin access required'}), 403
+            
+        cur.execute("SELECT id, email, username, display_name, role_id, status FROM users ORDER BY id DESC;")
+        users = cur.fetchall()
+        return jsonify(users), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    finally:
+        cur.close()
+        release_db_connection(conn)
+
+
+@auth_bp.route('/users/<int:user_id>', methods=['PUT'])
+@token_required
+def update_user(current_user_id, user_id):
+    """Updates a user's role_id and optionally password. Admin only."""
+    data = request.get_json()
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        if not _require_admin(cur, current_user_id):
+            return jsonify({'message': 'Admin access required'}), 403
+
+        # Update role_id if provided
+        if 'role_id' in data:
+            cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (data['role_id'], user_id))
+            
+        # Update password if provided
+        if 'password' in data and data['password'].strip():
+            hashed = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+            cur.execute("UPDATE users SET password_hash = %s WHERE id = %s;", (hashed, user_id))
+            
+        conn.commit()
+        return jsonify({'message': 'User updated successfully'}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'message': str(e)}), 500
+    finally:
+        cur.close()
+        release_db_connection(conn)

@@ -12,8 +12,7 @@ import {
   Bar,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
+  Cell, LabelList} from 'recharts';
 
 import {
   fetchResearchFilterOptions,
@@ -32,6 +31,8 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const TYPE_COLORS = ['#6366f1', '#22d3ee', '#f97316', '#a855f7', '#14b8a6', '#facc15'];
 
@@ -199,28 +200,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
     });
   };
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
@@ -254,8 +234,26 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Library Summary
+          </h2>
+          <ExportMenu 
+            elementId="library-summary-cards-container"
+            data={[{
+              total: summary.total,
+              journal_vs_conference: journalVsConference,
+              participating_departments: participatingDepartments,
+              type_distribution_length: typeDistribution.length
+            }]}
+            headers={['Total Publications', 'Journal/Conference', 'Departments', 'Types']}
+            keys={['total', 'journal_vs_conference', 'participating_departments', 'type_distribution_length']}
+            filename="library_summary"
+            title="Library Summary"
+          />
+        </div>
         {/* Modern Summary Cards */}
-        <div style={{
+        <div id="library-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '16px',
@@ -480,13 +478,23 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>📈</span> Publication Trend
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                  Year-wise publication count
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>📈</span> Publication Trend
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                    Year-wise publication count
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="library-trend-chart-container"
+                  data={trendChartData}
+                  headers={['Year', 'Publications']}
+                  keys={['year', 'publications']}
+                  filename="publication_trend"
+                  title="Publication Trend"
+                />
               </div>
 
               {/* Filters inside trend view */}
@@ -581,7 +589,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                 ))}
               </div>
 
-              <div className={`chart-container ${!trendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+              <div id="library-trend-chart-container" className={`chart-container ${!trendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                 <div className={`section-empty-state ${trendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
@@ -593,7 +601,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
-                      <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28} />
+                      <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28}>
+  <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+</Bar>
                     </BarChart>
                   ) : (
                     <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -602,7 +612,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="monotone" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
+                      <Line type="linear" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
+  <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+</Line>
                     </LineChart>
                   )}
                 </ResponsiveContainer>
@@ -619,13 +631,23 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>🏢</span> Department-wise Publications
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                  Publications by department
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>🏢</span> Department-wise Publications
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                    Publications by department
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="library-dept-chart-container"
+                  data={departmentChartData}
+                  headers={['Department', 'Publications']}
+                  keys={['department', 'total']}
+                  filename="publication_department_breakdown"
+                  title="Department-wise Publications"
+                />
               </div>
 
               {/* Filters inside department view */}
@@ -695,7 +717,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className={`chart-container ${!departmentChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+              <div id="library-dept-chart-container" className={`chart-container ${!departmentChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                 <div className={`section-empty-state ${departmentChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
@@ -705,7 +727,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     <XAxis dataKey="department" angle={-30} textAnchor="end" height={60} tick={{ fontSize: 10 }} interval={0} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20} />
+                    <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+</Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -721,13 +745,23 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>📊</span> Publication Types
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
-                  Distribution by format
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>📊</span> Publication Types
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '13px' }}>
+                    Distribution by format
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="library-type-chart-container"
+                  data={typePieData}
+                  headers={['Type', 'Count']}
+                  keys={['name', 'value']}
+                  filename="publication_type_distribution"
+                  title="Publication Types Distribution"
+                />
               </div>
 
               {/* Filters inside type distribution view */}
@@ -797,7 +831,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className={`chart-container ${!typePieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+              <div id="library-type-chart-container" className={`chart-container ${!typePieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                 <div className={`section-empty-state ${typePieData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
@@ -815,7 +849,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     >
                       {typePieData.map((e, i) => <Cell key={e.name} fill={TYPE_COLORS[i % TYPE_COLORS.length]} />)}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip content={<CustomTooltip />} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -832,13 +866,23 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div className="chart-header" style={{ marginBottom: '15px' }}>
-                <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>📋</span> Publications Directory
-                </h2>
-                <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
-                  {publicationList.length} publications found
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>📋</span> Publications Directory
+                  </h2>
+                  <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
+                    {publicationList.length} publications found
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="library-publications-table-container"
+                  data={publicationList}
+                  headers={['Title', 'Faculty', 'Department', 'Type', 'Year', 'Journal']}
+                  keys={['publication_title', 'faculty_name', 'department', 'publication_type', 'publication_year', 'journal_name']}
+                  filename="publications_directory"
+                  title="Publications Directory"
+                />
               </div>
 
               {/* Filters inside publications table view */}
@@ -922,7 +966,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              <div id="library-publications-table-container" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                   <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
                     <tr>
@@ -945,7 +989,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                         <td style={{ padding: '8px' }}>{p.journal_name}</td>
                       </tr>
                     ))}
-                    {!publicationList.length && (
+                    {publicationList.length === 0 && (
                       <tr>
                         <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
                           No information available for the selected filter

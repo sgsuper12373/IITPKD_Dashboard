@@ -14,8 +14,7 @@ import {
   Pie,
   Cell,
   BarChart,
-  Bar
-} from 'recharts';
+  Bar, LabelList} from 'recharts';
 import {
   fetchInnovationSummary,
   fetchYearlyGrowth,
@@ -26,6 +25,7 @@ import {
 import './Page.css';
 import './PeopleCampus.css';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
@@ -908,17 +908,27 @@ function InnovationSectionContent({ user, isPublicView }) {
         {/* Yearly Growth Chart */}
         {viewType === 'yearlyGrowth' && (
           <div>
-            <div className="chart-header" style={{ marginBottom: '20px' }}>
-              <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '24px' }}>📈</span> Year-wise Growth
-              </h2>
-              <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                Growth of incubatees, startups, and innovation projects over time.
-              </p>
+            <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>📈</span> Year-wise Growth
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                  Growth of incubatees, startups, and innovation projects over time.
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="innovation-yearly-growth-container"
+                data={yearlyChartData}
+                headers={['Year', 'Incubatees', 'Startups', 'Innovation Projects']}
+                keys={['year', 'incubatees', 'startups', 'innovationProjects']}
+                filename="innovation_yearly_growth"
+                title="Year-wise Growth"
+              />
             </div>
 
             {yearlyChartData.length > 0 ? (
-              <div className="chart-container">
+              <div id="innovation-yearly-growth-container" className="chart-container">
                 <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -946,31 +956,31 @@ function InnovationSectionContent({ user, isPublicView }) {
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                    <Line
-                      type="monotone"
+                    <Line type="linear"
                       dataKey="incubatees"
                       name="Incubatees"
                       stroke="#667eea"
                       strokeWidth={3}
                       dot={{ r: 6, fill: '#667eea' }}
-                      activeDot={{ r: 8 }}
-                    />
-                    <Line
-                      type="monotone"
+                      activeDot={{ r: 8 }}>
+  <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+</Line>
+                    <Line type="linear"
                       dataKey="startups"
                       name="Startups"
                       stroke="#764ba2"
                       strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
+                      dot={{ r: 4 }}>
+  <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#764ba2" }} />
+</Line>
+                    <Line type="linear"
                       dataKey="innovationProjects"
                       name="Innovation Projects"
                       stroke="#43e97b"
                       strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
+                      dot={{ r: 4 }}>
+  <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+</Line>
                   </LineChart>
                 </ResponsiveContainer>
 
@@ -1023,17 +1033,27 @@ function InnovationSectionContent({ user, isPublicView }) {
         {/* Sector Distribution Chart */}
         {viewType === 'sectorDistribution' && (
           <div>
-            <div className="chart-header" style={{ marginBottom: '20px' }}>
-              <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '24px' }}>📊</span> Sector-wise Innovation Distribution
-              </h2>
-              <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                Distribution of startups and innovation projects by sector.
-              </p>
+            <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '24px' }}>📊</span> Sector-wise Innovation Distribution
+                </h2>
+                <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                  Distribution of startups and innovation projects by sector.
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="innovation-sector-dist-container"
+                data={sectorPieData}
+                headers={['Sector', 'Count', 'Startups', 'Projects']}
+                keys={['name', 'value', 'startups', 'projects']}
+                filename="innovation_sector_distribution"
+                title="Sector-wise Innovation Distribution"
+              />
             </div>
 
             {sectorPieData.length > 0 ? (
-              <div className="chart-container">
+              <div id="innovation-sector-dist-container" className="chart-container">
                 <ResponsiveContainer width="100%" height={450}>
                   <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
                     <Pie

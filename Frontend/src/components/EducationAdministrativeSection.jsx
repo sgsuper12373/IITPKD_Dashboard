@@ -12,8 +12,7 @@ import {
   Tooltip,
   Legend,
   LineChart,
-  Line
-} from 'recharts';
+  Line, LabelList} from 'recharts';
 import {
   fetchFilterOptions,
   fetchSummary,
@@ -28,6 +27,8 @@ import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const ENGAGEMENT_COLORS = {
   Adjunct: '#667eea',
@@ -457,27 +458,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
     }));
   }, [typeDistributionData]);
 
-  // Custom Tooltip for charts
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip" style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '4px 0', color: entry.color }}>
-              {`${entry.name}: ${formatNumber(entry.value)}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   // Get loading state for current view
   const isLoading = () => {
@@ -713,14 +694,24 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className="chart-header">
-                <h2>Summary Indicators</h2>
-                <p className="chart-description">
-                  Total counts by faculty engagement type
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: 0 }}>Summary Indicators</h2>
+                  <p className="chart-description">
+                    Total counts by faculty engagement type
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="education-summary-cards-container"
+                  data={summaryCards}
+                  headers={['Type', 'Total', 'Active']}
+                  keys={['type', 'total', 'active']}
+                  filename="faculty_engagement_summary"
+                  title="Summary Indicators"
+                />
               </div>
 
-              <div style={{
+              <div id="education-summary-cards-container" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                 gap: '1.5rem',
@@ -852,30 +843,41 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         ({summaryFilters.year === 'All' ? 'All Years' : `Year: ${summaryFilters.year}`})
                       </span>
                     </h3>
-                    <button
-                      onClick={() => setSelectedCardType(null)}
-                      style={{
-                        background: '#f1f5f9',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '6px 12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#475569',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => { e.target.style.backgroundColor = '#e2e8f0'; }}
-                      onMouseLeave={(e) => { e.target.style.backgroundColor = '#f1f5f9'; }}
-                    >
-                      ✕ Close
-                    </button>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <ExportMenu 
+                        elementId="education-summary-drilldown-table"
+                        data={cardDetailsData}
+                        headers={['Faculty Name', 'Department']}
+                        keys={['faculty_name', 'department']}
+                        filename={`faculty_list_${selectedCardType}`}
+                        title={`${ENGAGEMENT_LABELS[selectedCardType] || selectedCardType} Faculty List`}
+                        exportType="table"
+                      />
+                      <button
+                        onClick={() => setSelectedCardType(null)}
+                        style={{
+                          background: '#f1f5f9',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '6px 12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          color: '#475569',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => { e.target.style.backgroundColor = '#e2e8f0'; }}
+                        onMouseLeave={(e) => { e.target.style.backgroundColor = '#f1f5f9'; }}
+                      >
+                        ✕ Close
+                      </button>
+                    </div>
                   </div>
 
-                    <div style={{ overflowX: 'auto' }}>
+                    <div id="education-summary-drilldown-table" style={{ overflowX: 'auto' }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                           <tr style={{ backgroundColor: '#f8fafc' }}>
@@ -987,14 +989,24 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className="chart-header">
-                <h2>Department-wise Breakdown</h2>
-                <p className="chart-description">
-                  Distribution of external academic engagement by department
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2>Department-wise Breakdown</h2>
+                  <p className="chart-description">
+                    Distribution of external academic engagement by department
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="education-dept-chart-container"
+                  data={departmentChartData}
+                  headers={['Department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type), 'Total']}
+                  keys={['department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type), 'total']}
+                  filename="faculty_engagement_department_breakdown"
+                  title="Department-wise Breakdown"
+                />
               </div>
 
-              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+              <div id="education-dept-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
                 {departmentChartData.length === 0 && !loading.department && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1032,14 +1044,14 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       const type = item.engagement_type;
                       if (type === 'FacultyFellow') return null;
                       return (
-                        <Bar
-                          key={type}
+                        <Bar key={type}
                           dataKey={type}
                           name={ENGAGEMENT_LABELS[type] || type}
                           fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
                           animationDuration={800}
-                          radius={[4, 4, 0, 0]}
-                        />
+                          radius={[4, 4, 0, 0]}>
+  <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+</Bar>
                       );
                     })}
                   </BarChart>
@@ -1129,14 +1141,24 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className="chart-header">
-                <h2>Year-wise Trends</h2>
-                <p className="chart-description">
-                  Faculty engagement trends over multiple years
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2>Year-wise Trends</h2>
+                  <p className="chart-description">
+                    Faculty engagement trends over multiple years
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="education-trend-chart-container"
+                  data={yearTrendChartData}
+                  headers={['Year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type)]}
+                  keys={['year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type)]}
+                  filename="faculty_engagement_trends"
+                  title="Year-wise Trends"
+                />
               </div>
 
-              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+              <div id="education-trend-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
                 {yearTrendChartData.length === 0 && !loading.trend && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1169,17 +1191,17 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       const type = item.engagement_type;
                       if (type === 'FacultyFellow') return null;
                       return (
-                        <Line
-                          key={type}
-                          type="monotone"
+                        <Line key={type}
+                          type="linear"
                           dataKey={type}
                           name={ENGAGEMENT_LABELS[type] || type}
                           stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
                           strokeWidth={3}
                           dot={{ r: 5 }}
                           activeDot={{ r: 8 }}
-                          animationDuration={800}
-                        />
+                          animationDuration={800}>
+  <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+</Line>
                       );
                     })}
                   </LineChart>
@@ -1269,14 +1291,24 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div className="chart-header">
-                <h2>Type Distribution</h2>
-                <p className="chart-description">
-                  Proportional breakdown by faculty engagement type
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2>Type Distribution</h2>
+                  <p className="chart-description">
+                    Proportional breakdown by faculty engagement type
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="education-distribution-chart-container"
+                  data={pieChartData}
+                  headers={['Type', 'Count']}
+                  keys={['name', 'value']}
+                  filename="faculty_engagement_distribution"
+                  title="Type Distribution"
+                />
               </div>
 
-              <div className="bar-chart-container" style={{ position: 'relative', minHeight: '400px' }}>
+              <div id="education-distribution-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
                 {pieChartData.length === 0 && !loading.distribution && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1392,14 +1424,25 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              <div className="chart-header">
-                <h2>External Academic Engagement Details</h2>
-                <p className="chart-description">Detailed list of all external academic engagements</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2>External Academic Engagement Details</h2>
+                  <p className="chart-description">Detailed list of all external academic engagements</p>
+                </div>
+                <ExportMenu 
+                  elementId="education-engagement-details-table"
+                  data={engagementList}
+                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                  filename="faculty_engagement_details"
+                  title="Engagement Details"
+                  exportType="table"
+                />
               </div>
 
               {/* Directory Table - Conditionally Mounted for Performance */}
               {viewType === 'details' && (
-                <div className="table-responsive accelerated-scroll" style={{
+                <div id="education-engagement-details-table" className="table-responsive accelerated-scroll" style={{
                   height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
                   border: '1px solid var(--border-light)', borderRadius: '8px',
                   backgroundColor: '#fff', position: 'relative'
@@ -1516,14 +1559,25 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              <div className="chart-header">
-                <h2>Honorary Professors</h2>
-                <p className="chart-description">List of honorary professors for the selected filters</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2>Honorary Professors</h2>
+                  <p className="chart-description">List of honorary professors for the selected filters</p>
+                </div>
+                <ExportMenu 
+                  elementId="education-honorary-professors-table"
+                  data={engagementList}
+                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                  filename="honorary_professors"
+                  title="Honorary Professors"
+                  exportType="table"
+                />
               </div>
 
               {/* Honorary Table - Conditionally Mounted for Performance */}
               {viewType === 'honorary' && (
-                <div className="table-responsive accelerated-scroll" style={{
+                <div id="education-honorary-professors-table" className="table-responsive accelerated-scroll" style={{
                   height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
                   border: '1px solid var(--border-light)', borderRadius: '8px',
                   backgroundColor: '#fff', position: 'relative'

@@ -4,8 +4,7 @@ import {
   ResponsiveContainer,
   BarChart, Bar,
   LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend
-} from 'recharts';
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList} from 'recharts';
 
 import { fetchIccSummary, fetchIccYearly } from '../services/grievanceStats';
 import DataUploadModal from './DataUploadModal';
@@ -13,6 +12,8 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const AREA_COLORS = {
   total: '#667eea',
@@ -125,11 +126,21 @@ function IccSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <>
-            <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
-              Internal Complaints Committee (ICC)
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+                ICC Summary
+              </h2>
+              <ExportMenu 
+                elementId="icc-summary-cards-container"
+                data={[summary]}
+                headers={['Total Complaints', 'Resolved', 'Pending']}
+                keys={['total', 'resolved', 'pending']}
+                filename="icc_summary"
+                title="ICC Summary"
+              />
+            </div>
             {/* Modern Summary Cards */}
-            <div style={{
+            <div id="icc-summary-cards-container" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: '20px',
@@ -311,56 +322,66 @@ function IccSection({ user, isPublicView = false }) {
                       Year-wise Complaint Trend
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setVisibleMetrics(prev => ({ ...prev, total: !prev.total }))}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: visibleMetrics.total ? AREA_COLORS.total : '#f0f0f0',
-                        color: visibleMetrics.total ? 'white' : '#666',
-                        border: 'none',
-                        borderRadius: '20px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      Total
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setVisibleMetrics(prev => ({ ...prev, resolved: !prev.resolved }))}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: visibleMetrics.resolved ? AREA_COLORS.resolved : '#f0f0f0',
-                        color: visibleMetrics.resolved ? 'white' : '#666',
-                        border: 'none',
-                        borderRadius: '20px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontWeight: '500'
-                      }}
-                    >
-                      Resolved
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setVisibleMetrics(prev => ({ ...prev, pending: !prev.pending }))}
-                      style={{
-                        padding: '6px 12px',
-                        backgroundColor: visibleMetrics.pending ? AREA_COLORS.pending : '#f0f0f0',
-                        color: visibleMetrics.pending ? 'white' : '#666',
-                        border: 'none',
-                        borderRadius: '20px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontWeight: '500'
-                      }}
-                    >
-                      Pending
-                    </button>
+                  <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                    <ExportMenu 
+                      elementId="icc-trend-chart-container"
+                      data={yearlyData}
+                      headers={['Year', 'Total', 'Resolved', 'Pending']}
+                      keys={['year', 'total', 'resolved', 'pending']}
+                      filename="icc_trend_data"
+                      title="ICC Complaint Trends"
+                    />
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setVisibleMetrics(prev => ({ ...prev, total: !prev.total }))}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: visibleMetrics.total ? AREA_COLORS.total : '#f0f0f0',
+                          color: visibleMetrics.total ? 'white' : '#666',
+                          border: 'none',
+                          borderRadius: '20px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        Total
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVisibleMetrics(prev => ({ ...prev, resolved: !prev.resolved }))}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: visibleMetrics.resolved ? AREA_COLORS.resolved : '#f0f0f0',
+                          color: visibleMetrics.resolved ? 'white' : '#666',
+                          border: 'none',
+                          borderRadius: '20px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        Resolved
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVisibleMetrics(prev => ({ ...prev, pending: !prev.pending }))}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: visibleMetrics.pending ? AREA_COLORS.pending : '#f0f0f0',
+                          color: visibleMetrics.pending ? 'white' : '#666',
+                          border: 'none',
+                          borderRadius: '20px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        Pending
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -390,7 +411,7 @@ function IccSection({ user, isPublicView = false }) {
                     <p style={{ color: '#666', fontSize: '16px' }}>No complaint records available.</p>
                   </div>
                 ) : (
-                  <div className="chart-container">
+                  <div id="icc-trend-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart — Complaints, Resolved, Pending */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <ResponsiveContainer width="100%" height={350}>
@@ -398,11 +419,17 @@ function IccSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                          <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          {visibleMetrics.total && <Bar dataKey="total" name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
-                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
-                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} />}
+                          {visibleMetrics.total && <Bar dataKey="total" name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
+</Bar>}
+                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+  <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
+</Bar>}
+                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+  <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />
+</Bar>}
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -414,9 +441,11 @@ function IccSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                          <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          <Line type="monotone" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }} />
+                          <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
+</Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -446,16 +475,27 @@ function IccSection({ user, isPublicView = false }) {
                       Detailed breakdown of total complaints and their resolution status.
                     </p>
                   </div>
-                  <span style={{
-                    backgroundColor: '#667eea',
-                    color: 'white',
-                    padding: '6px 12px',
-                    borderRadius: '20px',
-                    fontSize: '13px',
-                    fontWeight: '500'
-                  }}>
-                    {yearlyData.length} Years
-                  </span>
+                  <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                    <ExportMenu 
+                      elementId="icc-yearly-table-container"
+                      data={yearlyData}
+                      headers={['Year', 'Total', 'Resolved', 'Pending']}
+                      keys={['year', 'total', 'resolved', 'pending']}
+                      filename="icc_yearly_stats"
+                      title="Yearly Complaint Statistics"
+                      exportType="table"
+                    />
+                    <span style={{
+                      backgroundColor: '#667eea',
+                      color: 'white',
+                      padding: '6px 12px',
+                      borderRadius: '20px',
+                      fontSize: '13px',
+                      fontWeight: '500'
+                    }}>
+                      {yearlyData.length} Years
+                    </span>
+                  </div>
                 </div>
 
                 {yearlyData.length === 0 ? (
@@ -464,7 +504,7 @@ function IccSection({ user, isPublicView = false }) {
                     <p style={{ color: '#666', fontSize: '16px' }}>No records available to display.</p>
                   </div>
                 ) : (
-                  <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <div id="icc-yearly-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
                     <table style={{
                       width: '100%',
                       borderCollapse: 'collapse',

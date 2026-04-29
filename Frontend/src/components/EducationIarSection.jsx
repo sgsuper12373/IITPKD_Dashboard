@@ -10,8 +10,7 @@ import {
   Tooltip,
   Legend,
   BarChart,
-  Bar,
-} from 'recharts';
+  Bar, LabelList} from 'recharts';
 
 import {
   fetchIarMouFilterOptions,
@@ -20,6 +19,8 @@ import {
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -106,21 +107,7 @@ function EducationIarSection({ user, isPublicView = false }) {
   const handleFilterChange = (field, value) => setFilters(prev => ({ ...prev, [field]: value }));
   const handleClearFilters = () => setFilters({ mou_year: 'All' });
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '12px' }}>
-          <p style={{ margin: 0, fontWeight: 'bold', marginBottom: '5px' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: 0, color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   return (
     <div className={`academic-section page-container ${isPublicView ? 'public-view' : ''}`}>
@@ -241,7 +228,22 @@ function EducationIarSection({ user, isPublicView = false }) {
               backgroundColor: '#fff', borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: 0, color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>{viewType === 'trend' ? '📈' : '📋'}</span> {viewType === 'trend' ? 'IAR MoUs Trend' : 'IAR MoUs Directory'}
+                  </h2>
+                </div>
+                <ExportMenu 
+                  elementId={viewType === 'trend' ? "iar-mou-trend-container" : "iar-mou-directory-table"}
+                  data={viewType === 'trend' ? mouTrendChartData : mouList}
+                  headers={viewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']}
+                  keys={viewType === 'trend' ? ['year', 'total'] : ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']}
+                  filename={viewType === 'trend' ? "iar_mou_trend" : "iar_mou_directory"}
+                  title={viewType === 'trend' ? "IAR MoUs Trend" : "IAR MoUs Directory"}
+                  exportType={viewType === 'trend' ? "chart" : "table"}
+                />
+              </div>
               {/* Filters Block */}
               <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -280,7 +282,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                       }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                     ))}
                   </div>
-                  <div className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                  <div id="iar-mou-trend-container" className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                     <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                       <p>No information available for the selected filter</p>
                     </div>
@@ -292,7 +294,9 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                          <Bar dataKey="total" name="MoUs Signed" fill={IAR_MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28} />
+                          <Bar dataKey="total" name="MoUs Signed" fill={IAR_MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+</Bar>
                         </BarChart>
                       ) : (
                         <LineChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -301,9 +305,11 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                          <Line type="monotone" dataKey="total" name="MoUs Signed"
+                          <Line type="linear" dataKey="total" name="MoUs Signed"
                             stroke={IAR_MOU_COLOR} strokeWidth={3}
-                            dot={{ r: 6, fill: IAR_MOU_COLOR }} activeDot={{ r: 8 }} />
+                            dot={{ r: 6, fill: IAR_MOU_COLOR }} activeDot={{ r: 8 }}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+</Line>
                         </LineChart>
                       )}
                     </ResponsiveContainer>
@@ -315,7 +321,7 @@ function EducationIarSection({ user, isPublicView = false }) {
               {viewType === 'directory' && (
                 <>
                   <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} records found</p>
-                  <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  <div id="iar-mou-directory-table" className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
                     <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                       <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                         <tr>

@@ -549,7 +549,7 @@ def get_onroll_summary(current_user_id):
 
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type, '')) = 'RESEARCH'
-                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
+                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
                 ) AS research_onroll
 
             FROM {STUDENT_TABLE};

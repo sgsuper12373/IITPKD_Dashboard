@@ -37,12 +37,14 @@ def create_app():
         academic_stats, administrative_stats, grievance_stats,
         ewd_stats, iar_stats, education_stats, placement_stats,
         academic_module, research_module, innovation_module,
-        industry_connect_module, outreach_extension_module, nirf_stats,
+        industry_connect_module, outreach_extension_module, nirf_stats, export_db,
+
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
     app.register_blueprint(dashboard.dashboard_bp,                    url_prefix='/api')
     app.register_blueprint(upload.upload_bp,                          url_prefix='/api')
+    app.register_blueprint(export_db.export_db_bp,                    url_prefix='/api/export')
     app.register_blueprint(nirf_stats.nirf_bp,                        url_prefix='/api/nirf')
     app.register_blueprint(academic_stats.academic_bp,                 url_prefix='/api/academic')
     app.register_blueprint(administrative_stats.administrative_bp,     url_prefix='/api/administrative')

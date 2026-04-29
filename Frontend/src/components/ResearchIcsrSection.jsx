@@ -10,8 +10,7 @@ import {
   Tooltip,
   Legend,
   BarChart,
-  Bar,
-} from 'recharts';
+  Bar, LabelList} from 'recharts';
 
 import {
   fetchResearchFilterOptions,
@@ -25,6 +24,8 @@ import {
   fetchMouList,
 } from '../services/researchStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 import DataUploadModal from './DataUploadModal';
 
@@ -312,28 +313,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     });
   };
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {entry.name === 'revenue' ? formatCurrency(entry.value) : entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
@@ -379,8 +359,29 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            ICSR Impact Summary
+          </h2>
+          <ExportMenu 
+            elementId="icsr-summary-cards-container"
+            data={[{
+              total_projects: summary.total_projects,
+              funded_projects: summary.funded_projects,
+              consultancy_projects: summary.consultancy_projects,
+              total_revenue: summary.consultancy_revenue,
+              patents_filed: summary.patent_breakdown.Filed,
+              patents_granted: summary.patent_breakdown.Granted,
+              total_mous: totalMous
+            }]}
+            headers={['Total Projects', 'Funded', 'Consultancy', 'Revenue', 'Patents Filed', 'Patents Granted', 'Total MoUs']}
+            keys={['total_projects', 'funded_projects', 'consultancy_projects', 'total_revenue', 'patents_filed', 'patents_granted', 'total_mous']}
+            filename="icsr_summary"
+            title="ICSR Impact Summary"
+          />
+        </div>
         {/* Modern Summary Cards */}
-        <div style={{
+        <div id="icsr-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
@@ -628,13 +629,23 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 borderRadius: '10px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📊</span> Projects Trend
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                    Annual count of sponsored and consultancy projects.
-                  </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div className="chart-header">
+                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '24px' }}>📊</span> Projects Trend
+                    </h2>
+                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                      Annual count of sponsored and consultancy projects.
+                    </p>
+                  </div>
+                  <ExportMenu 
+                    elementId="research-projects-trend-container"
+                    data={projectTrendChartData}
+                    headers={['Year', 'Sponsored Projects', 'Consultancy Projects']}
+                    keys={['year', 'funded', 'consultancy']}
+                    filename="research_projects_trend"
+                    title="Projects Trend"
+                  />
                 </div>
 
                 {/* Filters inside projects view */}
@@ -760,7 +771,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   ))}
                 </div>
 
-                <div className={`chart-container ${!projectTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div id="research-projects-trend-container" className={`chart-container ${!projectTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                   <div className={`section-empty-state ${projectTrendChartData.length ? 'hidden' : ''}`}>
                     <p>No information available for the selected filter</p>
                   </div>
@@ -772,8 +783,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                        <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18} />
-                        <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18} />
+                        <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18}>
+  <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+</Bar>
+                        <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18}>
+  <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+</Bar>
                       </BarChart>
                     ) : (
                       <LineChart data={projectTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -782,8 +797,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Line type="monotone" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }} />
+                        <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
+  <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+</Line>
+                        <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }}>
+  <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+</Line>
                       </LineChart>
                     )}
                   </ResponsiveContainer>
@@ -800,13 +819,23 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 borderRadius: '10px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📝</span> Patents Trend
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                    Year-wise patent filings, grants, and publications.
-                  </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div className="chart-header">
+                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '24px' }}>📝</span> Patents Trend
+                    </h2>
+                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                      Year-wise patent filings, grants, and publications.
+                    </p>
+                  </div>
+                  <ExportMenu 
+                    elementId="research-patents-trend-container"
+                    data={patentTrendChartData}
+                    headers={['Year', 'Filed', 'Granted', 'Total']}
+                    keys={['year', 'Filed', 'Granted', 'total']}
+                    filename="research_patents_trend"
+                    title="Patents Trend"
+                  />
                 </div>
 
                 {/* Filters inside patents view */}
@@ -902,7 +931,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   ))}
                 </div>
 
-                <div className={`chart-container ${!patentTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div id="research-patents-trend-container" className={`chart-container ${!patentTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                   <div className={`section-empty-state ${patentTrendChartData.length ? 'hidden' : ''}`}>
                     <p>No information available for the selected filter</p>
                   </div>
@@ -915,7 +944,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
                         {PATENT_STATUS_ORDER.map((status) => (
-                          <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18} />
+                          <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18}>
+  <LabelList dataKey={status} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
+</Bar>
                         ))}
                       </BarChart>
                     ) : (
@@ -926,7 +957,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
                         {PATENT_STATUS_ORDER.map((status) => (
-                          <Line key={status} type="monotone" dataKey={status} name={status} stroke={PATENT_COLORS[status]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[status] }} activeDot={{ r: 7 }} />
+                          <Line key={status} type="linear" dataKey={status} name={status} stroke={PATENT_COLORS[status]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[status] }} activeDot={{ r: 7 }}>
+  <LabelList dataKey={status} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
+</Line>
                         ))}
                       </LineChart>
                     )}
@@ -944,13 +977,24 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 borderRadius: '10px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div className="chart-header" style={{ marginBottom: '15px' }}>
-                  <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>📋</span> Projects Directory
-                  </h2>
-                  <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
-                    {projectList.length} projects found
-                  </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div className="chart-header">
+                    <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>📋</span> Projects Directory
+                    </h2>
+                    <p style={{ fontSize: '13px', color: '#666', margin: '5px 0 0 0' }}>
+                      {projectList.length} projects found
+                    </p>
+                  </div>
+                  <ExportMenu 
+                    elementId="research-projects-directory-table"
+                    data={projectList}
+                    headers={['Title', 'PI', 'Type', 'Dept', 'Amount (₹)', 'Status']}
+                    keys={['project_title', 'principal_investigator', 'project_type', 'department', 'amount_sanctioned', 'status']}
+                    filename="research_projects_directory"
+                    title="Projects Directory"
+                    exportType="table"
+                  />
                 </div>
 
                 {/* Filters inside projects table view */}
@@ -1065,7 +1109,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   </div>
                 </div>
 
-                <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <div id="research-projects-directory-table" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                   <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                     <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                       <tr>
@@ -1108,16 +1152,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 backgroundColor: '#fff', borderRadius: '10px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>🤝</span> MoU (Memorandum of Understanding)
-                  </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0 0 16px 0' }}>
-                    Yearly and directory view of signed MoUs.
-                  </p>
-
-                  {/* MoU sub-view toggle */}
-                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '12px' }}>
                     <button
                       onClick={() => setMouViewType('trend')}
                       style={{
@@ -1143,7 +1178,15 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       }}
                     >📋 MoUs Directory</button>
                   </div>
-                </div>
+                  <ExportMenu 
+                    elementId={mouViewType === 'trend' ? "research-mou-trend-container" : "research-mou-directory-table"}
+                    data={mouViewType === 'trend' ? mouTrendChartData : mouList}
+                    headers={mouViewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Focus', 'Signed', 'Valid Till']}
+                    keys={mouViewType === 'trend' ? ['year', 'total'] : ['partner_name', 'collaboration_nature', 'date_signed', 'validity_end']}
+                    filename={`research_mous_${mouViewType}`}
+                    title={mouViewType === 'trend' ? "MoUs Trend" : "MoUs Directory"}
+                    exportType={mouViewType === 'directory' ? "table" : "chart"}
+                  />
 
                 {/* Filters */}
                 <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
@@ -1183,7 +1226,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                       ))}
                     </div>
-                    <div className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                    <div id="research-mou-trend-container" className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                       <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                         <p>No information available for the selected filter</p>
                       </div>
@@ -1195,7 +1238,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                            <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28} />
+                            <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+</Bar>
                           </BarChart>
                         ) : (
                           <LineChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -1204,9 +1249,11 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                            <Line type="monotone" dataKey="total" name="MoUs Signed"
+                            <Line type="linear" dataKey="total" name="MoUs Signed"
                               stroke={MOU_COLOR} strokeWidth={3}
-                              dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }} />
+                              dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>
+  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+</Line>
                           </LineChart>
                         )}
                       </ResponsiveContainer>
@@ -1218,7 +1265,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 {mouViewType === 'directory' && (
                   <>
                     <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} MoUs found</p>
-                    <div className="table-responsive" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                    <div id="research-mou-directory-table" className="table-responsive" style={{ maxHeight: '420px', overflowY: 'auto' }}>
                       <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                         <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
                           <tr>

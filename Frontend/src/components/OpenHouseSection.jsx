@@ -10,8 +10,9 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend
-} from 'recharts';
+  Legend, LabelList } from 'recharts';
+import { CustomTooltip } from '../utils/chartUtils';
+import ExportMenu from './ExportMenu';
 import {
   fetchOpenHouseSummary,
   fetchOpenHouseList,
@@ -162,8 +163,21 @@ function OpenHouseSection({ user, isPublicView = false }) {
         </div>
       ))}
 
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          Open House Summary
+        </h2>
+        <ExportMenu 
+          elementId="openhouse-summary-cards-container"
+          data={[summary]}
+          headers={['Total Events', 'Total Visitors', 'Participated Departments']}
+          keys={['total_events', 'total_visitors', 'departments_participated']}
+          filename="openhouse_summary"
+          title="Open House Summary"
+        />
+      </div>
       {/* Summary Cards - Modern Design */}
-      <div style={{
+      <div id="openhouse-summary-cards-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '24px',
@@ -504,6 +518,17 @@ function OpenHouseSection({ user, isPublicView = false }) {
         boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
         marginBottom: '40px'
       }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+          <ExportMenu 
+            elementId="openhouse-chart-container"
+            data={timeline}
+            headers={['Year', 'Events', 'Visitors', 'Avg. Depts']}
+            keys={['event_year', 'event_count', 'total_visitors', 'avg_departments']}
+            filename={`openhouse_${chartType}_trend`}
+            title={chartType === 'timeline' ? 'Event Timeline' : 'Participation Trends'}
+          />
+        </div>
+        <div id="openhouse-chart-container">
         {/* Event Timeline Chart */}
         {chartType === 'timeline' && timeline.length > 0 && (
           <div>
@@ -531,31 +556,24 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                <Line
-                  type="monotone"
+                <Line type="linear"
                   dataKey="event_count"
                   stroke="#4f46e5"
                   name="Events"
                   strokeWidth={3}
-                  dot={{ r: 6, fill: '#4f46e5' }}
-                />
-                <Line
-                  type="monotone"
+                  dot={{ r: 6, fill: '#4f46e5' }}>
+  <LabelList dataKey="event_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#4f46e5" }} />
+</Line>
+                <Line type="linear"
                   dataKey="total_visitors"
                   stroke="#22c55e"
                   name="Visitors"
                   strokeWidth={3}
-                  dot={{ r: 6, fill: '#22c55e' }}
-                />
+                  dot={{ r: 6, fill: '#22c55e' }}>
+  <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+</Line>
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -588,31 +606,25 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                  }}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                <Bar
-                  dataKey="avg_departments"
+                <Bar dataKey="avg_departments"
                   fill="#0ea5e9"
                   name="Avg. Departments"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="total_visitors"
+                  radius={[4, 4, 0, 0]}>
+  <LabelList dataKey="avg_departments" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#0ea5e9" }} />
+</Bar>
+                <Bar dataKey="total_visitors"
                   fill="#f97316"
                   name="Total Visitors"
-                  radius={[4, 4, 0, 0]}
-                />
+                  radius={[4, 4, 0, 0]}>
+  <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f97316" }} />
+</Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
+        </div>
 
         {/* No data message */}
         {timeline.length === 0 && (
@@ -636,24 +648,28 @@ function OpenHouseSection({ user, isPublicView = false }) {
         boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
         marginBottom: '30px'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '24px'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <span style={{
-              fontSize: '28px',
-              background: '#f0f0f0',
-              padding: '8px',
-              borderRadius: '12px'
-            }}>📋</span>
-            <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>Open House Events</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <span style={{
+                fontSize: '28px',
+                background: '#f0f0f0',
+                padding: '8px',
+                borderRadius: '12px'
+              }}>📋</span>
+              <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>Open House Events</h2>
+            </div>
+            <ExportMenu 
+              elementId="openhouse-events-table-container"
+              data={eventsList}
+              headers={['Year', 'Date', 'Theme', 'Target Audience', 'Departments', 'Visitors']}
+              keys={['event_year', 'event_date', 'theme', 'target_audience', 'departments_participated', 'total_visitors']}
+              filename="openhouse_events_list"
+              title="Open House Events Directory"
+            />
           </div>
           <span style={{
             backgroundColor: '#667eea',
@@ -665,7 +681,6 @@ function OpenHouseSection({ user, isPublicView = false }) {
           }}>
             {pagination.total} Events
           </span>
-        </div>
 
         {/* Filters */}
         <div style={{
@@ -735,7 +750,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
           </div>
         </div>
 
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
+
+        <div id="openhouse-events-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
           <table style={{
             width: '100%',
             borderCollapse: 'collapse',

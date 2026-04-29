@@ -10,8 +10,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend
-} from 'recharts';
+  Legend, LabelList} from 'recharts';
 
 import {
   fetchResearchFilterOptions,
@@ -28,6 +27,8 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
 import '../DesignSystem.css';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const TYPE_COLORS = ['#6366f1', '#22c55e', '#f97316', '#a855f7', '#14b8a6', '#0ea5e9', '#facc15'];
 
@@ -247,28 +248,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
     });
   };
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
@@ -301,8 +281,26 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Externship Summary
+          </h2>
+          <ExportMenu 
+            elementId="externship-summary-cards-container"
+            data={[{
+              total: summary.total,
+              participating_departments: participatingDepartments,
+              active_years: activeYears,
+              top_type: topType
+            }]}
+            headers={['Total Externships', 'Participating Departments', 'Timeline Coverage', 'Most Common Type']}
+            keys={['total', 'participating_departments', 'active_years', 'top_type']}
+            filename="externship_summary"
+            title="Externship Summary"
+          />
+        </div>
         {/* Modern Summary Cards */}
-        <div style={{
+        <div id="externship-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '20px',
@@ -615,16 +613,26 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
           }}>
             {/* 1. Year-wise Externships (Always Mounted) */}
             <div className={`chart-view ${viewType === 'yearly' ? 'active' : 'inactive'}`}>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                  <span style={{ fontSize: '28px' }}>📊</span> Year-wise Externships
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
-                  Distribution by externship type across the chosen timeframe
-                </p>
+              <div className="chart-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
+                    <span style={{ fontSize: '28px' }}>📊</span> Year-wise Externships
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                    Distribution by externship type across the chosen timeframe
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="externships-yearly-container"
+                  data={yearlyChartData}
+                  headers={['Year', ...externshipTypeKeys]}
+                  keys={['year', ...externshipTypeKeys]}
+                  filename="externships_yearly_trend"
+                  title="Year-wise Externships"
+                />
               </div>
 
-              <div className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+              <div id="externships-yearly-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -633,15 +641,15 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px' }} />
                     {externshipTypeKeys.map((type, index) => (
-                      <Bar
-                        key={type}
+                      <Bar key={type}
                         dataKey={type}
                         stackId="a"
                         fill={TYPE_COLORS[index % TYPE_COLORS.length]}
                         radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
                         isAnimationActive={true}
-                        animationDuration={1000}
-                      />
+                        animationDuration={1000}>
+  <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+</Bar>
                     ))}
                   </BarChart>
                 </ResponsiveContainer>
@@ -667,34 +675,44 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', background: '#f0f0f0', padding: '4px', borderRadius: '8px' }}>
-                  {['bar', 'trend'].map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setDeptChartType(mode)}
-                      style={{
-                        padding: '6px 16px',
-                        borderRadius: '6px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        backgroundColor: deptChartType === mode ? '#fff' : 'transparent',
-                        color: deptChartType === mode ? '#22c55e' : '#666',
-                        boxShadow: deptChartType === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
-                        transition: 'all 0.2s',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}
-                    >
-                      {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
-                    </button>
-                  ))}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '8px', background: '#f0f0f0', padding: '4px', borderRadius: '8px' }}>
+                    {['bar', 'trend'].map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setDeptChartType(mode)}
+                        style={{
+                          padding: '6px 16px',
+                          borderRadius: '6px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          backgroundColor: deptChartType === mode ? '#fff' : 'transparent',
+                          color: deptChartType === mode ? '#22c55e' : '#666',
+                          boxShadow: deptChartType === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu 
+                    elementId="externships-dept-container"
+                    data={deptChartType === 'bar' ? departmentComparisonData : departmentYearlyTrendData.trendData}
+                    headers={deptChartType === 'bar' ? ['Department', 'Count'] : ['Year', ...departmentYearlyTrendData.departments]}
+                    keys={deptChartType === 'bar' ? ['department', 'count'] : ['year', ...departmentYearlyTrendData.departments]}
+                    filename={`externships_dept_${deptChartType}`}
+                    title="Department-wise Analysis"
+                  />
                 </div>
               </div>
 
-              <div className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+              <div id="externships-dept-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
                 {/* Department Bar Chart (X = Department) */}
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
@@ -712,14 +730,14 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                         />
                         <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Bar
-                          dataKey="count"
+                        <Bar dataKey="count"
                           name="Externships"
                           fill="#22c55e"
                           radius={[4, 4, 0, 0]}
                           isAnimationActive={true}
-                          animationDuration={1000}
-                        />
+                          animationDuration={1000}>
+  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+</Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
@@ -740,17 +758,17 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         {departmentYearlyTrendData.departments.map((dept, index) => (
-                          <Line
-                            key={dept}
-                            type="monotone"
+                          <Line key={dept}
+                            type="linear"
                             dataKey={dept}
                             stroke={TYPE_COLORS[index % TYPE_COLORS.length]}
                             strokeWidth={3}
                             dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
                             activeDot={{ r: 6, strokeWidth: 0 }}
                             isAnimationActive={true}
-                            animationDuration={1000}
-                          />
+                            animationDuration={1000}>
+  <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+</Line>
                         ))}
                       </LineChart>
                     </ResponsiveContainer>
@@ -766,16 +784,27 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
             {/* 3. Externship Directory Table - Conditionally Mounted for Performance */}
             {viewType === 'externshipTable' && (
               <div className="chart-view active performance-render-auto">
-                <div className="chart-header" style={{ marginBottom: '20px' }}>
-                  <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span>📋</span> Externship Directory
-                  </h2>
-                  <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
-                    Displaying {externshipList.length} total records
-                  </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div className="chart-header">
+                    <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span>📋</span> Externship Directory
+                    </h2>
+                    <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
+                      Displaying {externshipList.length} total records
+                    </p>
+                  </div>
+                  <ExportMenu 
+                    elementId="externship-directory-table"
+                    data={externshipList}
+                    headers={['Faculty', 'Department', 'Partner', 'Type', 'Start Date', 'End Date', 'Days']}
+                    keys={['faculty_name', 'department', 'industry_name', 'type', 'startdate', 'enddate', 'duration_days']}
+                    filename="externship_directory"
+                    title="Externship Directory"
+                    exportType="table"
+                  />
                 </div>
 
-                <div className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
+                <div id="externship-directory-table" className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
                   <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
                   <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                     <tr style={{ backgroundColor: '#f97316' }}>

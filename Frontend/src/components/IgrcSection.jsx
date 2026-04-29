@@ -4,8 +4,7 @@ import {
   ResponsiveContainer,
   BarChart, Bar,
   LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend
-} from 'recharts';
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
 
 import { fetchIgrcSummary, fetchIgrcYearly } from '../services/grievanceStats';
 import DataUploadModal from './DataUploadModal';
@@ -14,6 +13,8 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 const BAR_COLORS = {
   filed: '#667eea',
@@ -119,11 +120,21 @@ function IgrcSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <div className="performance-render-auto">
-            <h2 style={{ textDecoration: 'underline', color: '#000', marginBottom: '16px', fontSize: '20px' }}>
-              Internal Grievance Resolution Cell (IGRC)
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+                IGRC Summary
+              </h2>
+              <ExportMenu 
+                elementId="igrc-summary-cards-container"
+                data={[summary]}
+                headers={['Total Grievances', 'Resolved', 'Pending']}
+                keys={['total', 'resolved', 'pending']}
+                filename="igrc_summary"
+                title="IGRC Summary"
+              />
+            </div>
             {/* Modern Gradient Summary Cards */}
-            <div style={{
+            <div id="igrc-summary-cards-container" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
               gap: '20px',
@@ -290,9 +301,19 @@ function IgrcSection({ user, isPublicView = false }) {
               </h2>
               <div className="chart-header">
                 <div>
-                  <p className="chart-description">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <p className="chart-description" style={{ margin: 0 }}>
                     Visual comparison of total grievances filed against resolutions and pending cases.
                   </p>
+                  <ExportMenu 
+                    elementId="igrc-yearly-chart-container"
+                    data={selectedYear === 'All' ? yearlyData : yearlyData.filter((row) => String(row.year) === String(selectedYear))}
+                    headers={['Year', 'Filed', 'Resolved', 'Pending']}
+                    keys={['year', 'filed', 'resolved', 'pending']}
+                    filename="igrc_yearly_data"
+                    title="IGRC Yearly Grievances"
+                  />
+                </div>
                 </div>
                 <div className="metric-toggle-group">
                   <button
@@ -373,12 +394,12 @@ function IgrcSection({ user, isPublicView = false }) {
                 const sharedAxisProps = {
                   xAxis: <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
                   yAxis: <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
-                  tooltip: <Tooltip contentStyle={{ backgroundColor: '#2a2a2a', borderColor: '#555' }} />,
+                  tooltip: <Tooltip content={<CustomTooltip />} />,
                   legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />,
                   grid: <CartesianGrid strokeDasharray="3 3" stroke="#444" />,
                 };
                 return (
-                  <div className="chart-container">
+                  <div id="igrc-yearly-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <ResponsiveContainer width="100%" height={420}>
@@ -388,9 +409,15 @@ function IgrcSection({ user, isPublicView = false }) {
                           {sharedAxisProps.yAxis}
                           {sharedAxisProps.tooltip}
                           {sharedAxisProps.legend}
-                          {visibleMetrics.filed && <Bar dataKey="filed" name="Filed" fill={BAR_COLORS.filed} />}
-                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={BAR_COLORS.resolved} />}
-                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={BAR_COLORS.pending} />}
+                          {visibleMetrics.filed && <Bar dataKey="filed" name="Filed" fill={BAR_COLORS.filed}>
+  <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+</Bar>}
+                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={BAR_COLORS.resolved}>
+  <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.resolved }} />
+</Bar>}
+                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={BAR_COLORS.pending}>
+  <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.pending }} />
+</Bar>}
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -404,7 +431,9 @@ function IgrcSection({ user, isPublicView = false }) {
                           {sharedAxisProps.yAxis}
                           {sharedAxisProps.tooltip}
                           {sharedAxisProps.legend}
-                          <Line type="monotone" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 5, fill: BAR_COLORS.filed, strokeWidth: 0 }} activeDot={{ r: 7 }} />
+                          <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 5, fill: BAR_COLORS.filed, strokeWidth: 0 }} activeDot={{ r: 7 }}>
+  <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+</Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>

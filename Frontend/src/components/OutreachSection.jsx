@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
 import './Page.css';
 import './OutreachMinimal.css';
 
@@ -352,9 +353,18 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
             fontSize: '0.78rem',
             fontWeight: '600',
             flexShrink: 0,
+            marginRight: '12px'
           }}>
             {matching.length} {matching.length === 1 ? 'record' : 'records'}
           </span>
+          <ExportMenu 
+            elementId="outreach-program-records-container"
+            data={matching}
+            headers={['Year', 'Program Name', 'Type', 'Audience', 'Attendees']}
+            keys={['academic_year', 'program_name', 'program_type', 'targeted_audience', 'num_attendees']}
+            filename={`outreach_${programConfig.key}_list`}
+            title={`${programConfig.title} Records`}
+          />
           {user?.role_id >= 2 && (
             <button
               className="page-upload-btn"
@@ -394,6 +404,12 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
               gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: '1.5rem'
             }}>
+            <div id="outreach-program-records-container" style={{
+              display: 'grid',
+              gridTemplateColumns: 'inherit',
+              gap: 'inherit',
+              width: '100%'
+            }}>
               {matching.map((record, idx) => (
                 <GridRecordCard
                   key={record.id ?? idx}
@@ -402,6 +418,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
                   onClick={() => setSelectedRecord(record)}
                 />
               ))}
+            </div>
             </div>
           )}
         </div>
@@ -478,12 +495,22 @@ function OutreachSection({ user, isPublicView = false }) {
             ← Back to Outreach Extension
           </button>
         )}
-        <div className="outreach-page-header">
-          <h1>Outreach Programs</h1>
-          <p>
-            Community engagement initiatives connecting IIT Palakkad with schools, colleges, and society.
-            Select a programme to explore its records.
-          </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div className="outreach-page-header">
+            <h1>Outreach Programs</h1>
+            <p>
+              Community engagement initiatives connecting IIT Palakkad with schools, colleges, and society.
+              Select a programme to explore its records.
+            </p>
+          </div>
+          <ExportMenu 
+            elementId="outreach-programs-summary-container"
+            data={PROGRAM_CONFIGS.map(c => ({ title: c.title, count: getCount(c) }))}
+            headers={['Program', 'Record Count']}
+            keys={['title', 'count']}
+            filename="outreach_programs_summary"
+            title="Outreach Programs Summary"
+          />
         </div>
 
         {loading && (
@@ -506,7 +533,7 @@ function OutreachSection({ user, isPublicView = false }) {
         )}
 
         {!loading && !error && (
-          <div className="outreach-sections-grid">
+          <div id="outreach-programs-summary-container" className="outreach-sections-grid">
             {PROGRAM_CONFIGS.map((config) => {
               const count = getCount(config);
               return (

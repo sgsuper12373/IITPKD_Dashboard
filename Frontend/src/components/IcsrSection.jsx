@@ -14,8 +14,7 @@ import {
   Legend,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
+  Cell, LabelList} from 'recharts';
 import {
   fetchIcsrSummary,
   fetchIcsrYearlyDistribution,
@@ -24,6 +23,8 @@ import {
   fetchIcsrFilterOptions
 } from '../services/industryConnectStats';
 import DataUploadModal from './DataUploadModal';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
@@ -227,28 +228,7 @@ function IcsrSection({ user, isPublicView = false }) {
     return pieData;
   }, [eventTypes]);
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label || payload[0].name}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {formatNumber(entry.value)}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
@@ -281,8 +261,21 @@ function IcsrSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            ICSR Summary
+          </h2>
+          <ExportMenu 
+            elementId="icsr-summary-cards-container"
+            data={[summary]}
+            headers={['Total Events', 'Total Funding']}
+            keys={['total_events', 'total_funding']}
+            filename="icsr_summary"
+            title="ICSR Summary"
+          />
+        </div>
         {/* Modern Summary Cards */}
-        <div style={{
+        <div id="icsr-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '24px',
@@ -509,13 +502,23 @@ function IcsrSection({ user, isPublicView = false }) {
           {/* Yearly Distribution Trend Line Graph */}
           {viewType === 'yearly' && (
             <div>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>📈</span> Year-wise Event Distribution Trend
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                  Yearly trend of industry events over time
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>📈</span> Year-wise Event Distribution Trend
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                    Yearly trend of industry events over time
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="icsr-yearly-trend-container"
+                  data={yearlyChartData}
+                  headers={['Year', 'Events']}
+                  keys={['year', 'events']}
+                  filename="icsr_yearly_events"
+                  title="Year-wise Event Distribution Trend"
+                />
               </div>
 
               {/* Filters inside the yearly view */}
@@ -625,7 +628,7 @@ function IcsrSection({ user, isPublicView = false }) {
 
               <div className="data-content-wrapper">
 
-                <div className={`chart-container ${yearlyChartData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div id="icsr-yearly-trend-container" className={`chart-container ${yearlyChartData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                   <div className={`section-empty-state ${yearlyChartData.length > 0 ? 'hidden' : ''}`}>
                     <p>No yearly distribution data available for the selected filters</p>
                   </div>
@@ -656,7 +659,9 @@ function IcsrSection({ user, isPublicView = false }) {
                             />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                            <Bar dataKey="events" name="Events" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28} />
+                            <Bar dataKey="events" name="Events" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28}>
+  <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+</Bar>
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -687,15 +692,15 @@ function IcsrSection({ user, isPublicView = false }) {
                             />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="circle" />
-                            <Line
-                              type="monotone"
+                            <Line type="linear"
                               dataKey="events"
                               name="Events"
                               stroke="#667eea"
                               strokeWidth={3}
                               dot={{ r: 6, fill: '#667eea', strokeWidth: 2 }}
-                              activeDot={{ r: 8 }}
-                            />
+                              activeDot={{ r: 8 }}>
+  <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+</Line>
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
@@ -738,13 +743,23 @@ function IcsrSection({ user, isPublicView = false }) {
           {/* Event Types Distribution - Pie Chart with Top 5 + Others */}
           {viewType === 'eventTypes' && (
             <div>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>🥧</span> Event Type Distribution
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                  Distribution of different types of industry interaction events
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>🥧</span> Event Type Distribution
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                    Distribution of different types of industry interaction events
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="icsr-event-type-dist-container"
+                  data={eventTypesPieData}
+                  headers={['Event Type', 'Count']}
+                  keys={['name', 'value']}
+                  filename="icsr_event_type_distribution"
+                  title="Event Type Distribution"
+                />
               </div>
 
               {/* Filters inside the event types view */}
@@ -828,7 +843,7 @@ function IcsrSection({ user, isPublicView = false }) {
 
               <div className="data-content-wrapper">
 
-                <div className={`chart-container ${eventTypesPieData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+                <div id="icsr-event-type-dist-container" className={`chart-container ${eventTypesPieData.length === 0 ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
                   <div className={`section-empty-state ${eventTypesPieData.length > 0 ? 'hidden' : ''}`}>
                     <p>No event distribution data available for the selected filters</p>
                   </div>
@@ -926,13 +941,24 @@ function IcsrSection({ user, isPublicView = false }) {
           {/* Industry Event Directory */}
           {viewType === 'eventsDirectory' && (
             <div>
-              <div className="chart-header" style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '24px' }}>📋</span> Industry Event Directory
-                </h2>
-                <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                  Search and filter through all industry interaction events
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="chart-header">
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>📋</span> Industry Event Directory
+                  </h2>
+                  <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                    List of industry interaction events with funding details
+                  </p>
+                </div>
+                <ExportMenu 
+                  elementId="icsr-event-directory-table"
+                  data={eventsList}
+                  headers={['Date', 'Event Title', 'Partner', 'Type', 'Funding (₹)']}
+                  keys={['event_date', 'event_title', 'industry_partner', 'event_type', 'funding_amount']}
+                  filename="icsr_events_directory"
+                  title="Industry Event Directory"
+                  exportType="table"
+                />
               </div>
 
               {/* Filters inside the events directory view */}

@@ -88,8 +88,21 @@ function ConclaveSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Conclave Summary
+          </h2>
+          <ExportMenu 
+            elementId="conclave-summary-cards-container"
+            data={[summary]}
+            headers={['Total Conclaves', 'Companies Participated']}
+            keys={['total_conclaves', 'total_companies']}
+            filename="conclave_summary"
+            title="Conclave Summary"
+          />
+        </div>
         {/* Summary Cards - Modern Design */}
-        <div style={{
+        <div id="conclave-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '24px',
@@ -274,12 +287,26 @@ function ConclaveSection({ user, isPublicView = false }) {
             <p style={{ color: '#666', marginTop: '10px' }}>Loading conclave information...</p>
           </div>
         ) : conclaves.length > 0 ? (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-            gap: '24px',
-            marginTop: '20px'
-          }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+                Conclave Directory
+              </h2>
+              <ExportMenu 
+                elementId="conclave-directory-container"
+                data={conclaves}
+                headers={['Year', 'Companies', 'Theme', 'Focus Area']}
+                keys={['year', 'number_of_companies', 'theme', 'focus_area']}
+                filename="conclave_directory"
+                title="Conclave Directory"
+              />
+            </div>
+            <div id="conclave-directory-container" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+              gap: '24px',
+              marginTop: '20px'
+            }}>
             {conclaves.map((conclave) => (
               <div
                 key={conclave.conclave_id}
@@ -580,6 +607,7 @@ function ConclaveSection({ user, isPublicView = false }) {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         ) : (
           <div className="no-data" style={{

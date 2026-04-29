@@ -153,11 +153,36 @@ def get_placement_summary(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
 
+    year_filter = request.args.get('year')
+    program_filter = request.args.get('program')
+    gender_filter = request.args.get('gender')
+    sector_filter = request.args.get('sector')
+
+    # If year is 'All' or not specified, default to the latest academic year
+    # as per user request to show latest status instead of cumulative.
+    if not year_filter or year_filter == 'All':
+        conn = None
+        cur = None
+        try:
+            conn = get_db_connection()
+            if conn:
+                cur = conn.cursor()
+                # Find the latest academic year using the format '2024-25'
+                cur.execute(f"SELECT placement_year FROM {PLACEMENT_SUMMARY_TABLE} ORDER BY CAST(SPLIT_PART(placement_year, '-', 1) AS INTEGER) DESC LIMIT 1")
+                row = cur.fetchone()
+                if row:
+                    year_filter = row['placement_year']
+        except Exception as e:
+            print(f"Error finding latest placement year: {e}")
+        finally:
+            if cur: cur.close()
+            if conn: release_db_connection(conn)
+
     filters = {
-        'year': request.args.get('year'),
-        'program': request.args.get('program'),
-        'gender': request.args.get('gender'),
-        'sector': request.args.get('sector'),
+        'year': year_filter,
+        'program': program_filter,
+        'gender': gender_filter,
+        'sector': sector_filter,
     }
 
     summary_where, summary_params = build_where_clause(
@@ -216,6 +241,7 @@ def get_placement_summary(current_user_id):
             'highest_package': package_row.get('highest_package'),
             'lowest_package': package_row.get('lowest_package'),
             'average_package': package_row.get('average_package'),
+            'year': filters.get('year')
         }
         return jsonify({'data': summary}), 200
     except UndefinedTable:

@@ -13,7 +13,7 @@ import {
   Pie,
   Cell,
   BarChart,
-  Bar
+  Bar, LabelList
 } from 'recharts';
 
 import {
@@ -28,6 +28,8 @@ import {
   fetchTopRecruiters
 } from '../services/placementStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import ExportMenu from './ExportMenu';
+import { CustomTooltip } from '../utils/chartUtils';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -158,6 +160,15 @@ function PlacementSection({ user, isPublicView = false }) {
   });
   const [error, setError] = useState(null);
 
+  const latestYear = useMemo(() => {
+    if (!filterOptions.years || filterOptions.years.length === 0) return null;
+    return [...filterOptions.years].sort((a, b) => {
+      const yearA = parseInt(a.split('-')[0]);
+      const yearB = parseInt(b.split('-')[0]);
+      return yearB - yearA;
+    })[0];
+  }, [filterOptions.years]);
+
   const token = localStorage.getItem('authToken');
 
   // Get current filters based on view type
@@ -267,8 +278,13 @@ function PlacementSection({ user, isPublicView = false }) {
         setLoading(prev => ({ ...prev, trend: true }));
         setError(null);
 
+        const summaryFilters = { ...trendFilters };
+        if (summaryFilters.year === 'All' && latestYear) {
+          summaryFilters.year = latestYear;
+        }
+
         const [summaryResp, trendResp] = await Promise.all([
-          fetchPlacementSummary(trendFilters, token),
+          fetchPlacementSummary(summaryFilters, token),
           fetchPlacementTrend(trendFilters, token)
         ]);
 
@@ -292,7 +308,7 @@ function PlacementSection({ user, isPublicView = false }) {
     if (viewType === 'placementTrend') {
       loadTrendData();
     }
-  }, [trendFilters, token, viewType, uploadVersion]);
+  }, [trendFilters, token, viewType, uploadVersion, latestYear]);
 
   // Load gender data
   useEffect(() => {
@@ -501,33 +517,7 @@ function PlacementSection({ user, isPublicView = false }) {
     }));
   }, [packageTrend]);
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {
-                entry.name.includes('Package') || entry.name.includes('package')
-                  ? formatCurrency(entry.value)
-                  : entry.name.includes('%')
-                    ? formatPercentage(entry.value)
-                    : formatNumber(entry.value)
-              }
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // Using shared CustomTooltip from chartUtils
 
   // Get loading state for current view
   const isLoading = () => {
@@ -591,8 +581,21 @@ function PlacementSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+            Placement Summary {summary.year && `(${summary.year})`}
+          </h2>
+          <ExportMenu 
+            elementId="placement-summary-cards-container"
+            data={[summary]}
+            headers={['Year', 'Registered', 'Placed', 'Placement %', 'Highest Package', 'Average Package']}
+            keys={['year', 'registered', 'placed', 'placement_percentage', 'highest_package', 'average_package']}
+            filename={`placement_summary_${summary.year || 'latest'}`}
+            title={`Placement Summary - ${summary.year || 'Latest'}`}
+          />
+        </div>
         {/* Modern Summary Cards */}
-        <div style={{
+        <div id="placement-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '24px',
@@ -610,7 +613,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered</h3>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-value" style={{ color: 'white' }}>
                 {formatNumber(summary.registered)}
@@ -634,7 +637,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed</h3>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-value" style={{ color: 'white' }}>
                 {formatNumber(summary.placed)}
@@ -658,7 +661,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📈</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement %</h3>
+                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement % {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-value" style={{ color: 'white' }}>
                 {formatPercentage(summary.placement_percentage)}
@@ -691,7 +694,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
               </div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
                 {formatCurrency(summary.highest_package)}
@@ -724,7 +727,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📈</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Average</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Average {summary.year && `(${summary.year})`}</span>
               </div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
                 {formatCurrency(summary.average_package)}
@@ -873,14 +876,24 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Placement Percentage Trend</h2>
-              <p className="chart-description">
-                Track how overall placement conversion has evolved across years.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <div className="chart-header">
+                <h2>Placement Percentage Trend</h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>
+                  Evolution of students registered vs placed and the resulting placement percentage.
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="placement-trend-container"
+                data={placementTrendChartData}
+                headers={['Year', 'Registered', 'Placed', 'Placement %']}
+                keys={['year', 'registered', 'placed', 'percentage']}
+                filename="placement_trend"
+                title="Placement Trend Overview"
+              />
             </div>
 
-            <div className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-trend-container" className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
               <div className={`section-empty-state ${placementTrendChartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -902,8 +915,12 @@ function PlacementSection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
-                    <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16} />
-                    <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16} />
+                    <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
+                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                    </Bar>
+                    <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
+                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                    </Bar>
                   </BarChart>
                 ) : (
                   <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -912,9 +929,15 @@ function PlacementSection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '11px' }} />
-                    <Line type="monotone" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="linear" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }}>
+                      <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                    </Line>
+                    <Line type="linear" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }}>
+                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                    </Line>
+                    <Line type="linear" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }}>
+                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                    </Line>
                   </LineChart>
                 )}
               </ResponsiveContainer>
@@ -1034,14 +1057,22 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Gender-wise Placement Breakdown</h2>
-              <p className="chart-description">
-                Registered vs Placed counts per gender.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="section-header-left">
+                <h2>Gender Breakdown</h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Comparison of placement metrics across genders.</p>
+              </div>
+              <ExportMenu 
+                elementId="placement-gender-container"
+                data={genderBarData}
+                headers={['Gender', 'Registered', 'Placed']}
+                keys={['gender', 'registered', 'placed']}
+                filename="placement_gender_breakdown"
+                title="Gender-wise Placement Status"
+              />
             </div>
 
-            <div className={`chart-container ${!genderBarData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-gender-container" className={`chart-container ${!genderBarData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
               <div className={`section-empty-state ${genderBarData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -1052,8 +1083,12 @@ function PlacementSection({ user, isPublicView = false }) {
                   <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '12px' }} iconType="rect" />
-                  <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32} />
-                  <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[4, 4, 0, 0]} barSize={32} />
+                  <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32}>
+                    <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[0] }} />
+                  </Bar>
+                  <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[4, 4, 0, 0]} barSize={32}>
+                    <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[1] }} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
 
@@ -1165,14 +1200,22 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Program-wise Placement Status</h2>
-              <p className="chart-description">
-                Compare registrations and offers across UG, PG, and PhD cohorts.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="section-header-left">
+                <h2>Program-wise Status</h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Placement performance across different academic programs.</p>
+              </div>
+              <ExportMenu 
+                elementId="placement-program-container"
+                data={programStatusChartData}
+                headers={['Program', 'Registered', 'Placed', 'Percentage']}
+                keys={['program', 'registered', 'placed', 'percentage']}
+                filename="placement_program_status"
+                title="Program-wise Placement Performance"
+              />
             </div>
 
-            <div className={`chart-container ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-program-container" className={`chart-container ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
               <div className={`section-empty-state ${programStatusChartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -1182,8 +1225,12 @@ function PlacementSection({ user, isPublicView = false }) {
                   <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
                   <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30} />
-                  <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
+                    <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                  </Bar>
+                  <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30}>
+                    <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
 
@@ -1267,14 +1314,22 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Recruiters per Year</h2>
-              <p className="chart-description">
-                Monitor company participation and total offers year over year.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="section-header-left">
+                <h2>Recruiter Statistics</h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Yearly trends of companies visiting and offers made.</p>
+              </div>
+              <ExportMenu 
+                elementId="placement-recruiters-container"
+                data={recruiterChartData}
+                headers={['Year', 'Companies', 'Offers']}
+                keys={['year', 'companies', 'offers']}
+                filename="placement_recruiters_stats"
+                title="Recruiter Statistics"
+              />
             </div>
 
-            <div className={`chart-container ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-recruiters-container" className={`chart-container ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
               <div className={`section-empty-state ${recruiterChartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -1284,8 +1339,12 @@ function PlacementSection({ user, isPublicView = false }) {
                   <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                   <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30} />
-                  <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
+                    <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                  </Bar>
+                  <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30}>
+                    <LabelList dataKey="offers" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
               <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
@@ -1364,14 +1423,24 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Sector-wise Company Split</h2>
-              <p className="chart-description">
-                Distribution of visiting recruiters by industry sector (Top 5 sectors shown).
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-header">
+                <h2>Sector-wise Company Split</h2>
+                <p className="chart-description">
+                  Distribution of visiting recruiters by industry sector (Top 5 sectors shown).
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="placement-sector-pie-container"
+                data={sectorPieData}
+                headers={['Sector', 'Companies', 'Offers']}
+                keys={['sector', 'companies', 'offers']}
+                filename="placement_sector_distribution"
+                title="Sector-wise Company Split"
+              />
             </div>
 
-            <div className={`chart-container ${!sectorPieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-sector-pie-container" className={`chart-container ${!sectorPieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
               <div className={`section-empty-state ${sectorPieData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -1388,7 +1457,7 @@ function PlacementSection({ user, isPublicView = false }) {
                       <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                         {pieData.map((entry, index) => (<Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />))}
                       </Pie>
-                      <Tooltip formatter={(value) => formatNumber(value)} />
+                      <Tooltip content={<CustomTooltip />} />
                       <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
                     </PieChart>
                   </ResponsiveContainer>
@@ -1484,14 +1553,22 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Package Trends</h2>
-              <p className="chart-description">
-                Track average package trends across years.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="section-header-left">
+                <h2>Salary Package Trends</h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Evolution of average, highest, and lowest salary packages.</p>
+              </div>
+              <ExportMenu 
+                elementId="placement-packages-container"
+                data={packageTrendChartData}
+                headers={['Year', 'Highest', 'Lowest', 'Average']}
+                keys={['year', 'highest', 'lowest', 'average']}
+                filename="placement_package_trends"
+                title="Salary Package Trends (LPA)"
+              />
             </div>
 
-            <div className={`chart-container ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+            <div id="placement-packages-container" className={`chart-container ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
               <div className={`section-empty-state ${packageTrendChartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
@@ -1501,9 +1578,15 @@ function PlacementSection({ user, isPublicView = false }) {
                   <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                   <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line type="monotone" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false} />
-                  <Line type="monotone" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} />
-                  <Line type="monotone" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false} />
+                  <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
+                    <LabelList dataKey="average" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
+                  </Line>
+                  <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                    <LabelList dataKey="highest" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#3b82f6" }} />
+                  </Line>
+                  <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                    <LabelList dataKey="lowest" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#ef4444" }} />
+                  </Line>
                 </LineChart>
               </ResponsiveContainer>
               <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
@@ -1596,14 +1679,25 @@ function PlacementSection({ user, isPublicView = false }) {
 
             </div>
 
-            <div className="chart-header">
-              <h2>Top Recruiters</h2>
-              <p className="chart-description">
-                Highlights of visiting recruiters, their sectors, and offer volume.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-header">
+                <h2>Top Recruiters</h2>
+                <p className="chart-description">
+                  Highlights of visiting recruiters, their sectors, and offer volume.
+                </p>
+              </div>
+              <ExportMenu 
+                elementId="placement-top-recruiters-table"
+                data={topRecruiters}
+                headers={['Year', 'Company Name', 'Sector', 'Offers', 'Hires']}
+                keys={['year', 'company_name', 'sector', 'offers', 'hires']}
+                filename="placement_top_recruiters"
+                title="Top Recruiters"
+                exportType="table"
+              />
             </div>
 
-            <div>
+            <div id="placement-top-recruiters-table">
               <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
                 <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
                   <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
@@ -1613,7 +1707,6 @@ function PlacementSection({ user, isPublicView = false }) {
                       <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
                       <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
                       <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
-                      <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Flagged</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1626,11 +1719,6 @@ function PlacementSection({ user, isPublicView = false }) {
                         </td>
                         <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
                         <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
-                        <td style={{ padding: '10px', fontSize: '13px' }}>
-                          <span style={{ backgroundColor: row.is_top_recruiter ? '#dcfce7' : '#fee2e2', color: row.is_top_recruiter ? '#166534' : '#991b1b', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
-                            {row.is_top_recruiter ? 'Yes' : 'No'}
-                          </span>
-                        </td>
                       </tr>
                     ))}
                     {!topRecruiters.length && (

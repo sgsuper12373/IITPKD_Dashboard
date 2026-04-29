@@ -13,13 +13,14 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend
-} from 'recharts';
+  Legend, LabelList} from 'recharts';
 import './Page.css';
 import './AcademicSection.css';
 import '../DesignSystem.css';
 import DataUploadModal from './DataUploadModal';
 import { useNavigate } from 'react-router-dom';
+import { CustomTooltip } from '../utils/chartUtils';
+import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -102,8 +103,21 @@ function NptelSection({ user, isPublicView = false }) {
         )}
       </div>
 
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          NPTEL Summary
+        </h2>
+        <ExportMenu 
+          elementId="nptel-summary-cards-container"
+          data={[summary]}
+          headers={['Total Courses Offered', 'Total Enrollments']}
+          keys={['total_courses', 'total_enrollments']}
+          filename="nptel_summary"
+          title="NPTEL Summary"
+        />
+      </div>
       {/* Summary Cards - Modern Design */}
-      <div style={{
+      <div id="nptel-summary-cards-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '24px',
@@ -285,6 +299,14 @@ function NptelSection({ user, isPublicView = false }) {
       <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: 0 }}>Trends & Analysis</h3>
+          <ExportMenu 
+            elementId="nptel-trend-chart-container"
+            data={trendData}
+            headers={['Year', 'Courses', 'Enrollments']}
+            keys={['year', 'courses', 'enrollments']}
+            filename={`nptel_${viewType}`}
+            title={viewType === 'courses_trend' ? 'Courses Trend' : 'Enrollments Trend'}
+          />
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '25px' }}>
@@ -308,7 +330,7 @@ function NptelSection({ user, isPublicView = false }) {
           ))}
         </div>
 
-        <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <div id="nptel-trend-chart-container" style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
           {trendData.length > 0 ? (
             <div style={{ marginBottom: '40px' }}>
               <h3 style={{ marginBottom: '20px', color: '#333' }}>
@@ -319,17 +341,17 @@ function NptelSection({ user, isPublicView = false }) {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
                   <YAxis stroke="#666" />
-                  <Tooltip />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Line
-                    type="monotone"
+                  <Line type="linear"
                     dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'}
                     name={viewType === 'courses_trend' ? 'Courses' : 'Enrollments'}
                     stroke={viewType === 'courses_trend' ? '#667eea' : '#f093fb'}
                     strokeWidth={3}
                     dot={{ r: 6, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb', strokeWidth: 2, stroke: '#fff' }}
-                    activeDot={{ r: 8 }}
-                  />
+                    activeDot={{ r: 8 }}>
+  <LabelList dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb' }} />
+</Line>
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -342,10 +364,19 @@ function NptelSection({ user, isPublicView = false }) {
         </div>
       </div>
 
-      {/* Data Table */}
       <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
-        <h3 style={{ marginBottom: '20px', color: '#333' }}>Course List Details</h3>
-        <div className="table-responsive" style={{ overflowX: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 style={{ margin: '0', color: '#333' }}>Course List Details</h3>
+          <ExportMenu 
+            elementId="nptel-course-list-container"
+            data={listData}
+            headers={['Course Name', 'Department', 'Faculty Name', 'Enrollments', 'Offering Year']}
+            keys={['course_name', 'department', 'faculty_name', 'enrollments', 'offering_year']}
+            filename="nptel_course_list"
+            title="Course List Details"
+          />
+        </div>
+        <div id="nptel-course-list-container" className="table-responsive" style={{ overflowX: 'auto' }}>
           <table className="grievance-table" style={{
             width: '100%',
             minWidth: '800px',

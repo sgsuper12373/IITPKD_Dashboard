@@ -9,6 +9,7 @@ import './Page.css';
 import './AcademicSection.css';
 import DataUploadModal from './DataUploadModal';
 import { useNavigate } from 'react-router-dom';
+import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -121,8 +122,21 @@ function UbaSection({ user, isPublicView = false }) {
         </div>
       ))}
 
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          Impact Summary
+        </h2>
+        <ExportMenu 
+          elementId="uba-summary-cards-container"
+          data={[summary]}
+          headers={['Total Projects', 'Total Events']}
+          keys={['total_projects', 'total_events']}
+          filename="uba_summary"
+          title="UBA Impact Summary"
+        />
+      </div>
       {/* Impact Summary Cards */}
-      <div style={{
+      <div id="uba-summary-cards-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '24px',
@@ -303,10 +317,21 @@ function UbaSection({ user, isPublicView = false }) {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Projects</h2>
-          <span style={{ backgroundColor: '#667eea', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
-            {projects.length} Projects
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ backgroundColor: '#667eea', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
+              {projects.length} Projects
+            </span>
+            <ExportMenu 
+              elementId="uba-projects-container"
+              data={projects}
+              headers={['Project Title', 'Status', 'Coordinator', 'Partners']}
+              keys={['project_title', 'project_status', 'coordinator_name', 'collaboration_partners']}
+              filename="uba_projects_directory"
+              title="UBA Projects Directory"
+            />
+          </div>
         </div>
+        <div id="uba-projects-container">
 
         {projects.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
@@ -342,6 +367,7 @@ function UbaSection({ user, isPublicView = false }) {
             ))}
           </div>
         )}
+        </div>
       </div>
 
       {/* Events Section */}
@@ -354,10 +380,21 @@ function UbaSection({ user, isPublicView = false }) {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Events</h2>
-          <span style={{ backgroundColor: '#f093fb', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
-            {events.length} Events
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ backgroundColor: '#f093fb', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
+              {events.length} Events
+            </span>
+            <ExportMenu 
+              elementId="uba-events-table-container"
+              data={events}
+              headers={['Year', 'Program Name', 'Type', 'Association', 'Attendees', 'Reach']}
+              keys={['year', 'program_name', 'program_type', 'association', 'num_attendees', 'geographic_reach']}
+              filename="uba_events_list"
+              title="UBA Events Directory"
+            />
+          </div>
         </div>
+        <div id="uba-events-table-container">
 
         {events.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
@@ -397,6 +434,7 @@ function UbaSection({ user, isPublicView = false }) {
             </table>
           </div>
         )}
+        </div>
       </div>
 
       <DataUploadModal
