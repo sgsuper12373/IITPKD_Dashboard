@@ -12,7 +12,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList} from 'recharts';
+  Legend, LabelList
+} from 'recharts';
 
 import { fetchEwdSummary, fetchEwdYearly } from '../services/ewdStats';
 import DataUploadModal from './DataUploadModal';
@@ -210,8 +211,8 @@ function EwdSection({ user, isPublicView = false }) {
         ) : (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ color: '#333', margin: 0, fontSize: '20px' }}>EWD Summary</h2>
-              <ExportMenu 
+              <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>EWD Summary</h2>
+              <ExportMenu
                 elementId="ewd-summary-cards-container"
                 data={[summary]}
                 headers={['Total Electricity', 'Avg Electricity/Capita', 'Avg Water/Capita', 'Avg Green Coverage']}
@@ -406,7 +407,7 @@ function EwdSection({ user, isPublicView = false }) {
                         <option key={year} value={year}>FY {year}</option>
                       ))}
                     </select>
-                    <ExportMenu 
+                    <ExportMenu
                       elementId="ewd-current-year-indicators-container"
                       data={[selectedYearData]}
                       headers={['Year', 'Per Capita Electricity', 'Per Capita Water', 'Per Capita Recycled', 'Green Coverage']}
@@ -571,7 +572,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Annual Electricity Consumption</h2>
                     <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Institution-wide electricity usage (kWh) recorded by EWD each financial year.</p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="ewd-electricity-chart-container"
                     data={filteredYearlyData}
                     headers={['Year', 'Annual Electricity (kWh)']}
@@ -616,8 +617,8 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#667eea" radius={[4, 4, 0, 0]} barSize={30} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Bar>
+                            <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -631,8 +632,8 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#667eea" strokeWidth={3} dot={{ r: 5, fill: '#667eea', strokeWidth: 0 }} activeDot={{ r: 7 }}>
-  <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Line>
+                            <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                          </Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -648,7 +649,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Per Capita Consumption Trends</h2>
                     <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Electricity and water consumption metrics normalised per capita.</p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="ewd-percapita-chart-container"
                     data={filteredYearlyData}
                     headers={['Year', 'Electricity (kWh)', 'Water (Litres)', 'Recycled (Litres)']}
@@ -690,14 +691,14 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
-</Bar>
+                            <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                          </Bar>
                           <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
-</Bar>
+                            <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                          </Bar>
                           <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
-</Bar>
+                            <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -711,14 +712,14 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-  <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
-</Line>
+                            <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                          </Line>
                           <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 4, fill: '#43e97b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-  <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
-</Line>
+                            <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                          </Line>
                           <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 4, fill: '#fa709a', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-  <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
-</Line>
+                            <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                          </Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -734,7 +735,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Environmental Summary</h2>
                     <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Green coverage (sq.m) illustrates campus sustainability efforts over time.</p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="ewd-environment-chart-container"
                     data={filteredYearlyData}
                     headers={['Year', 'Green Coverage (sq.m)']}
@@ -776,8 +777,8 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
-</Bar>
+                            <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -797,8 +798,8 @@ function EwdSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
                           <Line type="linear" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" fill="url(#colorGreenCoverage)" strokeWidth={2} dot={{ r: 4, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-  <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
-</Line>
+                            <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                          </Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>

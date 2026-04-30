@@ -161,7 +161,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
             Academic Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="education-academic-summary-cards-container"
             data={[courseCounts]}
             headers={['Active Courses', 'Industry Linked Courses']}
@@ -251,7 +251,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
         {/* Content Area */}
         <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', position: 'relative', minHeight: '500px' }}>
-          
+
           {loading && (
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.6)', zIndex: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '16px' }}>
               <div className="loading-spinner" />
@@ -265,12 +265,12 @@ function EducationAcademicSection({ user, isPublicView = false }) {
                   {viewMode === 'all' ? 'Active Courses Repository' : 'Industry Linked Courses'}
                 </h3>
                 <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-                  {viewMode === 'all' 
-                    ? `${allCourses.length} courses currently running` 
+                  {viewMode === 'all'
+                    ? `${allCourses.length} courses currently running`
                     : `${industryCourses.length} courses collaborating with industry partners`}
                 </p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="education-academic-courses-table"
                 data={viewMode === 'all' ? allCourses : industryCourses}
                 headers={['Course Name', 'Category', 'Programme', 'Industry Partner', 'Coordinator', 'Status']}
@@ -280,7 +280,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
                 exportType="table"
               />
             </div>
-            
+
             <div id="education-academic-courses-table">
               <CourseTable
                 courses={viewMode === 'all' ? allCourses : industryCourses}
@@ -297,7 +297,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div>
+    </div >
   );
 }
 

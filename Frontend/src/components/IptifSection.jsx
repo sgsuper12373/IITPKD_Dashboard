@@ -10,7 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList} from 'recharts';
+  Legend, LabelList
+} from 'recharts';
 import {
   fetchIptifSummary,
   fetchIptifProjects,
@@ -23,6 +24,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './DataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
+import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -168,16 +170,16 @@ function IptifSection({ user, isPublicView = false }) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} /><XAxis dataKey="year" stroke="#666" /><YAxis stroke="#666" />
             <Tooltip content={<CustomTooltip />} /><Legend />
             <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
-  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Bar>
+              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Bar>
           </BarChart>
         ) : (
           <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} /><XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} /><YAxis stroke="#666" />
             <Tooltip content={<CustomTooltip />} /><Legend />
             <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Line>
+              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Line>
           </LineChart>
         )}
       </ResponsiveContainer>
@@ -208,10 +210,10 @@ function IptifSection({ user, isPublicView = false }) {
         {error && <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>Students On Roll
             IPTIF Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="iptif-summary-cards-container"
             data={[summary]}
             headers={['Total Projects', 'Total Programs', 'Total Startups']}
@@ -267,7 +269,7 @@ function IptifSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}><span style={{ fontSize: '24px' }}>📊</span> Projects Trend</h2>
                 <p style={{ color: '#666', margin: '0' }}>Yearly trend of projects by scheme and status</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="iptif-projects-chart-container"
                 data={projectsTrend}
                 headers={['Year', 'Count']}
@@ -341,7 +343,7 @@ function IptifSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}><span style={{ fontSize: '24px' }}>🎓</span> Programs Trend</h2>
                 <p style={{ color: '#666', margin: '0' }}>Yearly trend of programs by type and association</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="iptif-programs-chart-container"
                 data={programsTrend}
                 headers={['Year', 'Count']}
@@ -400,7 +402,7 @@ function IptifSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}><span style={{ fontSize: '24px' }}>🚀</span> Startups Growth</h2>
                 <p style={{ color: '#666', margin: '0' }}>Yearly growth of startups by domain and status</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="iptif-startups-chart-container"
                 data={startupsTrend}
                 headers={['Year', 'Count']}
@@ -460,7 +462,7 @@ function IptifSection({ user, isPublicView = false }) {
                 <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}><span style={{ fontSize: '24px' }}>🏭</span> Facilities Revenue</h2>
                 <p style={{ color: '#666', margin: '0' }}>Yearly revenue trend from facilities by type</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="iptif-facilities-chart-container"
                 data={facilitiesTrend}
                 headers={['Year', 'Count']}
@@ -516,7 +518,7 @@ function IptifSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div>
+    </div >
   );
 }
 

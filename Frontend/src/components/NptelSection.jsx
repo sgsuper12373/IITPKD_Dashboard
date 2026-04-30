@@ -13,7 +13,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList} from 'recharts';
+  Legend, LabelList
+} from 'recharts';
 import './Page.css';
 import './AcademicSection.css';
 import '../DesignSystem.css';
@@ -104,10 +105,10 @@ function NptelSection({ user, isPublicView = false }) {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+        <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
           NPTEL Summary
         </h2>
-        <ExportMenu 
+        <ExportMenu
           elementId="nptel-summary-cards-container"
           data={[summary]}
           headers={['Total Courses Offered', 'Total Enrollments']}
@@ -117,14 +118,15 @@ function NptelSection({ user, isPublicView = false }) {
         />
       </div>
       {/* Summary Cards - Modern Design */}
-      <div id="nptel-summary-cards-container" style={{
+      < div id="nptel-summary-cards-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '24px',
         marginBottom: '40px'
-      }}>
+      }
+      }>
         {/* Total Courses Card */}
-        <div style={{
+        < div style={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           borderRadius: '20px',
           padding: '28px',
@@ -139,7 +141,7 @@ function NptelSection({ user, isPublicView = false }) {
           }
         }}>
           {/* Decorative circles */}
-          <div style={{
+          < div style={{
             position: 'absolute',
             top: '-30px',
             right: '-30px',
@@ -148,7 +150,7 @@ function NptelSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.1)',
             borderRadius: '50%'
           }} />
-          <div style={{
+          < div style={{
             position: 'absolute',
             bottom: '-40px',
             left: '-40px',
@@ -158,7 +160,7 @@ function NptelSection({ user, isPublicView = false }) {
             borderRadius: '50%'
           }} />
 
-          <div style={{ position: 'relative', zIndex: 1 }}>
+          < div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -206,11 +208,11 @@ function NptelSection({ user, isPublicView = false }) {
                 Active NPTEL courses
               </span>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
 
         {/* Total Enrollments Card */}
-        <div style={{
+        < div style={{
           background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
           borderRadius: '20px',
           padding: '28px',
@@ -292,14 +294,14 @@ function NptelSection({ user, isPublicView = false }) {
               </span>
             </div>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
 
       {/* View Selection & Trend Chart */}
-      <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
+      < div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: 0 }}>Trends & Analysis</h3>
-          <ExportMenu 
+          <ExportMenu
             elementId="nptel-trend-chart-container"
             data={trendData}
             headers={['Year', 'Courses', 'Enrollments']}
@@ -350,8 +352,8 @@ function NptelSection({ user, isPublicView = false }) {
                     strokeWidth={3}
                     dot={{ r: 6, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb', strokeWidth: 2, stroke: '#fff' }}
                     activeDot={{ r: 8 }}>
-  <LabelList dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb' }} />
-</Line>
+                    <LabelList dataKey={viewType === 'courses_trend' ? 'courses' : 'enrollments'} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: viewType === 'courses_trend' ? '#667eea' : '#f093fb' }} />
+                  </Line>
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -362,12 +364,12 @@ function NptelSection({ user, isPublicView = false }) {
             </div>
           )}
         </div>
-      </div>
+      </div >
 
       <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: '0', color: '#333' }}>Course List Details</h3>
-          <ExportMenu 
+          <ExportMenu
             elementId="nptel-course-list-container"
             data={listData}
             headers={['Course Name', 'Department', 'Faculty Name', 'Enrollments', 'Offering Year']}

@@ -585,7 +585,7 @@ function PlacementSection({ user, isPublicView = false }) {
           <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
             Placement Summary {summary.year && `(${summary.year})`}
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="placement-summary-cards-container"
             data={[summary]}
             headers={['Year', 'Registered', 'Placed', 'Placement %', 'Highest Package', 'Average Package']}
@@ -883,7 +883,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   Evolution of students registered vs placed and the resulting placement percentage.
                 </p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-trend-container"
                 data={placementTrendChartData}
                 headers={['Year', 'Registered', 'Placed', 'Placement %']}
@@ -1062,7 +1062,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <h2>Gender Breakdown</h2>
                 <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Comparison of placement metrics across genders.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-gender-container"
                 data={genderBarData}
                 headers={['Gender', 'Registered', 'Placed']}
@@ -1205,7 +1205,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <h2>Program-wise Status</h2>
                 <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Placement performance across different academic programs.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-program-container"
                 data={programStatusChartData}
                 headers={['Program', 'Registered', 'Placed', 'Percentage']}
@@ -1319,7 +1319,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <h2>Recruiter Statistics</h2>
                 <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Yearly trends of companies visiting and offers made.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-recruiters-container"
                 data={recruiterChartData}
                 headers={['Year', 'Companies', 'Offers']}
@@ -1430,7 +1430,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   Distribution of visiting recruiters by industry sector (Top 5 sectors shown).
                 </p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-sector-pie-container"
                 data={sectorPieData}
                 headers={['Sector', 'Companies', 'Offers']}
@@ -1558,7 +1558,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <h2>Salary Package Trends</h2>
                 <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Evolution of average, highest, and lowest salary packages.</p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-packages-container"
                 data={packageTrendChartData}
                 headers={['Year', 'Highest', 'Lowest', 'Average']}
@@ -1686,7 +1686,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   Highlights of visiting recruiters, their sectors, and offer volume.
                 </p>
               </div>
-              <ExportMenu 
+              <ExportMenu
                 elementId="placement-top-recruiters-table"
                 data={topRecruiters}
                 headers={['Year', 'Company Name', 'Sector', 'Offers', 'Hires']}
@@ -1751,7 +1751,7 @@ function PlacementSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div>
+    </div >
 
   );
 }

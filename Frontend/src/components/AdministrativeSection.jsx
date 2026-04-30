@@ -5,7 +5,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend,
   AreaChart, Area,
   PieChart, Pie, Cell,
-  LineChart, Line, LabelList } from 'recharts';
+  LineChart, Line, LabelList
+} from 'recharts';
 import {
   fetchFilterOptions,
   fetchFacultyFilterOptions,
@@ -45,7 +46,7 @@ const SERIES_META = [
 
 const VIEWS = [
   { value: 'yearwise', label: 'Yearwise Strength', icon: '📈' },
-  { value: 'department', label: 'Faculty Expertise Matrix', icon: '📊' },
+  { value: 'department', label: 'Faculty Strength', icon: '📊' },
   { value: 'gender', label: 'Gender Ratio', icon: '🥧' },
 ];
 
@@ -258,14 +259,14 @@ function AdministrativeSection({ isPublicView = false }) {
           Clear All Filters
         </button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${activeView === 'yearwise' ? 7 : 6}, 1fr)`, gap: '0.6rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
         {[
           { id: 'emp-type-filter', label: 'Employee Type', key: 'emp_type', options: filterOptions.emp_type, views: ['yearwise', 'gender'] },
           { id: 'department-filter', label: 'Department', key: 'department', options: activeView === 'department' ? facultyFilterOptions.department : filterOptions.department, views: ['yearwise', 'department', 'gender'] },
           { id: 'designation-filter', label: 'Designation', key: 'designation', options: activeView === 'department' ? facultyFilterOptions.designation : filterOptions.designation, views: ['yearwise', 'department', 'gender'] },
           { id: 'gender-filter', label: 'Gender', key: 'gender', options: filterOptions.gender, views: ['yearwise', 'department'] },
           { id: 'group-filter', label: 'Group', key: 'group_name', options: activeView === 'department' ? facultyFilterOptions.group_name : filterOptions.group_name, views: ['yearwise', 'department', 'gender'] },
-          { id: 'category-filter', label: 'Category', key: 'appointed_category', options: filterOptions.appointed_category, views: ['yearwise', 'department', 'gender'] },
+          /* { id: 'category-filter', label: 'Category', key: 'appointed_category', options: filterOptions.appointed_category, views: ['yearwise', 'department', 'gender'] }, */
           { id: 'num-years-filter', label: 'No. of Years', key: 'num_years', customOptions: NUM_YEARS_OPTIONS, views: ['yearwise'] },
         ].filter(({ views }) => views.includes(activeView)).map(({ id, label, key, options, customOptions }) => (
           <div key={id} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -323,8 +324,8 @@ function AdministrativeSection({ isPublicView = false }) {
 
         {/* ══ Row 1: Filter card + Year-filtered data cards ════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ color: '#333', margin: 0, fontSize: '20px' }}>Employee Summary</h2>
-          <ExportMenu 
+          <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>Employee Summary</h2>
+          <ExportMenu
             elementId="admin-summary-cards-container"
             data={[{
               label: 'Selected Year',
@@ -487,7 +488,7 @@ function AdministrativeSection({ isPublicView = false }) {
                     {label}
                   </button>
                 ))}
-                <ExportMenu 
+                <ExportMenu
                   elementId="admin-yearwise-chart-container"
                   data={yearwiseData}
                   headers={['Year', ...SERIES_META.map(s => s.label)]}
@@ -523,8 +524,8 @@ function AdministrativeSection({ isPublicView = false }) {
                     {SERIES_META.map(({ key, color, label }) =>
                       visibleSeries[key] ? (
                         <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
-  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Bar>
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                        </Bar>
                       ) : null
                     )}
                   </BarChart>
@@ -552,8 +553,8 @@ function AdministrativeSection({ isPublicView = false }) {
                       visibleSeries[key] ? (
                         <Line key={key} type="linear" dataKey={key} name={label}
                           stroke={color} fill={`url(#${gradientId})`} strokeWidth={2}>
-  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Line>
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                        </Line>
                       ) : null
                     )}
                   </LineChart>
@@ -564,7 +565,7 @@ function AdministrativeSection({ isPublicView = false }) {
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
-            Faculty Expertise Matrix — bar chart (Teaching, current year hires)
+            Faculty Department Wise Count — bar chart (Teaching, current year hires)
         ══════════════════════════════════════════════════════════════════ */}
         {activeView === 'department' && (
           <div style={CHART_BOX}>
@@ -572,7 +573,7 @@ function AdministrativeSection({ isPublicView = false }) {
 
             <div style={{ marginBottom: '20px' }}>
               <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>
-                Faculty Expertise Matrix
+                Faculty Department Wise Count
               </h2>
               <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
                 Currently active teaching faculty (non-Director) grouped by department. Total: <strong>{expertiseTotal}</strong>
@@ -591,31 +592,38 @@ function AdministrativeSection({ isPublicView = false }) {
                   <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No active faculty match the current filters.</p>
                 </div>
               )}
-                <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
-                  <ResponsiveContainer width="100%" height={420}>
-                <BarChart data={expertiseData} margin={{ top: 5, right: 20, left: 0, bottom: 130 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
-  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <ExportMenu 
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginBottom: '10px'
+              }}>
+                <ExportMenu
                   elementId="admin-expertise-chart-container"
                   data={expertiseData}
                   headers={['Department', 'Faculty Count']}
                   keys={['name', 'count']}
                   filename="admin_faculty_expertise"
-                  title="Faculty Expertise Matrix"
+                  title="Faculty Department Wise Count"
                 />
+              </div>
+
+              <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
+                <ResponsiveContainer width="100%" height={420}>
+                  <BarChart data={expertiseData} margin={{ top: 5, right: 20, left: 0, bottom: 130 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                      <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
@@ -633,7 +641,20 @@ function AdministrativeSection({ isPublicView = false }) {
                 Gender distribution of currently active employees at IIT Palakkad.
               </p>
             </div>
-
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginBottom: '10px'
+            }}>
+              <ExportMenu
+                elementId="admin-gender-chart-container"
+                data={genderData}
+                headers={['Gender', 'Count']}
+                keys={['name', 'value']}
+                filename="admin_gender_distribution"
+                title="Gender Distribution"
+              />
+            </div>
             <div id="admin-gender-chart-container" style={{ position: 'relative', padding: '10px' }}>
               {genderData.length === 0 && (
                 <div style={{
@@ -678,14 +699,6 @@ function AdministrativeSection({ isPublicView = false }) {
                 <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1a1a1a' }}>
                   {genderData.length > 0 ? `Total Employees: ${genderTotal}` : ''}
                 </div>
-                <ExportMenu 
-                  elementId="admin-gender-chart-container"
-                  data={genderData}
-                  headers={['Gender', 'Count']}
-                  keys={['name', 'value']}
-                  filename="admin_gender_distribution"
-                  title="Gender Distribution"
-                />
               </div>
             </div>
           </div>

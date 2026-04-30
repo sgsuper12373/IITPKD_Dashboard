@@ -293,7 +293,7 @@ function TechinSection({ user, isPublicView = false }) {
         {error && <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>Students On Roll
             Techin Summary
           </h2>
           <ExportMenu
@@ -538,7 +538,7 @@ function TechinSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div>
+    </div >
   );
 }
 

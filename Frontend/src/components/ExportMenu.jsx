@@ -3,12 +3,12 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const ExportMenu = ({ 
-  elementId, 
-  data, 
-  headers, 
-  keys, 
-  filename = 'export', 
+const ExportMenu = ({
+  elementId,
+  data,
+  headers,
+  keys,
+  filename = 'export',
   title = '',
   exportType = 'both' // 'chart', 'table', or 'both'
 }) => {
@@ -29,13 +29,13 @@ const ExportMenu = ({
     if (!elementId) return;
     const element = document.getElementById(elementId);
     if (!element) return;
-    
+
     try {
       setIsOpen(false);
       // Small delay to ensure the menu is closed before capturing
       await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const canvas = await html2canvas(element, { 
+
+      const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
         scale: 2, // Higher quality
         logging: false,
@@ -57,7 +57,7 @@ const ExportMenu = ({
     if (!data || !data.length || !keys || !headers) return;
 
     let csvContent = headers.join(',') + '\n';
-    
+
     data.forEach(row => {
       const rowData = keys.map(key => {
         let cellData = row[key] !== undefined && row[key] !== null ? row[key] : '';
@@ -81,7 +81,7 @@ const ExportMenu = ({
     setIsOpen(false);
   };
 
-  const downloadPDF = () => {
+  /*const downloadPDF = () => {
     if (!data || !data.length || !keys || !headers) return;
 
     const doc = new jsPDF('p', 'pt', 'a4');
@@ -114,11 +114,11 @@ const ExportMenu = ({
 
     doc.save(`${filename}.pdf`);
     setIsOpen(false);
-  };
+  };*/
 
   return (
     <div ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
           padding: '8px 14px',
@@ -139,7 +139,7 @@ const ExportMenu = ({
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
         </svg>
         Export
       </button>
@@ -160,7 +160,7 @@ const ExportMenu = ({
           animation: 'fadeIn 0.2s ease-out'
         }}>
           {(exportType === 'chart' || exportType === 'both') && (
-            <button 
+            <button
               onClick={downloadPNG}
               style={menuItemStyle}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
@@ -171,15 +171,15 @@ const ExportMenu = ({
           )}
           {(exportType === 'table' || exportType === 'both') && (
             <>
-              <button 
+              {/*<button
                 onClick={downloadPDF}
                 style={menuItemStyle}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <span style={{ fontSize: '16px' }}>📄</span> PDF (Data)
-              </button>
-              <button 
+              </button>*/}
+              <button
                 onClick={downloadCSV}
                 style={menuItemStyle}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}

@@ -10,7 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList } from 'recharts';
+  Legend, LabelList
+} from 'recharts';
 import { CustomTooltip } from '../utils/chartUtils';
 import ExportMenu from './ExportMenu';
 import {
@@ -164,10 +165,10 @@ function OpenHouseSection({ user, isPublicView = false }) {
       ))}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+        <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
           Open House Summary
         </h2>
-        <ExportMenu 
+        <ExportMenu
           elementId="openhouse-summary-cards-container"
           data={[summary]}
           headers={['Total Events', 'Total Visitors', 'Participated Departments']}
@@ -177,14 +178,15 @@ function OpenHouseSection({ user, isPublicView = false }) {
         />
       </div>
       {/* Summary Cards - Modern Design */}
-      <div id="openhouse-summary-cards-container" style={{
+      < div id="openhouse-summary-cards-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '24px',
         marginBottom: '40px'
-      }}>
+      }
+      }>
         {/* Total Events Card */}
-        <div style={{
+        < div style={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           borderRadius: '20px',
           padding: '28px',
@@ -195,7 +197,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
           cursor: 'pointer'
         }}>
           {/* Decorative elements */}
-          <div style={{
+          < div style={{
             position: 'absolute',
             top: '-30px',
             right: '-30px',
@@ -204,7 +206,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             background: 'rgba(255, 255, 255, 0.1)',
             borderRadius: '50%'
           }} />
-          <div style={{
+          < div style={{
             position: 'absolute',
             bottom: '-40px',
             left: '-40px',
@@ -214,7 +216,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
             borderRadius: '50%'
           }} />
 
-          <div style={{ position: 'relative', zIndex: 1 }}>
+          < div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -262,11 +264,11 @@ function OpenHouseSection({ user, isPublicView = false }) {
                 Annual showcase events
               </span>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
 
         {/* Total Visitors Card */}
-        <div style={{
+        < div style={{
           background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
           borderRadius: '20px',
           padding: '28px',
@@ -344,10 +346,10 @@ function OpenHouseSection({ user, isPublicView = false }) {
               </span>
             </div>
           </div>
-        </div>
+        </div >
 
         {/* Participating Departments Card */}
-        <div style={{
+        < div style={{
           background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '20px',
           padding: '28px',
@@ -425,11 +427,11 @@ function OpenHouseSection({ user, isPublicView = false }) {
               </span>
             </div>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
 
       {/* Chart Type Selection - Radio Buttons */}
-      <div style={{
+      < div style={{
         backgroundColor: '#fff',
         borderRadius: '20px',
         padding: '20px',
@@ -508,10 +510,10 @@ function OpenHouseSection({ user, isPublicView = false }) {
             </span>
           </label>
         </div>
-      </div>
+      </div >
 
       {/* Single Chart Section based on radio selection */}
-      <div style={{
+      < div style={{
         backgroundColor: '#fff',
         borderRadius: '20px',
         padding: '24px',
@@ -519,7 +521,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
         marginBottom: '40px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-          <ExportMenu 
+          <ExportMenu
             elementId="openhouse-chart-container"
             data={timeline}
             headers={['Year', 'Events', 'Visitors', 'Avg. Depts']}
@@ -529,158 +531,160 @@ function OpenHouseSection({ user, isPublicView = false }) {
           />
         </div>
         <div id="openhouse-chart-container">
-        {/* Event Timeline Chart */}
-        {chartType === 'timeline' && timeline.length > 0 && (
-          <div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '20px'
-            }}>
-              <span style={{
-                fontSize: '28px',
-                background: '#f0f0f0',
-                padding: '8px',
-                borderRadius: '12px'
-              }}>📈</span>
-              <div>
-                <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Event Timeline</h3>
-                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0 0' }}>
-                  Trend of events and visitor counts over the years.
-                </p>
+          {/* Event Timeline Chart */}
+          {chartType === 'timeline' && timeline.length > 0 && (
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '20px'
+              }}>
+                <span style={{
+                  fontSize: '28px',
+                  background: '#f0f0f0',
+                  padding: '8px',
+                  borderRadius: '12px'
+                }}>📈</span>
+                <div>
+                  <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Event Timeline</h3>
+                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0 0' }}>
+                    Trend of events and visitor counts over the years.
+                  </p>
+                </div>
               </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={timeline}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                  <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                  <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
+                  <Line type="linear"
+                    dataKey="event_count"
+                    stroke="#4f46e5"
+                    name="Events"
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: '#4f46e5' }}>
+                    <LabelList dataKey="event_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#4f46e5" }} />
+                  </Line>
+                  <Line type="linear"
+                    dataKey="total_visitors"
+                    stroke="#22c55e"
+                    name="Visitors"
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: '#22c55e' }}>
+                    <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                  </Line>
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <ResponsiveContainer width="100%" height={350}>
-              <LineChart data={timeline}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                <Line type="linear"
-                  dataKey="event_count"
-                  stroke="#4f46e5"
-                  name="Events"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: '#4f46e5' }}>
-  <LabelList dataKey="event_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#4f46e5" }} />
-</Line>
-                <Line type="linear"
-                  dataKey="total_visitors"
-                  stroke="#22c55e"
-                  name="Visitors"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: '#22c55e' }}>
-  <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-</Line>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+          )}
 
-        {/* Participation Trends Chart */}
-        {chartType === 'participation' && timeline.length > 0 && (
-          <div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '20px'
-            }}>
-              <span style={{
-                fontSize: '28px',
-                background: '#f0f0f0',
-                padding: '8px',
-                borderRadius: '12px'
-              }}>📊</span>
-              <div>
-                <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Participation Trends</h3>
-                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0 0' }}>
-                  Average departmental participation vs total visitors.
-                </p>
+          {/* Participation Trends Chart */}
+          {chartType === 'participation' && timeline.length > 0 && (
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '20px'
+              }}>
+                <span style={{
+                  fontSize: '28px',
+                  background: '#f0f0f0',
+                  padding: '8px',
+                  borderRadius: '12px'
+                }}>📊</span>
+                <div>
+                  <h3 style={{ margin: 0, color: '#333', fontSize: '18px' }}>Participation Trends</h3>
+                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0 0' }}>
+                    Average departmental participation vs total visitors.
+                  </p>
+                </div>
               </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={timeline}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                  <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                  <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                  <Bar dataKey="avg_departments"
+                    fill="#0ea5e9"
+                    name="Avg. Departments"
+                    radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="avg_departments" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#0ea5e9" }} />
+                  </Bar>
+                  <Bar dataKey="total_visitors"
+                    fill="#f97316"
+                    name="Total Visitors"
+                    radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f97316" }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={timeline}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                <Bar dataKey="avg_departments"
-                  fill="#0ea5e9"
-                  name="Avg. Departments"
-                  radius={[4, 4, 0, 0]}>
-  <LabelList dataKey="avg_departments" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#0ea5e9" }} />
-</Bar>
-                <Bar dataKey="total_visitors"
-                  fill="#f97316"
-                  name="Total Visitors"
-                  radius={[4, 4, 0, 0]}>
-  <LabelList dataKey="total_visitors" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f97316" }} />
-</Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+          )}
         </div>
 
         {/* No data message */}
-        {timeline.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '60px',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px'
-          }}>
-            <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
-            <p style={{ color: '#666', fontSize: '16px' }}>No chart data available</p>
-          </div>
-        )}
-      </div>
+        {
+          timeline.length === 0 && (
+            <div style={{
+              textAlign: 'center',
+              padding: '60px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px'
+            }}>
+              <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
+              <p style={{ color: '#666', fontSize: '16px' }}>No chart data available</p>
+            </div>
+          )
+        }
+      </div >
 
       {/* Events Table Section */}
-      <div style={{
+      < div style={{
         backgroundColor: '#fff',
         borderRadius: '20px',
         padding: '24px',
         boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
         marginBottom: '30px'
       }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
-            }}>
-              <span style={{
-                fontSize: '28px',
-                background: '#f0f0f0',
-                padding: '8px',
-                borderRadius: '12px'
-              }}>📋</span>
-              <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>Open House Events</h2>
-            </div>
-            <ExportMenu 
-              elementId="openhouse-events-table-container"
-              data={eventsList}
-              headers={['Year', 'Date', 'Theme', 'Target Audience', 'Departments', 'Visitors']}
-              keys={['event_year', 'event_date', 'theme', 'target_audience', 'departments_participated', 'total_visitors']}
-              filename="openhouse_events_list"
-              title="Open House Events Directory"
-            />
-          </div>
-          <span style={{
-            backgroundColor: '#667eea',
-            color: 'white',
-            padding: '6px 12px',
-            borderRadius: '20px',
-            fontSize: '14px',
-            fontWeight: '500'
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
           }}>
-            {pagination.total} Events
-          </span>
+            <span style={{
+              fontSize: '28px',
+              background: '#f0f0f0',
+              padding: '8px',
+              borderRadius: '12px'
+            }}>📋</span>
+            <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>Open House Events</h2>
+          </div>
+          <ExportMenu
+            elementId="openhouse-events-table-container"
+            data={eventsList}
+            headers={['Year', 'Date', 'Theme', 'Target Audience', 'Departments', 'Visitors']}
+            keys={['event_year', 'event_date', 'theme', 'target_audience', 'departments_participated', 'total_visitors']}
+            filename="openhouse_events_list"
+            title="Open House Events Directory"
+          />
+        </div>
+        <span style={{
+          backgroundColor: '#667eea',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '20px',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}>
+          {pagination.total} Events
+        </span>
 
         {/* Filters */}
         <div style={{
@@ -852,61 +856,63 @@ function OpenHouseSection({ user, isPublicView = false }) {
         </div>
 
         {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '1rem',
-            marginTop: '2rem',
-            flexWrap: 'wrap'
-          }}>
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: pagination.page === 1 ? '#ccc' : '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: pagination.page === 1 ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              ← Previous
-            </button>
-            <span style={{ color: '#666', fontSize: '14px' }}>
-              Page <strong>{pagination.page}</strong> of <strong>{pagination.pages}</strong>
-            </span>
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.pages}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: pagination.page === pagination.pages ? '#ccc' : '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: pagination.page === pagination.pages ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              Next →
-            </button>
-          </div>
-        )}
-      </div>
+        {
+          pagination.pages > 1 && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '1rem',
+              marginTop: '2rem',
+              flexWrap: 'wrap'
+            }}>
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: pagination.page === 1 ? '#ccc' : '#667eea',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: pagination.page === 1 ? 'not-allowed' : 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                ← Previous
+              </button>
+              <span style={{ color: '#666', fontSize: '14px' }}>
+                Page <strong>{pagination.page}</strong> of <strong>{pagination.pages}</strong>
+              </span>
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.pages}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: pagination.page === pagination.pages ? '#ccc' : '#667eea',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: pagination.page === pagination.pages ? 'not-allowed' : 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Next →
+              </button>
+            </div>
+          )
+        }
+      </div >
 
       <DataUploadModal
         isOpen={isUploadModalOpen}

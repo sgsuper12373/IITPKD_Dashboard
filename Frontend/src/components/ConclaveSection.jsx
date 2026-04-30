@@ -89,8 +89,17 @@ function ConclaveSection({ user, isPublicView = false }) {
           marginBottom: '20px'
         }}>{error}</div>}
 
+        {/* FIX 1: Restored proper <h2> tag that was broken */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          <h2
+            style={{
+              textDecoration: "underline",
+              color: isPublicView ? "#000000" : "#ffffff",
+              textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)",
+              margin: 0,
+              fontSize: "20px"
+            }}
+          >
             Conclave Summary
           </h2>
           <ExportMenu
@@ -102,6 +111,7 @@ function ConclaveSection({ user, isPublicView = false }) {
             title="Conclave Summary"
           />
         </div>
+
         {/* Summary Cards - Modern Design */}
         <div id="conclave-summary-cards-container" style={{
           display: 'grid',
@@ -119,10 +129,6 @@ function ConclaveSection({ user, isPublicView = false }) {
             overflow: 'hidden',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
             cursor: 'pointer',
-            ':hover': {
-              transform: 'translateY(-5px)',
-              boxShadow: '0 20px 40px rgba(102, 126, 234, 0.4)'
-            }
           }}>
             {/* Decorative circles */}
             <div style={{
@@ -205,10 +211,6 @@ function ConclaveSection({ user, isPublicView = false }) {
             overflow: 'hidden',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
             cursor: 'pointer',
-            ':hover': {
-              transform: 'translateY(-5px)',
-              boxShadow: '0 20px 40px rgba(240, 147, 251, 0.4)'
-            }
           }}>
             <div style={{
               position: 'absolute',
@@ -289,6 +291,7 @@ function ConclaveSection({ user, isPublicView = false }) {
           </div>
         ) : conclaves.length > 0 ? (
           <div>
+            {/* FIX 2: Removed stray "Students On Roll" h2; kept only "Conclave Directory" */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
                 Conclave Directory

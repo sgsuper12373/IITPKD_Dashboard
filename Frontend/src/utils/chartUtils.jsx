@@ -2,11 +2,20 @@ import React from 'react';
 
 /**
  * Standard Custom Tooltip for Recharts that displays percentage values.
+ * Total is the denominator — individual entries are expressed as % of Total.
+ * The "Total" entry itself does not show a percentage.
  */
 export const CustomTooltip = ({ active, payload, label, formatter }) => {
   if (active && payload && payload.length) {
-    // Calculate total for percentage if not already provided in data
-    const total = payload.reduce((sum, entry) => sum + (Number(entry.value) || 0), 0);
+    // Find an explicit "Total" entry in the payload if present
+    const totalEntry = payload.find(e => e.name === 'Total');
+
+    // Denominator:
+    //   • If there's an explicit "Total" bar/line, use its value.
+    //   • Otherwise sum only non-Total entries (all entries when no Total exists).
+    const denominator = totalEntry
+      ? Number(totalEntry.value) || 0
+      : payload.reduce((sum, e) => sum + (Number(e.value) || 0), 0);
 
     return (
       <div style={{
@@ -21,9 +30,16 @@ export const CustomTooltip = ({ active, payload, label, formatter }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           {payload.map((entry, index) => {
             const value = Number(entry.value) || 0;
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            
-            let displayValue = formatter ? formatter(value, entry.name) : value.toLocaleString('en-IN');
+            const isTotal = entry.name === 'Total';
+
+            // Only show % for non-Total entries, using Total as denominator
+            const percentage = (!isTotal && denominator > 0)
+              ? ((value / denominator) * 100).toFixed(1)
+              : null;
+
+            const displayValue = formatter
+              ? formatter(value, entry.name)
+              : value.toLocaleString('en-IN');
 
             return (
               <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between' }}>
@@ -33,7 +49,11 @@ export const CustomTooltip = ({ active, payload, label, formatter }) => {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '13px', color: '#1e293b', fontWeight: 600 }}>{displayValue}</span>
-                  <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '6px', fontWeight: 500 }}>({percentage}%)</span>
+                  {percentage !== null && (
+                    <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '6px', fontWeight: 500 }}>
+                      ({percentage}%)
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -62,4 +82,9 @@ export const formatCurrency = (value) => {
  */
 export const formatNumber = (value) => {
   return new Intl.NumberFormat('en-IN').format(value || 0);
+};
+
+export const getOrderedLegend = (payload = [], keys = []) => {
+  const map = new Map(payload.map(p => [p.dataKey, p]));
+  return keys.map(k => map.get(k)).filter(Boolean);
 };

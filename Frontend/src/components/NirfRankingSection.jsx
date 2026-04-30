@@ -170,7 +170,7 @@ const NirfRankingSection = ({ user }) => {
                             {/* Left: stat summary */}
                             <div style={{ minWidth: '160px' }}>
                                 <div style={{ fontSize: '13px', fontWeight: 700, color: '#555', marginBottom: '4px' }}>
-                                    Overall NIRF Rank
+                                    Overall NIRF Rank (Lower is Better)
                                 </div>
                                 <div style={{ fontSize: '11px', color: '#888', marginBottom: '12px' }}>
                                     Engineering Category · {recentFirst?.year}–{recentLatest?.year}
@@ -244,8 +244,8 @@ const NirfRankingSection = ({ user }) => {
                                                 strokeWidth={2.5}
                                                 dot={{ r: 4, fill: '#1a237e', strokeWidth: 2, stroke: '#fff' }}
                                                 activeDot={{ r: 6 }}>
-  <LabelList dataKey="rank" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#1a237e" }} />
-</Line>
+                                                <LabelList dataKey="rank" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#1a237e" }} />
+                                            </Line>
                                         </LineChart>
                                     )}
                                 </ResponsiveContainer>
@@ -319,8 +319,8 @@ const NirfRankingSection = ({ user }) => {
                                                 strokeWidth={2}
                                                 dot={{ r: 3, fill: color }}
                                                 activeDot={{ r: 5 }}>
-  <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-</Line>
+                                                <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                                            </Line>
                                         </LineChart>
                                     )}
                                 </ResponsiveContainer>

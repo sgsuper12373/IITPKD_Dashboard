@@ -52,28 +52,72 @@ function HomePage({ user }) {
             <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
 
             <div className="content-card">
-              <h2>Purpose</h2>
-              <p>To create knowledge; to communicate knowledge; and to apply knowledge for the benefit of society. To nurture lifelong learners with rigorous foundation and a passion for innovation; strong ethical values and social responsibility. To be home to the best minds from across the globe.</p>
+
+              <h2>Vision and Strategic Focus</h2>
+
+              <p>
+                At Indian Institute of Technology Palakkad, we strive to build a dynamic institution that nurtures talent, advances knowledge, and contributes to society. Our vision is guided by six key pillars: People and Campus, Education, Research, Industry Connect, Innovation and Entrepreneurship, and Outreach and Extension.
+              </p>
+
+              <h3>
+                <Link to="/people-campus" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  People and Campus
+                </Link>
+              </h3>
+              <p>
+                We are committed to building an inclusive and diverse community that values well-being and growth. With strong alumni engagement and a focus on sustainability, we aim to achieve a net-zero carbon campus by 2040.
+              </p>
+
+              <h3>
+                <Link to="/research" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  Research
+                </Link>
+              </h3>
+              <p>
+                We aim to lead in both fundamental and applied research by fostering interdisciplinary collaboration. Our work focuses on addressing real-world challenges, particularly in sustainability, supported by accessible, state-of-the-art infrastructure.
+              </p>
+
+              <h3>
+                <Link to="/education" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  Education
+                </Link>
+              </h3>
+              <p>
+                We offer flexible, rigorous, and contemporary academic programmes that prepare students for a rapidly changing world. Our approach emphasizes interdisciplinary learning, innovation in teaching, and a strong focus on hands-on and research-based education.
+              </p>
+
+              <h3>
+                <Link to="/industry-connect" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  Industry Connect
+                </Link>
+              </h3>
+              <p>
+                We collaborate closely with industry to align research with practical applications. Through partnerships and knowledge exchange, we prepare students to be industry-ready and contribute to national development.
+              </p>
+
+              <h3>
+                <Link to="/innovation-entrepreneurship" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  Innovation and Entrepreneurship
+                </Link>
+              </h3>
+              <p>
+                We promote a culture of innovation by supporting the journey from ideas to impactful ventures. Our ecosystem encourages students and faculty to develop solutions that address societal needs.
+              </p>
+
+              <h3>
+                <Link to="/outreach-extension" style={{ color: "#111111", textDecoration: "underline", textShadow: "0 1px 4px rgba(255, 255, 255, 0.8), 0 0 1px rgba(255, 255, 255, 0.9)" }}>
+                  Outreach and Extension
+                </Link>
+              </h3>
+              <p>
+                We actively engage with communities to promote science and technology, inspire young minds, and support continuing education and skill development.
+              </p>
+
             </div>
-
-            <div className="content-card">
-              <h2>Core Values</h2>
-              <p>We are a happy and vibrant community founded on reason and compassion, driven by curiosity, creativity and a desire to be agents of change. We cherish a sense of belonging towards the Institution. We foster diversity in composition and thought, boundaryless inquiries and interactions, and free and independent thinking. We espouse an ecologically and socially responsible way of life.</p>
-            </div>
-
-
-
-            <div className="content-card">
-              <h2>Envisioned Future</h2>
-              <p>We envision being a globally recognized institution at the forefront of education, research, and technology development, having strong ties with industries and other academic institutions.</p>
-              <p>We envision being an inclusive and diverse community on a sustainable and green campus, actively engaged with its neighborhood.</p>
-            </div>
-
-
             {/* NIRF Ranking Section */}
             <NirfRankingSection user={user} />
 
-            {/* Main Sections Overview */}
+            {/* Main Sections Overview 
             <div className="content-card">
               <h2>Explore Our Institute</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1.5rem' }}>
@@ -109,7 +153,8 @@ function HomePage({ user }) {
                 </div>
 
               </div>
-            </div>
+            </div> 
+            */}
 
           </div>
         </div>

@@ -12,7 +12,8 @@ import {
   Legend,
   PieChart,
   Pie,
-  Cell, LabelList} from 'recharts';
+  Cell, LabelList
+} from 'recharts';
 
 import {
   fetchFilterOptions,
@@ -192,26 +193,26 @@ function IarSection({ user, isPublicView = false }) {
 
 
           {/* ... Summary Cards ... */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
-                IAR Summary
-              </h2>
-              <ExportMenu 
-                elementId="iar-summary-cards-container"
-                data={[summary]}
-                headers={['Total Alumni', 'Higher Studies', 'Corporate']}
-                keys={['total_alumni', 'higher_studies', 'corporate']}
-                filename="iar_summary"
-                title="IAR Summary"
-              />
-            </div>
-            {/* Modern Summary Cards */}
-            <div id="iar-summary-cards-container" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '20px',
-              marginBottom: '30px'
-            }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
+              IAR Summary
+            </h2>
+            <ExportMenu
+              elementId="iar-summary-cards-container"
+              data={[summary]}
+              headers={['Total Alumni', 'Higher Studies', 'Corporate']}
+              keys={['total_alumni', 'higher_studies', 'corporate']}
+              filename="iar_summary"
+              title="IAR Summary"
+            />
+          </div>
+          {/* Modern Summary Cards */}
+          <div id="iar-summary-cards-container" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+            marginBottom: '30px'
+          }}>
             {/* Total Alumni Card */}
             <div style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -466,7 +467,7 @@ function IarSection({ user, isPublicView = false }) {
                       Track the proportion of alumni opting for higher studies versus corporate roles across admission years.
                     </p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="iar-outcome-trend-container"
                     data={trendData}
                     headers={['Year', 'Total Alumni', 'Higher Studies', 'Corporate']}
@@ -493,14 +494,14 @@ function IarSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
-</Bar>
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
+                          </Bar>
                           <Bar dataKey="higher" name="Higher Studies" fill={TREND_HIGHER_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-  <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
-</Bar>
+                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
+                          </Bar>
                           <Bar dataKey="corporate" name="Corporate" fill={TREND_CORPORATE_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-  <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
-</Bar>
+                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -513,14 +514,14 @@ function IarSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
-</Line>
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
+                          </Line>
                           <Line type="linear" dataKey="higher" name="Higher Studies" stroke={TREND_HIGHER_COLOR} strokeWidth={2} dot={{ r: 3 }}>
-  <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
-</Line>
+                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
+                          </Line>
                           <Line type="linear" dataKey="corporate" name="Corporate" stroke={TREND_CORPORATE_COLOR} strokeWidth={2} dot={{ r: 3 }}>
-  <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
-</Line>
+                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
+                          </Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -549,7 +550,7 @@ function IarSection({ user, isPublicView = false }) {
                       Top 5 states by alumni count
                     </p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="iar-state-dist-container"
                     data={stateTop10}
                     headers={['State', 'Count']}
@@ -602,7 +603,7 @@ function IarSection({ user, isPublicView = false }) {
                       Top 5 countries by alumni count
                     </p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="iar-country-dist-container"
                     data={countryDistribution}
                     headers={['Country', 'Count']}
@@ -670,7 +671,7 @@ function IarSection({ user, isPublicView = false }) {
                       Top 10 departments by alumni count — higher studies vs corporate career paths.
                     </p>
                   </div>
-                  <ExportMenu 
+                  <ExportMenu
                     elementId="iar-dept-outcome-container"
                     data={sortedOutcomeBreakdown}
                     headers={['Department', 'Total', 'Higher Studies', 'Corporate']}
@@ -712,11 +713,11 @@ function IarSection({ user, isPublicView = false }) {
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12}>
-  <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: HIGHER_BAR_COLOR }} />
-</Bar>
+                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: HIGHER_BAR_COLOR }} />
+                          </Bar>
                           <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12}>
-  <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: CORPORATE_BAR_COLOR }} />
-</Bar>
+                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: CORPORATE_BAR_COLOR }} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
 
@@ -767,7 +768,7 @@ function IarSection({ user, isPublicView = false }) {
                             Tabular view listing counts per department.
                           </p>
                         </div>
-                        <ExportMenu 
+                        <ExportMenu
                           elementId="iar-dept-outcome-table"
                           data={sortedOutcomeBreakdown}
                           headers={['Department', 'Total', 'Higher Studies', 'Corporate']}

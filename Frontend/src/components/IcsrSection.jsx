@@ -14,7 +14,8 @@ import {
   Legend,
   PieChart,
   Pie,
-  Cell, LabelList} from 'recharts';
+  Cell, LabelList
+} from 'recharts';
 import {
   fetchIcsrSummary,
   fetchIcsrYearlyDistribution,
@@ -262,10 +263,10 @@ function IcsrSection({ user, isPublicView = false }) {
         }}>{error}</div>}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
             ICSR Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="icsr-summary-cards-container"
             data={[summary]}
             headers={['Total Events', 'Total Funding']}
@@ -511,7 +512,7 @@ function IcsrSection({ user, isPublicView = false }) {
                     Yearly trend of industry events over time
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="icsr-yearly-trend-container"
                   data={yearlyChartData}
                   headers={['Year', 'Events']}
@@ -632,108 +633,108 @@ function IcsrSection({ user, isPublicView = false }) {
                   <div className={`section-empty-state ${yearlyChartData.length > 0 ? 'hidden' : ''}`}>
                     <p>No yearly distribution data available for the selected filters</p>
                   </div>
-                      <div className={`chart-wrapper ${chartMode === 'bar' ? 'active' : 'inactive'}`}>
-                        <ResponsiveContainer width="100%" height={400}>
-                          <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis
-                              dataKey="year"
-                              stroke="#666"
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              label={{
-                                value: 'Year',
-                                position: 'insideBottom',
-                                offset: -10,
-                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                              }}
-                            />
-                            <YAxis
-                              stroke="#666"
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              label={{
-                                value: 'Number of Events',
-                                angle: -90,
-                                position: 'insideLeft',
-                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                              }}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                            <Bar dataKey="events" name="Events" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28}>
-  <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div className={`chart-wrapper ${chartMode === 'trend' ? 'active' : 'inactive'}`}>
-                        <ResponsiveContainer width="100%" height={400}>
-                          <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis
-                              dataKey="year"
-                              stroke="#666"
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              label={{
-                                value: 'Year',
-                                position: 'insideBottom',
-                                offset: -10,
-                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                              }}
-                            />
-                            <YAxis
-                              stroke="#666"
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              label={{
-                                value: 'Number of Events',
-                                angle: -90,
-                                position: 'insideLeft',
-                                style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                              }}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="circle" />
-                            <Line type="linear"
-                              dataKey="events"
-                              name="Events"
-                              stroke="#667eea"
-                              strokeWidth={3}
-                              dot={{ r: 6, fill: '#667eea', strokeWidth: 2 }}
-                              activeDot={{ r: 8 }}>
-  <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Line>
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
+                  <div className={`chart-wrapper ${chartMode === 'bar' ? 'active' : 'inactive'}`}>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis
+                          dataKey="year"
+                          stroke="#666"
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          label={{
+                            value: 'Year',
+                            position: 'insideBottom',
+                            offset: -10,
+                            style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                          }}
+                        />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          label={{
+                            value: 'Number of Events',
+                            angle: -90,
+                            position: 'insideLeft',
+                            style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                          }}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        <Bar dataKey="events" name="Events" fill="#667eea" radius={[4, 4, 0, 0]} barSize={28}>
+                          <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className={`chart-wrapper ${chartMode === 'trend' ? 'active' : 'inactive'}`}>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis
+                          dataKey="year"
+                          stroke="#666"
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          label={{
+                            value: 'Year',
+                            position: 'insideBottom',
+                            offset: -10,
+                            style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                          }}
+                        />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          label={{
+                            value: 'Number of Events',
+                            angle: -90,
+                            position: 'insideLeft',
+                            style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
+                          }}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="circle" />
+                        <Line type="linear"
+                          dataKey="events"
+                          name="Events"
+                          stroke="#667eea"
+                          strokeWidth={3}
+                          dot={{ r: 6, fill: '#667eea', strokeWidth: 2 }}
+                          activeDot={{ r: 8 }}>
+                          <LabelList dataKey="events" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                        </Line>
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
 
-                      {/* Chart Statistics */}
-                      <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '15px'
-                      }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div className="metric-value-sm" style={{ color: '#667eea' }}>
-                            {yearlyChartData.reduce((sum, item) => sum + item.events, 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '12px' }}>Total Events</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div className="metric-value-sm" style={{ color: '#22c55e' }}>
-                            {yearlyChartData.length > 0 ? Math.max(...yearlyChartData.map(item => item.events)) : 0}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '12px' }}>Peak Events in Year</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div className="metric-value-sm" style={{ color: '#f97316' }}>
-                            {yearlyChartData.length}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>
-                        </div>
+                  {/* Chart Statistics */}
+                  <div style={{
+                    marginTop: '20px',
+                    padding: '15px',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '8px',
+                    border: '1px solid #e0e0e0',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '15px'
+                  }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div className="metric-value-sm" style={{ color: '#667eea' }}>
+                        {yearlyChartData.reduce((sum, item) => sum + item.events, 0)}
+                      </div>
+                      <div style={{ color: '#666', fontSize: '12px' }}>Total Events</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div className="metric-value-sm" style={{ color: '#22c55e' }}>
+                        {yearlyChartData.length > 0 ? Math.max(...yearlyChartData.map(item => item.events)) : 0}
+                      </div>
+                      <div style={{ color: '#666', fontSize: '12px' }}>Peak Events in Year</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div className="metric-value-sm" style={{ color: '#f97316' }}>
+                        {yearlyChartData.length}
+                      </div>
+                      <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -752,7 +753,7 @@ function IcsrSection({ user, isPublicView = false }) {
                     Distribution of different types of industry interaction events
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="icsr-event-type-dist-container"
                   data={eventTypesPieData}
                   headers={['Event Type', 'Count']}
@@ -950,7 +951,7 @@ function IcsrSection({ user, isPublicView = false }) {
                     List of industry interaction events with funding details
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="icsr-event-directory-table"
                   data={eventsList}
                   headers={['Date', 'Event Title', 'Partner', 'Type', 'Funding (₹)']}
@@ -1067,26 +1068,26 @@ function IcsrSection({ user, isPublicView = false }) {
                   {eventsList.length > 0 ? (
                     <>
                       {/* Table Header - Fixed */}
-                        <div style={{
-                          backgroundColor: '#f97316',
-                          color: 'white',
-                          display: 'grid',
-                          gridTemplateColumns: '1.8fr 1fr 1.5fr 1fr 1.2fr 1.2fr',
-                          gap: '12px',
-                          padding: '12px',
-                          fontWeight: 'bold',
-                          fontSize: '13px',
-                          position: 'sticky',
-                          top: 0,
-                          zIndex: 10
-                        }}>
-                          <div>Event Name</div>
-                          <div>Type</div>
-                          <div>Hosted By</div>
-                          <div>Date</div>
-                          <div>Target Audience</div>
-                          <div>Funding By</div>
-                        </div>
+                      <div style={{
+                        backgroundColor: '#f97316',
+                        color: 'white',
+                        display: 'grid',
+                        gridTemplateColumns: '1.8fr 1fr 1.5fr 1fr 1.2fr 1.2fr',
+                        gap: '12px',
+                        padding: '12px',
+                        fontWeight: 'bold',
+                        fontSize: '13px',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10
+                      }}>
+                        <div>Event Name</div>
+                        <div>Type</div>
+                        <div>Hosted By</div>
+                        <div>Date</div>
+                        <div>Target Audience</div>
+                        <div>Funding By</div>
+                      </div>
 
                       {/* Scrollable Table Body */}
                       <div style={{
@@ -1241,7 +1242,7 @@ function IcsrSection({ user, isPublicView = false }) {
           onUploadSuccess={refreshData}
         />
       </div>
-    </div>
+    </div >
   );
 }
 

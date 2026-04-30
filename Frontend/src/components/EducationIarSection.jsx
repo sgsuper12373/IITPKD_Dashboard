@@ -120,7 +120,7 @@ function EducationIarSection({ user, isPublicView = false }) {
         )}
         <div className="page-header" style={{ marginBottom: '20px' }}>
           <div className="page-header-title">
-            <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#000000' }}>
               <span className="icon-wrapper" style={{ background: IAR_MOU_COLOR, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', color: 'white' }}>🤝</span>
               International & Alumni Relations MoUs
             </h1>

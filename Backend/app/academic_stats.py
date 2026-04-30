@@ -329,6 +329,7 @@ def get_gender_trends(current_user_id):
             'branch': request.args.get('branch', type=str),
             'department': request.args.get('department', type=str),
             'category': request.args.get('category', type=str),
+            'state': request.args.get('state', type=str),
             'pwd': request.args.get('pwd', type=str)
         }
 
@@ -385,7 +386,12 @@ def get_gender_trends(current_user_id):
 @academic_bp.route('/stats/program-trends', methods=['GET'])
 @token_required
 def get_program_trends(current_user_id):
-    """Fetches student strength by program grouped by year of admission."""
+    """
+    Fetches student strength by program grouped by year of admission,
+    including gender breakdown per program group (UG/PG/Research).
+    Now supports full filter set: program, batch, department, state, category, pwd.
+    Returns both aggregated program data and per-group gender counts.
+    """
     conn = None
     try:
         conn = get_db_connection()
@@ -393,18 +399,34 @@ def get_program_trends(current_user_id):
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = {
+            'program': request.args.get('program', type=str),
+            'batch': request.args.get('batch', type=str),
+            'department': request.args.get('department', type=str),
             'category': request.args.get('category', type=str),
-            'state': request.args.get('state', type=str)
+            'state': request.args.get('state', type=str),
+            'pwd': request.args.get('pwd', type=str),
         }
+
+        if filters['pwd'] == 'true':
+            filters['pwd'] = True
+        elif filters['pwd'] == 'false':
+            filters['pwd'] = False
+        elif filters['pwd'] == '' or filters['pwd'] is None:
+            filters['pwd'] = None
 
         where_clause, params = build_filter_query(filters)
 
-        # Use admission_year and programme_current with aliases for frontend compatibility
+        # Fetch per-program, per-gender, per-year counts
         query = f"""
-            SELECT admission_year as yearofadmission, programme_current as program, COUNT(*) as count
+            SELECT
+                admission_year  AS yearofadmission,
+                programme_current AS program,
+                academic_program_type,
+                gender,
+                COUNT(*) AS count
             FROM {STUDENT_TABLE}
             {where_clause}
-            GROUP BY admission_year, programme_current
+            GROUP BY admission_year, programme_current, academic_program_type, gender
             ORDER BY admission_year;
         """
 
@@ -412,8 +434,24 @@ def get_program_trends(current_user_id):
         cur.execute(query, params)
         results = cur.fetchall()
 
+        # Build year → {program: count} for legacy chart data
         year_data = {}
+        # Build year → {group: {gender: count}} for stacked gender data
+        # group = UG | PG | Research  (derived from academic_program_type)
+        year_gender_data = {}
         all_programs = set()
+
+        def map_program_type_to_group(apt):
+            if apt is None:
+                return None
+            apt_upper = apt.upper()
+            if apt_upper == 'UG':
+                return 'UG'
+            if apt_upper == 'PG':
+                return 'PG'
+            if apt_upper == 'RESEARCH':
+                return 'Research'
+            return None
 
         for row in results:
             year = row['yearofadmission']
@@ -421,14 +459,27 @@ def get_program_trends(current_user_id):
                 continue
 
             program = row['program']
-            count = row['count']
+            gender  = row['gender']
+            count   = row['count']
+            group   = map_program_type_to_group(row['academic_program_type'])
+
             all_programs.add(program)
 
+            # --- legacy program-per-year aggregation ---
             if year not in year_data:
                 year_data[year] = {'year': year}
+            year_data[year][program] = year_data[year].get(program, 0) + count
 
-            year_data[year][program] = count
+            # --- gender-per-group-per-year aggregation ---
+            if group:
+                if year not in year_gender_data:
+                    year_gender_data[year] = {}
+                if group not in year_gender_data[year]:
+                    year_gender_data[year][group] = {'Male': 0, 'Female': 0, 'Transgender': 0}
+                if gender in year_gender_data[year][group]:
+                    year_gender_data[year][group][gender] += count
 
+        # Build final_data (legacy)
         final_data = []
         for year in sorted(year_data.keys()):
             entry = year_data[year]
@@ -437,10 +488,32 @@ def get_program_trends(current_user_id):
                     entry[prog] = 0
             final_data.append(entry)
 
-        return jsonify({'data': final_data, 'programs': list(all_programs)}), 200
+        # Build gender_by_group_data — one entry per year with nested gender counts
+        gender_by_group_data = []
+        for year in sorted(year_gender_data.keys()):
+            entry = {'year': year}
+            for group in ['UG', 'PG', 'Research']:
+                g = year_gender_data[year].get(group, {'Male': 0, 'Female': 0, 'Transgender': 0})
+                entry[f'{group}_Male']        = g['Male']
+                entry[f'{group}_Female']      = g['Female']
+                entry[f'{group}_Transgender'] = g['Transgender']
+                entry[f'{group}_Total']       = g['Male'] + g['Female'] + g['Transgender']
+            entry['Total'] = (
+                entry.get('UG_Total', 0) +
+                entry.get('PG_Total', 0) +
+                entry.get('Research_Total', 0)
+            )
+            gender_by_group_data.append(entry)
+
+        return jsonify({
+            'data': final_data,
+            'programs': list(all_programs),
+            'gender_by_group': gender_by_group_data,   # NEW — stacked gender data
+        }), 200
 
     except Exception as e:
-        print(f"Error fetching program trends: {e}")
+        import traceback
+        print(f"Error fetching program trends: {e}\n{traceback.format_exc()}")
         return jsonify({'message': 'An error occurred while fetching program trends.'}), 500
     finally:
         if conn:
@@ -508,12 +581,6 @@ def get_student_summary(current_user_id):
 def get_onroll_summary(current_user_id):
     """
     Returns on-roll student counts by program type.
-    Uses direct string comparisons for academic_program_type and student_status.
-
-    UG       : academic_program_type = 'btech' | status IN ('On Roll', 'Slow-pace')
-    PG       : academic_program_type = 'pg'    | status IN ('On Roll', 'Slow-pace')
-    Research : academic_program_type = 'phd'   | status IN ('On Roll', 'Slow-pace', 'Viva Voce Completed', 'Thesis Submitted')
-    Total    : sum of the three counts above.
     """
     conn = None
     cur = None

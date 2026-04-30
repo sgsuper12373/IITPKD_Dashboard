@@ -12,7 +12,8 @@ import {
   Bar,
   PieChart,
   Pie,
-  Cell, LabelList} from 'recharts';
+  Cell, LabelList
+} from 'recharts';
 
 import {
   fetchResearchFilterOptions,
@@ -235,10 +236,10 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         }}>{error}</div>}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+          <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
             Library Summary
           </h2>
-          <ExportMenu 
+          <ExportMenu
             elementId="library-summary-cards-container"
             data={[{
               total: summary.total,
@@ -487,7 +488,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     Year-wise publication count
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="library-trend-chart-container"
                   data={trendChartData}
                   headers={['Year', 'Publications']}
@@ -602,8 +603,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
                       <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28}>
-  <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-</Bar>
+                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                      </Bar>
                     </BarChart>
                   ) : (
                     <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -613,8 +614,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
                       <Line type="linear" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
-  <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-</Line>
+                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                      </Line>
                     </LineChart>
                   )}
                 </ResponsiveContainer>
@@ -640,7 +641,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     Publications by department
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="library-dept-chart-container"
                   data={departmentChartData}
                   headers={['Department', 'Publications']}
@@ -728,8 +729,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-</Bar>
+                      <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -754,7 +755,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     Distribution by format
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="library-type-chart-container"
                   data={typePieData}
                   headers={['Type', 'Count']}
@@ -875,7 +876,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     {publicationList.length} publications found
                   </p>
                 </div>
-                <ExportMenu 
+                <ExportMenu
                   elementId="library-publications-table-container"
                   data={publicationList}
                   headers={['Title', 'Faculty', 'Department', 'Type', 'Year', 'Journal']}
@@ -1011,7 +1012,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         tableName="research_publications"
         token={token}
       />
-    </div>
+    </div >
   );
 }
 

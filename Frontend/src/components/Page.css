@@ -1,86 +1,131 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* ===================================================== */
+/* PAGE CONTAINER – FROSTED GLASS */
+/* ===================================================== */
+
 .page-content {
+  position: relative;
+
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
   padding: 2.5rem 3rem;
 
-  /* Original Orange Color Maintained */
-  background-color: #f8b225df;
+  background: linear-gradient(135deg,
+      rgba(255, 165, 0, 0.18),
+      rgba(255, 140, 0, 0.10));
 
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  box-sizing: border-box;
-  overflow: hidden;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 
-  /* Typography defaults */
+  border-radius: 14px;
+  border: 1px solid rgba(255, 200, 120, 0.35);
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 0 20px rgba(255, 140, 0, 0.25);
+
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: #1f1f1f;
   line-height: 1.6;
+
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-/* ✅ Automatically style page title (first h1 only) */
-.page-content>h1 {
+/* 🔥 KEY FIX: header contrast layer */
+.page-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0));
+
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hover polish */
+.page-content:hover {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* ===================================================== */
+/* HEADER */
+/* ===================================================== */
+
+.page-content h1 {
   font-size: 32px;
   font-weight: 800;
   line-height: 1.25;
-  letter-spacing: -0.4px;
-  color: #1a0800;
-  /* Deep Espresso Brown */
+  letter-spacing: -0.3px;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    0 0 1px rgba(0, 0, 0, 0.6);
+
   margin: 0 0 10px 0;
+  position: relative;
+  z-index: 1;
 }
 
-/* Subtitle text (your existing <p>) */
+/* Subtitle */
 .page-content>p {
-  color: #2a2a2a;
-  margin-bottom: 1.25rem;
-}
-
-/* Mobile optimization */
-@media (max-width: 640px) {
-  .page-content {
-    padding: 2rem;
-  }
-
-  .page-content>h1 {
-    font-size: 26px;
-    -webkit-text-stroke: 0.8px #000000;
-  }
-}
-
-.page-content>p {
-  /* Darkened for better readability on orange */
-  color: #2d2d2d;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* ================= CHART HEADINGS ================= */
-.chart-heading {
-  text-align: center;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #333333;
-  margin-bottom: 1rem;
-  margin-top: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
-  display: inline-block;
-}
+/* ===================================================== */
+/* BUTTONS */
+/* ===================================================== */
 
-.chart-container,
-.bar-chart-container {
-  display: flex;
-  flex-direction: column;
+.page-back-btn,
+.page-upload-btn {
+  background: rgba(255, 248, 236, 0.65);
+  color: #000000;
+
+  border: 1.5px solid #F4F7FB;
+  /* 🔥 clean solid outline */
+
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  backdrop-filter: blur(10px) saturate(1.6);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+
+  transition: all 0.25s ease;
 }
 
+.page-back-btn:hover,
+.page-upload-btn:hover {
+  background: rgba(255, 248, 236, 0.72);
+  transform: translateY(-1px);
+  color: #1a0800;
+}
 
-/* ================= FILTER SECTION FIXES ================= */
+/* ===================================================== */
+/* FILTER PANEL */
+/* ===================================================== */
+
 .filter-panel {
   background-color: #ffffff;
   border-radius: 12px;
@@ -88,430 +133,92 @@
   margin-bottom: 2rem;
   border: 1px solid #e0e0e0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  /* Ensures panel stays within page-content */
+
   width: 100%;
   box-sizing: border-box;
 }
 
 .filter-grid {
   display: grid;
-  /* Adjusted minmax to ensure columns fit within the panel */
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1.5rem;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 0;
-  /* Prevents grid items from expanding past container */
-}
-
-/* FIXED DROPDOWN ICONS */
 .filter-select {
   width: 100%;
   background-color: #ffffff;
-  color: #1a1a1a;
   border: 1px solid #cccccc;
   border-radius: 8px;
   padding: 0.75rem;
-  font-size: 0.95rem;
-  cursor: pointer;
   appearance: none;
-  box-sizing: border-box;
-
-  /* Icon positioning fixed to stay inside the div */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 12px) center;
-  background-size: 12px;
-  padding-right: 2.5rem;
-}
-
-/* ================= TOGGLES & BUTTONS ================= */
-.section-toggle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin: 2rem 0 1.5rem;
-}
-
-.toggle-button {
-  background-color: #2d2d2d;
-  border: 1px solid #4a4a4a;
-  border-radius: 999px;
-  color: #e5e7eb;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 0.65rem 1.6rem;
-  transition:
-    background-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    border-color 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    transform 180ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
-}
-
-.toggle-button.active {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  border-color: transparent;
-  color: #ffffff;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-  .page-content h1 {
-    font-size: 2rem;
-  }
-
-  .filter-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .filter-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ===================================================== */
-/* FORCE LIGHT SUMMARY CARDS – INNOVATION PAGE */
+/* SUMMARY CARDS */
 /* ===================================================== */
 
-.page-content .summary-card {
-  background-color: #fffaf0 !important;
-  border: 1px solid rgba(247, 166, 0, 0.35);
+.summary-card {
+  background-color: #fffaf0;
   border-radius: 14px;
-  padding: 1.5rem 1.75rem;
+  padding: 1.5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  color: #111111 !important;
-  overflow: hidden;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  box-sizing: border-box;
-  transition:
-    transform 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1)),
-    box-shadow 320ms var(--ease-spring, cubic-bezier(0.22, 1, 0.36, 1));
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Remove any dark overlays or gradients */
-.page-content .summary-card::before,
-.page-content .summary-card::after {
-  background: none !important;
+.summary-card:hover {
+  transform: translateY(-4px);
 }
 
-/* Label text with wrapping */
-.page-content .summary-card-label {
-  color: #92400e !important;
-  /* dark orange */
+.summary-card-label {
+  color: #92400e;
   font-size: 0.95rem;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-
-  /* FIX: Ensure label wraps properly */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  line-height: 1.3;
 }
 
-/* Value text with overflow handling */
-.page-content .summary-card-value {
-  color: #111111 !important;
+.summary-card-value {
   font-size: 1.9rem;
   font-weight: 700;
-
-  /* FIX: Prevent value overflow */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  line-height: 1.2;
-}
-
-/* Subtitle text (if present) */
-.page-content .summary-card .summary-subtitle {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-top: 0.3rem;
-
-  /* FIX: Wrap subtitle */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  line-height: 1.3;
-}
-
-/* Optional subtle accent line (top) */
-.page-content .summary-card {
-  position: relative;
-}
-
-.page-content .summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 1.25rem;
-  right: 1.25rem;
-  height: 3px;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
-  border-radius: 4px;
-}
-
-/* Hover polish */
-.page-content .summary-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
-}
-
-/* Mobile adjustments for summary cards */
-@media (max-width: 768px) {
-  .page-content .summary-card {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .page-content .summary-card-label {
-    font-size: 0.875rem;
-  }
-
-  .page-content .summary-card-value {
-    font-size: 1.5rem;
-  }
+  color: #111;
 }
 
 /* ===================================================== */
-/* FORCE LIGHT GRIEVANCE TABLE WRAPPER */
+/* TABLE */
 /* ===================================================== */
 
-.page-content .grievance-table-wrapper {
-  background-color: #fffaf0 !important;
-  /* warm off-white */
+.grievance-table-wrapper {
+  background-color: #fffaf0;
   border-radius: 16px;
   padding: 2rem;
-
-  border: 1px solid rgba(247, 166, 0, 0.35);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
-
-  color: #111111;
 }
 
-/* Header inside grievance wrapper */
-.page-content .grievance-table-wrapper .chart-header h2 {
-  color: #111111;
-}
-
-.page-content .grievance-table-wrapper .chart-header p {
-  color: #111111;
-}
-
-/* Remove any inherited dark backgrounds */
-.page-content .grievance-table-wrapper *,
-.page-content .grievance-table-wrapper *::before,
-.page-content .grievance-table-wrapper *::after {
-  background-color: transparent;
-}
-
-/* FILTER PANEL INSIDE GRIEVANCE WRAPPER */
-.page-content .grievance-table-wrapper .filter-panel {
-  background-color: #ffffff !important;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-}
-
-/* TABLE WRAPPER */
-.page-content .grievance-table-wrapper .table-responsive {
-  background-color: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
-  margin-top: 1.5rem;
-}
-
-/* TABLE STYLING */
-.page-content .grievance-table-wrapper table {
+.grievance-table-wrapper table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
 }
 
-.page-content .grievance-table-wrapper th {
+.grievance-table-wrapper th {
   background-color: #fff7ed;
-  color: #92400e;
-  font-weight: 600;
   padding: 0.85rem;
-  border-bottom: 1px solid #f3e8ff;
 }
 
-.page-content .grievance-table-wrapper td {
+.grievance-table-wrapper td {
   padding: 0.75rem;
-  color: #111111;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-/* Row hover */
-.page-content .grievance-table-wrapper tbody tr:hover {
-  background-color: #fffbeb;
-}
-
-/* No-data message */
-.page-content .grievance-table-wrapper .no-data {
-  color: #6b7280;
-  padding: 1.5rem;
-}
-
-/* Pagination buttons (inside wrapper) */
-.page-content .grievance-table-wrapper button {
-  background-color: #f59e0b;
-  color: #ffffff;
-}
-
-.page-content .grievance-table-wrapper button:disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
 }
 
 /* ===================================================== */
-/* NORMALIZE PAGE HEADERS (Innovation = Outreach style) */
+/* RESPONSIVE */
 /* ===================================================== */
 
-/* Any h1 inside page-content (direct or wrapped) */
-.page-content h1 {
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: -0.4px;
-  color: #1a0800;
-  /* Deep Espresso Brown */
-  margin: 0 0 10px 0;
-}
+@media (max-width: 768px) {
+  .page-content {
+    padding: 2rem;
+  }
 
-/* Reduce visual weight when h1 is inside a flex header (Innovation page) */
-.page-content>div>h1 {
-  font-size: 30px;
-  /* matches Outreach visual scale */
-}
-
-/* Mobile parity */
-@media (max-width: 640px) {
   .page-content h1 {
     font-size: 26px;
   }
-}
 
-/* ===================================================== */
-/* CONSISTENT PAGE HEADER – Title + Back + Upload row   */
-/* ===================================================== */
-
-/* Top-level row: back button on left, upload buttons on right */
-.page-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-}
-
-/* Left side — title + description */
-.page-header-row .page-header-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.page-header-row .page-header-left h1 {
-  margin-bottom: 4px;
-}
-
-.page-header-row .page-header-left p {
-  color: #2d2d2d;
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* Right side — upload buttons */
-.page-header-row .page-header-actions {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-  padding-top: 4px;
-}
-
-.page-back-btn {
-  background: rgba(255, 248, 236, 0.45);
-  color: #1a0800;
-  border: 1.5px solid rgba(255, 248, 236, 0.70);
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  text-decoration: none;
-  backdrop-filter: blur(10px) saturate(1.6);
-  -webkit-backdrop-filter: blur(10px) saturate(1.6);
-  box-shadow: inset 0 1px 0 rgba(255, 248, 236, 0.60);
-  transition: all 0.25s ease;
-}
-
-.page-back-btn:hover {
-  background: rgba(255, 248, 236, 0.72);
-  color: #1a0800;
-  border-color: rgba(255, 248, 236, 0.95);
-  transform: translateX(-2px);
-  backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
-  -webkit-backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.80);
-}
-
-.page-upload-btn {
-  background: rgba(255, 248, 236, 0.45);
-  color: #1a0800;
-  border: 1.5px solid rgba(255, 248, 236, 0.70);
-  border-radius: 8px;
-  padding: 9px 22px;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  white-space: nowrap;
-  backdrop-filter: blur(10px) saturate(1.6);
-  -webkit-backdrop-filter: blur(10px) saturate(1.6);
-  box-shadow: inset 0 1px 0 rgba(255, 248, 236, 0.60);
-  transition: all 0.25s ease;
-}
-
-.page-upload-btn:hover {
-  background: rgba(255, 248, 236, 0.72);
-  color: #1a0800;
-  border-color: rgba(255, 248, 236, 0.95);
-  backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
-  -webkit-backdrop-filter: blur(18px) saturate(2.0) brightness(1.06);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.80);
-}
-
-/* ===== Mobile: Stack header ===== */
-@media (max-width: 768px) {
-  .page-header-row {
-    flex-direction: column;
-  }
-
-  .page-header-row .page-header-actions {
-    width: 100%;
-    justify-content: flex-start;
+  .filter-grid {
+    grid-template-columns: 1fr;
   }
 }

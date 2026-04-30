@@ -53,14 +53,14 @@ export const fetchFacultyFilterOptions = async (token) => {
 export const fetchEmployeeOverview = async (filters, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '' && value !== 'All') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/employee-overview?${params.toString()}`,
       {
@@ -89,18 +89,18 @@ export const fetchEmployeeOverview = async (filters, token) => {
 export const fetchFacultyByDepartmentDesignation = async (filters, employeeType, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     if (employeeType && employeeType !== 'All') {
       params.append('emp_type', employeeType);
     }
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/faculty-by-department-designation?${params.toString()}`,
       {
@@ -129,18 +129,18 @@ export const fetchFacultyByDepartmentDesignation = async (filters, employeeType,
 export const fetchStaffCount = async (filters, employeeType, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     if (employeeType && employeeType !== 'All') {
       params.append('emp_type', employeeType);
     }
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/staff-count?${params.toString()}`,
       {
@@ -169,18 +169,18 @@ export const fetchStaffCount = async (filters, employeeType, token) => {
 export const fetchGenderDistribution = async (filters, employeeType, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     if (employeeType && employeeType !== 'All') {
       params.append('emp_type', employeeType);
     }
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/gender-distribution?${params.toString()}`,
       {
@@ -209,18 +209,18 @@ export const fetchGenderDistribution = async (filters, employeeType, token) => {
 export const fetchCategoryDistribution = async (filters, employeeType, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     if (employeeType && employeeType !== 'All') {
       params.append('emp_type', employeeType);
     }
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/category-distribution?${params.toString()}`,
       {
@@ -249,18 +249,18 @@ export const fetchCategoryDistribution = async (filters, employeeType, token) =>
 export const fetchDepartmentBreakdown = async (filters, employeeType, token) => {
   try {
     const params = new URLSearchParams();
-    
+
     if (employeeType && employeeType !== 'All') {
       params.append('emp_type', employeeType);
     }
-    
+
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, value);
       }
     });
-    
+
     const response = await axios.get(
       `${API_BASE_URL}/stats/department-breakdown?${params.toString()}`,
       {
@@ -330,9 +330,9 @@ export const fetchFacultyExpertiseMatrix = async (filters, token) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching faculty expertise matrix:', error);
+    console.error('Error fetching faculty department wise count:', error);
     if (error.response) {
-      throw new Error(error.response.data.message || 'Failed to fetch faculty expertise matrix');
+      throw new Error(error.response.data.message || 'Failed to fetch faculty department wise count');
     }
     throw new Error('Network error. Please check if the backend server is running.');
   }

@@ -4,7 +4,8 @@ import {
   ResponsiveContainer,
   BarChart, Bar,
   LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList} from 'recharts';
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList
+} from 'recharts';
 
 import { fetchIccSummary, fetchIccYearly } from '../services/grievanceStats';
 import DataUploadModal from './DataUploadModal';
@@ -17,8 +18,8 @@ import { CustomTooltip } from '../utils/chartUtils';
 
 const AREA_COLORS = {
   total: '#667eea',
-  resolved: '#43e97b',
-  pending: '#fa709a'
+  pending: '#fa709a',
+  resolved: '#43e97b'
 };
 
 function IccSection({ user, isPublicView = false }) {
@@ -127,10 +128,10 @@ function IccSection({ user, isPublicView = false }) {
         ) : (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
+              <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
                 ICC Summary
               </h2>
-              <ExportMenu 
+              <ExportMenu
                 elementId="icc-summary-cards-container"
                 data={[summary]}
                 headers={['Total Complaints', 'Resolved', 'Pending']}
@@ -323,7 +324,7 @@ function IccSection({ user, isPublicView = false }) {
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <ExportMenu 
+                    <ExportMenu
                       elementId="icc-trend-chart-container"
                       data={yearlyData}
                       headers={['Year', 'Total', 'Resolved', 'Pending']}
@@ -347,7 +348,7 @@ function IccSection({ user, isPublicView = false }) {
                           transition: 'all 0.2s ease'
                         }}
                       >
-                        Total
+                        Complaints Received
                       </button>
                       <button
                         type="button"
@@ -422,14 +423,14 @@ function IccSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                           {visibleMetrics.total && <Bar dataKey="total" name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
-</Bar>}
-                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
-</Bar>}
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
+                          </Bar>}
                           {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-  <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />
-</Bar>}
+                            <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />
+                          </Bar>}
+                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                            <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
+                          </Bar>}
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -444,8 +445,8 @@ function IccSection({ user, isPublicView = false }) {
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                           <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
-  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
-</Line>
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
+                          </Line>
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -476,11 +477,11 @@ function IccSection({ user, isPublicView = false }) {
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <ExportMenu 
+                    <ExportMenu
                       elementId="icc-yearly-table-container"
                       data={yearlyData}
-                      headers={['Year', 'Total', 'Resolved', 'Pending']}
-                      keys={['year', 'total', 'resolved', 'pending']}
+                      headers={['Year', 'Total', 'Pending', 'Resolved']}
+                      keys={['year', 'total', 'pending', 'resolved']}
                       filename="icc_yearly_stats"
                       title="Yearly Complaint Statistics"
                       exportType="table"
@@ -514,8 +515,8 @@ function IccSection({ user, isPublicView = false }) {
                         <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
                           <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Year</th>
                           <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Total Complaints</th>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Resolved</th>
                           <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Pending</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Resolved</th>
                           <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Status</th>
                         </tr>
                       </thead>
@@ -524,15 +525,6 @@ function IccSection({ user, isPublicView = false }) {
                           const statusLabel =
                             row.pending === 0 ? (
                               <span style={{
-                                backgroundColor: '#dcfce7',
-                                color: '#166534',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '500'
-                              }}>All Resolved</span>
-                            ) : row.resolved === 0 ? (
-                              <span style={{
                                 backgroundColor: '#fee2e2',
                                 color: '#991b1b',
                                 padding: '4px 8px',
@@ -540,6 +532,15 @@ function IccSection({ user, isPublicView = false }) {
                                 fontSize: '12px',
                                 fontWeight: '500'
                               }}>All Pending</span>
+                            ) : row.resolved === 0 ? (
+                              <span style={{
+                                backgroundColor: '#dcfce7',
+                                color: '#166534',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                fontWeight: '500'
+                              }}>All Resolved</span>
                             ) : (
                               <span style={{
                                 backgroundColor: '#fef3c7',
@@ -558,8 +559,8 @@ function IccSection({ user, isPublicView = false }) {
                             }}>
                               <td style={{ padding: '12px', fontWeight: '500' }}>{row.year}</td>
                               <td style={{ padding: '12px' }}>{row.total}</td>
-                              <td style={{ padding: '12px', color: '#22c55e', fontWeight: '500' }}>{row.resolved}</td>
                               <td style={{ padding: '12px', color: '#f97316', fontWeight: '500' }}>{row.pending}</td>
+                              <td style={{ padding: '12px', color: '#22c55e', fontWeight: '500' }}>{row.resolved}</td>
                               <td style={{ padding: '12px' }}>{statusLabel}</td>
                             </tr>
                           );
@@ -581,7 +582,7 @@ function IccSection({ user, isPublicView = false }) {
         tableName="icc_yearwise"
         token={token}
       />
-    </div>
+    </div >
   );
 }
 

@@ -95,10 +95,10 @@ export const fetchStudentStrengthFiltered = async (filters, token) => {
         }
       }
     );
-    
+
     // Log the response to see what data is coming back
     console.log('Student Strength API Response:', JSON.stringify(response.data, null, 2));
-    
+
     return response.data;
   } catch (error) {
     console.error('Error fetching student strength:', error);
@@ -111,6 +111,7 @@ export const fetchStudentStrengthFiltered = async (filters, token) => {
 
 /**
  * Fetches gender distribution trends (grouped by year).
+ * Supports: program, batch, branch, department, category, state, pwd
  * @param {Object} filters - Filter object
  * @param {string} token - Authentication token
  * @returns {Promise<Object>} Trend data
@@ -150,9 +151,11 @@ export const fetchGenderTrends = async (filters, token) => {
 
 /**
  * Fetches student strength by program trends (grouped by year).
+ * Supports: program, batch, department, category, state, pwd
+ * Also returns gender_by_group for stacked gender charts per program type.
  * @param {Object} filters - Filter object
  * @param {string} token - Authentication token
- * @returns {Promise<Object>} Trend data
+ * @returns {Promise<Object>} Trend data including gender_by_group
  */
 export const fetchProgramTrends = async (filters, token) => {
   try {
@@ -161,7 +164,11 @@ export const fetchProgramTrends = async (filters, token) => {
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== null && value !== undefined && value !== '' && value !== 'All') {
-        params.append(key, value);
+        if (key === 'pwd' && typeof value === 'boolean') {
+          params.append(key, value.toString());
+        } else {
+          params.append(key, value);
+        }
       }
     });
 
