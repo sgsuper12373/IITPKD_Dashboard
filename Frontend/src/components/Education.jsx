@@ -7,14 +7,6 @@ import './PeopleCampus.css';
 
 const EDUCATION_SECTIONS = [
   {
-    code: 'A',
-    title: 'Administrative Section',
-    description: 'Administrative services and information',
-    route: '/education/administrative-section',
-    // 🔹 ADDITION
-    allowedRoles: [3]
-  },
-  {
     code: 'P',
     title: 'Placement Office',
     description: 'Career outcomes, recruiters, and placement analytics',

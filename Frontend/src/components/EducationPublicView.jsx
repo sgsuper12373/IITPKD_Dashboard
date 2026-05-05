@@ -3,7 +3,6 @@ import './Page.css';
 import './EducationMinimal.css';
 
 import PlacementSection from './PlacementSection';
-import EducationAdministrativeSection from './EducationAdministrativeSection';
 import EducationAcademicSection from './EducationAcademicSection';
 import EducationIarSection from './EducationIarSection';
 
@@ -18,14 +17,6 @@ function EducationPublicView({ user }) {
       expandedTitle: 'Empowering careers through industry-leading placement opportunities.',
       icon: '💼',
       component: PlacementSection
-    },
-    {
-      id: 'administrative',
-      title: 'Adjunt/ Honarary/ Visiting/ PoP',
-      subtitle: '',
-      expandedTitle: 'Mentorship that inspires Excellence through Experience.',
-      icon: '📋',
-      component: EducationAdministrativeSection
     },
     {
       id: 'academic',
@@ -93,11 +84,11 @@ function EducationPublicView({ user }) {
                           <span className="education-back-arrow">←</span>
                           <span>Back</span>
                         </button>
-                        
+
                         <div className="education-icon-header">{section.icon}</div>
                         <p className="education-overview-text">{section.expandedTitle}</p>
                       </div>
-                      
+
                       {/* Section Content */}
                       <div className="education-content-area">
                         <SectionComponent user={user} isPublicView={true} />

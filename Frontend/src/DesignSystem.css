@@ -12,9 +12,9 @@
   --border-light: #e2e8f0;
   --text-dark: #1e293b;
   --text-muted: #64748b;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* ✨ AESTHETIC ENHANCEMENTS */
@@ -24,6 +24,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -43,22 +44,32 @@
   animation: premium-fade-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
 
 /* 🚀 PERFORMANCE UTILITIES */
 
 /* Content visibility: auto skips rendering for off-screen elements */
 .performance-render-auto {
   content-visibility: auto;
-  contain-intrinsic-size: 0 100px; /* Placeholder size to prevent scrollbar jumping */
+  contain-intrinsic-size: 0 100px;
+  /* Placeholder size to prevent scrollbar jumping */
 }
 
 /* Accelerated scrolling for fixed-height containers */
 .accelerated-scroll {
   -webkit-overflow-scrolling: touch;
-  transform: translateZ(0); /* Force GPU layer */
+  transform: translateZ(0);
+  /* Force GPU layer */
   will-change: transform;
 }
 
@@ -103,7 +114,7 @@
 
 /* 📊 SUMMARY CARD UTILITIES */
 .metric-value {
-  font-size: clamp(1.2rem, 3.8vw, 2.6rem); 
+  font-size: clamp(1.2rem, 3.8vw, 2.6rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -111,6 +122,7 @@
   overflow-wrap: break-word;
   display: block;
   width: 100%;
+  color: white;
 }
 
 /* For cards with 4 columns, we need a smaller cap to prevent overflow */
@@ -148,7 +160,7 @@
   background: rgba(255, 255, 255, 0.85);
   padding: 12px 24px;
   border-radius: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(4px);
 }
 
@@ -163,7 +175,9 @@
 }
 
 @keyframes subtle-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ================= SHARED EMPTY STATE OVERLAY ================= */
@@ -174,7 +188,7 @@
 
 .chart-has-empty .recharts-wrapper {
   transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   filter: blur(2px);
   opacity: 0.4;
 }
@@ -196,8 +210,8 @@
   transform: translateY(0) scale(1);
   visibility: visible;
   transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              visibility 0s linear 0s;
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 0s;
 }
 
 .section-empty-state.hidden {
@@ -206,8 +220,8 @@
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
-              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
-              visibility 0s linear 0.6s;
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+    visibility 0s linear 0.6s;
 }
 
 .section-empty-state p {

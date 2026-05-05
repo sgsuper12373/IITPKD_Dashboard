@@ -11,16 +11,16 @@
 /* ================= GLOBAL ANIMATION TOKENS ================= */
 :root {
   /* Spring easing — iOS-style, ultra smooth */
-  --ease-spring:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
   /* Out-quint — very fast start, gentle finish */
-  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Standard ease — balanced */
-  --ease-std:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
 
-  --dur-fast:   180ms;
-  --dur-mid:    320ms;
-  --dur-slow:   520ms;
-  --dur-xslow:  700ms;
+  --dur-fast: 180ms;
+  --dur-mid: 320ms;
+  --dur-slow: 520ms;
+  --dur-xslow: 700ms;
 }
 
 /* GPU compositing hints for all animated elements */
@@ -41,7 +41,7 @@
 }
 
 /* ================= ACADEMIC SECTION HEADER ================= */
-.academic-section-header h1, 
+.academic-section-header h1,
 .academic-section-header h2 {
   color: #1a1a1a;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -69,14 +69,7 @@
 }
 
 /* ================= SECTION HEADER WITH DROPDOWN ================= */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border-light);
-}
+
 
 .header-left {
   display: flex;
@@ -84,13 +77,6 @@
   gap: 1rem;
 }
 
-.section-title {
-  color: var(--text-main);
-  font-size: 2rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -0.02em;
-}
 
 .glimpse-selector {
   display: flex;
@@ -491,8 +477,8 @@
   transform: translateY(0) scale(1);
   visibility: visible;
   transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              visibility 0s linear 0s;
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0s linear 0s;
 }
 
 .trend-empty-state.hidden {
@@ -501,8 +487,8 @@
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
-              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
-              visibility 0s linear 0.6s;
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+    visibility 0s linear 0.6s;
 }
 
 .trend-empty-state p {
@@ -519,7 +505,7 @@
 .pie-chart .recharts-wrapper,
 .bar-chart-container .recharts-wrapper {
   transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .trend-chart.has-empty .recharts-wrapper,
@@ -616,7 +602,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ================= PIE & BAR CHART SPECIFIC ================= */
@@ -679,18 +667,9 @@
     padding: 1.5rem;
   }
 
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.25rem;
-  }
 
   .header-left {
     width: 100%;
-  }
-
-  .section-title {
-    font-size: 1.6rem;
   }
 
   .glimpse-selector {
@@ -783,6 +762,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -794,6 +774,7 @@
     opacity: 0;
     transform: translateY(6px) scale(0.99);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -805,6 +786,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -816,6 +798,7 @@
     opacity: 0;
     transform: scale(0.96);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

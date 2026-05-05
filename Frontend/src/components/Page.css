@@ -115,6 +115,33 @@
   transition: all 0.25s ease;
 }
 
+.section-title {
+  color: var(--text-main);
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-light);
+  margin-top: 1rem;
+}
+
+.section-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* or 0.5rem / 1rem depending on your design */
+  flex-wrap: wrap;
+  /* keeps it responsive */
+}
+
 .page-back-btn:hover,
 .page-upload-btn:hover {
   background: rgba(255, 248, 236, 0.72);
@@ -220,5 +247,15 @@
 
   .filter-grid {
     grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
   }
 }

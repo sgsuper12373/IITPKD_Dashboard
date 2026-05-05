@@ -165,20 +165,31 @@ function IarSection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
         {!isPublicView && (
-          <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
-            ← Back to People & Campus
-          </button>
-        )}
-        {!isPublicView && <h1>International and Alumni Relations</h1>}
-        {isPublicView ? null : user && user.role_id === 3 && (
-          <div style={{ marginBottom: '1.5rem' }}>
+          <>
             <button
-              className="page-upload-btn"
-              onClick={() => setIsUploadModalOpen(true)}
+              className="page-back-btn"
+              onClick={() => navigate('/people-campus')}
             >
-              <span>📤</span> Upload Data
+              ← Back to People & Campus
             </button>
-          </div>
+
+            <div className="section-header">
+              <div className="section-header-left">
+                <h1>International and Alumni Relations</h1>
+              </div>
+
+              <div className="section-header-actions">
+                {user && user.role_id === 3 && (
+                  <button
+                    className="page-upload-btn"
+                    onClick={() => setIsUploadModalOpen(true)}
+                  >
+                    <span>📤</span> Upload Data
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
         )}
 
         {error && <div className="error-message" style={{
@@ -194,9 +205,6 @@ function IarSection({ user, isPublicView = false }) {
 
           {/* ... Summary Cards ... */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
-              IAR Summary
-            </h2>
             <ExportMenu
               elementId="iar-summary-cards-container"
               data={[summary]}

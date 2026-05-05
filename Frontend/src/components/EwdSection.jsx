@@ -179,22 +179,32 @@ function EwdSection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
         {!isPublicView && (
-          <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
-            ← Back to People & Campus
-          </button>
-        )}
-        {!isPublicView && <h1>Engineering and Works Division (EWD)</h1>}
-        {isPublicView ? null : user && user.role_id === 3 && (
-          <div style={{ marginBottom: '1.5rem' }}>
+          <>
             <button
-              className="page-upload-btn"
-              onClick={() => setIsUploadModalOpen(true)}
+              className="page-back-btn"
+              onClick={() => navigate('/people-campus')}
             >
-              <span>📤</span> Upload Data
+              ← Back to People & Campus
             </button>
-          </div>
-        )}
 
+            <div className="section-header">
+              <div className="section-header-left">
+                <h1>Engineering and Works Division (EWD)</h1>
+              </div>
+
+              <div className="section-header-actions">
+                {user && user.role_id === 3 && (
+                  <button
+                    className="page-upload-btn"
+                    onClick={() => setIsUploadModalOpen(true)}
+                  >
+                    <span>📤</span> Upload Data
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        )}
         {error && <div className="error-message" style={{
           padding: '10px',
           backgroundColor: '#f8d7da',
@@ -211,7 +221,6 @@ function EwdSection({ user, isPublicView = false }) {
         ) : (
           <>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>EWD Summary</h2>
               <ExportMenu
                 elementId="ewd-summary-cards-container"
                 data={[summary]}
@@ -224,7 +233,7 @@ function EwdSection({ user, isPublicView = false }) {
             {/* Modern Summary Cards */}
             <div id="ewd-summary-cards-container" style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
+              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
               gap: '20px',
               marginBottom: '30px'
             }}>
@@ -323,39 +332,6 @@ function EwdSection({ user, isPublicView = false }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
                     <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Litres per person</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Avg. Green Coverage Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #34d399 0%, #059669 100%)',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 10px 20px rgba(52, 211, 153, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '100px',
-                  height: '100px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🌳</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Avg. Green Coverage</span>
-                  </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                    {formatDecimal(summary.averageGreenCoverage)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Square meters</span>
                   </div>
                 </div>
               </div>

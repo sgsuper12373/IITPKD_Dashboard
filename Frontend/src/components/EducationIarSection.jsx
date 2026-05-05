@@ -109,33 +109,73 @@ function EducationIarSection({ user, isPublicView = false }) {
   const handleClearFilters = () => setFilters({ mou_year: 'All' });
 
   // Using shared CustomTooltip from chartUtils
-
+  const sortedMouList = useMemo(() => {
+    return [...mouList].sort((a, b) =>
+      (a.partner_name || '').localeCompare(b.partner_name || '')
+    );
+  }, [mouList]);
   return (
     <div className={`academic-section page-container ${isPublicView ? 'public-view' : ''}`}>
       <div className={isPublicView ? '' : 'page-content'}>
         {!isPublicView && (
-          <button className="page-back-btn" onClick={() => navigate('/education')} style={{ marginBottom: '20px' }}>
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/education')}
+            style={{ marginBottom: '20px' }}
+          >
             ← Back to Education
           </button>
         )}
-        <div className="page-header" style={{ marginBottom: '20px' }}>
-          <div className="page-header-title">
-            <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#000000' }}>
-              <span className="icon-wrapper" style={{ background: IAR_MOU_COLOR, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', color: 'white' }}>🤝</span>
+
+        <div className="section-header" style={{ marginBottom: '20px' }}>
+          <div className="section-header-left">
+            <h1
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: !isPublicView ? '#ffffff' : '#000000',
+                textShadow: !isPublicView
+                  ? '0 1px 3px rgba(0,0,0,0.6)'
+                  : 'none',
+              }}
+            >
+              <span
+                className="icon-wrapper"
+                style={{
+                  background: IAR_MOU_COLOR,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  color: 'white',
+                }}
+              >
+                🤝
+              </span>
               International & Alumni Relations MoUs
             </h1>
-            <p className="page-subtitle">Track and manage collaborative IAR MoUs</p>
+
+            <p
+              className="page-subtitle"
+              style={{
+                color: !isPublicView ? '#f1f1f1' : '#555',
+              }}
+            >
+              Track and manage collaborative IAR MoUs
+            </p>
           </div>
 
-          {!isPublicView && (
-            <div className="page-actions-group">
-              {user && user.role_id === 3 && (
-                <div className="page-header-actions">
-                  <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                    <span>📤</span> Upload MoUs
-                  </button>
-                </div>
-              )}
+          {!isPublicView && user && user.role_id === 3 && (
+            <div className="section-header-actions">
+              <button
+                className="page-upload-btn"
+                onClick={() => setIsUploadModalOpen(true)}
+              >
+                <span>📤</span> Upload MoUs
+              </button>
             </div>
           )}
         </div>
@@ -178,52 +218,6 @@ function EducationIarSection({ user, isPublicView = false }) {
                 </div>
               </div>
             </div>
-
-            <div style={{
-              display: 'flex',
-              gap: '10px',
-              padding: '10px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '10px',
-              border: '1px solid #e9ecef',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              marginBottom: '30px'
-            }}>
-              <button
-                onClick={() => setViewType('trend')}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: viewType === 'trend' ? IAR_MOU_COLOR : 'transparent',
-                  color: viewType === 'trend' ? 'white' : '#333',
-                  border: viewType === 'trend' ? `2px solid ${IAR_MOU_COLOR}` : '2px solid #dee2e6',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: viewType === 'trend' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                📈 Trend Overview
-              </button>
-              <button
-                onClick={() => setViewType('directory')}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: viewType === 'directory' ? '#0ea5e9' : 'transparent',
-                  color: viewType === 'directory' ? 'white' : '#333',
-                  border: viewType === 'directory' ? '2px solid #0ea5e9' : '2px solid #dee2e6',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: viewType === 'directory' ? 'bold' : 'normal',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                📋 MoUs Directory
-              </button>
-            </div>
-
             <section className="chart-section" style={{
               marginBottom: '30px', padding: '20px',
               backgroundColor: '#fff', borderRadius: '10px',
@@ -246,28 +240,60 @@ function EducationIarSection({ user, isPublicView = false }) {
                 />
               </div>
               {/* Filters Block */}
-              <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                  <button onClick={handleClearFilters} style={{ padding: '6px 12px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>Clear Filters</button>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr)', gap: '12px' }}>
-                  <div>
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Signed Year</label>
-                    <select value={filters.mou_year}
-                      onChange={(e) => handleFilterChange('mou_year', e.target.value)}
-                      style={{ padding: '6px', fontSize: '13px', width: '100%' }}>
-                      <option value="All">All Years</option>
-                      {filterOptions.mou_years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div style={{ marginTop: '12px', padding: '8px', backgroundColor: '#e9ecef', borderRadius: '4px', fontSize: '12px' }}>
-                  <strong>Active Filters:</strong>{' '}
-                  {filters.mou_year !== 'All' ? <span>📅 {filters.mou_year}</span> : <span>No filters applied</span>}
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+                <button
+                  onClick={handleClearFilters}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#dc3545',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Clear Filters
+                </button>
+              </div>
+
+              {/* 🔥 View Toggle Buttons (NOW INSIDE FILTER) */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                marginBottom: '12px',
+                flexWrap: 'wrap'
+              }}>
+                <button
+                  onClick={() => setViewType('trend')}
+                  style={{
+                    padding: '6px 14px',
+                    fontSize: '13px',
+                    borderRadius: '6px',
+                    border: viewType === 'trend' ? `1px solid ${IAR_MOU_COLOR}` : '1px solid #e2e8f0',
+                    backgroundColor: viewType === 'trend' ? '#ccfbf1' : '#fff',
+                    color: viewType === 'trend' ? '#0f766e' : '#333',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📈 Trend Overview
+                </button>
+
+                <button
+                  onClick={() => setViewType('directory')}
+                  style={{
+                    padding: '6px 14px',
+                    fontSize: '13px',
+                    borderRadius: '6px',
+                    border: viewType === 'directory' ? '1px solid #0ea5e9' : '1px solid #e2e8f0',
+                    backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
+                    color: viewType === 'directory' ? '#0369a1' : '#333',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📋 MoUs Directory
+                </button>
               </div>
 
               {/* Trend View */}
@@ -322,10 +348,11 @@ function EducationIarSection({ user, isPublicView = false }) {
               {viewType === 'directory' && (
                 <>
                   <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} records found</p>
-                  <div id="iar-mou-directory-table" className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  <div id="iar-mou-directory-table" className="table-responsive" style={{ maxHeight: '350px', height: '350px', overflowY: 'auto' }}>
                     <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                       <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                         <tr>
+                          <th style={{ padding: '10px' }}>Sl. No.</th>
                           <th style={{ padding: '10px' }}>Partner</th>
                           <th style={{ padding: '10px' }}>Framework</th>
                           <th style={{ padding: '10px' }}>Country</th>
@@ -335,8 +362,9 @@ function EducationIarSection({ user, isPublicView = false }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {mouList.map((m, i) => (
+                        {sortedMouList.map((m, i) => (
                           <tr key={m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                            <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td> {/* ✅ Sl. No. */}
                             <td style={{ padding: '8px' }}>{m.partner_name}</td>
                             <td style={{ padding: '8px' }}>{m.framework}</td>
                             <td style={{ padding: '8px' }}>{m.country}</td>

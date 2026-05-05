@@ -9,7 +9,7 @@ components = {
         'ResearchIcsrSection.jsx', 'ResearchAdministrativeSection.jsx', 'ResearchLibrarySection.jsx'
     ],
     '/education': [
-        'PlacementSection.jsx', 'EducationAdministrativeSection.jsx', 'EducationAcademicSection.jsx'
+        'PlacementSection.jsx', 'EducationAcademicSection.jsx'
     ],
     '/innovation-entrepreneurship': [
         'IptifSection.jsx', 'TechinSection.jsx'

@@ -29,6 +29,7 @@ import { CustomTooltip } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
+import '../DesignSystem.css';
 
 const EVENT_TYPE_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6', '#ec4899', '#8b5cf6'];
 

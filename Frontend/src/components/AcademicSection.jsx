@@ -123,7 +123,7 @@ function SharedFilters({
         <button className="clear-filters-btn" onClick={onClear} style={{ padding: '0.28rem 0.8rem', fontSize: '0.76rem', borderRadius: '6px' }}>Clear All Filters</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: '0.5rem' }}>
 
         {/* Gender selector — only shown in gender mode */}
         {isGender && (
@@ -202,7 +202,7 @@ function SharedFilters({
           </select>
         </div>
 
-        {/* PWD */}
+        {/* PWD 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
           <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>PWD</label>
           <select
@@ -217,7 +217,7 @@ function SharedFilters({
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
-        </div>
+        </div> */}
 
         {/* No. of Years — shown in gender mode */}
         {isGender && (
@@ -481,7 +481,10 @@ function AcademicSection({ user, isPublicView = false }) {
       <div className={isPublicView ? '' : 'page-content'}>
 
         {!isPublicView && (
-          <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/people-campus')}
+          >
             ← Back to People & Campus
           </button>
         )}
@@ -489,15 +492,19 @@ function AcademicSection({ user, isPublicView = false }) {
         {showUploadBtn && (
           <div className="section-header">
             <h1>Student Overview</h1>
-            <div className="header-left" />
-            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>Upload Data</button>
+
+            <button
+              className="page-upload-btn"
+              onClick={() => setIsUploadModalOpen(true)}
+            >
+              Upload Data
+            </button>
           </div>
         )}
         {error && <div className="error-message">{error}</div>}
 
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>Students On Roll</h2>
           <ExportMenu
             elementId="academic-onroll-cards-container"
             data={[onrollSummary]}
@@ -537,7 +544,6 @@ function AcademicSection({ user, isPublicView = false }) {
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>Student Summary</h2>
           <ExportMenu
             elementId="academic-summary-cards-container"
             data={[cumulativeSummary]}
@@ -596,10 +602,6 @@ function AcademicSection({ user, isPublicView = false }) {
         {/* ══ Charts ════════════════════════════════════════════════════════ */}
         <div className="chart-section">
           <div>
-            <div className="chart-header" style={{ marginBottom: '0.5rem' }}>
-              <h2 style={{ fontSize: '1.4rem', marginBottom: 0 }}>Student Overview</h2>
-            </div>
-
             {/* Mode toggle */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
               {[{ key: 'gender', label: 'Gender Breakdown' }, { key: 'program', label: 'UG / PG / Research' }].map(({ key, label }) => (

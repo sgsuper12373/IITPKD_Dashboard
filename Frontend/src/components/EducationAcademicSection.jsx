@@ -157,10 +157,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
-            Academic Summary
-          </h2>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <ExportMenu
             elementId="education-academic-summary-cards-container"
             data={[courseCounts]}
@@ -215,38 +212,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
               <div style={{ fontSize: '12px', opacity: 0.7 }}>Courses running in current AY · Click to browse →</div>
             </div>
           </div>
-        </div>
-
-        {/* View Mode Toggle */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '28px' }}>
-          <button
-            onClick={() => setViewMode('all')}
-            style={{
-              padding: '12px 28px', borderRadius: '50px', cursor: 'pointer', fontSize: '15px', fontWeight: viewMode === 'all' ? '600' : '500',
-              backgroundColor: viewMode === 'all' ? '#6366f1' : 'white',
-              color: viewMode === 'all' ? 'white' : '#333',
-              border: viewMode === 'all' ? '2px solid #6366f1' : '2px solid #dee2e6',
-              boxShadow: viewMode === 'all' ? '0 6px 16px #6366f140' : 'none',
-              transition: 'all 0.3s ease',
-              display: 'flex', alignItems: 'center', gap: '8px'
-            }}
-          >
-            <span style={{ fontSize: '18px' }}>📂</span> Courses Repository
-          </button>
-          <button
-            onClick={() => setViewMode('industry')}
-            style={{
-              padding: '12px 28px', borderRadius: '50px', cursor: 'pointer', fontSize: '15px', fontWeight: viewMode === 'industry' ? '600' : '500',
-              backgroundColor: viewMode === 'industry' ? '#f97316' : 'white',
-              color: viewMode === 'industry' ? 'white' : '#333',
-              border: viewMode === 'industry' ? '2px solid #f97316' : '2px solid #dee2e6',
-              boxShadow: viewMode === 'industry' ? '0 6px 16px #f9731640' : 'none',
-              transition: 'all 0.3s ease',
-              display: 'flex', alignItems: 'center', gap: '8px'
-            }}
-          >
-            <span style={{ fontSize: '18px' }}>🏭</span> Industry Linked Courses
-          </button>
         </div>
 
         {/* Content Area */}

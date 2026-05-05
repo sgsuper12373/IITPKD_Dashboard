@@ -450,24 +450,37 @@ def get_gender_distribution(current_user_id):
     conn = None
     cur = None
     try:
+        from datetime import datetime
+
         conn = get_db_connection()
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = _read_common_filters()
         employee_type = filters.pop('emp_type', None)
-        filters.pop('empstatus', None)  # not used; active window handles this
+        filters.pop('empstatus', None)
+
+        # ✅ ADD: default year
+        selected_year = request.args.get('year', type=int) or datetime.now().year
 
         where_clause, params = build_filter_query(filters)
-        # Filter: currently active (doj <= today AND (dor IS NULL OR dor > today))
-        active_condition = "doj <= CURRENT_DATE AND (dor IS NULL OR dor > CURRENT_DATE)"
+
+        # ✅ ADD: year-based condition
+        date_condition = """
+            doj <= make_date(%s, 12, 31)
+            AND (dor IS NULL OR dor >= make_date(%s, 12, 31))
+        """
+        params = [selected_year, selected_year] + params
+
+        # ⛔ ORIGINAL BLOCK KEPT (just replaced condition variable)
         if where_clause:
-            where_clause += f" AND {active_condition}"
+            where_clause += f" AND {date_condition}"
         else:
-            where_clause = f"WHERE {active_condition}"
+            where_clause = f"WHERE {date_condition}"
+
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
-        
-        # Explicitly exclude Director from gender ratio pie charts
+
+        # keep this exactly
         where_clause += " AND COALESCE(designation, '') != 'Director'"
 
         query = f"""
@@ -513,13 +526,12 @@ def get_gender_distribution(current_user_id):
 @administrative_bp.route('/stats/category-distribution', methods=['GET'])
 @token_required
 def get_category_distribution(current_user_id):
-    """
-    Group-wise distribution (group_name: A, B, C …).
-    Replaces the old category distribution (the category column no longer exists).
-    """
+
     conn = None
     cur = None
     try:
+        from datetime import datetime
+
         conn = get_db_connection()
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
@@ -527,8 +539,25 @@ def get_category_distribution(current_user_id):
         filters = _read_common_filters()
         employee_type = filters.pop('emp_type', None)
 
+        # ✅ ADD: default year
+        selected_year = request.args.get('year', type=int) or datetime.now().year
+
         where_clause, params = build_filter_query(filters)
-        where_clause, params = _append_active_default(where_clause, params, filters.get('empstatus'))
+
+        # ✅ ADD: year-based condition (instead of only active)
+        date_condition = """
+            doj <= make_date(%s, 12, 31)
+            AND (dor IS NULL OR dor >= make_date(%s, 12, 31))
+        """
+        params = [selected_year, selected_year] + params
+
+        # ⛔ ORIGINAL STRUCTURE KEPT
+        if where_clause:
+            where_clause += f" AND {date_condition}"
+        else:
+            where_clause = f"WHERE {date_condition}"
+
+        # ⛔ KEEP ORIGINAL FUNCTION
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
 
         query = f"""
@@ -727,9 +756,11 @@ def get_yearwise_strength(current_user_id):
         group_name         = request.args.get('group_name',         type=str)
         appointed_category = request.args.get('appointed_category', type=str)
         num_years          = request.args.get('num_years',          type=int) or 5
-        # empstatus intentionally ignored: doj/dor window captures "active that year"
 
-        # Hard-coded emp_type filter (no user string interpolated into SQL)
+        # ✅ ADD THIS
+        selected_year      = request.args.get('year', type=int)
+
+        # Hard-coded emp_type filter
         if emp_type == 'Teaching':
             emp_filter = (
                 "e.employmentnature = 'Regular' "
@@ -750,7 +781,7 @@ def get_yearwise_strength(current_user_id):
                 ")"
             )
 
-        # Parameterised extra filters (safe against SQL injection)
+        # Filters
         extra_conditions, filter_params = [], []
         if department:
             extra_conditions.append("e.department = %s")
@@ -772,9 +803,14 @@ def get_yearwise_strength(current_user_id):
         if extra_conditions:
             full_filter += " AND " + " AND ".join(extra_conditions)
 
-        # num_years appears first in the query; filter_params follow
-        query_params = [num_years] + filter_params
+        # ✅ UPDATED PARAMS
+        query_params = [
+            selected_year, selected_year,   # start
+            num_years,
+            selected_year, selected_year    # end
+        ] + filter_params
 
+        # ✅ UPDATED QUERY (ONLY generate_series modified)
         query = f"""
             SELECT
                 y.yr                                                    AS year,
@@ -784,12 +820,18 @@ def get_yearwise_strength(current_user_id):
                 COUNT(e.id) FILTER (WHERE e.gender NOT IN ('Male','Female') AND e.gender IS NOT NULL) AS other
             FROM (
                 SELECT generate_series(
-                    GREATEST(
-                        (SELECT EXTRACT(YEAR FROM MIN(doj))::int
-                         FROM employees WHERE doj IS NOT NULL),
-                        EXTRACT(YEAR FROM CURRENT_DATE)::int - %s + 1
-                    ),
-                    EXTRACT(YEAR FROM CURRENT_DATE)::int
+                    CASE 
+                        WHEN %s IS NOT NULL THEN %s
+                        ELSE GREATEST(
+                            (SELECT EXTRACT(YEAR FROM MIN(doj))::int
+                             FROM employees WHERE doj IS NOT NULL),
+                            EXTRACT(YEAR FROM CURRENT_DATE)::int - %s + 1
+                        )
+                    END,
+                    CASE 
+                        WHEN %s IS NOT NULL THEN %s
+                        ELSE EXTRACT(YEAR FROM CURRENT_DATE)::int
+                    END
                 ) AS yr
             ) y
             LEFT JOIN employees e
@@ -814,7 +856,7 @@ def get_yearwise_strength(current_user_id):
             }
             for row in results
         ]
-        # `total` here reflects the most-recent year's active headcount
+
         current_total = data[-1]['Total'] if data else 0
 
         return jsonify({'data': data, 'total': current_total}), 200
@@ -833,24 +875,12 @@ def get_yearwise_strength(current_user_id):
 @administrative_bp.route('/stats/faculty-expertise-matrix', methods=['GET'])
 @token_required
 def get_faculty_expertise_matrix(current_user_id):
-    """
-    Faculty (Teaching, non-Director) who joined in the current calendar year,
-    grouped by department.
 
-    SQL equivalent:
-        SELECT department, COUNT(*) FROM employees
-        WHERE emp_type = 'Teaching'
-          AND designation != 'Director'
-          AND doj <= CURRENT_DATE
-          AND (dor IS NULL OR dor > CURRENT_DATE)
-        GROUP BY department;
-
-    Optional additional filters: department, designation, gender,
-                                  group_name, appointed_category.
-    """
     conn = None
     cur = None
     try:
+        from datetime import datetime
+
         conn = get_db_connection()
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
@@ -860,6 +890,9 @@ def get_faculty_expertise_matrix(current_user_id):
         gender             = request.args.get('gender',             type=str)
         group_name         = request.args.get('group_name',         type=str)
         appointed_category = request.args.get('appointed_category', type=str)
+
+        # ✅ Default to current year
+        selected_year = request.args.get('year', type=int) or datetime.now().year
 
         extra_conditions = []
         params = []
@@ -884,6 +917,13 @@ def get_faculty_expertise_matrix(current_user_id):
         if extra_conditions:
             extra_sql = " AND " + " AND ".join(extra_conditions)
 
+        # ✅ Year-based on-roll logic (always applied)
+        date_condition = """
+            doj <= make_date(%s, 12, 31)
+            AND (dor IS NULL OR dor >= make_date(%s, 12, 31))
+        """
+        params = [selected_year, selected_year] + params
+
         query = f"""
             SELECT
                 COALESCE(department, 'Unknown') AS department,
@@ -891,8 +931,7 @@ def get_faculty_expertise_matrix(current_user_id):
             FROM employees
             WHERE emp_type = 'Teaching'
               AND designation != 'Director'
-              AND doj <= CURRENT_DATE
-              AND (dor IS NULL OR dor > CURRENT_DATE)
+              AND {date_condition}
               {extra_sql}
             GROUP BY department
             ORDER BY count DESC, department;
