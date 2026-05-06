@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -121,6 +121,11 @@ function PlacementSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   // ── Helpers ──────────────────────────────────────────────────────────────
   const getCurrentFilters = () => {
     switch (viewType) {
@@ -164,7 +169,6 @@ function PlacementSection({ user, isPublicView = false }) {
   // ── Filter options ────────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) { setError('Authentication token not found. Please log in again.'); return; }
       try {
         const options = await fetchPlacementFilterOptions(token);
         const rawGenders = Array.isArray(options?.genders) ? options.genders : [];
@@ -184,7 +188,7 @@ function PlacementSection({ user, isPublicView = false }) {
 
   // ── Data loaders ──────────────────────────────────────────────────────────
   useEffect(() => {
-    if (viewType !== 'placementTrend' || !token) return;
+    if (viewType !== 'placementTrend') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, trend: true }));
@@ -208,7 +212,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [trendFilters, token, viewType, uploadVersion, latestYear]);
 
   useEffect(() => {
-    if (viewType !== 'genderWise' || !token) return;
+    if (viewType !== 'genderWise') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, gender: true }));
@@ -225,7 +229,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [genderFilters, token, viewType, uploadVersion]);
 
   useEffect(() => {
-    if (viewType !== 'programWise' || !token) return;
+    if (viewType !== 'programWise') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, program: true }));
@@ -242,7 +246,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [programFilters, token, viewType, uploadVersion]);
 
   useEffect(() => {
-    if (viewType !== 'recruiters' || !token) return;
+    if (viewType !== 'recruiters') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, recruiters: true }));
@@ -259,7 +263,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [recruitersFilters, token, viewType, uploadVersion]);
 
   useEffect(() => {
-    if (viewType !== 'sectorWise' || !token) return;
+    if (viewType !== 'sectorWise') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, sector: true }));
@@ -276,7 +280,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [sectorFilters, token, viewType, uploadVersion]);
 
   useEffect(() => {
-    if (viewType !== 'packageTrend' || !token) return;
+    if (viewType !== 'packageTrend') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, package: true }));
@@ -293,7 +297,7 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [packageFilters, token, viewType, uploadVersion]);
 
   useEffect(() => {
-    if (viewType !== 'topRecruiters' || !token) return;
+    if (viewType !== 'topRecruiters') return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, topRecruiters: true }));
@@ -527,55 +531,55 @@ function PlacementSection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
 
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/education')}
-            >
-              ← Back to Education
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/education')}
+          >
+            ← Back to Education
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>Placements & Career Outcomes</h1>
-              </div>
-
-              {user && user.role_id === 3 && (
-                <div className="section-header-actions">
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => {
-                      setActiveUploadTable('placement_summary');
-                      setIsUploadModalOpen(true);
-                    }}
-                  >
-                    <span>📤</span> Upload Summary
-                  </button>
-
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => {
-                      setActiveUploadTable('placement_companies');
-                      setIsUploadModalOpen(true);
-                    }}
-                  >
-                    <span>📤</span> Upload Companies
-                  </button>
-
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => {
-                      setActiveUploadTable('placement_packages');
-                      setIsUploadModalOpen(true);
-                    }}
-                  >
-                    <span>📤</span> Upload Packages
-                  </button>
-                </div>
-              )}
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>Placements & Career Outcomes</h1>
             </div>
-          </>
+
+            {!isReadOnlyView && isAdmin && (
+              <div className="section-header-actions">
+                <button
+                  className="page-upload-btn"
+                  onClick={() => {
+                    setActiveUploadTable('placement_summary');
+                    setIsUploadModalOpen(true);
+                  }}
+                >
+                  <span>📤</span> Upload Summary
+                </button>
+
+                <button
+                  className="page-upload-btn"
+                  onClick={() => {
+                    setActiveUploadTable('placement_companies');
+                    setIsUploadModalOpen(true);
+                  }}
+                >
+                  <span>📤</span> Upload Companies
+                </button>
+
+                <button
+                  className="page-upload-btn"
+                  onClick={() => {
+                    setActiveUploadTable('placement_packages');
+                    setIsUploadModalOpen(true);
+                  }}
+                >
+                  <span>📤</span> Upload Packages
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && (

@@ -17,6 +17,12 @@ function IndustryConnect({ user }) {
 
   const sections = [
     {
+      title: 'Administrative Section',
+      route: '/research/administrative-section',
+      description: 'Faculty industry externships and collaborations',
+      allowedRoles: [3, 2]
+    },
+    {
       title: 'ICSR Section',
       route: '/industry-connect/icsr',
       description: 'Industry interaction events, workshops, and engagement activities',
@@ -32,8 +38,8 @@ function IndustryConnect({ user }) {
     }
   ];
 
-  // 🔹 ADDITION: If public user → always show public view
-  if (roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 1
+  if (!user || roleId === 1) {
     return <IndustryConnectPublicView user={user} />;
   }
 

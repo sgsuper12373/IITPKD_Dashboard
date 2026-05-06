@@ -5,7 +5,7 @@ import './Login.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 // The Login component receives a prop `onLoginSuccess` from App.jsx
 // which it will call with the token and user data after a successful login/signup.
-function Login({ onLoginSuccess }) {
+function Login({ onLoginSuccess, onGuestAccess }) {
   const navigate = useNavigate();
   // This state toggles between Login and Sign Up forms
   const [isLoginView, setIsLoginView] = useState(true);
@@ -113,15 +113,27 @@ function Login({ onLoginSuccess }) {
           {error && <p className="login-error">{error}</p>}
         </form>
 
-        {/* <button
-        className="login-toggle"
-        onClick={() => {
-          setIsLoginView(!isLoginView);
-          setError('');
-        }}
-      >
-        {isLoginView ? 'Need an account? Sign Up' : 'Already have an account? Login'}
-      </button> */}
+        <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+          <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => { onGuestAccess(); navigate('/'); }}
+          style={{
+            width: '100%',
+            padding: '0.6rem',
+            marginTop: '0.25rem',
+            background: 'transparent',
+            border: '1.5px solid #ccc',
+            borderRadius: '6px',
+            color: '#555',
+            fontSize: '0.95rem',
+            cursor: 'pointer',
+          }}
+        >
+          Continue as Guest
+        </button>
       </div>
     </div>
   );

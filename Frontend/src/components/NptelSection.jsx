@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
   fetchNptelSummary,
   fetchNptelTrend,
@@ -33,6 +33,11 @@ function NptelSection({ user, isPublicView = false }) {
   const [activeUploadTable, setActiveUploadTable] = useState('');
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const [summary, setSummary] = useState({
     total_courses: 0,
     total_enrollments: 0
@@ -48,7 +53,6 @@ function NptelSection({ user, isPublicView = false }) {
   // Load data
   useEffect(() => {
     const loadData = async () => {
-      if (!token) return;
       try {
         setLoading(true);
         const [sumData, trendRes, listRes] = await Promise.all([
@@ -84,15 +88,15 @@ function NptelSection({ user, isPublicView = false }) {
 
   const content = (
     <>
-      {!isPublicView && (
+      {!isReadOnlyView && (
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
           ← Back to Outreach Extension
         </button>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        {!isPublicView && <h1 style={{ margin: 0 }}>NPTEL – CCE (Centre for Continuing Education)</h1>}
+        {!isReadOnlyView && <h1 style={{ margin: 0 }}>NPTEL – CCE (Centre for Continuing Education)</h1>}
 
-        {!isPublicView && user && user.role_id === 3 && (
+        {!isReadOnlyView && isAdmin && (
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
               className="page-upload-btn"
@@ -104,10 +108,7 @@ function NptelSection({ user, isPublicView = false }) {
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
-          NPTEL Summary
-        </h2>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
         <ExportMenu
           elementId="nptel-summary-cards-container"
           data={[summary]}

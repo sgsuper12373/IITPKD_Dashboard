@@ -1,7 +1,7 @@
 """Analytics for the Academic module (courses_table)."""
 from flask import Blueprint, jsonify, request
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 academic_module_bp = Blueprint('academic_module', __name__)
@@ -54,7 +54,7 @@ def module_tables_available() -> bool:
 # ===================== Filter Options =====================
 
 @academic_module_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     if not module_tables_available():
         return jsonify({'message': 'Academic module tables are missing.'}), 500
@@ -137,7 +137,7 @@ def get_filter_options(current_user_id):
 # ===================== Summary =====================
 
 @academic_module_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_summary(current_user_id):
     if not module_tables_available():
         return jsonify({'message': 'Academic module tables are missing.'}), 500
@@ -211,7 +211,7 @@ def get_summary(current_user_id):
 # ===================== Category Breakdown =====================
 
 @academic_module_bp.route('/category-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_category_breakdown(current_user_id):
     """Course count by category (CORE, ELECTIVE, MOOC)."""
     if not module_tables_available():
@@ -255,7 +255,7 @@ def get_category_breakdown(current_user_id):
 # ===================== Programme Breakdown =====================
 
 @academic_module_bp.route('/programme-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_programme_breakdown(current_user_id):
     """Course count by target programme (BTECH, MTECH, MSC, PHD)."""
     if not module_tables_available():
@@ -299,7 +299,7 @@ def get_programme_breakdown(current_user_id):
 # ===================== Course List =====================
 
 @academic_module_bp.route('/courses', methods=['GET'])
-@token_required
+@token_optional
 def get_courses(current_user_id):
     """Paginated, filterable course list."""
     if not module_tables_available():
@@ -439,7 +439,7 @@ def get_courses(current_user_id):
 # ===================== Course Counts =====================
 
 @academic_module_bp.route('/course-counts', methods=['GET'])
-@token_required
+@token_optional
 def get_course_counts(current_user_id):
     """Active/inactive counts for all courses and industry courses."""
     if not module_tables_available():
@@ -489,28 +489,28 @@ def get_course_counts(current_user_id):
 # ===================== Legacy endpoint stubs =====================
 
 @academic_module_bp.route('/industry-course-trend', methods=['GET'])
-@token_required
+@token_optional
 def get_industry_course_trend(current_user_id):
     """Legacy endpoint — industry_courses table has been removed."""
     return jsonify({'message': 'industry_courses table has been removed. Use /courses and /category-breakdown instead.'}), 404
 
 
 @academic_module_bp.route('/industry-courses', methods=['GET'])
-@token_required
+@token_optional
 def get_industry_courses(current_user_id):
     """Legacy endpoint — industry_courses table has been removed."""
     return jsonify({'message': 'industry_courses table has been removed. Use /courses instead.'}), 404
 
 
 @academic_module_bp.route('/program-launch-stats', methods=['GET'])
-@token_required
+@token_optional
 def get_program_launch_stats(current_user_id):
     """Legacy endpoint — academic_program_launch table has been removed."""
     return jsonify({'message': 'academic_program_launch table has been removed. Use /programme-breakdown instead.'}), 404
 
 
 @academic_module_bp.route('/program-list', methods=['GET'])
-@token_required
+@token_optional
 def get_program_list(current_user_id):
     """Legacy endpoint — academic_program_launch table has been removed."""
     return jsonify({'message': 'academic_program_launch table has been removed. Use /courses instead.'}), 404

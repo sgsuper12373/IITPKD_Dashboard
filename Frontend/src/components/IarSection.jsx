@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -99,12 +99,13 @@ function IarSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadFilterOptions = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        return;
-      }
       try {
         const options = await fetchFilterOptions(token);
         setFilterOptions({
@@ -120,7 +121,6 @@ function IarSection({ user, isPublicView = false }) {
   }, [token, uploadVersion]);
 
   const loadData = async () => {
-    if (!token) return;
     try {
       setLoading(true);
       setError(null);
@@ -164,32 +164,32 @@ function IarSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/people-campus')}
-            >
-              ← Back to People & Campus
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/people-campus')}
+          >
+            ← Back to People & Campus
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>International and Alumni Relations</h1>
-              </div>
-
-              <div className="section-header-actions">
-                {user && user.role_id === 3 && (
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
-                    <span>📤</span> Upload Data
-                  </button>
-                )}
-              </div>
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>International and Alumni Relations</h1>
             </div>
-          </>
+
+            <div className="section-header-actions">
+              {!isReadOnlyView && isAdmin && (
+                <button
+                  className="page-upload-btn"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  <span>📤</span> Upload Data
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
         {error && <div className="error-message" style={{
@@ -204,7 +204,7 @@ function IarSection({ user, isPublicView = false }) {
 
 
           {/* ... Summary Cards ... */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
             <ExportMenu
               elementId="iar-summary-cards-container"
               data={[summary]}
@@ -471,9 +471,6 @@ function IarSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '24px' }}>📈</span> Outcome Trend Over Years
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                      Track the proportion of alumni opting for higher studies versus corporate roles across admission years.
-                    </p>
                   </div>
                   <ExportMenu
                     elementId="iar-outcome-trend-container"

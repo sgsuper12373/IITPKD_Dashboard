@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 
@@ -166,7 +166,7 @@ def _build_publication_filters(
 
 
 @research_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     conn = None
     cur = None
@@ -299,7 +299,7 @@ def get_filter_options(current_user_id):
 
 
 @research_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_summary(current_user_id):
     conn = None
     cur = None
@@ -402,7 +402,7 @@ def get_summary(current_user_id):
 
 
 @research_bp.route('/projects/trend', methods=['GET'])
-@token_required
+@token_optional
 def funded_project_trend(current_user_id):
     """Return yearly project counts from both sponsored and consultancy tables."""
     conn = None
@@ -462,7 +462,7 @@ def funded_project_trend(current_user_id):
 
 
 @research_bp.route('/projects/list', methods=['GET'])
-@token_required
+@token_optional
 def project_list(current_user_id):
     conn = None
     cur = None
@@ -553,7 +553,7 @@ def project_list(current_user_id):
 
 
 @research_bp.route('/consultancy/revenue-trend', methods=['GET'])
-@token_required
+@token_optional
 def consultancy_revenue_trend(current_user_id):
     """Return yearly revenue from both sponsored and consultancy tables."""
     conn = None
@@ -613,7 +613,7 @@ def consultancy_revenue_trend(current_user_id):
 
 
 @research_bp.route('/mous/list', methods=['GET'])
-@token_required
+@token_optional
 def mou_list(current_user_id):
     conn = None
     cur = None
@@ -660,7 +660,7 @@ def mou_list(current_user_id):
 
 
 @research_bp.route('/mous/trend', methods=['GET'])
-@token_required
+@token_optional
 def mou_trend(current_user_id):
     conn = None
     cur = None
@@ -707,7 +707,7 @@ def mou_trend(current_user_id):
 
 
 @research_bp.route('/patents/stats', methods=['GET'])
-@token_required
+@token_optional
 def patent_stats(current_user_id):
     conn = None
     cur = None
@@ -767,7 +767,7 @@ def patent_stats(current_user_id):
 
 
 @research_bp.route('/patents/list', methods=['GET'])
-@token_required
+@token_optional
 def patent_list(current_user_id):
     conn = None
     cur = None
@@ -830,7 +830,7 @@ def patent_list(current_user_id):
 
 
 @research_bp.route('/externships/analytics', methods=['GET'])
-@token_required
+@token_optional
 def externship_analytics(current_user_id):
     """Combined summary and list data for externships to reduce API calls."""
     conn = None
@@ -936,21 +936,21 @@ def externship_analytics(current_user_id):
 
 
 @research_bp.route('/externships/summary', methods=['GET'])
-@token_required
+@token_optional
 def externship_summary(current_user_id):
     # Keep for backward compatibility, but we should use /analytics
     return externship_analytics(current_user_id)
 
 
 @research_bp.route('/externships/list', methods=['GET'])
-@token_required
+@token_optional
 def externship_list(current_user_id):
     # Keep for backward compatibility
     return externship_analytics(current_user_id)
 
 
 @research_bp.route('/publications/summary', methods=['GET'])
-@token_required
+@token_optional
 def publication_summary(current_user_id):
     conn = None
     cur = None
@@ -1024,7 +1024,7 @@ def publication_summary(current_user_id):
 
 
 @research_bp.route('/publications/trend', methods=['GET'])
-@token_required
+@token_optional
 def publication_trend(current_user_id):
     conn = None
     cur = None
@@ -1060,7 +1060,7 @@ def publication_trend(current_user_id):
 
 
 @research_bp.route('/publications/department', methods=['GET'])
-@token_required
+@token_optional
 def publication_by_department(current_user_id):
     conn = None
     cur = None
@@ -1096,7 +1096,7 @@ def publication_by_department(current_user_id):
 
 
 @research_bp.route('/publications/type-distribution', methods=['GET'])
-@token_required
+@token_optional
 def publication_type_distribution(current_user_id):
     conn = None
     cur = None
@@ -1130,7 +1130,7 @@ def publication_type_distribution(current_user_id):
 
 
 @research_bp.route('/publications/list', methods=['GET'])
-@token_required
+@token_optional
 def publication_list(current_user_id):
     conn = None
     cur = None

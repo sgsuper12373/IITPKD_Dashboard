@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -60,7 +60,7 @@ const formatDuration = (days) => {
   return `${numeric} days`;
 };
 
-function ResearchAdministrativeSection({ user, isPublicView = false }) {
+function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -91,12 +91,13 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadFilterOptions = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        return;
-      }
       try {
         const options = await fetchResearchFilterOptions(token);
         setFilterOptions({
@@ -119,7 +120,6 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
 
   useEffect(() => {
     const loadExternshipData = async () => {
-      if (!token) return;
       try {
         setLoading(true);
         setError(null);
@@ -254,32 +254,32 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/research')}
-            >
-              ← Back to Research
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/research')}
+          >
+            ← Back to Research
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>Administrative Section (Industry Externships)</h1>
-              </div>
-
-              {user && user.role_id === 3 && (
-                <div className="section-header-actions">
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
-                    <span>📤</span> Upload Externship Data
-                  </button>
-                </div>
-              )}
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>Administrative Section (Industry Faculty Industry Stints)</h1>
             </div>
-          </>
+
+            {!isReadOnlyView && isAdmin && (
+              <div className="section-header-actions">
+                <button
+                  className="page-upload-btn"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  <span>📤</span> Upload Externship Data
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && <div className="error-message" style={{
@@ -299,10 +299,10 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
               active_years: activeYears,
               top_type: topType
             }]}
-            headers={['Total Externships', 'Participating Departments', 'Timeline Coverage']}
+            headers={['Total Faculty Industry Stints', 'Participating Departments', 'Timeline Coverage']}
             keys={['total', 'participating_departments', 'active_years', 'top_type']}
             filename="externship_summary"
-            title="Externship Summary"
+            title="Faculty Industry Stint Summary"
           />
         </div>
         {/* Modern Summary Cards */}
@@ -333,7 +333,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Externships</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Faculty Industry Stints</span>
               </div>
               <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
                 {formatNumber(summary.total)}
@@ -512,7 +512,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Year Filter */}
                 <div className="filter-group">
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Externship Year</label>
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Faculty Industry Stint Year</label>
                   <select
                     className="filter-select"
                     value={filters.externship_year}
@@ -534,7 +534,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
               <div className="chart-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                    <span style={{ fontSize: '28px' }}>📊</span> Year-wise Externships
+                    <span style={{ fontSize: '28px' }}>📊</span> Year-wise Faculty Industry Stints
                   </h2>
                   <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
                     Distribution by externship type across the chosen timeframe
@@ -546,7 +546,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                   headers={['Year', ...externshipTypeKeys]}
                   keys={['year', ...externshipTypeKeys]}
                   filename="externships_yearly_trend"
-                  title="Year-wise Externships"
+                  title="Year-wise Faculty Industry Stints"
                 />
               </div>
               <div id="externships-yearly-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
@@ -669,7 +669,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div className="chart-header">
                     <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>📋</span> Externship Directory
+                      <span>📋</span> Faculty Industry Stint Directory
                     </h2>
                     <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
                       Displaying {externshipList.length} total records
@@ -681,7 +681,7 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
                     headers={['Faculty', 'Department', 'Partner', 'Type', 'Start Date', 'End Date', 'Days']}
                     keys={['faculty_name', 'department', 'industry_name', 'type', 'startdate', 'enddate', 'duration_days']}
                     filename="externship_directory"
-                    title="Externship Directory"
+                    title="Faculty Industry Stint Directory"
                     exportType="table"
                   />
                 </div>
@@ -743,4 +743,4 @@ function ResearchAdministrativeSection({ user, isPublicView = false }) {
   );
 }
 
-export default ResearchAdministrativeSection;
+export default IndustryAdministrativeSection;

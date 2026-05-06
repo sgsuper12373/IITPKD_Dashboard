@@ -6,7 +6,7 @@ Blueprint providing analytics for the Industry Connect module:
 from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 
@@ -82,7 +82,7 @@ def _build_events_where_clause(filters: dict) -> tuple[str, list]:
 # ========== ICSR Section Endpoints ==========
 
 @industry_connect_bp.route('/icsr/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_icsr_summary(current_user_id):
     """Get summary statistics for ICSR industry events."""
     if not _data_available():
@@ -128,7 +128,7 @@ def get_icsr_summary(current_user_id):
 
 
 @industry_connect_bp.route('/icsr/yearly-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_icsr_yearly_distribution(current_user_id):
     """Get year-wise distribution of industry events."""
     if not _data_available():
@@ -180,7 +180,7 @@ def get_icsr_yearly_distribution(current_user_id):
 
 
 @industry_connect_bp.route('/icsr/event-types', methods=['GET'])
-@token_required
+@token_optional
 def get_icsr_event_types(current_user_id):
     """Get event types distribution (frequency by type)."""
     if not _data_available():
@@ -229,7 +229,7 @@ def get_icsr_event_types(current_user_id):
 
 
 @industry_connect_bp.route('/icsr/events', methods=['GET'])
-@token_required
+@token_optional
 def get_icsr_events(current_user_id):
     """Get list of industry events with filtering and pagination."""
     if not _data_available():
@@ -319,7 +319,7 @@ def get_icsr_events(current_user_id):
 
 
 @industry_connect_bp.route('/icsr/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_icsr_filter_options(current_user_id):
     """Get filter options for ICSR events."""
     if not _data_available():
@@ -365,7 +365,7 @@ def get_icsr_filter_options(current_user_id):
 # ========== Industry-Academia Conclave Endpoints ==========
 
 @industry_connect_bp.route('/conclave/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_conclave_summary(current_user_id):
     """Get summary statistics for Industry-Academia Conclave."""
     if not _data_available():
@@ -404,7 +404,7 @@ def get_conclave_summary(current_user_id):
 
 
 @industry_connect_bp.route('/conclave/list', methods=['GET'])
-@token_required
+@token_optional
 def get_conclave_list(current_user_id):
     """Get list of all Industry-Academia Conclaves."""
     if not _data_available():

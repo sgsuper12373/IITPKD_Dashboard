@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
@@ -16,7 +16,7 @@ import {
 } from '../services/educationStats';
 import DataUploadModal from './DataUploadModal';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import { CustomTooltip, getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 
@@ -29,6 +29,7 @@ const BAR_ANIMATION = {
 
 const GENDER_COLORS = { Male: '#667eea', Female: '#764ba2', Transgender: '#43e97b', Other: '#f093fb' };
 
+// SERIES_META order defines both bar render order AND legend order for Regular section
 const SERIES_META = [
   { key: 'Total', color: '#667eea', gradientId: 'colorEmpTotal', label: 'Total' },
   { key: 'Male', color: '#43e97b', gradientId: 'colorEmpMale', label: 'Male' },
@@ -67,6 +68,8 @@ const ENGAGEMENT_COLORS = {
   FacultyFellow: '#4facfe', PoP: '#00f2fe'
 };
 
+// ✅ FIXED: ENGAGEMENT_CARD_META and EDU_ENGAGEMENT_ORDER MUST match exactly
+// This order is: Adjunct → Honorary → Visiting → PoP
 const ENGAGEMENT_CARD_META = [
   { type: 'Adjunct', label: 'Adjunct Faculty', icon: '👨‍🏫', grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.25)' },
   { type: 'Honorary', label: 'Honorary Faculty', icon: '🏅', grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.25)' },
@@ -75,6 +78,11 @@ const ENGAGEMENT_CARD_META = [
 ];
 
 const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 'Visiting', PoP: 'PoP' };
+
+// ✅ FIXED: EDU_ENGAGEMENT_ORDER defines STRICT order for bars AND legend
+// MUST be: Adjunct → Honorary → Visiting → PoP (matches ENGAGEMENT_CARD_META)
+const EDU_ENGAGEMENT_ORDER = ['Adjunct', 'Honorary', 'Visiting', 'PoP'];
+
 const EDU_COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'];
 
 const formatNumber = (v) => new Intl.NumberFormat('en-IN').format(Number(v) || 0);
@@ -104,6 +112,32 @@ const CustomXAxisTick = ({ x, y, payload }) => {
   );
 };
 
+// ── Reusable ordered legend renderer ─────────────────────────────────────
+// Mirrors the pattern used in AcademicSection.jsx via getOrderedLegend
+const makeOrderedLegendRenderer = (orderedKeys) => (props) => {
+  const ordered = getOrderedLegend(props.payload, orderedKeys);
+  return (
+    <ul style={{
+      display: 'flex', justifyContent: 'center', gap: '16px',
+      listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap'
+    }}>
+      {ordered.map(entry => (
+        <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{
+            width: 10, height: 10, backgroundColor: entry.color,
+            display: 'inline-block', borderRadius: 2, flexShrink: 0
+          }} />
+          <span>{entry.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+// Pre-built ordered legend renderers for each chart family
+const regularLegendRenderer = makeOrderedLegendRenderer(SERIES_META.map(s => s.key));
+const eduLegendRenderer = makeOrderedLegendRenderer(EDU_ENGAGEMENT_ORDER);
+
 // ── Main Component ──────────────────────────────────────────────────────────
 
 function AdministrativeSection({ user, isPublicView = false }) {
@@ -111,6 +145,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // ── Top-level section toggle ──────────────────────────────────────────────
   const [section, setSection] = useState('regular'); // 'regular' | 'education'
@@ -125,7 +164,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const [facultyFilterOptions, setFacultyFilterOptions] = useState({ department: [], designation: [], group_name: [] });
   const [filters, setFilters] = useState({
     department: null, designation: null, gender: null,
-    emp_type: null, group_name: null, appointed_category: null, num_years: 5
+    emp_type: null, group_name: null, appointed_category: null, num_years: 10
   });
 
   // Per-view year filters for Regular section
@@ -162,13 +201,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const [eduError, setEduError] = useState(null);
   const [eduLoading, setEduLoading] = useState(false);
 
-  // ── NEW: Chart type toggles for Education views ──────────────────────────
-  // Department-wise breakdown toggle: 'Bar' | 'Trend'
+  // Chart type toggles for Education views
   const [eduDeptChartType, setEduDeptChartType] = useState('Bar');
-  // Trend view toggle: 'Bar' | 'Line'
   const [eduTrendChartType, setEduTrendChartType] = useState('Bar');
 
-  // ── Education Trend: No. of Years filter (independent of year filter) ────
+  // Education Trend: No. of Years filter (independent of year filter)
   const [eduTrendNumYears, setEduTrendNumYears] = useState(5);
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -176,7 +213,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
   // ══════════════════════════════════════════════════════════════════════════
 
   useEffect(() => {
-    if (!token) return;
     Promise.all([
       fetchYearwiseStrength({ num_years: 100 }, token),
       fetchYearwiseStrength({ emp_type: 'Teaching', num_years: 100 }, token),
@@ -192,21 +228,20 @@ function AdministrativeSection({ user, isPublicView = false }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     fetchFilterOptions(token)
       .then(opts => setFilterOptions(opts))
       .catch(() => setRegError('Failed to load filter options.'));
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token || activeView !== 'department') return;
+    if (activeView !== 'department') return;
     fetchFacultyFilterOptions(token)
       .then(opts => setFacultyFilterOptions(opts))
       .catch(() => { });
   }, [token, activeView, uploadVersion]);
 
   useEffect(() => {
-    if (!token || activeView !== 'department') return;
+    if (activeView !== 'department') return;
     const fdFilters = { ...filters };
     if (regYearFD) fdFilters.year = regYearFD;
     fetchFacultyExpertiseMatrix(fdFilters, token)
@@ -215,16 +250,23 @@ function AdministrativeSection({ user, isPublicView = false }) {
   }, [filters, regYearFD, token, activeView, uploadVersion]);
 
   useEffect(() => {
-    if (!token || activeView !== 'yearwise') return;
+    if (activeView !== 'yearwise') return;
     const ywFilters = { ...filters };
     if (regYearYW !== 'All') ywFilters.year = regYearYW;
     fetchYearwiseStrength(ywFilters, token)
-      .then(r => setYearwiseData(r.data))
+      .then(r => {
+        const reordered = (r.data || []).map(row => {
+          const ordered = { year: row.year };
+          SERIES_META.forEach(({ key }) => { ordered[key] = row[key] ?? 0; });
+          return ordered;
+        });
+        setYearwiseData(reordered);
+      })
       .catch(() => setRegError('Failed to load yearwise strength data.'));
   }, [filters, regYearYW, token, activeView, uploadVersion]);
 
   useEffect(() => {
-    if (!token || activeView !== 'gender') return;
+    if (activeView !== 'gender') return;
     const grFilters = { ...filters };
     if (regYearGR) grFilters.year = regYearGR;
     fetchGenderDistribution(grFilters, null, token)
@@ -246,7 +288,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const handleClearFilters = () => {
     setFilters({
       department: null, designation: null, gender: null,
-      emp_type: null, group_name: null, appointed_category: null, num_years: 5
+      emp_type: null, group_name: null, appointed_category: null, num_years: 10
     });
     setRegYearYW('All');
     setRegYearFD(CURRENT_YEAR);
@@ -265,7 +307,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
   // ══════════════════════════════════════════════════════════════════════════
 
   useEffect(() => {
-    if (!token) return;
     fetchEduFilterOptions(token).then(options => {
       const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
       setEduFilterOptions({
@@ -282,7 +323,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     const loadEduData = async () => {
       try {
         setEduLoading(true);
@@ -292,12 +332,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
         if (eduFilters.department !== 'All') p.department = eduFilters.department;
         if (eduFilters.engagement_type !== 'All') p.engagement_type = eduFilters.engagement_type;
 
-        // FIX: For trend data, pass year filter as well so it can slice to a specific year.
-        // The trend API should handle year param to filter/highlight that year's data.
-        // If you want ALL years in the chart regardless, keep trendParams without year.
-        // But if user picks a specific year, we pass it so the API can return that year's row.
         const trendParams = { ...p };
-        // Keep year in trendParams so year filter works for trend view too
 
         const [summaryResp, deptResp, trendResp, typeResp, listResp] = await Promise.all([
           fetchSummary(p, token),
@@ -328,7 +363,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   }, [eduFilters, token, eduView, selectedCardType, uploadVersion]);
 
   useEffect(() => {
-    if (!token || !selectedCardType) return;
+    if (!selectedCardType) return;
     const p = {};
     if (eduFilters.year !== 'All') p.year = eduFilters.year;
     if (selectedCardType !== '__all__') p.engagement_type = selectedCardType;
@@ -352,30 +387,32 @@ function AdministrativeSection({ user, isPublicView = false }) {
       type: item.engagement_type, active: Number(item.active) || 0
     })), [eduSummary.summary]);
 
+  // ✅ FIXED: Always include ALL engagement types with zero-value enforcement
   const eduDeptChartData = useMemo(() => {
     if (!eduDepartmentData.length) return [];
     return eduDepartmentData.map(dept => {
       const entry = { department: dept.department || 'Unknown' };
-      eduSummary.summary.forEach(item => {
-        entry[item.engagement_type] = Number(dept[`${item.engagement_type}_active`]) || 0;
+      // Force all keys from EDU_ENGAGEMENT_ORDER to exist (even if 0)
+      EDU_ENGAGEMENT_ORDER.forEach(type => {
+        entry[type] = Number(dept[`${type}_active`]) || 0;
       });
       entry.total = Number(dept.active) || 0;
       return entry;
     });
-  }, [eduDepartmentData, eduSummary.summary]);
+  }, [eduDepartmentData]);
 
+  // ✅ FIXED: Always include ALL engagement types with zero-value enforcement
   const eduTrendChartData = useMemo(() => {
     if (!eduYearTrendData.length) return [];
-    // Map all rows first
     const mapped = eduYearTrendData.map(entry => {
       const item = { year: entry.year || 'Unknown' };
-      eduSummary.summary.forEach(s => { item[s.engagement_type] = Number(entry[s.engagement_type]) || 0; });
+      // Force all keys from EDU_ENGAGEMENT_ORDER to exist (even if 0)
+      EDU_ENGAGEMENT_ORDER.forEach(type => { item[type] = Number(entry[type]) || 0; });
       return item;
     });
-    // Sort ascending by year, then keep only the last N years
     const sorted = [...mapped].sort((a, b) => Number(a.year) - Number(b.year));
     return sorted.slice(-eduTrendNumYears);
-  }, [eduYearTrendData, eduSummary.summary, eduTrendNumYears]);
+  }, [eduYearTrendData, eduTrendNumYears]);
 
   const eduPieData = useMemo(() =>
     eduTypeDistribution.map(item => ({ name: item.engagement_type, value: Number(item.active) || 0 })),
@@ -394,6 +431,16 @@ function AdministrativeSection({ user, isPublicView = false }) {
     padding: '8px', fontSize: '13px', width: '100%',
     borderRadius: '6px', border: '1px solid #ddd', outline: 'none'
   };
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // LEGEND KEY ARRAYS (used by getOrderedLegend)
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // Regular section: ordered key list locked to SERIES_META order
+  const regularSeriesKeys = SERIES_META.map(s => s.key);
+
+  // Education section: ordered key list locked to EDU_ENGAGEMENT_ORDER
+  const eduSeriesKeys = [...EDU_ENGAGEMENT_ORDER];
 
   // ══════════════════════════════════════════════════════════════════════════
   // UNIFIED FILTER BAR
@@ -592,7 +639,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
           {/* ══ EDUCATION filters ══ */}
 
-          {/* Year filter: shown for all edu views EXCEPT trend (trend uses No. of Years instead) */}
           {isEdu && eduView !== 'trend' && (
             <div>
               <label style={labelStyle}>Year</label>
@@ -604,7 +650,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {/* No. of Years filter: only shown for trend view */}
           {isEdu && eduView === 'trend' && (
             <div>
               <label style={labelStyle}>No. of Years</label>
@@ -839,7 +884,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Per-type cards */}
+          {/* Per-type cards — rendered in ENGAGEMENT_CARD_META order (= EDU_ENGAGEMENT_ORDER) */}
           {visibleCards.map(({ type, label, icon, grad, shadow }) => {
             const card = eduSummaryCards.find(c => c.type === type) || { active: 0 };
             const isSelected = selectedCardType === type;
@@ -897,40 +942,41 @@ function AdministrativeSection({ user, isPublicView = false }) {
   };
 
   // ══════════════════════════════════════════════════════════════════════════
-  // REUSABLE: Education chart series renderer
+  // ✅ REUSABLE: Education chart series renderers
+  // Both renderers iterate EDU_ENGAGEMENT_ORDER STRICTLY (NO filtering!)
+  // This ensures bar/line order ALWAYS matches legend order
   // ══════════════════════════════════════════════════════════════════════════
 
   const renderEduBarSeries = () =>
-    eduSummary.summary.map((item, index) => {
-      if (item.engagement_type === 'FacultyFellow') return null;
+    EDU_ENGAGEMENT_ORDER.map((type, index) => {
+      const color = ENGAGEMENT_COLORS[type] || EDU_COLORS[index % EDU_COLORS.length];
       return (
         <Bar
-          key={item.engagement_type}
-          dataKey={item.engagement_type}
-          name={ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type}
-          fill={ENGAGEMENT_COLORS[item.engagement_type] || EDU_COLORS[index % EDU_COLORS.length]}
+          key={type}
+          dataKey={type}
+          name={ENGAGEMENT_LABELS[type] || type}
+          fill={color}
           radius={[4, 4, 0, 0]}
           animationDuration={800}
         >
           <LabelList
-            dataKey={item.engagement_type}
+            dataKey={type}
             position="top"
-            style={{ fontSize: '10px', fontWeight: 600, fill: ENGAGEMENT_COLORS[item.engagement_type] || EDU_COLORS[index % EDU_COLORS.length] }}
+            style={{ fontSize: '10px', fontWeight: 600, fill: color }}
           />
         </Bar>
       );
     });
 
   const renderEduLineSeries = () =>
-    eduSummary.summary.map((item, index) => {
-      if (item.engagement_type === 'FacultyFellow') return null;
-      const color = ENGAGEMENT_COLORS[item.engagement_type] || EDU_COLORS[index % EDU_COLORS.length];
+    EDU_ENGAGEMENT_ORDER.map((type, index) => {
+      const color = ENGAGEMENT_COLORS[type] || EDU_COLORS[index % EDU_COLORS.length];
       return (
         <Line
-          key={item.engagement_type}
+          key={type}
           type="linear"
-          dataKey={item.engagement_type}
-          name={ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type}
+          dataKey={type}
+          name={ENGAGEMENT_LABELS[type] || type}
           stroke={color}
           strokeWidth={3}
           dot={{ r: 5 }}
@@ -938,7 +984,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           animationDuration={800}
         >
           <LabelList
-            dataKey={item.engagement_type}
+            dataKey={type}
             position="top"
             style={{ fontSize: '10px', fontWeight: 600, fill: color }}
           />
@@ -954,20 +1000,20 @@ function AdministrativeSection({ user, isPublicView = false }) {
     <div className={isPublicView ? '' : 'page-container'}>
       <div className={isPublicView ? '' : 'page-content'}>
 
-        {!isPublicView && (
-          <>
-            <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
-              ← Back to People & Campus
-            </button>
-            <div className="section-header">
-              <div className="section-header-left"><h1>Employee Overview</h1></div>
-              <div className="section-header-actions">
-                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <span>📤</span> Upload Employee Data
-                </button>
-              </div>
+        {!isReadOnlyView && (
+          <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
+            ← Back to People & Campus
+          </button>
+        )}
+        {!isReadOnlyView && isAdmin && (
+          <div className="section-header">
+            <div className="section-header-left"><h1>Employee Overview</h1></div>
+            <div className="section-header-actions">
+              <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                <span>📤</span> Upload Employee Data
+              </button>
             </div>
-          </>
+          </div>
         )}
 
         {(regError || eduError) && (
@@ -1024,6 +1070,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No employee records match the current filters.</p>
                   </div>
                 )}
+
+                {/* Bar chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={350}>
                     <BarChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
@@ -1031,17 +1079,33 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                      {SERIES_META.map(({ key, color, label }) =>
-                        visibleSeries[key] ? (
-                          <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-                          </Bar>
-                        ) : null
-                      )}
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to SERIES_META */}
+                      <Legend
+                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '12px', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
+                      {SERIES_META.map(({ key, color, label }) => (
+                        <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                        </Bar>
+                      ))}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+
+                {/* Trend (Line) chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
@@ -1057,14 +1121,28 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                      {SERIES_META.map(({ key, color, label }) =>
-                        visibleSeries[key] ? (
-                          <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={2}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-                          </Line>
-                        ) : null
-                      )}
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to SERIES_META */}
+                      <Legend
+                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '12px', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
+                      {SERIES_META.map(({ key, color, label }) => (
+                        <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={2} hide={!visibleSeries[key]}>
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                        </Line>
+                      ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -1171,7 +1249,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
           {/* ══════════════════════════════════════════════════════════════════
               EDUCATION: Department-wise Breakdown
-              — Now has Bar / Trend (Line) toggle
+              ✅ FIXED: Strict EDU_ENGAGEMENT_ORDER rendering + getOrderedLegend
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'department' && (
             <>
@@ -1200,8 +1278,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 <ExportMenu
                   elementId="edu-dept-chart-container"
                   data={eduDeptChartData}
-                  headers={['Department', ...eduSummary.summary.filter(i => i.engagement_type !== 'FacultyFellow').map(i => ENGAGEMENT_LABELS[i.engagement_type] || i.engagement_type), 'Total']}
-                  keys={['department', ...eduSummary.summary.filter(i => i.engagement_type !== 'FacultyFellow').map(i => i.engagement_type), 'total']}
+                  headers={['Department', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t), 'Total']}
+                  keys={['department', ...EDU_ENGAGEMENT_ORDER, 'total']}
                   filename="faculty_engagement_department_breakdown"
                   title="Department-wise Breakdown"
                 />
@@ -1222,7 +1300,25 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect" />
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
+                      <Legend
+                        verticalAlign="top"
+                        wrapperStyle={{ paddingBottom: '20px' }}
+                        iconType="rect"
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
@@ -1236,7 +1332,25 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect" />
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
+                      <Legend
+                        verticalAlign="top"
+                        wrapperStyle={{ paddingBottom: '20px' }}
+                        iconType="rect"
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>
@@ -1247,7 +1361,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
           {/* ══════════════════════════════════════════════════════════════════
               EDUCATION: Year-wise Trend
-              — Now has Bar / Line toggle; year filter is now passed to API
+              ✅ FIXED: Strict EDU_ENGAGEMENT_ORDER rendering + getOrderedLegend
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'trend' && (
             <>
@@ -1281,8 +1395,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 <ExportMenu
                   elementId="edu-trend-chart-container"
                   data={eduTrendChartData}
-                  headers={['Year', ...eduSummary.summary.filter(i => i.engagement_type !== 'FacultyFellow').map(i => ENGAGEMENT_LABELS[i.engagement_type] || i.engagement_type)]}
-                  keys={['year', ...eduSummary.summary.filter(i => i.engagement_type !== 'FacultyFellow').map(i => i.engagement_type)]}
+                  headers={['Year', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t)]}
+                  keys={['year', ...EDU_ENGAGEMENT_ORDER]}
                   filename="faculty_engagement_trends"
                   title="Year-wise Trends"
                 />
@@ -1303,7 +1417,24 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
+                      <Legend
+                        wrapperStyle={{ paddingTop: '20px' }}
+                        iconType="rect"
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
@@ -1317,7 +1448,24 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
+                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
+                      <Legend
+                        wrapperStyle={{ paddingTop: '20px' }}
+                        iconType="rect"
+                        content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }}
+                      />
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>

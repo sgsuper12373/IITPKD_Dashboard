@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, List, Sequence, Tuple
 from flask import Blueprint, jsonify, request
 from psycopg2.errors import UndefinedTable
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 placement_bp = Blueprint('placement', __name__)
@@ -95,7 +95,7 @@ def safe_percentage(numerator: float, denominator: float) -> float:
 
 
 @placement_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     if not placement_data_available():
         return jsonify({
@@ -148,7 +148,7 @@ def get_filter_options(current_user_id):
 
 
 @placement_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_placement_summary(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -257,7 +257,7 @@ def get_placement_summary(current_user_id):
 
 
 @placement_bp.route('/percentage-trend', methods=['GET'])
-@token_required
+@token_optional
 def get_percentage_trend(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -314,7 +314,7 @@ def get_percentage_trend(current_user_id):
 
 
 @placement_bp.route('/gender-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_gender_breakdown(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -371,7 +371,7 @@ def get_gender_breakdown(current_user_id):
 
 
 @placement_bp.route('/program-status', methods=['GET'])
-@token_required
+@token_optional
 def get_program_status(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -431,7 +431,7 @@ def get_program_status(current_user_id):
 
 
 @placement_bp.route('/recruiters', methods=['GET'])
-@token_required
+@token_optional
 def get_recruiter_counts(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -485,7 +485,7 @@ def get_recruiter_counts(current_user_id):
 
 
 @placement_bp.route('/sector-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_sector_distribution(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -541,7 +541,7 @@ def get_sector_distribution(current_user_id):
 
 
 @placement_bp.route('/package-trend', methods=['GET'])
-@token_required
+@token_optional
 def get_package_trend(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500
@@ -629,7 +629,7 @@ def get_package_trend(current_user_id):
 
 
 @placement_bp.route('/top-recruiters', methods=['GET'])
-@token_required
+@token_optional
 def get_top_recruiters(current_user_id):
     if not placement_data_available():
         return jsonify({'message': 'Placement tables are missing.'}), 500

@@ -28,9 +28,9 @@ function EducationPublicView({ user }) {
     },
     {
       id: 'iar',
-      title: 'IAR MoUs',
+      title: 'Education Collaborations',
       subtitle: '',
-      expandedTitle: 'Track and manage collaborative IAR MoUs.',
+      expandedTitle: 'Track and manage collaborations with Education Institutes',
       icon: '🤝',
       component: EducationIarSection
     }

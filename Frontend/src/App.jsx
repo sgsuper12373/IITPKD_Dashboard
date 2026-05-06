@@ -25,7 +25,9 @@ import PlacementSection from './components/PlacementSection';
 import EducationAcademicSection from './components/EducationAcademicSection';
 import EducationIarSection from './components/EducationIarSection';
 import ResearchIcsrSection from './components/ResearchIcsrSection';
-import ResearchAdministrativeSection from './components/ResearchAdministrativeSection';
+import Patents from './components/Patents';
+import MoUCollaborations from './components/MoUCollaborations';
+import IndustryAdministrativeSection from './components/IndustryAdministrativeSection';
 import ResearchLibrarySection from './components/ResearchLibrarySection';
 import InnovationSection from './components/InnovationSection';
 import IptifSection from './components/IptifSection';
@@ -40,11 +42,9 @@ import StudentsEngagementSection from './components/StudentsEngagement';
 import OutreachSection from './components/OutreachSection';
 
 function App() {
-  // State to hold the authentication token
   const [token, setToken] = useState(null);
-
-  // State to hold user info (optional, but good for UI)
   const [user, setUser] = useState(null);
+  const [isGuestMode, setIsGuestMode] = useState(false);
 
   // Rehydrate auth state on initial load
   useEffect(() => {
@@ -70,20 +70,38 @@ function App() {
     localStorage.setItem('authUser', JSON.stringify(receivedUser));
   };
 
+  const handleGuestAccess = () => {
+    setIsGuestMode(true);
+    setUser({ username: 'Guest', display_name: 'Guest', role_id: 1, isGuest: true });
+  };
+
   const handleLogout = () => {
     setToken(null);
     setUser(null);
+    setIsGuestMode(false);
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
   };
+
+  // Strip invalid auth headers so unauthenticated users can reach public endpoints
+  useEffect(() => {
+    const requestInterceptor = axios.interceptors.request.use((config) => {
+      const auth = config.headers?.Authorization;
+      if (!auth || auth === 'Bearer null' || auth === 'Bearer undefined') {
+        delete config.headers.Authorization;
+      }
+      return config;
+    });
+    return () => { axios.interceptors.request.eject(requestInterceptor); };
+  }, []);
 
   // Axios interceptor to catch 401 errors (e.g. token expiration) and auto-logout
   useEffect(() => {
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response && error.response.status === 401) {
-          // Unauthorised or token expired - log the user out to redirect to login
+        if (error.response && error.response.status === 401 && token) {
+          // Only auto-logout if the user was actually logged in
           handleLogout();
         }
         return Promise.reject(error);
@@ -93,10 +111,15 @@ function App() {
     return () => {
       axios.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [token]);
 
-  // Protected Route wrapper
+  // Allows authenticated users AND guest mode
   const ProtectedRoute = ({ children }) => {
+    return (token || isGuestMode) ? children : <Navigate to="/login" replace />;
+  };
+
+  // Requires a real auth token (admin-only routes)
+  const AuthRoute = ({ children }) => {
     return token ? children : <Navigate to="/login" replace />;
   };
 
@@ -107,14 +130,15 @@ function App() {
         <Route
           path="/login"
           element={
-            token ? <Navigate to="/" replace /> : <Login onLoginSuccess={handleLoginSuccess} />
+            (token || isGuestMode) ? <Navigate to="/" replace /> :
+              <Login onLoginSuccess={handleLoginSuccess} onGuestAccess={handleGuestAccess} />
           }
         />
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Home user={user} onLogout={handleLogout} />
+              <Home user={user} onLogout={handleLogout} isGuest={isGuestMode} />
             </ProtectedRoute>
           }
         >
@@ -128,7 +152,9 @@ function App() {
           <Route path="people-campus/iar" element={<IarSection user={user} />} />
           <Route path="research" element={<Research user={user} />} />
           <Route path="research/icsr" element={<ResearchIcsrSection user={user} />} />
-          <Route path="research/administrative-section" element={<ResearchAdministrativeSection user={user} />} />
+          <Route path="patents" element={<Patents user={user} />} />
+          <Route path="mou-collaborations" element={<MoUCollaborations user={user} />} />
+          <Route path="research/administrative-section" element={<IndustryAdministrativeSection user={user} />} />
           <Route path="research/library" element={<ResearchLibrarySection user={user} />} />
           <Route path="education" element={<Education user={user} />} />
           <Route path="education/placements" element={<PlacementSection user={user} />} />
@@ -159,9 +185,10 @@ function App() {
           <Route path="outreach-extension/students-engagement/pmc" element={<OutreachSection user={user} isPublicView={true} programKey="palakkad_math_circle" />} />
           <Route path="outreach-extension/students-engagement/pbd" element={<OutreachSection user={user} isPublicView={true} programKey="pale_blue_dot" />} />
           <Route path="outreach-extension/students-engagement/sq" element={<OutreachSection user={user} isPublicView={true} programKey="science_quest" />} />
-          <Route path="profile" element={<Profile user={user} />} />
-          <Route path="upload" element={<UploadForm token={token} onLogout={handleLogout} />} />
-          <Route path="create-user" element={<CreateUser user={user} token={token} />} />
+          {/* Admin-only routes — require real auth token, not guest */}
+          <Route path="profile" element={<AuthRoute><Profile user={user} /></AuthRoute>} />
+          <Route path="upload" element={<AuthRoute><UploadForm token={token} onLogout={handleLogout} /></AuthRoute>} />
+          <Route path="create-user" element={<AuthRoute><CreateUser user={user} token={token} /></AuthRoute>} />
         </Route>
 
         {/* Catch all - redirect to home */}

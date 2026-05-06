@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -59,9 +59,13 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadOptions = async () => {
-      if (!token) return;
       try {
         const opts = await fetchIarMouFilterOptions(token);
         setFilterOptions({
@@ -76,7 +80,6 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!token) return;
       setLoading(true);
       setError(null);
       try {
@@ -117,7 +120,7 @@ function EducationIarSection({ user, isPublicView = false }) {
   return (
     <div className={`academic-section page-container ${isPublicView ? 'public-view' : ''}`}>
       <div className={isPublicView ? '' : 'page-content'}>
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <button
             className="page-back-btn"
             onClick={() => navigate('/education')}
@@ -155,20 +158,15 @@ function EducationIarSection({ user, isPublicView = false }) {
               >
                 🤝
               </span>
-              International & Alumni Relations MoUs
-            </h1>
+              {isPublicView
+                ? 'Education Collaborations'
+                : 'International & Alumni Relations MoUs'
+              }
 
-            <p
-              className="page-subtitle"
-              style={{
-                color: !isPublicView ? '#f1f1f1' : '#555',
-              }}
-            >
-              Track and manage collaborative IAR MoUs
-            </p>
+            </h1>
           </div>
 
-          {!isPublicView && user && user.role_id === 3 && (
+          {!isReadOnlyView && isAdmin && (
             <div className="section-header-actions">
               <button
                 className="page-upload-btn"

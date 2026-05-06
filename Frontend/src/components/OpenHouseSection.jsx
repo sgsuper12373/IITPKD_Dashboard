@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -33,6 +33,11 @@ function OpenHouseSection({ user, isPublicView = false }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   // Chart type selection with radio buttons
   const [chartType, setChartType] = useState('timeline'); // 'timeline' | 'participation'
 
@@ -62,7 +67,6 @@ function OpenHouseSection({ user, isPublicView = false }) {
   // Load summary data
   useEffect(() => {
     const loadSummary = async () => {
-      if (!token) return;
       try {
         setLoading(true);
         const data = await fetchOpenHouseSummary(token);
@@ -79,7 +83,6 @@ function OpenHouseSection({ user, isPublicView = false }) {
   // Load timeline data
   useEffect(() => {
     const loadTimeline = async () => {
-      if (!token) return;
       try {
         const result = await fetchOpenHouseTimeline(token);
         setTimeline(result.timeline || []);
@@ -93,7 +96,6 @@ function OpenHouseSection({ user, isPublicView = false }) {
   // Load events list
   useEffect(() => {
     const loadEvents = async () => {
-      if (!token) return;
       try {
         const result = await fetchOpenHouseList(
           token,
@@ -146,9 +148,9 @@ function OpenHouseSection({ user, isPublicView = false }) {
           ← Back to Outreach Extension
         </button>
       )}
-      {!isPublicView && <h1>Open House</h1>}
+      {!isReadOnlyView && <h1>Open House</h1>}
 
-      {isPublicView ? null : (user && user.role_id === 3 && (
+      {!isReadOnlyView && isAdmin && (
         <div style={{
           display: 'flex',
           gap: '1rem',
@@ -162,12 +164,9 @@ function OpenHouseSection({ user, isPublicView = false }) {
             <span>📤</span> Upload Open House Data
           </button>
         </div>
-      ))}
+      )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
-          Open House Summary
-        </h2>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
         <ExportMenu
           elementId="openhouse-summary-cards-container"
           data={[summary]}

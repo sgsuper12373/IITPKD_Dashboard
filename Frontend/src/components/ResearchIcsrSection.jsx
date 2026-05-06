@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -140,6 +140,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const selectStyle = {
     padding: '8px',
     fontSize: '13px',
@@ -163,7 +169,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     color: viewType === type ? '#9a3412' : '#475569',
 
     // Typography
-    fontSize: '14px',              // slightly reduced for better proportion
+    fontSize: '14px',
     fontWeight: '600',
 
     // Interaction
@@ -183,10 +189,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
   useEffect(() => {
     const loadFilterOptions = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        return;
-      }
       try {
         const options = await fetchResearchFilterOptions(token);
         setFilterOptions({
@@ -214,7 +216,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!token || mouOnly) return;
+      if (mouOnly) return;
       try {
         setLoading(true);
         setError(null);
@@ -280,7 +282,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   // MoU data loading
   useEffect(() => {
     const loadMouData = async () => {
-      if (!token) return;
       try {
         const [trendResp, listResp] = await Promise.all([
           fetchMouTrend({ mou_year: mouFilters.mou_year }, token),
@@ -354,78 +355,76 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     });
   };
 
-  // Using shared CustomTooltip from chartUtils
-
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/research')}
-            >
-              ← Back to Research
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/research')}
+          >
+            ← Back to Research
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>
-                  {mouOnly
-                    ? 'IC&SR MoUs'
-                    : 'Industrial Consultancy & Sponsored Research'}
-                </h1>
-              </div>
-
-              {user && user.role_id === 3 && (
-                <div className="section-header-actions">
-                  {!mouOnly && (
-                    <>
-                      <button
-                        className="page-upload-btn"
-                        onClick={() => {
-                          setActiveUploadTable('icsr_consultancy_projects');
-                          setIsUploadModalOpen(true);
-                        }}
-                      >
-                        <span>📤</span> Consultancy
-                      </button>
-
-                      <button
-                        className="page-upload-btn"
-                        onClick={() => {
-                          setActiveUploadTable('icsr_sponsered_projects');
-                          setIsUploadModalOpen(true);
-                        }}
-                      >
-                        <span>📤</span> Sponsored
-                      </button>
-
-                      <button
-                        className="page-upload-btn"
-                        onClick={() => {
-                          setActiveUploadTable('research_patents');
-                          setIsUploadModalOpen(true);
-                        }}
-                      >
-                        <span>📤</span> Patents
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => {
-                      setActiveUploadTable('research_mous');
-                      setIsUploadModalOpen(true);
-                    }}
-                  >
-                    <span>📤</span> MoUs
-                  </button>
-                </div>
-              )}
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>
+                {mouOnly
+                  ? 'Industry Collaboration'
+                  : 'Industrial Consultancy & Sponsored Research'}
+              </h1>
             </div>
-          </>
+
+            {!isReadOnlyView && isAdmin && (
+              <div className="section-header-actions">
+                {!mouOnly && (
+                  <>
+                    <button
+                      className="page-upload-btn"
+                      onClick={() => {
+                        setActiveUploadTable('icsr_consultancy_projects');
+                        setIsUploadModalOpen(true);
+                      }}
+                    >
+                      <span>📤</span> Consultancy
+                    </button>
+
+                    <button
+                      className="page-upload-btn"
+                      onClick={() => {
+                        setActiveUploadTable('icsr_sponsered_projects');
+                        setIsUploadModalOpen(true);
+                      }}
+                    >
+                      <span>📤</span> Sponsored
+                    </button>
+
+                    <button
+                      className="page-upload-btn"
+                      onClick={() => {
+                        setActiveUploadTable('research_patents');
+                        setIsUploadModalOpen(true);
+                      }}
+                    >
+                      <span>📤</span> Patents
+                    </button>
+                  </>
+                )}
+
+                <button
+                  className="page-upload-btn"
+                  onClick={() => {
+                    setActiveUploadTable('research_mous');
+                    setIsUploadModalOpen(true);
+                  }}
+                >
+                  <span>📤</span> MoUs
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && <div className="error-message" style={{
@@ -455,12 +454,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             title="ICSR Impact Summary"
           />
         </div>
+
         {/* Modern Summary Cards */}
         <div id="icsr-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
-          marginBottom: '40px'
+          marginBottom: '10px'
         }}>
           {!mouOnly && (
             <>
@@ -587,7 +587,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
           )}
 
           {/* MoU Summary Card */}
-          {(!isPublicView || mouOnly) && (
+          {(!isReadOnlyView || mouOnly) && (
             <div style={{
               background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
               borderRadius: '20px',
@@ -612,274 +612,205 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             </div>
           )}
         </div>
-        {/* ✅ GLOBAL FILTER BLOCK */}
-        <div style={{
-          marginBottom: '20px',
-          padding: '15px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
-        }}>
+
+        {/* ✅ GLOBAL FILTER BLOCK — hidden when MoU view (MoU has its own unified container) */}
+        {viewType !== 'mou' && (
           <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '15px'
+            marginBottom: '20px',
+            padding: '15px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '8px',
+            border: '1px solid #e9ecef'
           }}>
             <div style={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               marginBottom: '15px'
             }}>
               <div style={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                flexDirection: 'column',
+                gap: '12px',
+                marginBottom: '15px'
               }}>
-                <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-              </div>
-
-              {/* ✅ BUTTONS JUST AFTER HEADING */}
-              {!mouOnly && (
                 <div style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '10px'
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
                 }}>
-                  <button style={tabStyle('projects')} onClick={() => setViewType('projects')}>📊 Projects Trend</button>
-                  <button style={tabStyle('patents')} onClick={() => setViewType('patents')}>📝 Patents Trend</button>
-                  <button style={tabStyle('projectsTable')} onClick={() => setViewType('projectsTable')}>📋 Projects Directory</button>
-                  <button style={tabStyle('mou')} onClick={() => setViewType('mou')}>🤝 MoUs</button>
+                  <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
                 </div>
-              )}
+
+                {/* ✅ BUTTONS JUST AFTER HEADING */}
+                {!mouOnly && (
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '10px'
+                  }}>
+                    <button style={tabStyle('projects')} onClick={() => setViewType('projects')}>📊 Projects Trend</button>
+                    <button style={tabStyle('patents')} onClick={() => setViewType('patents')}>📝 Patents Trend</button>
+                    <button style={tabStyle('projectsTable')} onClick={() => setViewType('projectsTable')}>📋 Projects Directory</button>
+                    <button style={tabStyle('mou')} onClick={() => setViewType('mou')}>🤝 MoUs</button>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  handleClearFilters();
+                  handleClearMouFilters();
+                }}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: '#dc3545',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
+              >
+                Clear Filters
+              </button>
             </div>
-            <button
-              onClick={() => {
-                handleClearFilters();
-                handleClearMouFilters();
-              }}
+
+            <div
+              className="filter-grid"
               style={{
-                padding: '6px 12px',
-                backgroundColor: '#dc3545',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px'
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: '12px'
               }}
             >
-              Clear Filters
-            </button>
+              {/* ✅ PROJECT FILTERS */}
+              {(viewType === 'projects' || viewType === 'projectsTable') && (
+                <>
+                  <div className="filter-group">
+                    <label>Department</label>
+                    <select
+                      value={filters.department}
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Departments</option>
+                      {filterOptions.project_departments.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Project Year</label>
+                    <select
+                      value={filters.project_year}
+                      onChange={(e) => handleFilterChange('project_year', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.project_years.map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Project Type</label>
+                    <select
+                      value={filters.project_type}
+                      onChange={(e) => handleFilterChange('project_type', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Types</option>
+                      {filterOptions.project_types.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Status</label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => handleFilterChange('status', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Statuses</option>
+                      {filterOptions.project_statuses.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {/* ✅ PATENT FILTERS */}
+              {viewType === 'patents' && (
+                <>
+                  <div className="filter-group">
+                    <label>Patent Year</label>
+                    <select
+                      value={filters.patent_year}
+                      onChange={(e) => handleFilterChange('patent_year', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Years</option>
+                      {filterOptions.patent_years.map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Patent Status</label>
+                    <select
+                      value={filters.patent_status}
+                      onChange={(e) => handleFilterChange('patent_status', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Statuses</option>
+                      {filterOptions.patent_statuses.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Active Filters Summary */}
+            <div style={{
+              marginTop: '12px',
+              padding: '8px',
+              backgroundColor: '#e9ecef',
+              borderRadius: '4px',
+              fontSize: '14px'
+            }}>
+              <strong>Active Filters:</strong>{' '}
+              {(viewType === 'projects' || viewType === 'projectsTable') && (
+                <>
+                  {filters.department !== 'All' && <span>🏢 {filters.department}</span>}
+                  {filters.project_year !== 'All' && <span> 📅 {filters.project_year}</span>}
+                  {filters.project_type !== 'All' && <span> 📋 {filters.project_type}</span>}
+                  {filters.status !== 'All' && <span> ⚡ {filters.status}</span>}
+                </>
+              )}
+
+              {viewType === 'patents' && (
+                <>
+                  {filters.patent_year !== 'All' && <span>📅 {filters.patent_year}</span>}
+                  {filters.patent_status !== 'All' && <span> 📌 {filters.patent_status}</span>}
+                </>
+              )}
+            </div>
           </div>
-
-          <div
-            className="filter-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '12px'
-            }}
-          >
-            {/* ✅ PROJECT FILTERS */}
-            {(viewType === 'projects' || viewType === 'projectsTable') && (
-              <>
-                <div className="filter-group">
-                  <label>Department</label>
-                  <select
-                    value={filters.department}
-                    onChange={(e) => handleFilterChange('department', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Departments</option>
-                    {filterOptions.project_departments.map((d) => (
-                      <option key={d} value={d}>{d}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="filter-group">
-                  <label>Project Year</label>
-                  <select
-                    value={filters.project_year}
-                    onChange={(e) => handleFilterChange('project_year', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Years</option>
-                    {filterOptions.project_years.map((y) => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="filter-group">
-                  <label>Project Type</label>
-                  <select
-                    value={filters.project_type}
-                    onChange={(e) => handleFilterChange('project_type', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Types</option>
-                    {filterOptions.project_types.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="filter-group">
-                  <label>Status</label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => handleFilterChange('status', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Statuses</option>
-                    {filterOptions.project_statuses.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-
-            {/* ✅ PATENT FILTERS */}
-            {viewType === 'patents' && (
-              <>
-                <div className="filter-group">
-                  <label>Patent Year</label>
-                  <select
-                    value={filters.patent_year}
-                    onChange={(e) => handleFilterChange('patent_year', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Years</option>
-                    {filterOptions.patent_years.map((y) => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="filter-group">
-                  <label>Patent Status</label>
-                  <select
-                    value={filters.patent_status}
-                    onChange={(e) => handleFilterChange('patent_status', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Statuses</option>
-                    {filterOptions.patent_statuses.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-
-            {/* ✅ MOU FILTERS */}
-            {viewType === 'mou' && (
-              <>
-                {/* Top Controls */}
-                <div style={{
-                  gridColumn: '1 / -1',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                  alignItems: 'center',
-                  maxWidth: '100%',
-                  overflow: 'hidden'
-                }}>
-                  <button
-                    onClick={() => setMouViewType('trend')}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '5px',
-                      border: mouViewType === 'trend' ? '2px solid #a855f7' : '1px solid #e2e8f0',
-                      backgroundColor: mouViewType === 'trend' ? '#faf5ff' : '#f8fafc',
-                      color: mouViewType === 'trend' ? '#6b21a8' : '#475569',
-                      fontWeight: 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    📈 MoUs Trend
-                  </button>
-
-                  <button
-                    onClick={() => setMouViewType('directory')}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '5px',
-                      border: mouViewType === 'directory' ? '2px solid #ec4899' : '1px solid #e2e8f0',
-                      backgroundColor: mouViewType === 'directory' ? '#fdf2f8' : '#f8fafc',
-                      color: mouViewType === 'directory' ? '#9d174d' : '#475569',
-                      fontWeight: 500,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    📋 MoUs Directory
-                  </button>
-                </div>
-
-                {/* MoU Year Filter */}
-                <div className="filter-group">
-                  <label>MoU Year</label>
-                  <select
-                    value={mouFilters.mou_year}
-                    onChange={(e) => handleMouFilterChange('mou_year', e.target.value)}
-                    style={selectStyle}
-                  >
-                    <option value="All">All Years</option>
-                    {(filterOptions.mou_years || []).map((year) => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
-              </>
-            )}
-
-          </div>
-
-          {/* Active Filters Summary */}
-          <div style={{
-            marginTop: '12px',
-            padding: '8px',
-            backgroundColor: '#e9ecef',
-            borderRadius: '4px',
-            fontSize: '14px'
-          }}>
-            <strong>Active Filters:</strong>{' '}
-            {viewType === 'mou' && (
-              <>
-                {mouFilters.mou_year !== 'All' && <span> 📅 {mouFilters.mou_year}</span>}
-              </>
-            )}
-
-            {(viewType === 'projects' || viewType === 'projectsTable') && (
-              <>
-                {filters.department !== 'All' && <span>🏢 {filters.department}</span>}
-                {filters.project_year !== 'All' && <span> 📅 {filters.project_year}</span>}
-                {filters.project_type !== 'All' && <span> 📋 {filters.project_type}</span>}
-                {filters.status !== 'All' && <span> ⚡ {filters.status}</span>}
-              </>
-            )}
-
-            {viewType === 'patents' && (
-              <>
-                {filters.patent_year !== 'All' && <span>📅 {filters.patent_year}</span>}
-                {filters.patent_status !== 'All' && <span> 📌 {filters.patent_status}</span>}
-              </>
-            )}
-          </div>
-        </div>
+        )}
 
         <>
           {/* Projects Trend Section */}
           {viewType === 'projects' && (
             <section className="chart-section" style={{
-              marginBottom: '30px',
+              marginBottom: '0px',
               padding: '20px',
               backgroundColor: '#fff',
               borderRadius: '10px',
@@ -903,8 +834,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   title="Projects Trend"
                 />
               </div>
-
-              {/* Filters inside projects view */}
 
               {/* Bar / Trend toggle */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
@@ -967,7 +896,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
           {/* Patents Trend Section */}
           {viewType === 'patents' && (
             <section className="chart-section" style={{
-              marginBottom: '30px',
+              marginBottom: '0px',
               padding: '20px',
               backgroundColor: '#fff',
               borderRadius: '10px',
@@ -976,7 +905,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div className="chart-header">
                   <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📝</span> Patents Trend
+                    <span style={{ fontSize: '24px' }}>📝</span> Knwoledge Transfer
                   </h2>
                   <p className="chart-description" style={{ color: '#666', margin: '0' }}>
                     Year-wise patent filings, grants, and publications.
@@ -991,9 +920,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   title="Patents Trend"
                 />
               </div>
-
-              {/* Filters inside patents view */}
-
 
               {/* Bar / Trend toggle */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
@@ -1054,7 +980,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
           {/* Projects Directory Table */}
           {viewType === 'projectsTable' && (
             <section className="chart-section" style={{
-              marginBottom: '30px',
+              marginBottom: '0px',
               padding: '20px',
               backgroundColor: '#fff',
               borderRadius: '10px',
@@ -1079,9 +1005,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   exportType="table"
                 />
               </div>
-
-              {/* Filters inside projects table view */}
-
 
               <div id="research-projects-directory-table" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
@@ -1119,89 +1042,227 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             </section>
           )}
 
-          {/* MoU Section */}
+          {/* =====================================================================
+              MoU Section — Unified single container: filter + chart/table together
+          ====================================================================== */}
           {viewType === 'mou' && (
             <section className="chart-section" style={{
-              marginBottom: '30px', padding: '20px',
-              backgroundColor: '#fff', borderRadius: '10px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              marginBottom: '0px',
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              overflow: 'hidden'
             }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                marginBottom: '1rem'
-              }}>
-                <ExportMenu
-                  elementId={mouViewType === 'trend' ? "research-mou-trend-container" : "research-mou-directory-table"}
-                  data={mouViewType === 'trend' ? mouTrendChartData : mouList}
-                  headers={mouViewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Focus', 'Signed', 'Valid Till']}
-                  keys={mouViewType === 'trend' ? ['year', 'total'] : ['partner_name', 'collaboration_nature', 'date_signed', 'validity_end']}
-                  filename={`research_mous_${mouViewType}`}
-                  title={mouViewType === 'trend' ? "MoUs Trend" : "MoUs Directory"}
-                />
-              </div>
-              {/* MoU Trend Chart */}
-              {mouViewType === 'trend' && (
-                <>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                    {['bar', 'trend'].map((mode) => (
-                      <button key={mode} onClick={() => setMouChartMode(mode)} style={{
-                        padding: '6px 16px', fontSize: '13px', fontWeight: 600,
-                        borderRadius: '6px', cursor: 'pointer', border: 'none',
-                        backgroundColor: mouChartMode === mode ? MOU_COLOR : '#f1f5f9',
-                        color: mouChartMode === mode ? '#fff' : '#555'
-                      }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
-                    ))}
-                  </div>
-                  <div id="research-mou-trend-container" className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
-                    <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
-                      <p>No information available for the selected filter</p>
-                    </div>
-                    <ResponsiveContainer width="100%" height={350} minWidth={0}>
-                      {mouChartMode === 'bar' ? (
-                        <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis
-                            stroke="#666"
-                            tick={{ fontSize: 11 }}
-                            domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                          />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                          <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
-                          </Bar>
-                        </BarChart>
-                      ) : (
-                        <LineChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis
-                            stroke="#666"
-                            tick={{ fontSize: 11 }}
-                            domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                          />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                          <Line type="linear" dataKey="total" name="MoUs Signed"
-                            stroke={MOU_COLOR} strokeWidth={3}
-                            dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>
-                            <LabelList dataKey="total" offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
-                          </Line>
-                        </LineChart>
-                      )}
-                    </ResponsiveContainer>
-                  </div>
-                </>
-              )}
 
-              {/* MoU Directory Table */}
-              {mouViewType === 'directory' && (
-                <>
-                  <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} MoUs found</p>
-                  <div id="research-mou-directory-table" className="table-responsive" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+              {/* ── Top filter bar ─────────────────────────────────────────────── */}
+              <div style={{
+                padding: '16px 20px',
+                backgroundColor: '#f8f9fa',
+                borderBottom: '1px solid #e9ecef'
+              }}>
+                {/* Row 1: Filters heading + nav tabs + Clear Filters */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  flexWrap: 'wrap',
+                  gap: '12px'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
+
+                    {/* View-type nav tabs (only shown when not mouOnly) */}
+                    {!mouOnly && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        <button style={tabStyle('projects')} onClick={() => setViewType('projects')}>📊 Projects Trend</button>
+                        <button style={tabStyle('patents')} onClick={() => setViewType('patents')}>📝 Patents Trend</button>
+                        <button style={tabStyle('projectsTable')} onClick={() => setViewType('projectsTable')}>📋 Projects Directory</button>
+                        <button style={tabStyle('mou')} onClick={() => setViewType('mou')}>🤝 MoUs</button>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      handleClearFilters();
+                      handleClearMouFilters();
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      backgroundColor: '#dc3545',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      alignSelf: 'flex-start'
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+
+                {/* Row 2: MoU Trend / Directory toggle + Year dropdown */}
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  alignItems: 'flex-end'
+                }}>
+                  {/* Sub-view toggle */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => setMouViewType('trend')}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '5px',
+                        border: mouViewType === 'trend' ? '2px solid #a855f7' : '1px solid #e2e8f0',
+                        backgroundColor: mouViewType === 'trend' ? '#faf5ff' : '#f8fafc',
+                        color: mouViewType === 'trend' ? '#6b21a8' : '#475569',
+                        fontWeight: 500,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      📈 MoUs Trend
+                    </button>
+
+                    <button
+                      onClick={() => setMouViewType('directory')}
+                      style={{
+                        padding: '5px 12px',
+                        borderRadius: '5px',
+                        border: mouViewType === 'directory' ? '2px solid #ec4899' : '1px solid #e2e8f0',
+                        backgroundColor: mouViewType === 'directory' ? '#fdf2f8' : '#f8fafc',
+                        color: mouViewType === 'directory' ? '#9d174d' : '#475569',
+                        fontWeight: 500,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      📋 MoUs Directory
+                    </button>
+                  </div>
+
+                  {/* Year filter */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '160px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500, color: '#555' }}>MoU Year</label>
+                    <select
+                      value={mouFilters.mou_year}
+                      onChange={(e) => handleMouFilterChange('mou_year', e.target.value)}
+                      style={selectStyle}
+                    >
+                      <option value="All">All Years</option>
+                      {(filterOptions.mou_years || []).map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Chart / Table body ──────────────────────────────────────────── */}
+              <div style={{ padding: '20px' }}>
+
+                {/* Header row: title + Export */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '16px'
+                }}>
+                  <div>
+                    <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}>
+                      <span>🤝</span>
+                      {mouViewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
+                    </h2>
+                    {mouViewType === 'directory' && (
+                      <p style={{ fontSize: '13px', color: '#666', margin: '4px 0 0 0' }}>
+                        {mouList.length} MoUs found
+                      </p>
+                    )}
+                  </div>
+                  <ExportMenu
+                    elementId={mouViewType === 'trend' ? "research-mou-trend-container" : "research-mou-directory-table"}
+                    data={mouViewType === 'trend' ? mouTrendChartData : mouList}
+                    headers={mouViewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Focus', 'Signed', 'Valid Till']}
+                    keys={mouViewType === 'trend' ? ['year', 'total'] : ['partner_name', 'collaboration_nature', 'date_signed', 'validity_end']}
+                    filename={`research_mous_${mouViewType}`}
+                    title={mouViewType === 'trend' ? "MoUs Trend" : "MoUs Directory"}
+                  />
+                </div>
+
+                {/* ── Trend view ── */}
+                {mouViewType === 'trend' && (
+                  <>
+                    {/* Bar / Trend mode toggle */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                      {['bar', 'trend'].map((mode) => (
+                        <button key={mode} onClick={() => setMouChartMode(mode)} style={{
+                          padding: '6px 16px', fontSize: '13px', fontWeight: 600,
+                          borderRadius: '6px', cursor: 'pointer', border: 'none',
+                          backgroundColor: mouChartMode === mode ? MOU_COLOR : '#f1f5f9',
+                          color: mouChartMode === mode ? '#fff' : '#555'
+                        }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                      ))}
+                    </div>
+
+                    <div
+                      id="research-mou-trend-container"
+                      className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`}
+                      style={{ position: 'relative', height: '450px' }}
+                    >
+                      <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
+                        <p>No information available for the selected filter</p>
+                      </div>
+                      <ResponsiveContainer width="100%" height={450}>
+                        {mouChartMode === 'bar' ? (
+                          <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis
+                              stroke="#666"
+                              tick={{ fontSize: 11 }}
+                              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                            <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
+                              <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+                            </Bar>
+                          </BarChart>
+                        ) : (
+                          <LineChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis
+                              stroke="#666"
+                              tick={{ fontSize: 11 }}
+                              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                            <Line type="linear" dataKey="total" name="MoUs Signed"
+                              stroke={MOU_COLOR} strokeWidth={3}
+                              dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>
+                              <LabelList dataKey="total" offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+                            </Line>
+                          </LineChart>
+                        )}
+                      </ResponsiveContainer>
+                    </div>
+                  </>
+                )}
+
+                {/* ── Directory view ── */}
+                {mouViewType === 'directory' && (
+                  <div
+                    id="research-mou-directory-table"
+                    className="table-responsive"
+                    style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}
+                  >
                     <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                       <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
                         <tr>
@@ -1230,8 +1291,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       </tbody>
                     </table>
                   </div>
-                </>
-              )}
+                )}
+
+              </div>
             </section>
           )}
 
@@ -1245,7 +1307,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div >
+    </div>
   );
 }
 

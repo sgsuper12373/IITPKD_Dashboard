@@ -73,6 +73,26 @@ def token_required(f):
     return decorated
 
 
+def token_optional(f):
+    """Route decorator that validates a token if present, allows the request if absent.
+    Use on public/read-only endpoints that should also work for unauthenticated users."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization', '')
+        parts = auth_header.split()
+        if (len(parts) == 2 and parts[0].lower() == 'bearer'
+                and parts[1].lower() not in ('null', 'undefined', '')):
+            user_id = decode_auth_token(parts[1])
+            if isinstance(user_id, str):
+                return jsonify({'message': user_id}), 401
+            kwargs['current_user_id'] = user_id
+        else:
+            kwargs['current_user_id'] = None
+        return f(*args, **kwargs)
+
+    return decorated
+
+
 # ---------------------------------------------------------------------------
 # Auth routes
 # ---------------------------------------------------------------------------

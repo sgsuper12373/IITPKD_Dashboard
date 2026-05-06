@@ -60,8 +60,8 @@ function PeopleCampus({ user }) {
     }
   ];
 
-  // 🔹 ADDITION: If public user → always show public view
-  if (roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 1
+  if (!user || roleId === 1) {
     return <PeopleCampusPublicView user={user} />;
   }
 

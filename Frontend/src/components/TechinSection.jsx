@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -10,7 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend, LabelList
+  Legend,
+  LabelList
 } from 'recharts';
 import {
   fetchTechinSummary,
@@ -26,47 +27,106 @@ import './PeopleCampus.css';
 import '../DesignSystem.css';
 import ExportMenu from './ExportMenu';
 
+/* ─── helpers ─────────────────────────────────────────────────────────────── */
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
 const formatCompactCurrency = (value) => {
   if (value === undefined || value === null) return '₹0';
-  if (value >= 10000000) {
-    return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
-  } else if (value >= 100000) {
-    return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
-  }
+  if (value >= 10000000) return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  if (value >= 100000) return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
   return '₹' + formatNumber(value);
 };
 
+/* ─── The ONE constant that controls height everywhere ─────────────────────── */
+const CONTENT_HEIGHT = 480;
+
+/* ─── CSS injected once ────────────────────────────────────────────────────── */
+const TRANSITION_STYLE = `
+  @keyframes techin-fade-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.995); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);     }
+  }
+  .techin-anim {
+    animation: techin-fade-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .techin-tab-btn {
+    padding: 9px 22px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.15s;
+  }
+  .techin-tab-btn:hover  { transform: translateY(-1px); }
+  .techin-tab-btn:active { transform: translateY(0); }
+  .techin-mode-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+  }
+  .techin-mode-btn:hover  { transform: translateY(-1px); }
+  .techin-mode-btn:active { transform: translateY(0); }
+  .techin-summary-card {
+    border-radius: 20px;
+    padding: 24px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1),
+                box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
+    user-select: none;
+  }
+  .techin-summary-card:hover  { transform: translateY(-4px) scale(1.02); }
+  .techin-summary-card:active { transform: scale(0.97); }
+`;
+
+function injectStyle() {
+  if (document.getElementById('techin-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'techin-styles';
+  s.textContent = TRANSITION_STYLE;
+  document.head.appendChild(s);
+}
+
+/* ─── view configs ─────────────────────────────────────────────────────────── */
+const VIEWS = [
+  { id: 'programs', label: 'Programs Trend', color: '#667eea', icon: '📊' },
+  { id: 'skillDev', label: 'Skill Dev Trend', color: '#f093fb', icon: '🎯' },
+  { id: 'startups', label: 'Startups Growth', color: '#43e97b', icon: '🚀' },
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
 function TechinSection({ user, isPublicView = false }) {
+  injectStyle();
+
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
+  /* modal */
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
+  /* view / mode */
   const [viewType, setViewType] = useState('programs');
   const [chartMode, setChartMode] = useState('bar');
-  const [repoMode, setRepoMode] = useState(false);
 
-  const openRepo = (view) => { setViewType(view); setRepoMode(true); };
-
-  // Independent filter states per view
-  const [programFilters, setProgramFilters] = useState({ type: 'All', association: 'All' });
-  const [skillDevFilters, setSkillDevFilters] = useState({ category: 'All', association: 'All' });
-  const [startupFilters, setStartupFilters] = useState({ domain: 'All', status: 'All' });
-
+  /* ── data ── */
   const [summary, setSummary] = useState({
-    total_programs: 0,
-    total_skill_dev_programs: 0,
-    total_startups: 0,
-    total_startup_revenue: 0,
-    highest_revenue: 0,
-    lowest_revenue: 0,
-    average_revenue: 0
+    total_programs: 0, total_skill_dev_programs: 0, total_startups: 0,
+    total_startup_revenue: 0, highest_revenue: 0, lowest_revenue: 0, average_revenue: 0
   });
-
-  // Per-view data (always mounted)
   const [programsTrend, setProgramsTrend] = useState([]);
   const [programsTable, setProgramsTable] = useState([]);
   const [skillDevTrend, setSkillDevTrend] = useState([]);
@@ -80,16 +140,22 @@ function TechinSection({ user, isPublicView = false }) {
     startups: { domains: [], statuses: [] }
   });
 
-  // Per-view loading states
+  const [programFilters, setProgramFilters] = useState({ type: 'All', association: 'All' });
+  const [skillDevFilters, setSkillDevFilters] = useState({ category: 'All', association: 'All' });
+  const [startupFilters, setStartupFilters] = useState({ domain: 'All', status: 'All' });
+
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [loadingSkillDev, setLoadingSkillDev] = useState(false);
   const [loadingStartups, setLoadingStartups] = useState(false);
 
   const [error, setError] = useState(null);
 
-  // Initial load
+  /* animation key */
+  const [animKey, setAnimKey] = useState(0);
+  const bump = useCallback(() => setAnimKey(k => k + 1), []);
+
+  /* ── initial load ── */
   useEffect(() => {
-    if (!token) return;
     const load = async () => {
       try {
         const [sumData, filterOps] = await Promise.all([
@@ -103,9 +169,7 @@ function TechinSection({ user, isPublicView = false }) {
     load();
   }, [token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Programs data
   useEffect(() => {
-    if (!token) return;
     let m = true;
     setLoadingPrograms(true);
     fetchTechinPrograms(programFilters, token)
@@ -115,9 +179,7 @@ function TechinSection({ user, isPublicView = false }) {
     return () => { m = false; };
   }, [token, programFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Skill Dev data
   useEffect(() => {
-    if (!token) return;
     let m = true;
     setLoadingSkillDev(true);
     fetchTechinSkillDev(skillDevFilters, token)
@@ -127,9 +189,7 @@ function TechinSection({ user, isPublicView = false }) {
     return () => { m = false; };
   }, [token, skillDevFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Startups data
   useEffect(() => {
-    if (!token) return;
     let m = true;
     setLoadingStartups(true);
     fetchTechinStartups(startupFilters, token)
@@ -141,19 +201,32 @@ function TechinSection({ user, isPublicView = false }) {
 
   const handleFilterChange = (setter) => (field, value) => setter(prev => ({ ...prev, [field]: value }));
 
-  const getViewColor = () => {
-    if (viewType === 'programs') return '#667eea';
-    if (viewType === 'skillDev') return '#f093fb';
-    return '#43e97b';
+  const switchView = (id) => { setViewType(id); bump(); };
+  const switchMode = (mode) => { setChartMode(mode); bump(); };
+
+  const handleSummaryCard = (view) => {
+    setViewType(view);
+    setChartMode('table');
+    bump();
+    setTimeout(() => {
+      document.getElementById('techin-content-region')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
   };
 
+  const clearFilters = () => {
+    if (viewType === 'programs') setProgramFilters({ type: 'All', association: 'All' });
+    if (viewType === 'skillDev') setSkillDevFilters({ category: 'All', association: 'All' });
+    if (viewType === 'startups') setStartupFilters({ domain: 'All', status: 'All' });
+  };
+
+  /* ── custom tooltip ── */
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
           <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>Year: {label}</p>
           {payload.map((entry, i) => (
-            <p key={i} style={{ margin: '0', color: entry.color }}>Count: {formatNumber(entry.value)}</p>
+            <p key={i} style={{ margin: '0', color: entry.color }}>{entry.name}: {formatNumber(entry.value)}</p>
           ))}
         </div>
       );
@@ -161,174 +234,262 @@ function TechinSection({ user, isPublicView = false }) {
     return null;
   };
 
-
-
-
-  const barLineChart = (data, color, name) => (
-    <div style={{ marginBottom: '40px', position: 'relative', minHeight: '400px' }}>
+  /* ── chart renderer — fixed pixel height so Recharts renders correctly ── */
+  const renderChart = (data, color, name) => (
+    <div style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}>
       {data.length === 0 && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-          <span style={{ fontSize: '40px', marginBottom: '10px' }}>📈</span>
+          <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-        <button onClick={() => setChartMode('bar')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'bar' ? color : '#e9ecef', color: chartMode === 'bar' ? '#fff' : '#333', fontWeight: chartMode === 'bar' ? '600' : '400' }}>Bar</button>
-        <button onClick={() => setChartMode('trend')} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer', backgroundColor: chartMode === 'trend' ? color : '#e9ecef', color: chartMode === 'trend' ? '#fff' : '#333', fontWeight: chartMode === 'trend' ? '600' : '400' }}>Trend</button>
-      </div>
-      <ResponsiveContainer width="100%" height={400} minWidth={0}>
+      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
         {chartMode === 'bar' ? (
           <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
-            <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="year" stroke="#666" />
+            <YAxis stroke="#666" />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
             <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
               <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
             </Bar>
           </BarChart>
         ) : (
           <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} /><XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} /><YAxis stroke="#666" tick={{ fontSize: 12 }} />
-            <Tooltip content={<CustomTooltip />} /><Legend wrapperStyle={{ fontSize: '12px' }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+            <YAxis stroke="#666" />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
             <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+              <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
             </Line>
           </LineChart>
         )}
       </ResponsiveContainer>
-
-      {/* Chart Stats */}
-      <div style={{ marginTop: '24px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '12px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-        <div style={{ textAlign: 'center' }}><div style={{ color, fontWeight: 'bold', fontSize: '32px' }}>{data.reduce((s, d) => s + d.count, 0)}</div><div style={{ color: '#666', fontSize: '13px', marginTop: '4px' }}>Total</div></div>
-        <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '32px' }}>{data.length}</div><div style={{ color: '#666', fontSize: '13px', marginTop: '4px' }}>Years Covered</div></div>
-        <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '32px' }}>{data.length > 0 ? Math.max(...data.map(d => d.count)) : 0}</div><div style={{ color: '#666', fontSize: '13px', marginTop: '4px' }}>Peak Year</div></div>
-      </div>
     </div>
   );
 
-  const renderTable = (tableData, viewId) => {
-    const color = viewId === 'programs' ? '#667eea' : viewId === 'skillDev' ? '#f093fb' : '#43e97b';
-    const headers = viewId === 'startups'
-      ? ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue']
-      : ['Program Name', viewId === 'skillDev' ? 'Category' : 'Type', 'Association', 'Date', 'Attendees'];
+  /* ── current view config ── */
+  const currentView = VIEWS.find(v => v.id === viewType);
+  const color = currentView?.color || '#667eea';
 
-    return (
-      <div style={{ marginTop: '30px', position: 'relative', minHeight: '80px' }}>
-        {tableData.length === 0 && (
-          <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '12px', pointerEvents: 'none' }}>
-            <p style={{ color: '#888', fontWeight: 500, fontSize: '15px' }}>No records found for the selected filters.</p>
-          </div>
-        )}
-        <div style={{ marginBottom: '20px' }}>
-          <h3 style={{ margin: '0', color: '#333', fontSize: '20px', fontWeight: '600' }}>Detailed Data</h3>
-          <p style={{ color: '#666', margin: '5px 0 0 0', fontSize: '14px' }}>{tableData.length} records found</p>
+  /* ── filter dropdowns per view ── */
+  const renderFilters = () => {
+    if (viewType === 'programs') return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Type</label>
+          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Types</option>
+            {filterOptions.programs.types.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
         </div>
-        <div style={{ maxHeight: '550px', overflowY: 'auto', overflowX: 'auto', border: '1px solid #e0e0e0', borderRadius: '12px', backgroundColor: '#fff' }}>
-          <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', backgroundColor: '#fff' }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-              <tr style={{ backgroundColor: color, color: 'white' }}>
-                {headers.map(h => <th key={h} style={{ padding: '14px 12px', textAlign: 'left', fontSize: '14px' }}>{h}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, idx) => (
-                <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                  {viewId === 'programs' && (
-                    <>
-                      <td style={{ padding: '12px', fontSize: '14px', fontWeight: '500' }}>{row.program_name}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.type}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.association}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.no_of_attendess || '0'}</td>
-                    </>
-                  )}
-                  {viewId === 'skillDev' && (
-                    <>
-                      <td style={{ padding: '12px', fontSize: '14px', fontWeight: '500' }}>{row.program_name}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.category}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.association}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.no_of_attendess || '0'}</td>
-                    </>
-                  )}
-                  {viewId === 'startups' && (
-                    <>
-                      <td style={{ padding: '12px', fontSize: '14px', fontWeight: '500' }}>{row.startup_name}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.domain}</td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>
-                        <span style={{ backgroundColor: row.status === 'Active' ? '#dcfce7' : '#fef3c7', color: row.status === 'Active' ? '#166534' : '#92400e', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '500', display: 'inline-block' }}>{row.status}</span>
-                      </td>
-                      <td style={{ padding: '12px', fontSize: '14px' }}>{row.number_of_jobs || '0'}</td>
-                      <td style={{ padding: '12px', fontSize: '14px', color: '#059669', fontWeight: '600' }}>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Association</label>
+          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Associations</option>
+            {filterOptions.programs.associations.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+        </div>
+      </div>
+    );
+    if (viewType === 'skillDev') return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Category</label>
+          <select value={skillDevFilters.category} onChange={e => handleFilterChange(setSkillDevFilters)('category', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Categories</option>
+            {filterOptions.skill_dev.categories.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Association</label>
+          <select value={skillDevFilters.association} onChange={e => handleFilterChange(setSkillDevFilters)('association', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Associations</option>
+            {filterOptions.skill_dev.associations.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+        </div>
+      </div>
+    );
+    if (viewType === 'startups') return (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Domain</label>
+          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Domains</option>
+            {filterOptions.startups.domains.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Status</label>
+          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+            <option value="All">All Statuses</option>
+            {filterOptions.startups.statuses.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
       </div>
     );
   };
 
+  /* ── shared table shell — fixed height, header pinned, body scrolls ── */
+  const TableShell = ({ headerBg, columns, children }) => (
+    <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ backgroundColor: headerBg, color: 'white', display: 'grid', gridTemplateColumns: columns, gap: '8px', padding: '12px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>
+        {children[0]}
+      </div>
+      <div style={{ overflowY: 'auto', flex: 1 }}>
+        {children[1]}
+      </div>
+    </div>
+  );
+
+  /* ── table renderers ── */
+  const renderTable = () => {
+    if (viewType === 'programs') {
+      if (!programsTable.length && !loadingPrograms) return <EmptyState />;
+      return (
+        <TableShell headerBg="#667eea" columns="2fr 1.2fr 1.2fr 1fr 1fr">
+          {[
+            <><div>Program Name</div><div>Type</div><div>Association</div><div>Date</div><div>Attendees</div></>,
+            <>
+              {programsTable.map((row, idx) => (
+                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
+                  <div style={{ fontWeight: '500' }}>{row.program_name}</div>
+                  <div>{row.type}</div>
+                  <div>{row.association}</div>
+                  <div>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
+                  <div>{row.no_of_attendess || '0'}</div>
+                </div>
+              ))}
+            </>
+          ]}
+        </TableShell>
+      );
+    }
+    if (viewType === 'skillDev') {
+      if (!skillDevTable.length && !loadingSkillDev) return <EmptyState />;
+      return (
+        <TableShell headerBg="#f093fb" columns="2fr 1.2fr 1.2fr 1fr 1fr">
+          {[
+            <><div>Program Name</div><div>Category</div><div>Association</div><div>Date</div><div>Attendees</div></>,
+            <>
+              {skillDevTable.map((row, idx) => (
+                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
+                  <div style={{ fontWeight: '500' }}>{row.program_name}</div>
+                  <div>{row.category}</div>
+                  <div>{row.association}</div>
+                  <div>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
+                  <div>{row.no_of_attendess || '0'}</div>
+                </div>
+              ))}
+            </>
+          ]}
+        </TableShell>
+      );
+    }
+    if (viewType === 'startups') {
+      if (!startupsTable.length && !loadingStartups) return <EmptyState />;
+      return (
+        <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
+          {[
+            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (₹)</div></>,
+            <>
+              {startupsTable.map((row, idx) => (
+                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
+                  <div style={{ fontWeight: '500' }}>{row.startup_name}</div>
+                  <div>{row.domain}</div>
+                  <div>
+                    <span style={{ backgroundColor: row.status === 'Active' ? '#dcfce7' : '#fef3c7', color: row.status === 'Active' ? '#166534' : '#92400e', padding: '4px 8px', borderRadius: '12px', fontSize: '11px', display: 'inline-block' }}>{row.status}</span>
+                  </div>
+                  <div>{row.number_of_jobs || '0'}</div>
+                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                </div>
+              ))}
+            </>
+          ]}
+        </TableShell>
+      );
+    }
+  };
+
+  /* trend data & label for current view */
+  const trendData = viewType === 'programs' ? programsTrend : viewType === 'skillDev' ? skillDevTrend : startupsTrend;
+  const trendLabel = viewType === 'programs' ? 'Programs Count' : viewType === 'skillDev' ? 'Skill Dev Count' : 'Startups Count';
+  const exportId = `techin-${viewType}-chart-container`;
+  const exportData = chartMode === 'table'
+    ? (viewType === 'programs' ? programsTable : viewType === 'skillDev' ? skillDevTable : startupsTable)
+    : trendData;
+
+  /* ─────────────────────────── RENDER ───────────────────────────────────── */
   return (
     <div className={isPublicView ? '' : 'page-container'}>
       <div className={isPublicView ? '' : 'page-content'}>
-        {!isPublicView && (
+
+        {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/innovation-entrepreneurship')}>
             ← Back to Innovation &amp; Entrepreneurship
           </button>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div>{!isPublicView && <h1 style={{ margin: 0 }}>TechIn</h1>}</div>
-          {user && user.role_id === 3 && (
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_program_table'); setIsUploadModalOpen(true); }} >📤 Upload Programs</button>
-              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_skill_development_program'); setIsUploadModalOpen(true); }} >📤 Upload Skill Dev</button>
-              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('techin_startup_table'); setIsUploadModalOpen(true); }} >📤 Upload Startups</button>
-            </div>
-          )}
-        </div>
+        <h1 style={{ marginBottom: '5px' }}>TechIn</h1>
 
-        {error && <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>}
+        {/* Upload Buttons */}
+        {!isReadOnlyView && isAdmin && (
+          <div style={{ display: 'flex', gap: '1rem', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {[
+              { label: 'Upload Programs', table: 'techin_program_table' },
+              { label: 'Upload Skill Dev', table: 'techin_skill_development_program' },
+              { label: 'Upload Startups', table: 'techin_startup_table' },
+            ].map(({ label, table }) => (
+              <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
+                📤 {label}
+              </button>
+            ))}
+          </div>
+        )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>Students On Roll
-            Techin Summary
-          </h2>
+        {error && (
+          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>
+        )}
+
+        {/* Summary header + export */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>TechIn Summary</h2>
           <ExportMenu
             elementId="techin-summary-cards-container"
             data={[summary]}
             headers={['Total Programs', 'Skill Dev Programs', 'Total Startups']}
             keys={['total_programs', 'total_skill_dev_programs', 'total_startups']}
             filename="techin_summary"
-            title="Techin Summary"
+            title="TechIn Summary"
           />
         </div>
-        {/* Summary Cards – Row 1 */}
-        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '30px' }}>
+
+        {/* ── Summary Cards ── */}
+        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
           {[
-            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 15px 30px rgba(102,126,234,0.25)', icon: '📚', label: 'Total Programs', value: summary.total_programs },
-            { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 15px 30px rgba(240,147,251,0.25)', icon: '🎯', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
-            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 15px 30px rgba(67,233,123,0.25)', icon: '🚀', label: 'Total Startups', value: summary.total_startups },
-          ].map(({ view, bg, shadow, icon, label, value }) => (
-            <div key={view} onClick={() => openRepo(view)} style={{ background: bg, borderRadius: '20px', padding: '28px', boxShadow: shadow, color: 'white', cursor: 'pointer', transition: 'transform 0.3s ease', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '120px', height: '120px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '10px', borderRadius: '12px' }}>{icon}</span>
-                  <span style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>{label}</span>
-                </div>
-                <div className="metric-value" style={{ marginBottom: '8px' }}>{formatNumber(value)}</div>
-                <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
-              </div>
+            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
+            { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
+            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
+          ].map(({ view, bg, shadow, label, value }) => (
+            <div
+              key={view}
+              className="techin-summary-card"
+              onClick={() => handleSummaryCard(view)}
+              style={{ background: bg, boxShadow: shadow }}
+            >
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
+              <div className="metric-value">{formatNumber(value)}</div>
+              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
             </div>
           ))}
         </div>
 
-        {/* Revenue Cards – Row 2 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ marginTop: '0', marginBottom: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
+        {/* ── Revenue Metrics ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
           <ExportMenu
             elementId="techin-revenue-metrics-container"
             data={[summary]}
@@ -338,198 +499,133 @@ function TechinSection({ user, isPublicView = false }) {
             title="Startup Revenue Metrics"
           />
         </div>
-        <div id="techin-revenue-metrics-container" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '20px',
-          marginBottom: '40px'
-        }}>
+        <div id="techin-revenue-metrics-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
           {[
             { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
             { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
             { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue },
             { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', shadow: '0 8px 20px rgba(239,68,68,0.2)', label: 'Lowest Revenue', value: summary.lowest_revenue },
           ].map(({ bg, shadow, label, value }) => (
-            <div key={label} style={{
-              background: bg,
-              borderRadius: '16px',
-              padding: '24px 16px',
-              boxShadow: shadow,
-              color: 'white',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              minHeight: '140px'
-            }}>
+            <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
-                <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>
-                  {formatCompactCurrency(value)}
-                </div>
+                <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* View Selector */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '30px', flexWrap: 'wrap' }}>
-          {[
-            { id: 'programs', label: 'Programs Trend', color: '#667eea', icon: '📊' },
-            { id: 'skillDev', label: 'Skill Dev Trend', color: '#f093fb', icon: '🎯' },
-            { id: 'startups', label: 'Startups Trend', color: '#43e97b', icon: '🚀' },
-          ].map(({ id, label, color, icon }) => (
-            <button key={id} onClick={() => setViewType(id)} style={{ padding: '12px 28px', backgroundColor: viewType === id ? color : 'white', color: viewType === id ? 'white' : '#333', border: viewType === id ? `2px solid ${color}` : '2px solid #dee2e6', borderRadius: '50px', cursor: 'pointer', fontSize: '15px', fontWeight: viewType === id ? '600' : '500', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: viewType === id ? `0 6px 16px ${color}40` : 'none' }}>
-              <span style={{ fontSize: '18px' }}>{icon}</span>{label}
-            </button>
-          ))}
+        {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}
+        <div
+          id="techin-content-region"
+          style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+        >
+          {/* Filter heading */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h4 style={{ margin: 0, color: '#333', fontSize: '15px', fontWeight: 700, letterSpacing: '0.02em', marginBottom: '10px' }}>Filters</h4>
+          </div>
+
+          {/* View-tab buttons */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {VIEWS.map(({ id, label, color: c, icon }) => {
+              const active = viewType === id;
+              return (
+                <button
+                  key={id}
+                  className="techin-tab-btn"
+                  onClick={() => switchView(id)}
+                  style={{
+                    backgroundColor: active ? c : 'white',
+                    color: active ? 'white' : '#333',
+                    borderColor: active ? c : '#dee2e6',
+                    boxShadow: active ? `0 6px 16px ${c}40` : 'none',
+                    fontWeight: active ? 600 : 500,
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>{icon}</span>{label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filter dropdowns + clear */}
+          <div style={{ padding: '0 6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={clearFilters}
+                style={{ padding: '5px 12px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear Filters
+              </button>
+            </div>
+            {renderFilters()}
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: '1px', background: '#e9ecef', margin: '16px 0' }} />
+
+          {/* Chart header: title + mode buttons + export */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <h2 style={{ margin: '0 0 4px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px' }}>
+                <span style={{ fontSize: '22px' }}>{currentView?.icon}</span>
+                {currentView?.label}
+              </h2>
+              <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>
+                {viewType === 'programs' && 'Yearly trend of programs by type and association'}
+                {viewType === 'skillDev' && 'Yearly trend of skill development programs'}
+                {viewType === 'startups' && 'Yearly growth of startups by domain and status'}
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {['bar', 'trend', 'table'].map(mode => {
+                const modeActive = chartMode === mode;
+                const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
+                return (
+                  <button
+                    key={mode}
+                    className="techin-mode-btn"
+                    onClick={() => switchMode(mode)}
+                    style={{
+                      backgroundColor: modeActive ? color : '#e9ecef',
+                      color: modeActive ? '#fff' : '#333',
+                      boxShadow: modeActive ? `0 4px 10px ${color}40` : 'none',
+                    }}
+                  >
+                    {modeLabel}
+                  </button>
+                );
+              })}
+              <ExportMenu
+                elementId={exportId}
+                data={exportData}
+                headers={chartMode === 'table'
+                  ? (viewType === 'startups'
+                    ? ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue']
+                    : ['Program Name', viewType === 'skillDev' ? 'Category' : 'Type', 'Association', 'Date', 'Attendees'])
+                  : ['Year', 'Count']}
+                keys={chartMode === 'table'
+                  ? (viewType === 'startups'
+                    ? ['startup_name', 'domain', 'status', 'number_of_jobs', 'revenue']
+                    : ['program_name', viewType === 'skillDev' ? 'category' : 'type', 'association', 'event_date', 'no_of_attendess'])
+                  : ['year', 'count']}
+                filename={`techin_${viewType}_${chartMode}`}
+                title={`${currentView?.label} — ${chartMode === 'table' ? 'Directory' : chartMode === 'bar' ? 'Bar Chart' : 'Trend'}`}
+              />
+            </div>
+          </div>
+
+          {/* Animated content region */}
+          <div key={animKey} className="techin-anim" id={exportId}>
+            {chartMode === 'table'
+              ? renderTable()
+              : renderChart(trendData, color, trendLabel)
+            }
+          </div>
         </div>
+        {/* end unified panel */}
 
-        {/* Repo back */}
-        {repoMode && (
-          <div style={{ marginBottom: '16px' }}>
-            <button onClick={() => setRepoMode(false)} style={{ padding: '8px 16px', backgroundColor: '#667eea', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>← Back to Dashboard</button>
-          </div>
-        )}
-
-        {/* ── PERSISTENT VIEW PANELS ── */}
-        <div style={{ marginBottom: '30px', padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-
-          {/* PROGRAMS */}
-          <div style={{ display: viewType === 'programs' ? 'block' : 'none', position: 'relative' }}>
-
-            {/* Filters */}
-            <div className="filter-panel" style={{ marginBottom: '24px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ margin: '0', color: '#333', fontSize: '16px', fontWeight: '600' }}>Filters for Programs View</h4>
-                <button onClick={() => setProgramFilters({ type: 'All', association: 'All' })} style={{ padding: '8px 16px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>Clear Filters</button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Type</label>
-                  <select value={programFilters.type} onChange={(e) => handleFilterChange(setProgramFilters)('type', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Types</option>
-                    {filterOptions.programs.types.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select></div>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Association</label>
-                  <select value={programFilters.association} onChange={(e) => handleFilterChange(setProgramFilters)('association', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Associations</option>
-                    {filterOptions.programs.associations.map(a => <option key={a} value={a}>{a}</option>)}
-                  </select></div>
-              </div>
-            </div>
-            {/* Chart header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div className="chart-header">
-                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>📊</span> Programs Trend</h2>
-                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of programs over time.</p>
-              </div>
-              <ExportMenu
-                elementId="techin-programs-chart-container"
-                data={programsTrend}
-                headers={['Year', 'Count']}
-                keys={['year', 'count']}
-                filename="techin_programs_trend"
-                title="Programs Trend"
-              />
-            </div>
-            {!repoMode && (
-              <div id="techin-programs-chart-container">
-                {barLineChart(programsTrend, '#667eea', 'Count')}
-              </div>
-            )}
-            {renderTable(programsTable, 'programs')}
-          </div>
-
-          {/* SKILL DEV */}
-          <div style={{ display: viewType === 'skillDev' ? 'block' : 'none', position: 'relative' }}>
-
-            <div className="filter-panel" style={{ marginBottom: '24px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ margin: '0', color: '#333', fontSize: '16px', fontWeight: '600' }}>Filters for Skill Development View</h4>
-                <button onClick={() => setSkillDevFilters({ category: 'All', association: 'All' })} style={{ padding: '8px 16px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>Clear Filters</button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Category</label>
-                  <select value={skillDevFilters.category} onChange={(e) => handleFilterChange(setSkillDevFilters)('category', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Categories</option>
-                    {filterOptions.skill_dev.categories.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select></div>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Association</label>
-                  <select value={skillDevFilters.association} onChange={(e) => handleFilterChange(setSkillDevFilters)('association', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Associations</option>
-                    {filterOptions.skill_dev.associations.map(a => <option key={a} value={a}>{a}</option>)}
-                  </select></div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div className="chart-header">
-                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🎯</span> Skill Development Trend</h2>
-                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of skill development programs over time.</p>
-              </div>
-              <ExportMenu
-                elementId="techin-skilldev-chart-container"
-                data={skillDevTrend}
-                headers={['Year', 'Count']}
-                keys={['year', 'count']}
-                filename="techin_skilldev_trend"
-                title="Skill Development Trend"
-              />
-            </div>
-            {!repoMode && (
-              <div id="techin-skilldev-chart-container">
-                {barLineChart(skillDevTrend, '#f093fb', 'Count')}
-              </div>
-            )}
-            {renderTable(skillDevTable, 'skillDev')}
-          </div>
-
-          {/* STARTUPS */}
-          <div style={{ display: viewType === 'startups' ? 'block' : 'none', position: 'relative' }}>
-
-            <div className="filter-panel" style={{ marginBottom: '24px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '12px', border: '1px solid #e9ecef' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ margin: '0', color: '#333', fontSize: '16px', fontWeight: '600' }}>Filters for Startups View</h4>
-                <button onClick={() => setStartupFilters({ domain: 'All', status: 'All' })} style={{ padding: '8px 16px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}>Clear Filters</button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Domain</label>
-                  <select value={startupFilters.domain} onChange={(e) => handleFilterChange(setStartupFilters)('domain', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Domains</option>
-                    {filterOptions.startups.domains.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select></div>
-                <div><label style={{ fontSize: '13px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>Status</label>
-                  <select value={startupFilters.status} onChange={(e) => handleFilterChange(setStartupFilters)('status', e.target.value)} style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #ced4da', backgroundColor: '#fff' }}>
-                    <option value="All">All Statuses</option>
-                    {filterOptions.startups.statuses.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select></div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div className="chart-header">
-                <h2 style={{ margin: '0 0 8px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px' }}><span style={{ fontSize: '28px' }}>🚀</span> Startups Growth</h2>
-                <p style={{ color: '#666', margin: '0', fontSize: '14px' }}>Yearly trend of startups over time.</p>
-              </div>
-              <ExportMenu
-                elementId="techin-startups-chart-container"
-                data={startupsTrend}
-                headers={['Year', 'Count']}
-                keys={['year', 'count']}
-                filename="techin_startups_growth"
-                title="Startups Growth"
-              />
-            </div>
-            {!repoMode && (
-              <div id="techin-startups-chart-container">
-                {barLineChart(startupsTrend, '#43e97b', 'Count')}
-              </div>
-            )}
-            {renderTable(startupsTable, 'startups')}
-          </div>
-
-        </div>
       </div>
 
       <DataUploadModal
@@ -538,7 +634,17 @@ function TechinSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
-    </div >
+    </div>
+  );
+}
+
+/* ── small helper ── */
+function EmptyState({ msg }) {
+  return (
+    <div style={{ height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+      <span style={{ fontSize: '36px', marginBottom: '10px' }}>🗂️</span>
+      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>{msg || 'No data available for the selected filters.'}</p>
+    </div>
   );
 }
 

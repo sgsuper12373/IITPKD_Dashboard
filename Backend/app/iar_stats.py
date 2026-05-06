@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 iar_bp = Blueprint('iar', __name__)
@@ -100,7 +100,7 @@ def classify_outcome(row):
 
 
 @iar_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     conn = None
     cur = None
@@ -139,7 +139,7 @@ def get_filter_options(current_user_id):
 
 
 @iar_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_summary(current_user_id):
     filters = {
         'year': request.args.get('year'),
@@ -185,7 +185,7 @@ def get_summary(current_user_id):
 
 
 @iar_bp.route('/state-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_state_distribution(current_user_id):
     filters = {
         'year': request.args.get('year'),
@@ -211,7 +211,7 @@ def get_state_distribution(current_user_id):
 
 
 @iar_bp.route('/country-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_country_distribution(current_user_id):
     filters = {
         'year': request.args.get('year'),
@@ -237,7 +237,7 @@ def get_country_distribution(current_user_id):
 
 
 @iar_bp.route('/outcome-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_outcome_breakdown(current_user_id):
     """Per-department counts for higher studies vs corporate (inferred from current_job)."""
     filters = {
@@ -271,7 +271,7 @@ def get_outcome_breakdown(current_user_id):
 # ---------------------------------------------------------------------------
 
 @iar_bp.route('/mous/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_mou_filter_options(current_user_id):
     conn = None
     cur = None
@@ -297,7 +297,7 @@ def get_mou_filter_options(current_user_id):
 
 
 @iar_bp.route('/mous/trend', methods=['GET'])
-@token_required
+@token_optional
 def get_mou_trend(current_user_id):
     mou_year = request.args.get('mou_year')
     conn = None
@@ -327,7 +327,7 @@ def get_mou_trend(current_user_id):
 
 
 @iar_bp.route('/mous/list', methods=['GET'])
-@token_required
+@token_optional
 def get_mou_list(current_user_id):
     mou_year = request.args.get('mou_year')
     conn = None

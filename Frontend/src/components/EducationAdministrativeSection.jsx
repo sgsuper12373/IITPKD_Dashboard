@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -129,6 +129,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   // Get current filters based on view type
   const getCurrentFilters = () => {
     switch (viewType) {
@@ -200,10 +205,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch filter options
   useEffect(() => {
     const loadFilterOptions = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        return;
-      }
       try {
         const options = await fetchFilterOptions(token);
         const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
@@ -237,7 +238,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch summary data
   useEffect(() => {
     const loadSummaryData = async () => {
-      if (!token) return;
       try {
         setLoading(prev => ({ ...prev, summary: true }));
         setError(null);
@@ -270,7 +270,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch drill-down details for summary cards
   useEffect(() => {
     const loadCardDetails = async () => {
-      if (!token || !selectedCardType) return;
+      if (!selectedCardType) return;
       try {
         setIsCardDetailsLoading(true);
         const filterParams = {
@@ -295,7 +295,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch department data
   useEffect(() => {
     const loadDepartmentData = async () => {
-      if (!token) return;
       try {
         setLoading(prev => ({ ...prev, department: true }));
         setError(null);
@@ -323,7 +322,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch trend data
   useEffect(() => {
     const loadTrendData = async () => {
-      if (!token) return;
       try {
         setLoading(prev => ({ ...prev, trend: true }));
         setError(null);
@@ -351,7 +349,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch distribution data
   useEffect(() => {
     const loadDistributionData = async () => {
-      if (!token) return;
       try {
         setLoading(prev => ({ ...prev, distribution: true }));
         setError(null);
@@ -379,7 +376,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Fetch details list data
   useEffect(() => {
     const loadDetailsData = async () => {
-      if (!token) return;
       try {
         setLoading(prev => ({ ...prev, details: true }));
         setError(null);
@@ -476,15 +472,15 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/education')}>
             ← Back to Education
           </button>
         )}
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h1>Administrative Section - External Academic Engagement</h1>
-            {user && user.role_id === 3 && (
+            {!isReadOnlyView && isAdmin && (
               <button
                 className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
@@ -1622,7 +1618,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
         </div>
 
         {/* Upload Modal */}
-        {!isPublicView && user && user.role_id === 3 && (
+        {!isReadOnlyView && isAdmin && (
           <DataUploadModal
             isOpen={isUploadModalOpen}
             onClose={() => setIsUploadModalOpen(false)}

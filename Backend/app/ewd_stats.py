@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from flask import Blueprint, jsonify
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 ewd_bp = Blueprint('ewd', __name__)
@@ -52,7 +52,7 @@ def _convert_decimal(row):
 
 
 @ewd_bp.route('/yearly', methods=['GET'])
-@token_required
+@token_optional
 def get_ewd_yearly(current_user_id):
     rows, error = _fetch_all_rows()
     if error:
@@ -63,7 +63,7 @@ def get_ewd_yearly(current_user_id):
 
 
 @ewd_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_ewd_summary(current_user_id):
     rows, error = _fetch_all_rows()
     if error:

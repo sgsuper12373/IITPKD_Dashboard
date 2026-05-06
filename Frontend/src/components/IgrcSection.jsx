@@ -46,14 +46,13 @@ function IgrcSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadData = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         setError(null);
@@ -95,7 +94,7 @@ function IgrcSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <button
             className="page-back-btn"
             onClick={() => navigate('/people-campus')}
@@ -104,13 +103,13 @@ function IgrcSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <div className="section-header">
             <h1 className="section-title">
               Internal Grievance Resolution Cell (IGRC)
             </h1>
 
-            {user && user.role_id === 3 && (
+            {!isReadOnlyView && isAdmin && (
               <button
                 className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
@@ -130,7 +129,7 @@ function IgrcSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <div className="performance-render-auto">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
               <ExportMenu
                 elementId="igrc-summary-cards-container"
                 data={[summary]}
@@ -312,14 +311,6 @@ function IgrcSection({ user, isPublicView = false }) {
                     <p className="chart-description" style={{ margin: 0 }}>
                       Visual comparison of total grievances filed against resolutions and pending cases.
                     </p>
-                    <ExportMenu
-                      elementId="igrc-yearly-chart-container"
-                      data={selectedYear === 'All' ? yearlyData : yearlyData.filter((row) => String(row.year) === String(selectedYear))}
-                      headers={['Year', 'Filed', 'Pending', 'Resolved']}
-                      keys={['year', 'filed', 'pending', 'resolved']}
-                      filename="igrc_yearly_data"
-                      title="IGRC Yearly Grievances"
-                    />
                   </div>
                 </div>
                 <div className="metric-toggle-group">
@@ -373,23 +364,51 @@ function IgrcSection({ user, isPublicView = false }) {
               </div>
 
               {/* Bar / Trend toggle */}
-              <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
-                {['Bar', 'Trend'].map(mode => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setChartType(mode)}
-                    style={{
-                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                      color: chartType === mode ? '#fff' : '#333',
-                      fontWeight: chartType === mode ? '600' : '400',
-                      fontSize: '13px', transition: 'all 0.2s'
-                    }}
-                  >
-                    {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
-                  </button>
-                ))}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                margin: '12px 0'
+              }}>
+                {/* Left side → Bar / Trend toggle */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {['Bar', 'Trend'].map(mode => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setChartType(mode)}
+                      style={{
+                        padding: '7px 20px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                        color: chartType === mode ? '#fff' : '#333',
+                        fontWeight: chartType === mode ? '600' : '400',
+                        fontSize: '13px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right side → Export Menu */}
+                <div style={{ position: 'relative', zIndex: 9999 }}>
+                  <ExportMenu
+                    elementId="igrc-yearly-chart-container"
+                    data={
+                      selectedYear === 'All'
+                        ? yearlyData
+                        : yearlyData.filter((row) => String(row.year) === String(selectedYear))
+                    }
+                    headers={['Year', 'Filed', 'Pending', 'Resolved']}
+                    keys={['year', 'filed', 'pending', 'resolved']}
+                    filename="igrc_yearly_data"
+                    title="IGRC Yearly Grievances"
+                  />
+                </div>
               </div>
 
               {yearlyData.length === 0 ? (

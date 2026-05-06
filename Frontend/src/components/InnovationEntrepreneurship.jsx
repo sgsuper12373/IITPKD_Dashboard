@@ -9,7 +9,7 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
 
   const sections = [
     {
-      title: 'IPTIF',
+      title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       route: '/innovation-entrepreneurship/iptif',
       description: 'Innovation'
     },
@@ -21,8 +21,8 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
   ];
   const [showPublicView, setShowPublicView] = useState(false);
 
-  // If public user → always show public view
-  if (roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 1
+  if (!user || roleId === 1) {
     return <InnovationPublicView user={user} />;
   }
 
@@ -66,7 +66,7 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
                 className="people-campus-card"
               >
                 <div className="card-icon">
-                  {section.title === 'IPTIF' ? '💡' : '🚀'}
+                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : '🚀'}
                 </div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>

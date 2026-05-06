@@ -264,6 +264,7 @@
   padding: 1.2rem;
   animation: cardExpand 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center top;
+  margin-top: 10px;
 }
 
 @keyframes cardExpand {
@@ -515,7 +516,7 @@
 
 /* Subsection Content */
 .subsection-content {
-  padding: 0 2rem;
+  padding: 0 0;
 }
 
 /* Remove duplicate headers from child components */

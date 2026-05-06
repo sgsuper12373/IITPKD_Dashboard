@@ -11,15 +11,15 @@ function InnovationPublicView({ user }) {
   const sections = [
     {
       id: 'startups',
-      title: 'IPTIF',
+      title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       subtitle: 'Innovation & Entrepreneurship',
-      expandedTitle: 'Nurturing startups and innovation projects at TECHIN and IPTIF',
+      expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
       icon: '💡',
       component: IptifSection
     },
     {
       id: 'innovation-hub',
-      title: 'TechIn',
+      title: 'Technology Innovation Foundation of IIT Palakkad (TECHIN)',
       subtitle: 'Research & Development',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: '🚀',
@@ -79,11 +79,11 @@ function InnovationPublicView({ user }) {
                           <span className="innovation-back-arrow">←</span>
                           <span>Back</span>
                         </button>
-                        
+
                         <div className="innovation-icon-header">{section.icon}</div>
                         <p className="innovation-overview-text">{section.expandedTitle}</p>
                       </div>
-                      
+
                       {/* Section Content */}
                       <div className="innovation-content-area">
                         <SectionComponent user={user} isPublicView={true} />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import InnovationPublicView from './InnovationPublicView';
 import {
@@ -104,6 +104,12 @@ function InnovationSectionContent({ user, isPublicView }) {
   const uploadVersion = useUploadRefresh();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const [viewType, setViewType] = useState('yearlyGrowth');
 
   const roleId = user?.role_id;
@@ -147,7 +153,6 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   // Load filter options on mount
   useEffect(() => {
-    if (!token) return;
     const loadFilterOptions = async () => {
       try {
         const options = await fetchFilterOptions(token);
@@ -160,7 +165,6 @@ function InnovationSectionContent({ user, isPublicView }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     const loadSummary = async () => {
       try {
         setLoading(true);
@@ -176,7 +180,6 @@ function InnovationSectionContent({ user, isPublicView }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     const loadYearlyGrowth = async () => {
       try {
         const result = await fetchYearlyGrowth(token);
@@ -189,7 +192,6 @@ function InnovationSectionContent({ user, isPublicView }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     const loadSectorDistribution = async () => {
       try {
         const result = await fetchSectorDistribution(token);
@@ -202,7 +204,6 @@ function InnovationSectionContent({ user, isPublicView }) {
   }, [token, uploadVersion]);
 
   useEffect(() => {
-    if (!token) return;
     const loadStartups = async () => {
       try {
         const result = await fetchStartups(
@@ -660,7 +661,7 @@ function InnovationSectionContent({ user, isPublicView }) {
               Clear Filters
             </button>
             {/* Only Super Admin can upload and only in admin view */}
-            {isSuperAdmin && !isPublicView && (
+            {!isReadOnlyView && isAdmin && (
               <button
                 className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
@@ -1357,7 +1358,7 @@ function InnovationSectionContent({ user, isPublicView }) {
       </div>
 
       {/* Data Upload Modal - only in admin view */}
-      {!isPublicView && (
+      {!isReadOnlyView && (
         <DataUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}

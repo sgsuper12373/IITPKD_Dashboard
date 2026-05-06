@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchConclaveSummary,
@@ -18,6 +18,11 @@ function ConclaveSection({ user, isPublicView = false }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const [summary, setSummary] = useState({
     total_conclaves: 0,
     total_companies: 0
@@ -30,7 +35,6 @@ function ConclaveSection({ user, isPublicView = false }) {
   // Load summary data
   useEffect(() => {
     const loadSummary = async () => {
-      if (!token) return;
       try {
         setLoading(true);
         const data = await fetchConclaveSummary(token);
@@ -47,7 +51,6 @@ function ConclaveSection({ user, isPublicView = false }) {
   // Load conclaves list
   useEffect(() => {
     const loadConclaves = async () => {
-      if (!token) return;
       try {
         const result = await fetchConclaveList(token);
         setConclaves(result.data || []);
@@ -61,24 +64,24 @@ function ConclaveSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button className="page-back-btn" onClick={() => navigate('/industry-connect')}>
-              ← Back to Industry Connect
-            </button>
-            <div className="page-header-row">
-              <div className="page-header-left">
-                <h1>Industry-Academia Conclave</h1>
-              </div>
-              {user && user.role_id === 3 && (
-                <div className="page-header-actions">
-                  <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                    <span>📤</span> Upload Conclave Data
-                  </button>
-                </div>
-              )}
+        {!isReadOnlyView && (
+          <button className="page-back-btn" onClick={() => navigate('/industry-connect')}>
+            ← Back to Industry Connect
+          </button>
+        )}
+        {!isReadOnlyView && (
+          <div className="page-header-row">
+            <div className="page-header-left">
+              <h1>Industry-Academia Conclave</h1>
             </div>
-          </>
+            {!isReadOnlyView && isAdmin && (
+              <div className="page-header-actions">
+                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                  <span>📤</span> Upload Conclave Data
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && <div className="error-message" style={{
@@ -90,7 +93,7 @@ function ConclaveSection({ user, isPublicView = false }) {
         }}>{error}</div>}
 
         {/* FIX 1: Restored proper <h2> tag that was broken */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <h2
             style={{
               textDecoration: "underline",
@@ -292,7 +295,7 @@ function ConclaveSection({ user, isPublicView = false }) {
         ) : conclaves.length > 0 ? (
           <div>
             {/* FIX 2: Removed stray "Students On Roll" h2; kept only "Conclave Directory" */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
               <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
                 Conclave Directory
               </h2>

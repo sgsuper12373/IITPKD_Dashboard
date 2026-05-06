@@ -60,14 +60,13 @@ function EwdSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadData = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         setError(null);
@@ -178,32 +177,32 @@ function EwdSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/people-campus')}
-            >
-              ← Back to People & Campus
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/people-campus')}
+          >
+            ← Back to People & Campus
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>Engineering and Works Division (EWD)</h1>
-              </div>
-
-              <div className="section-header-actions">
-                {user && user.role_id === 3 && (
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
-                    <span>📤</span> Upload Data
-                  </button>
-                )}
-              </div>
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>Engineering and Works Division (EWD)</h1>
             </div>
-          </>
+
+            <div className="section-header-actions">
+              {!isReadOnlyView && isAdmin && (
+                <button
+                  className="page-upload-btn"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  <span>📤</span> Upload Data
+                </button>
+              )}
+            </div>
+          </div>
         )}
         {error && <div className="error-message" style={{
           padding: '10px',
@@ -220,7 +219,7 @@ function EwdSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
               <ExportMenu
                 elementId="ewd-summary-cards-container"
                 data={[summary]}

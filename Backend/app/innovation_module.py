@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from flask import Blueprint, jsonify, request
 from psycopg2 import extras
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 
@@ -117,7 +117,7 @@ def build_where_clause(filter_mapping: Dict[str, str], filters: Dict[str, Any]) 
 
 
 @innovation_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_summary(current_user_id):
     """Get summary statistics for innovation and entrepreneurship."""
     if not _data_available():
@@ -167,7 +167,7 @@ def get_summary(current_user_id):
 
 
 @innovation_bp.route('/yearly-growth', methods=['GET'])
-@token_required
+@token_optional
 def get_yearly_growth(current_user_id):
     """Get year-wise growth of incubatees and startups."""
     if not _data_available():
@@ -249,7 +249,7 @@ def get_yearly_growth(current_user_id):
 
 
 @innovation_bp.route('/sector-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_sector_distribution(current_user_id):
     """Get sector-wise innovation distribution."""
     if not _data_available():
@@ -325,7 +325,7 @@ def get_sector_distribution(current_user_id):
 
 
 @innovation_bp.route('/startups', methods=['GET'])
-@token_required
+@token_optional
 def get_startups(current_user_id):
     """Get list of startups with search and filter capabilities."""
     if not _data_available():
@@ -440,7 +440,7 @@ def get_startups(current_user_id):
 
 
 @innovation_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     """Get filter options for startups and projects."""
     if not _data_available():
@@ -497,7 +497,7 @@ def get_filter_options(current_user_id):
 # ==========================================
 
 @innovation_bp.route('/iptif/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_summary(current_user_id):
     """Get overall summary for IPTIF."""
     if not _iptif_data_available():
@@ -538,7 +538,7 @@ def get_iptif_summary(current_user_id):
 
 
 @innovation_bp.route('/iptif/trends/projects', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_projects(current_user_id):
     """Get IPTIF projects trend and list."""
     if not _iptif_data_available():
@@ -606,7 +606,7 @@ def get_iptif_projects(current_user_id):
 
 
 @innovation_bp.route('/iptif/trends/programs', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_programs(current_user_id):
     """Get IPTIF programs trend and list."""
     if not _iptif_data_available():
@@ -668,7 +668,7 @@ def get_iptif_programs(current_user_id):
 
 
 @innovation_bp.route('/iptif/trends/startups', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_startups(current_user_id):
     """Get IPTIF startups trend and list."""
     if not _iptif_data_available():
@@ -730,7 +730,7 @@ def get_iptif_startups(current_user_id):
 
 
 @innovation_bp.route('/iptif/trends/facilities', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_facilities_revenue(current_user_id):
     """Get IPTIF facilities revenue trend and list."""
     if not _iptif_data_available():
@@ -788,7 +788,7 @@ def get_iptif_facilities_revenue(current_user_id):
 
 
 @innovation_bp.route('/iptif/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_iptif_filter_options(current_user_id):
     """Get filter options for all IPTIF tables."""
     if not _iptif_data_available():
@@ -861,7 +861,7 @@ def get_iptif_filter_options(current_user_id):
 # ==========================================
 
 @innovation_bp.route('/techin/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_techin_summary(current_user_id):
     """Get overall summary for TechIn."""
     if not _techin_data_available():
@@ -918,7 +918,7 @@ def get_techin_summary(current_user_id):
 
 
 @innovation_bp.route('/techin/trends/programs', methods=['GET'])
-@token_required
+@token_optional
 def get_techin_programs(current_user_id):
     """Get TechIn programs trend and list."""
     if not _techin_data_available():
@@ -980,7 +980,7 @@ def get_techin_programs(current_user_id):
 
 
 @innovation_bp.route('/techin/trends/skill-dev', methods=['GET'])
-@token_required
+@token_optional
 def get_techin_skill_dev(current_user_id):
     """Get TechIn skill development trend and list."""
     if not _techin_data_available():
@@ -1042,7 +1042,7 @@ def get_techin_skill_dev(current_user_id):
 
 
 @innovation_bp.route('/techin/trends/startups', methods=['GET'])
-@token_required
+@token_optional
 def get_techin_startups(current_user_id):
     """Get TechIn startups trend and list."""
     if not _techin_data_available():
@@ -1104,7 +1104,7 @@ def get_techin_startups(current_user_id):
 
 
 @innovation_bp.route('/techin/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_techin_filter_options(current_user_id):
     """Get filter options for TechIn tables."""
     if not _techin_data_available():

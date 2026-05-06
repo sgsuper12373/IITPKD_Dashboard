@@ -68,8 +68,8 @@ function OutreachExtension({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  // If public user → always show public view
-  if (roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 1
+  if (!user || roleId === 1) {
     return <OutreachPublicView user={user} />;
   }
 

@@ -3,7 +3,6 @@ import './Page.css';
 import './ResearchMinimal.css';
 
 import ResearchIcsrSection from './ResearchIcsrSection';
-import ResearchAdministrativeSection from './ResearchAdministrativeSection';
 import ResearchLibrarySection from './ResearchLibrarySection';
 
 function ResearchPublicView({ user }) {
@@ -19,14 +18,6 @@ function ResearchPublicView({ user }) {
       component: ResearchIcsrSection
     },
     {
-      id: 'administrative',
-      title: 'Externships',
-      subtitle: '',
-      expandedTitle: 'Bridging academia and industry through practical learning experiences',
-      icon: '🏢',
-      component: ResearchAdministrativeSection
-    },
-    {
       id: 'library',
       title: 'Research Publications',
       subtitle: '',
@@ -36,7 +27,7 @@ function ResearchPublicView({ user }) {
     },
     {
       id: 'icsr-mous',
-      title: 'IC&SR MoUs',
+      title: 'Industry Collaboration',
       subtitle: '',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
       icon: '🤝',
@@ -92,11 +83,11 @@ function ResearchPublicView({ user }) {
                           <span className="research-back-arrow">←</span>
                           <span>Back</span>
                         </button>
-                        
+
                         <div className="research-icon-header">{section.icon}</div>
                         <p className="research-overview-text">{section.expandedTitle}</p>
                       </div>
-                      
+
                       {/* Section Content */}
                       <div className="research-content-area">
                         <SectionComponent user={user} isPublicView={true} />

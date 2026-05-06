@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .db import get_db_connection, release_db_connection
-from .auth import token_required
+from .auth import token_optional
 
 academic_bp = Blueprint('academic', __name__)
 
@@ -82,7 +82,7 @@ def build_filter_query(filters):
 
 
 @academic_bp.route('/stats/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     """Fetches distinct values for each filter field."""
     conn = None
@@ -139,7 +139,7 @@ def get_filter_options(current_user_id):
 
 
 @academic_bp.route('/stats/gender-distribution-filtered', methods=['GET'])
-@token_required
+@token_optional
 def get_gender_distribution_filtered(current_user_id):
     """Fetches gender distribution based on provided filters."""
     conn = None
@@ -226,7 +226,7 @@ def get_gender_distribution_filtered(current_user_id):
 
 
 @academic_bp.route('/stats/student-strength', methods=['GET'])
-@token_required
+@token_optional
 def get_student_strength(current_user_id):
     """Fetches student strength grouped by program with gender breakdown."""
     conn = None
@@ -314,7 +314,7 @@ def get_student_strength(current_user_id):
 
 
 @academic_bp.route('/stats/gender-trends', methods=['GET'])
-@token_required
+@token_optional
 def get_gender_trends(current_user_id):
     """Fetches gender distribution grouped by year of admission."""
     conn = None
@@ -384,7 +384,7 @@ def get_gender_trends(current_user_id):
 
 
 @academic_bp.route('/stats/program-trends', methods=['GET'])
-@token_required
+@token_optional
 def get_program_trends(current_user_id):
     """
     Fetches student strength by program grouped by year of admission,
@@ -522,7 +522,7 @@ def get_program_trends(current_user_id):
 
 
 @academic_bp.route('/stats/student-summary', methods=['GET'])
-@token_required
+@token_optional
 def get_student_summary(current_user_id):
     """
     Returns UG / PG / Research counts using the academic_program_type column.
@@ -577,7 +577,7 @@ def get_student_summary(current_user_id):
 
 
 @academic_bp.route('/stats/onroll-summary', methods=['GET'])
-@token_required
+@token_optional
 def get_onroll_summary(current_user_id):
     """
     Returns on-roll student counts by program type.

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
   fetchUbaSummary,
   fetchUbaProjects,
@@ -18,6 +18,12 @@ function UbaSection({ user, isPublicView = false }) {
 
   const uploadVersion = useUploadRefresh();
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
@@ -35,7 +41,6 @@ function UbaSection({ user, isPublicView = false }) {
   // Load summary data
   useEffect(() => {
     const loadSummary = async () => {
-      if (!token) return;
       try {
         setLoading(true);
         const data = await fetchUbaSummary(token);
@@ -52,7 +57,6 @@ function UbaSection({ user, isPublicView = false }) {
   // Load projects
   useEffect(() => {
     const loadProjects = async () => {
-      if (!token) return;
       try {
         const result = await fetchUbaProjects(token);
         setProjects(result.projects || []);
@@ -66,7 +70,6 @@ function UbaSection({ user, isPublicView = false }) {
   // Load all events
   useEffect(() => {
     const loadEvents = async () => {
-      if (!token) return;
       try {
         const result = await fetchUbaEvents(token);
         setEvents(result.events || []);
@@ -93,14 +96,14 @@ function UbaSection({ user, isPublicView = false }) {
 
   const content = (
     <>
-      {!isPublicView && (
+      {!isReadOnlyView && (
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
           ← Back to Outreach Extension
         </button>
       )}
-      {!isPublicView && <h1>UBA (Unnat Bharat Abhiyan)</h1>}
+      {!isReadOnlyView && <h1>UBA (Unnat Bharat Abhiyan)</h1>}
 
-      {isPublicView ? null : (user && user.role_id === 3 && (
+      {!isReadOnlyView && isAdmin && (
         <div style={{
           display: 'flex',
           gap: '1rem',
@@ -120,12 +123,9 @@ function UbaSection({ user, isPublicView = false }) {
             <span>📅</span> Upload Events
           </button>
         </div>
-      ))}
+      )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textDecoration: "underline", color: isPublicView ? "#000000" : "#ffffff", textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)", margin: 0, fontSize: "20px" }}>
-          Impact Summary
-        </h2>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
         <ExportMenu
           elementId="uba-summary-cards-container"
           data={[summary]}
@@ -138,92 +138,96 @@ function UbaSection({ user, isPublicView = false }) {
       {/* Impact Summary Cards */}
       < div id="uba-summary-cards-container" style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateColumns: summary.total_projects > 0
+          ? 'repeat(2, 1fr)'
+          : '1fr',
         gap: '24px',
         marginBottom: '40px'
       }
       }>
         {/* Total Projects Card */}
-        < div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '20px',
-          padding: '28px',
-          boxShadow: '0 15px 35px rgba(102, 126, 234, 0.3)',
-          position: 'relative',
-          overflow: 'hidden',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          cursor: 'pointer'
-        }}>
-          {/* Decorative elements */}
+        {Number(summary.total_projects) > 0 && (
           < div style={{
-            position: 'absolute',
-            top: '-30px',
-            right: '-30px',
-            width: '150px',
-            height: '150px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%'
-          }} />
-          < div style={{
-            position: 'absolute',
-            bottom: '-40px',
-            left: '-40px',
-            width: '180px',
-            height: '180px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '50%'
-          }} />
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '20px',
+            padding: '28px',
+            boxShadow: '0 15px 35px rgba(102, 126, 234, 0.3)',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            cursor: 'pointer'
+          }}>
+            {/* Decorative elements */}
+            < div style={{
+              position: 'absolute',
+              top: '-30px',
+              right: '-30px',
+              width: '150px',
+              height: '150px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%'
+            }} />
+            < div style={{
+              position: 'absolute',
+              bottom: '-40px',
+              left: '-40px',
+              width: '180px',
+              height: '180px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '50%'
+            }} />
 
-          < div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px'
-            }}>
-              <span style={{
-                fontSize: '32px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                padding: '10px',
-                borderRadius: '12px'
-              }}>📊</span>
-              <h3 style={{
-                margin: 0,
-                color: 'rgba(255, 255, 255, 0.9)',
-                fontSize: '18px',
-                fontWeight: '500'
-              }}>Total Projects</h3>
-            </div>
-            <div style={{
-              fontSize: '48px',
-              fontWeight: 'bold',
-              color: 'white',
-              marginBottom: '8px',
-              lineHeight: '1.2'
-            }}>
-              {formatNumber(summary.total_projects)}
-            </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                display: 'inline-block',
-                width: '8px',
-                height: '8px',
-                background: '#4ade80',
-                borderRadius: '50%'
-              }} />
-              <span style={{
-                fontSize: '14px',
-                color: 'rgba(255, 255, 255, 0.8)'
+            < div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '16px'
               }}>
-                Active UBA initiatives
-              </span>
-            </div>
+                <span style={{
+                  fontSize: '32px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  padding: '10px',
+                  borderRadius: '12px'
+                }}>📊</span>
+                <h3 style={{
+                  margin: 0,
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  fontSize: '18px',
+                  fontWeight: '500'
+                }}>Total Projects</h3>
+              </div>
+              <div style={{
+                fontSize: '48px',
+                fontWeight: 'bold',
+                color: 'white',
+                marginBottom: '8px',
+                lineHeight: '1.2'
+              }}>
+                {formatNumber(summary.total_projects)}
+              </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span style={{
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '8px',
+                  background: '#4ade80',
+                  borderRadius: '50%'
+                }} />
+                <span style={{
+                  fontSize: '14px',
+                  color: 'rgba(255, 255, 255, 0.8)'
+                }}>
+                  Active UBA initiatives
+                </span>
+              </div>
+            </div >
           </div >
-        </div >
+        )}
 
         {/* Total Events Card */}
         < div style={{
@@ -309,67 +313,69 @@ function UbaSection({ user, isPublicView = false }) {
       </div >
 
       {/* Projects Section */}
-      < div className="chart-section" style={{
-        backgroundColor: '#fff',
-        borderRadius: '20px',
-        padding: '24px',
-        boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
-        marginBottom: '30px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Projects</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ backgroundColor: '#667eea', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
-              {projects.length} Projects
-            </span>
-            <ExportMenu
-              elementId="uba-projects-container"
-              data={projects}
-              headers={['Project Title', 'Status', 'Coordinator', 'Partners']}
-              keys={['project_title', 'project_status', 'coordinator_name', 'collaboration_partners']}
-              filename="uba_projects_directory"
-              title="UBA Projects Directory"
-            />
+      {projects.length > 0 && (
+        < div className="chart-section" style={{
+          backgroundColor: '#fff',
+          borderRadius: '20px',
+          padding: '24px',
+          boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
+          marginBottom: '30px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Projects</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ backgroundColor: '#667eea', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
+                {projects.length} Projects
+              </span>
+              <ExportMenu
+                elementId="uba-projects-container"
+                data={projects}
+                headers={['Project Title', 'Status', 'Coordinator', 'Partners']}
+                keys={['project_title', 'project_status', 'coordinator_name', 'collaboration_partners']}
+                filename="uba_projects_directory"
+                title="UBA Projects Directory"
+              />
+            </div>
           </div>
-        </div>
-        <div id="uba-projects-container">
+          <div id="uba-projects-container">
 
-          {projects.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
-              <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
-              <p style={{ fontSize: '16px' }}>No projects found</p>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-              {projects.map((project) => (
-                <div key={project.project_id} style={{
-                  backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e9ecef',
-                  overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-                }}>
-                  <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', lineHeight: '1.4' }}>{project.project_title}</h3>
-                    <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '4px', fontSize: '12px' }}>
-                      {project.project_status}
-                    </span>
+            {projects.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
+                <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
+                <p style={{ fontSize: '16px' }}>No projects found</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                {projects.map((project) => (
+                  <div key={project.project_id} style={{
+                    backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e9ecef',
+                    overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                  }}>
+                    <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
+                      <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', lineHeight: '1.4' }}>{project.project_title}</h3>
+                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '4px', fontSize: '12px' }}>
+                        {project.project_status}
+                      </span>
+                    </div>
+                    <div style={{ padding: '16px' }}>
+                      {project.coordinator_name && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', fontSize: '14px', color: '#555' }}>
+                          <span>👤</span><span><strong>Coordinator:</strong> {project.coordinator_name}</span>
+                        </div>
+                      )}
+                      {project.collaboration_partners && (
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: '#666' }}>
+                          <span>🤝</span><span><strong>Partners:</strong> {project.collaboration_partners}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ padding: '16px' }}>
-                    {project.coordinator_name && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', fontSize: '14px', color: '#555' }}>
-                        <span>👤</span><span><strong>Coordinator:</strong> {project.coordinator_name}</span>
-                      </div>
-                    )}
-                    {project.collaboration_partners && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: '#666' }}>
-                        <span>🤝</span><span><strong>Partners:</strong> {project.collaboration_partners}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div >
+                ))}
+              </div>
+            )}
+          </div>
+        </div >
+      )}
 
       {/* Events Section */}
       < div className="chart-section" style={{
@@ -403,12 +409,36 @@ function UbaSection({ user, isPublicView = false }) {
               <p style={{ fontSize: '16px' }}>No events found</p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <div style={{
+              maxHeight: '450px',
+              overflowY: 'auto',
+              overflowX: 'auto',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px'
+            }}>
+              <table style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '14px',
+                minWidth: '1200px'
+              }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
                     {['Year', 'Program Name', 'Type', 'Association', 'Dates', 'Audience', 'Attendees', 'Schools', 'Colleges', 'Reach', 'Remarks'].map(h => (
-                      <th key={h} style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', color: '#555', whiteSpace: 'nowrap' }}>{h}</th>
+                      <th
+                        key={h}
+                        style={{
+                          padding: '12px 10px',
+                          textAlign: 'left',
+                          fontWeight: '600',
+                          color: '#555',
+                          whiteSpace: 'nowrap',
+                          position: 'sticky',
+                          top: 0,
+                          backgroundColor: '#f8f9fa',
+                          zIndex: 2
+                        }}
+                      >{h}</th>
                     ))}
                   </tr>
                 </thead>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis,
   Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell, LabelList
@@ -70,9 +70,13 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadFilterOptions = async () => {
-      if (!token) { setError('Authentication token not found. Please log in again.'); return; }
       try {
         const options = await fetchResearchFilterOptions(token);
         setFilterOptions({
@@ -90,7 +94,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   useEffect(() => {
     const loadLibraryData = async () => {
-      if (!token) return;
       try {
         setLoading(true); setError(null);
         const [summaryResp, trendResp, deptResp, typeResp, listResp] = await Promise.all([
@@ -368,35 +371,35 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
 
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/research')}
-            >
-              ← Back to Research
-            </button>
-
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>Publications</h1>
-              </div>
-
-              {user && user.role_id === 3 && (
-                <div className="section-header-actions">
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
-                    📤 Upload Publications
-                  </button>
-                </div>
-              )}
-            </div>
-          </>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/research')}
+          >
+            ← Back to Research
+          </button>
         )}
 
-        {!isPublicView && <h1>Library & Scholarly Outputs</h1>}
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>Publications</h1>
+            </div>
+
+            {!isReadOnlyView && isAdmin && (
+              <div className="section-header-actions">
+                <button
+                  className="page-upload-btn"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  📤 Upload Publications
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isReadOnlyView && <h1>Library & Scholarly Outputs</h1>}
 
         {error && (
           <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>

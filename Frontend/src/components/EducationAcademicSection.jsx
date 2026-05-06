@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -82,6 +82,11 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   // Summary counts from /course-counts
   const [courseCounts, setCourseCounts] = useState({
     total_all: 0, active_all: 0, inactive_all: 0,
@@ -100,7 +105,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   // Load summary counts on mount
   useEffect(() => {
-    if (!token) return;
     fetchCourseCounts(token)
       .then(data => { if (data) setCourseCounts(data); })
       .catch(err => console.error('Failed to load course counts', err));
@@ -108,7 +112,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   // Load all courses for "Courses Repository"
   useEffect(() => {
-    if (!token || viewMode !== 'all') return;
+    if (viewMode !== 'all') return;
     setLoading(true);
     setError(null);
     fetchCourses({ course_type: 'all', active_only: true }, '', 1, 1000, token)
@@ -119,7 +123,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   // Load industry courses for "Industry Linked Courses"
   useEffect(() => {
-    if (!token || viewMode !== 'industry') return;
+    if (viewMode !== 'industry') return;
     setLoading(true);
     setError(null);
     fetchCourses({ course_type: 'industry', active_only: true }, '', 1, 1000, token)
@@ -131,24 +135,24 @@ function EducationAcademicSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? '' : 'page-container'}>
       <div className={isPublicView ? '' : 'page-content'}>
-        {!isPublicView && (
-          <>
-            <button className="page-back-btn" onClick={() => navigate('/education')}>
-              ← Back to Education
-            </button>
-            <div className="page-header-row">
-              <div className="page-header-left">
-                <h1>Academic Section</h1>
-              </div>
-              {user && user.role_id === 3 && (
-                <div className="page-header-actions">
-                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('courses_table'); setIsUploadModalOpen(true); }}>
-                    <span>📤</span> Upload Course Data
-                  </button>
-                </div>
-              )}
+        {!isReadOnlyView && (
+          <button className="page-back-btn" onClick={() => navigate('/education')}>
+            ← Back to Education
+          </button>
+        )}
+        {!isReadOnlyView && (
+          <div className="page-header-row">
+            <div className="page-header-left">
+              <h1>Academic Section</h1>
             </div>
-          </>
+            {!isReadOnlyView && isAdmin && (
+              <div className="page-header-actions">
+                <button className="page-upload-btn" onClick={() => { setActiveUploadTable('courses_table'); setIsUploadModalOpen(true); }}>
+                  <span>📤</span> Upload Course Data
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && (

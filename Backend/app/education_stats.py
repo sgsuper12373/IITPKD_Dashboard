@@ -3,7 +3,7 @@ from datetime import date
 from flask import Blueprint, jsonify, request
 from psycopg2.errors import UndefinedTable
 
-from .auth import token_required
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 education_bp = Blueprint('education', __name__)
@@ -202,7 +202,7 @@ def compute_summary(rows, year_str=None):
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @education_bp.route('/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({
@@ -279,7 +279,7 @@ def get_filter_options(current_user_id):
 
 
 @education_bp.route('/summary', methods=['GET'])
-@token_required
+@token_optional
 def get_summary(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({
@@ -320,7 +320,7 @@ def get_summary(current_user_id):
 
 
 @education_bp.route('/department-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_department_breakdown(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({
@@ -405,7 +405,7 @@ def get_department_breakdown(current_user_id):
 
 
 @education_bp.route('/year-trend', methods=['GET'])
-@token_required
+@token_optional
 def get_year_trend(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({'message': "Faculty engagement table not found."}), 500
@@ -496,7 +496,7 @@ def get_year_trend(current_user_id):
 
 
 @education_bp.route('/type-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_type_distribution(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({'message': "Faculty engagement table not found."}), 500
@@ -559,7 +559,7 @@ def get_type_distribution(current_user_id):
 
 
 @education_bp.route('/list', methods=['GET'])
-@token_required
+@token_optional
 def get_faculty_engagement_list(current_user_id):
     if not faculty_engagement_table_exists():
         return jsonify({'message': "Faculty engagement table not found."}), 500

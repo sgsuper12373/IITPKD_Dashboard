@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .db import get_db_connection, release_db_connection
-from .auth import token_required
+from .auth import token_optional
 import psycopg2.extras
 from datetime import date
 
@@ -94,7 +94,7 @@ def _read_common_filters():
 
 
 @administrative_bp.route('/stats/filter-options', methods=['GET'])
-@token_required
+@token_optional
 def get_filter_options(current_user_id):
     """
     Fetches distinct values for each filter field from the employees table.
@@ -167,7 +167,7 @@ def get_filter_options(current_user_id):
 
 
 @administrative_bp.route('/stats/employee-overview', methods=['GET'])
-@token_required
+@token_optional
 def get_employee_overview(current_user_id):
     """
     Department-wise breakdown by gender.
@@ -238,7 +238,7 @@ def get_employee_overview(current_user_id):
 
 
 @administrative_bp.route('/stats/faculty-gender-last-five-years', methods=['GET'])
-@token_required
+@token_optional
 def get_faculty_gender_last_five_years(current_user_id):
     """
     Faculty (Teaching) gender distribution for the last five calendar years.
@@ -321,7 +321,7 @@ def get_faculty_gender_last_five_years(current_user_id):
 
 
 @administrative_bp.route('/stats/faculty-by-department-designation', methods=['GET'])
-@token_required
+@token_optional
 def get_faculty_by_department_designation(current_user_id):
     """Department × designation breakdown."""
     conn = None
@@ -389,7 +389,7 @@ def get_faculty_by_department_designation(current_user_id):
 
 
 @administrative_bp.route('/stats/staff-count', methods=['GET'])
-@token_required
+@token_optional
 def get_staff_count(current_user_id):
     """
     Staff count grouped by emp_type (Teaching / Non Teaching).
@@ -444,7 +444,7 @@ def get_staff_count(current_user_id):
 
 
 @administrative_bp.route('/stats/gender-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_gender_distribution(current_user_id):
     """Gender-wise distribution for employees who joined in the current year."""
     conn = None
@@ -524,7 +524,7 @@ def get_gender_distribution(current_user_id):
 
 
 @administrative_bp.route('/stats/category-distribution', methods=['GET'])
-@token_required
+@token_optional
 def get_category_distribution(current_user_id):
 
     conn = None
@@ -599,7 +599,7 @@ def get_category_distribution(current_user_id):
 
 
 @administrative_bp.route('/stats/data-summary', methods=['GET'])
-@token_required
+@token_optional
 def get_data_summary(current_user_id):
     """Diagnostic endpoint — quick stats from the employees table."""
     conn = None
@@ -656,7 +656,7 @@ def get_data_summary(current_user_id):
 
 
 @administrative_bp.route('/stats/department-breakdown', methods=['GET'])
-@token_required
+@token_optional
 def get_department_breakdown(current_user_id):
     """Department-wise breakdown with gender and employee type."""
     conn = None
@@ -730,7 +730,7 @@ def get_department_breakdown(current_user_id):
 
 
 @administrative_bp.route('/stats/yearwise-strength', methods=['GET'])
-@token_required
+@token_optional
 def get_yearwise_strength(current_user_id):
     """
     Active employee headcount for each calendar year.
@@ -873,7 +873,7 @@ def get_yearwise_strength(current_user_id):
 
 
 @administrative_bp.route('/stats/faculty-expertise-matrix', methods=['GET'])
-@token_required
+@token_optional
 def get_faculty_expertise_matrix(current_user_id):
 
     conn = None

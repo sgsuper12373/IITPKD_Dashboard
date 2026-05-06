@@ -4,11 +4,20 @@ import './IndustryConnectMinimal.css';
 
 import IcsrSection from './IcsrSection';
 import ConclaveSection from './ConclaveSection';
+import IndustryAdministrativeSection from './IndustryAdministrativeSection';
 
 function IndustryConnectPublicView({ user }) {
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
+    {
+      id: 'administrative',
+      title: 'Faculty Industry Stint',
+      subtitle: '',
+      expandedTitle: 'Bridging academia and industry through practical learning experiences',
+      icon: '🏢',
+      component: IndustryAdministrativeSection
+    },
     {
       id: 'icsr',
       title: 'Industry Events',
@@ -75,11 +84,11 @@ function IndustryConnectPublicView({ user }) {
                           <span className="industry-back-arrow">←</span>
                           <span>Back</span>
                         </button>
-                        
+
                         <div className="industry-icon-header">{section.icon}</div>
                         <p className="industry-overview-text">{section.expandedTitle}</p>
                       </div>
-                      
+
                       {/* Section Content */}
                       <div className="industry-content-area">
                         <SectionComponent user={user} isPublicView={true} />

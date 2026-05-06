@@ -45,14 +45,13 @@ function IccSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   useEffect(() => {
     const loadData = async () => {
-      if (!token) {
-        setError('Authentication token not found. Please log in again.');
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         setError(null);
@@ -97,32 +96,32 @@ function IccSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isPublicView && (
-          <>
-            <button
-              className="page-back-btn"
-              onClick={() => navigate('/people-campus')}
-            >
-              ← Back to People & Campus
-            </button>
+        {!isReadOnlyView && (
+          <button
+            className="page-back-btn"
+            onClick={() => navigate('/people-campus')}
+          >
+            ← Back to People & Campus
+          </button>
+        )}
 
-            <div className="section-header">
-              <div className="section-header-left">
-                <h1>Internal Complaints Committee (ICC)</h1>
-              </div>
-
-              <div className="section-header-actions">
-                {user && user.role_id === 3 && (
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
-                    <span>📤</span> Upload Data
-                  </button>
-                )}
-              </div>
+        {!isReadOnlyView && (
+          <div className="section-header">
+            <div className="section-header-left">
+              <h1>Internal Complaints Committee (ICC)</h1>
             </div>
-          </>
+
+            <div className="section-header-actions">
+              {!isReadOnlyView && isAdmin && (
+                <button
+                  className="page-upload-btn"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  <span>📤</span> Upload Data
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
         {error && <div className="error-message" style={{
@@ -140,7 +139,7 @@ function IccSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
               <ExportMenu
                 elementId="icc-summary-cards-container"
                 data={[summary]}
@@ -334,14 +333,7 @@ function IccSection({ user, isPublicView = false }) {
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <ExportMenu
-                      elementId="icc-trend-chart-container"
-                      data={yearlyData}
-                      headers={['Year', 'Total', 'Resolved', 'Pending']}
-                      keys={['year', 'total', 'resolved', 'pending']}
-                      filename="icc_trend_data"
-                      title="ICC Complaint Trends"
-                    />
+
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button
                         type="button"
@@ -397,23 +389,47 @@ function IccSection({ user, isPublicView = false }) {
                 </div>
 
                 {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
-                  {['Bar', 'Trend'].map(mode => (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => setChartType(mode)}
-                      style={{
-                        padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                        backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                        color: chartType === mode ? '#fff' : '#333',
-                        fontWeight: chartType === mode ? '600' : '400',
-                        fontSize: '13px', transition: 'all 0.2s'
-                      }}
-                    >
-                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
-                    </button>
-                  ))}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  margin: '12px 0'
+                }}>
+                  {/* Left → Bar / Trend buttons */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {['Bar', 'Trend'].map(mode => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setChartType(mode)}
+                        style={{
+                          padding: '7px 20px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
+                          color: chartType === mode ? '#fff' : '#333',
+                          fontWeight: chartType === mode ? '600' : '400',
+                          fontSize: '13px',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Right → Export Menu */}
+                  <div style={{ position: 'relative', zIndex: 9999 }}>
+                    <ExportMenu
+                      elementId="icc-trend-chart-container"
+                      data={yearlyData}
+                      headers={['Year', 'Total', 'Resolved', 'Pending']}
+                      keys={['year', 'total', 'resolved', 'pending']}
+                      filename="icc_trend_data"
+                      title="ICC Complaint Trends"
+                    />
+                  </div>
                 </div>
 
                 {yearlyData.length === 0 ? (

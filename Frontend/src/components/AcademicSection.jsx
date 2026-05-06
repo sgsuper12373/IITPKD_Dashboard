@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -283,7 +283,7 @@ function AcademicSection({ user, isPublicView = false }) {
   // Chart-level controls
   const [selectedGender, setSelectedGender] = useState('All');
   const [chartType, setChartType] = useState('Bar');
-  const [trendYears, setTrendYears] = useState(5);
+  const [trendYears, setTrendYears] = useState(10);
   const [programChartMode, setProgramChartMode] = useState('gender'); // 'gender' | 'program'
   const [stackGender, setStackGender] = useState(false); // stacked gender in program chart
 
@@ -305,7 +305,13 @@ function AcademicSection({ user, isPublicView = false }) {
   });
 
   const token = localStorage.getItem('authToken');
-  const showUploadBtn = !isPublicView && user && (user.role_id === 3 || user.role_id === 4);
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
+  const showUploadBtn = !isReadOnlyView && isAdmin;
 
   // Available years for the summary-card year selector
   const availableYears = useMemo(() => {
@@ -317,7 +323,6 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── Fetch filter options ──────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) { setError('Authentication token not found. Please log in again.'); setLoading(false); return; }
       try {
         setLoading(true); setError(null);
         const options = await fetchFilterOptions(token);
@@ -334,7 +339,6 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── Cumulative summary ───────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) return;
       try {
         setSummaryLoading(true);
         const yearParam = summaryYear === 'All' ? null : summaryYear;
@@ -349,7 +353,6 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── On-roll summary ──────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) return;
       try {
         setOnrollLoading(true);
         const result = await fetchOnrollSummary(token);
@@ -363,7 +366,7 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── Gender distribution (for top-level year filter) ──────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token || filters.yearofadmission === null) return;
+      if (filters.yearofadmission === null) return;
       try { setLoading(true); setError(null); const r = await fetchGenderDistributionFiltered(filters, token); setGenderData(r.data); setTotal(r.total); }
       catch { setError('Failed to load gender distribution data.'); }
       finally { setLoading(false); }
@@ -374,7 +377,6 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── Gender trend ─────────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) return;
       try { setGenderTrendLoading(true); const r = await fetchGenderTrends(genderTrendFilters, token); setGenderTrendData(r.data); }
       catch (err) { console.error(err); }
       finally { setGenderTrendLoading(false); }
@@ -385,7 +387,6 @@ function AcademicSection({ user, isPublicView = false }) {
   // ── Program trend ─────────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
-      if (!token) return;
       try {
         setProgramTrendLoading(true);
         const r = await fetchProgramTrends(programTrendFilters, token);
@@ -442,9 +443,9 @@ function AcademicSection({ user, isPublicView = false }) {
 
   // ── Filter handlers ───────────────────────────────────────────────────────
   const handleGenderTrendFilterChange = (n, v) => setGenderTrendFilters(prev => ({ ...prev, [n]: v === 'All' ? null : v }));
-  const handleClearGenderTrendFilters = () => { setGenderTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(5); setSelectedGender('All'); setChartType('Bar'); };
+  const handleClearGenderTrendFilters = () => { setGenderTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(10); setSelectedGender('All'); setChartType('Bar'); };
   const handleProgramTrendFilterChange = (n, v) => setProgramTrendFilters(prev => ({ ...prev, [n]: v === 'All' ? null : v }));
-  const handleClearProgramTrendFilters = () => { setProgramTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(5); setStackGender(false); };
+  const handleClearProgramTrendFilters = () => { setProgramTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(10); setStackGender(false); };
 
   const areaKeys = selectedGender === 'All' ? ['Male', 'Female', 'Transgender'] : [selectedGender];
 
@@ -480,7 +481,7 @@ function AcademicSection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? '' : 'page-content'}>
 
-        {!isPublicView && (
+        {!isReadOnlyView && (
           <button
             className="page-back-btn"
             onClick={() => navigate('/people-campus')}
@@ -504,7 +505,7 @@ function AcademicSection({ user, isPublicView = false }) {
         {error && <div className="error-message">{error}</div>}
 
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <ExportMenu
             elementId="academic-onroll-cards-container"
             data={[onrollSummary]}
@@ -543,7 +544,7 @@ function AcademicSection({ user, isPublicView = false }) {
         </div>
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <ExportMenu
             elementId="academic-summary-cards-container"
             data={[cumulativeSummary]}

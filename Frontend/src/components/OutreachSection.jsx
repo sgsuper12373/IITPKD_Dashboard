@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
@@ -440,6 +440,12 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
   const navigate = useNavigate();
   const uploadVersion = useUploadRefresh();
   const token = localStorage.getItem('authToken');
+
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const canViewRestrictedSection = isPublicView && !isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+
   const [searchParams] = useSearchParams();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -458,7 +464,6 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
   }, [searchParams, programKey]);
 
   useEffect(() => {
-    if (!token) return;
     setLoading(true);
     fetchOutreachList(token)
       .then((data) => setRecords(data?.records ?? []))
@@ -472,7 +477,7 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
     return (
       <div className={isPublicView ? '' : 'page-container'}>
         <div className={isPublicView ? '' : 'page-content'}>
-          {!isPublicView && (
+          {!isReadOnlyView && (
             <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
               ← Back to Outreach Extension
             </button>
