@@ -4,6 +4,9 @@ import InnovationPublicView from './InnovationPublicView';
 import './Page.css';
 import './PeopleCampus.css';
 
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+
 function InnovationEntrepreneurship({ user, isPublicView }) {
   const roleId = user?.role_id;
 
@@ -65,8 +68,8 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
                 to={section.route}
                 className="people-campus-card"
               >
-                <div className="card-icon">
-                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : '🚀'}
+                <div className="card-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? <LightbulbIcon htmlColor="#fbc02d" fontSize="inherit" /> : <RocketLaunchIcon htmlColor="#f44336" fontSize="inherit" />}
                 </div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>

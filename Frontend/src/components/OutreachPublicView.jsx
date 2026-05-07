@@ -2,43 +2,40 @@ import { Link } from 'react-router-dom';
 import './Page.css';
 import './OutreachMinimal.css';
 
-const sections = [
-  {
-    id: 'social-engagement',
-    title: 'Social Engagements',
-    subtitle: 'Community outreach: Open House, workshops, and public lectures',
-    icon: 'S',
-    to: '/outreach-extension/social-engagement',
-  },
-  {
-    id: 'students-engagement',
-    title: 'Students Engagement',
-    subtitle: 'Student-led outreach: Workshops and community projects',
-    icon: 'S',
-    to: '/outreach-extension/students-engagement',
-  },
-];
+import PeopleIcon from '@mui/icons-material/People';
+import GroupsIcon from '@mui/icons-material/Groups';
 
-function OutreachPublicView() {
+
+function OutreachPublicView({ user }) {
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
+
   return (
     <div className="page-container">
       <div className="page-content">
         <div className="outreach-page-header" />
         <div className="outreach-sections-grid">
-          {sections.map((section, index) => (
-            <Link
-              key={section.id}
-              to={section.to}
-              style={{ textDecoration: 'none', animationDelay: `${index * 0.1}s` }}
-            >
+          {/* Social Engagements */}
+          {!isGuestUser && (
+            <Link to="/outreach-extension/social-engagement" style={{ textDecoration: 'none', animationDelay: '0s' }}>
               <div className="outreach-section-card">
-                <div className="outreach-card-icon">{section.icon}</div>
-                <h3 className="outreach-card-title">{section.title}</h3>
-                <p className="outreach-card-subtitle">{section.subtitle}</p>
+                <div className="outreach-card-icon"><PeopleIcon htmlColor="#2196f3" fontSize="inherit" /></div>
+                <h3 className="outreach-card-title">Social Engagements</h3>
+                <p className="outreach-card-subtitle">Community outreach: Open House, workshops, and public lectures</p>
                 <div className="outreach-card-arrow">→</div>
               </div>
             </Link>
-          ))}
+          )}
+          {/* Students Engagement */}
+          {!isGuestUser && (
+            <Link to="/outreach-extension/students-engagement" style={{ textDecoration: 'none', animationDelay: '0.1s' }}>
+              <div className="outreach-section-card">
+                <div className="outreach-card-icon"><GroupsIcon htmlColor="#4caf50" fontSize="inherit" /></div>
+                <h3 className="outreach-card-title">Students Engagement</h3>
+                <p className="outreach-card-subtitle">Student-led outreach: Workshops and community projects</p>
+                <div className="outreach-card-arrow">→</div>
+              </div>
+            </Link>
+          )}
         </div>
       </div>
     </div>

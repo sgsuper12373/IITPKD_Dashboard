@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
@@ -101,7 +101,7 @@ function IcsrSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
@@ -574,7 +574,7 @@ function IcsrSection({ user, isPublicView = false }) {
                         </div>
 
                         {/* Scrollable body */}
-                        <div style={{ flex: '1 1 auto', overflowY: 'auto', overflowX: 'auto', flex: '1 1 0', overflowY: 'auto' }}>
+                        <div style={{ flex: '1 1 0', overflowY: 'auto', overflowX: 'auto' }}>
                           {eventsList.map((event, index) => (
                             <div
                               key={event.project_id || index}

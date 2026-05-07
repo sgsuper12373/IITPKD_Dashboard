@@ -8,10 +8,16 @@ import UbaSection from './UbaSection';
 import OpenHouseSection from './OpenHouseSection';
 import OutreachSection from './OutreachSection';
 
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
+
 const SECTIONS = [
   {
     id: 'uba',
-    icon: '🌾',
+    guestHidden: true,
+    icon: <AccessibilityNewIcon htmlColor="#3f51b5" fontSize="inherit" />,
     title: 'Unnat Bharat Abhiyan',
     subtitle: 'Rural Development Initiatives',
     expandedTitle: 'Engaging with communities through rural development and village adoption programs.',
@@ -25,7 +31,8 @@ const SECTIONS = [
   },
   {
     id: 'open-house',
-    icon: '🏛️',
+    guestHidden: true,
+    icon: <AccountBalanceIcon htmlColor="#3f51b5" fontSize="inherit" />,
     title: 'Open House',
     subtitle: 'Annual Community Showcase',
     expandedTitle: 'Explore Open House events, visitor statistics, and departmental participation.',
@@ -39,7 +46,8 @@ const SECTIONS = [
   },
   {
     id: 'institute-visits',
-    icon: '🏫',
+    guestHidden: true,
+    icon: <EmojiPeopleIcon htmlColor="#f57c00" fontSize="inherit" />,
     title: 'Institute Visits',
     subtitle: 'Organised institution visits',
     expandedTitle: 'Organised visits by institutions to the IIT Palakkad campus.',
@@ -52,7 +60,8 @@ const SECTIONS = [
   },
   {
     id: 'nss',
-    icon: '🤝',
+    guestHidden: true,
+    icon: <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />,
     title: 'NSS Activities',
     subtitle: 'Community service initiatives',
     expandedTitle: 'National Service Scheme community service initiatives.',
@@ -67,6 +76,7 @@ const SECTIONS = [
 
 function SocialEngagementsSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const [activeSection, setActiveSection] = useState(null);
 
   const activeItem = SECTIONS.find((s) => s.id === activeSection);
@@ -85,7 +95,7 @@ function SocialEngagementsSection({ user, isPublicView = false }) {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' }}>
-              {SECTIONS.map((s) => (
+              {SECTIONS.filter(s => !isGuestUser || !s.guestHidden).map((s) => (
                 <div
                   key={s.id}
                   onClick={() => setActiveSection(s.id)}
@@ -115,7 +125,7 @@ function SocialEngagementsSection({ user, isPublicView = false }) {
 
                   <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '24px' }}>
-                      <span style={{ fontSize: '64px', background: 'rgba(255,255,255,0.2)', padding: '20px', borderRadius: '24px', marginBottom: '16px', display: 'inline-block' }}>
+                      <span style={{ fontSize: '64px', background: 'rgba(255,255,255,0.2)', padding: '20px', borderRadius: '24px', marginBottom: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                         {s.icon}
                       </span>
                       <h2 style={{ margin: 0, color: 'white', fontSize: '32px', fontWeight: 'bold', letterSpacing: '1px' }}>{s.title}</h2>

@@ -2,10 +2,14 @@ import { useState } from 'react';
 import './Page.css';
 import './InnovationMinimal.css';
 
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+
 import IptifSection from './IptifSection';
 import TechinSection from './TechinSection';
 
 function InnovationPublicView({ user }) {
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -14,7 +18,7 @@ function InnovationPublicView({ user }) {
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       subtitle: 'Innovation & Entrepreneurship',
       expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
-      icon: '💡',
+      icon: <LightbulbIcon htmlColor="#fbc02d" fontSize="inherit" />,
       component: IptifSection
     },
     {
@@ -22,7 +26,7 @@ function InnovationPublicView({ user }) {
       title: 'Technology Innovation Foundation of IIT Palakkad (TECHIN)',
       subtitle: 'Research & Development',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
-      icon: '🚀',
+      icon: <RocketLaunchIcon htmlColor="#f44336" fontSize="inherit" />,
       component: TechinSection
     }
   ];
@@ -47,19 +51,24 @@ function InnovationPublicView({ user }) {
         {/* Card Grid View */}
         {!activeSection && (
           <div className="innovation-sections-grid">
-            {sections.map((section, index) => (
-              <div
-                key={section.id}
-                className="innovation-section-card"
-                onClick={() => handleCardClick(section.id)}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="innovation-card-icon">{section.icon}</div>
-                <h3 className="innovation-card-title">{section.title}</h3>
-                <p className="innovation-card-subtitle">{section.subtitle}</p>
+            {/* IIT Palakkad Technology IHub Foundation (IPTIF) */}
+            {!isGuestUser && (
+              <div className="innovation-section-card" onClick={() => handleCardClick('startups')} style={{ animationDelay: '0s' }}>
+                <div className="innovation-card-icon"><LightbulbIcon htmlColor="#fbc02d" fontSize="inherit" /></div>
+                <h3 className="innovation-card-title">IIT Palakkad Technology IHub Foundation (IPTIF)</h3>
+                <p className="innovation-card-subtitle">Innovation & Entrepreneurship</p>
                 <div className="innovation-card-arrow">→</div>
               </div>
-            ))}
+            )}
+            {/* Technology Innovation Foundation of IIT Palakkad (TECHIN) */}
+            {!isGuestUser && (
+              <div className="innovation-section-card" onClick={() => handleCardClick('innovation-hub')} style={{ animationDelay: '0.1s' }}>
+                <div className="innovation-card-icon"><RocketLaunchIcon htmlColor="#f44336" fontSize="inherit" /></div>
+                <h3 className="innovation-card-title">Technology Innovation Foundation of IIT Palakkad (TECHIN)</h3>
+                <p className="innovation-card-subtitle">Research & Development</p>
+                <div className="innovation-card-arrow">→</div>
+              </div>
+            )}
           </div>
         )}
 

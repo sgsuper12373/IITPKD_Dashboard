@@ -2,10 +2,15 @@ import { useState } from 'react';
 import './Page.css';
 import './ResearchMinimal.css';
 
+import ScienceIcon from '@mui/icons-material/Science';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+
 import ResearchIcsrSection from './ResearchIcsrSection';
 import ResearchLibrarySection from './ResearchLibrarySection';
 
 function ResearchPublicView({ user }) {
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -14,7 +19,7 @@ function ResearchPublicView({ user }) {
       title: 'Sponsored and Consultancy Projects',
       subtitle: '',
       expandedTitle: 'Driving innovation through industry partnerships and funded research',
-      icon: '🔬',
+      icon: <ScienceIcon htmlColor="#00bcd4" fontSize="inherit" />,
       component: ResearchIcsrSection
     },
     {
@@ -22,7 +27,7 @@ function ResearchPublicView({ user }) {
       title: 'Research Publications',
       subtitle: '',
       expandedTitle: 'Advancing knowledge through publications and research contributions',
-      icon: '📚',
+      icon: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />,
       component: ResearchLibrarySection
     },
     {
@@ -30,7 +35,7 @@ function ResearchPublicView({ user }) {
       title: 'Industry Collaboration',
       subtitle: '',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
-      icon: '🤝',
+      icon: <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />,
       component: (props) => <ResearchIcsrSection {...props} mouOnly={true} />
     }
   ];
@@ -52,19 +57,33 @@ function ResearchPublicView({ user }) {
 
         {/* Card Grid View */}
         <div className={`research-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
-          {sections.map((section, index) => (
-            <div
-              key={section.id}
-              className="research-section-card"
-              onClick={() => handleCardClick(section.id)}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="research-card-icon">{section.icon}</div>
-              <h3 className="research-card-title">{section.title}</h3>
-              <p className="research-card-subtitle">{section.subtitle}</p>
+          {/* Sponsored and Consultancy Projects */}
+          {!isGuestUser && (
+            <div className="research-section-card" onClick={() => handleCardClick('icsr')} style={{ animationDelay: '0s' }}>
+              <div className="research-card-icon"><ScienceIcon htmlColor="#00bcd4" fontSize="inherit" /></div>
+              <h3 className="research-card-title">Sponsored and Consultancy Projects</h3>
+              <p className="research-card-subtitle"></p>
               <div className="research-card-arrow">→</div>
             </div>
-          ))}
+          )}
+          {/* Research Publications */}
+          {!isGuestUser && (
+            <div className="research-section-card" onClick={() => handleCardClick('library')} style={{ animationDelay: '0.1s' }}>
+              <div className="research-card-icon"><MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" /></div>
+              <h3 className="research-card-title">Research Publications</h3>
+              <p className="research-card-subtitle"></p>
+              <div className="research-card-arrow">→</div>
+            </div>
+          )}
+          {/* Industry Collaboration */}
+          {!isGuestUser && (
+            <div className="research-section-card" onClick={() => handleCardClick('icsr-mous')} style={{ animationDelay: '0.2s' }}>
+              <div className="research-card-icon"><HandshakeIcon htmlColor="#e91e63" fontSize="inherit" /></div>
+              <h3 className="research-card-title">Industry Collaboration</h3>
+              <p className="research-card-subtitle"></p>
+              <div className="research-card-arrow">→</div>
+            </div>
+          )}
         </div>
 
         {/* Expanded Section View */}

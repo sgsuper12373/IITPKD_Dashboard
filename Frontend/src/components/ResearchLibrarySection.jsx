@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis,
   Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell, LabelList
@@ -17,6 +17,13 @@ import './ResearchSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import { CustomTooltip } from '../utils/chartUtils';
+
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import BusinessIcon from '@mui/icons-material/Business';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import UploadIcon from '@mui/icons-material/Upload';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 const TYPE_COLORS = ['#6366f1', '#22d3ee', '#f97316', '#a855f7', '#14b8a6', '#facc15'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
@@ -70,7 +77,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -159,10 +166,10 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   // ── Reusable unified filter bar ──────────────────────────────────────────────
   const viewButtons = [
-    { key: 'trend', label: '📈 Trend', color: '#6366f1' },
-    { key: 'department', label: '🏢 Department', color: '#22c55e' },
-    { key: 'type', label: '📊 Type', color: '#f97316' },
-    { key: 'publicationsTable', label: '📋 Directory', color: '#a855f7' },
+    { key: 'trend', label: <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><TrendingUpIcon htmlColor="#1976d2" fontSize="small" /> Trend</div>, color: '#6366f1' },
+    { key: 'department', label: <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><BusinessIcon htmlColor="#607d8b" fontSize="small" /> Department</div>, color: '#22c55e' },
+    { key: 'type', label: <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><BarChartIcon htmlColor="#009688" fontSize="small" /> Type</div>, color: '#f97316' },
+    { key: 'publicationsTable', label: <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><FormatListBulletedIcon htmlColor="#607d8b" fontSize="small" /> Directory</div>, color: '#a855f7' },
   ];
 
   const FilterBar = ({ showDept = true, showYear = true, showType = true }) => (
@@ -391,8 +398,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                 <button
                   className="page-upload-btn"
                   onClick={() => setIsUploadModalOpen(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  📤 Upload Publications
+                  <UploadIcon htmlColor="#9c27b0" fontSize="small" /> Upload Publications
                 </button>
               </div>
             )}
@@ -429,15 +437,15 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           gap: '16px', marginBottom: '30px'
         }}>
           {[
-            { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
-            { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
-            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '🏢', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
+            { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />, label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
+            { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: <BarChartIcon htmlColor="#009688" fontSize="inherit" />, label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
+            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: <BusinessIcon htmlColor="#607d8b" fontSize="inherit" />, label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
           ].map(({ gradient, shadow, icon, label, value, sub }) => (
             <div key={label} style={{ background: gradient, borderRadius: '14px', padding: '16px', boxShadow: `0 8px 16px ${shadow}`, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '70px', height: '70px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>{icon}</span>
+                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px', display: 'flex' }}>{icon}</span>
                   <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>{label}</span>
                 </div>
                 <div style={{ fontSize: '38px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{value}</div>
@@ -461,7 +469,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                  <span style={{ fontSize: '28px' }}>📈</span> Publication Trend
+                  <span style={{ fontSize: '28px', display: 'flex' }}><TrendingUpIcon htmlColor="#1976d2" fontSize="inherit" /></span> Publication Trend
                 </h2>
                 <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Year-wise publication count</p>
               </div>
@@ -483,9 +491,10 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   cursor: 'pointer', border: 'none', transition: 'all 0.2s',
                   backgroundColor: trendChartMode === mode ? '#fff' : 'transparent',
                   color: trendChartMode === mode ? '#6366f1' : '#555',
-                  boxShadow: trendChartMode === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                  boxShadow: trendChartMode === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                  display: 'flex', alignItems: 'center', gap: '6px'
                 }}>
-                  {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                  {mode === 'bar' ? <><BarChartIcon htmlColor="#009688" fontSize="small"/> Bar</> : <><TrendingUpIcon htmlColor="#1976d2" fontSize="small"/> Trend</>}
                 </button>
               ))}
             </div>
@@ -534,7 +543,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                  <span style={{ fontSize: '28px' }}>🏢</span> Department-wise Publications
+                  <span style={{ fontSize: '28px', display: 'flex' }}><BusinessIcon htmlColor="#607d8b" fontSize="inherit" /></span> Department-wise Publications
                 </h2>
                 <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Publications by department</p>
               </div>
@@ -578,7 +587,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                  <span style={{ fontSize: '28px' }}>📊</span> Publication Types
+                  <span style={{ fontSize: '28px', display: 'flex' }}><BarChartIcon htmlColor="#009688" fontSize="inherit" /></span> Publication Types
                 </h2>
                 <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Distribution by format</p>
               </div>
@@ -621,7 +630,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
               <div>
                 <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📋</span> Publications Directory
+                  <span style={{ display: 'flex' }}><FormatListBulletedIcon htmlColor="#607d8b" fontSize="inherit" /></span> Publications Directory
                 </h2>
                 <p style={{ fontSize: '14px', color: '#666', margin: 0 }}>{publicationList.length} publications found</p>
               </div>

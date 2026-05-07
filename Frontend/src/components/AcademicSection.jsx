@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -16,6 +16,15 @@ import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import { CustomTooltip, getOrderedLegend } from '../utils/chartUtils';
+
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import SchoolIcon from '@mui/icons-material/School';
+import ScienceIcon from '@mui/icons-material/Science';
+import PeopleIcon from '@mui/icons-material/People';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
@@ -306,7 +315,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -504,6 +513,7 @@ function AcademicSection({ user, isPublicView = false }) {
         )}
         {error && <div className="error-message">{error}</div>}
 
+        {!isGuestUser && (<>
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <ExportMenu
@@ -517,10 +527,10 @@ function AcademicSection({ user, isPublicView = false }) {
         </div>
         <div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {[
-            { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
-            { label: 'UG', icon: '📘', value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
-            { label: 'PG', icon: '🎓', value: onrollSummary.pg_onroll, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'MTech + MS — On Roll' },
-            { label: 'Research', icon: '🔬', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'PhD / MSc (By Research) — On Roll' },
+            { label: 'Total Students On Roll', icon: <GpsFixedIcon htmlColor="#f44336" fontSize="inherit" />, value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
+            { label: 'UG', icon: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />, value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
+            { label: 'PG', icon: <SchoolIcon htmlColor="#f57c00" fontSize="inherit" />, value: onrollSummary.pg_onroll, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'MTech + MS — On Roll' },
+            { label: 'Research', icon: <ScienceIcon htmlColor="#00bcd4" fontSize="inherit" />, value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'PhD / MSc (By Research) — On Roll' },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = onrollLoading ? 0 : idx * 55;
             const t = onrollLoading ? 'opacity 0.15s ease-in, transform 0.15s ease-in' : `opacity 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms, transform 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms`;
@@ -542,7 +552,9 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
+        </>)}
 
+        {!isGuestUser && (<>
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
           <ExportMenu
@@ -560,7 +572,7 @@ function AcademicSection({ user, isPublicView = false }) {
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px', display: 'flex' }}><CalendarMonthIcon htmlColor="#e91e63" fontSize="inherit" /></span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '600' }}>Filter by Year</span>
               </div>
               <select value={summaryYear} onChange={e => setSummaryYear(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '500', background: 'rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer', outline: 'none' }}>
@@ -574,10 +586,10 @@ function AcademicSection({ user, isPublicView = false }) {
           </div>
 
           {[
-            { label: 'Total Students', icon: '👥', value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
-            { label: 'UG', icon: '📘', value: cumulativeSummary.ug_total, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'Undergraduate' },
-            { label: 'PG', icon: '🎓', value: cumulativeSummary.pg_total, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'Postgraduate' },
-            { label: 'Research', icon: '📖', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'MS and PHD' },
+            { label: 'Total Students', icon: <PeopleIcon htmlColor="#2196f3" fontSize="inherit" />, value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
+            { label: 'UG', icon: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />, value: cumulativeSummary.ug_total, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'Undergraduate' },
+            { label: 'PG', icon: <SchoolIcon htmlColor="#f57c00" fontSize="inherit" />, value: cumulativeSummary.pg_total, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'Postgraduate' },
+            { label: 'Research', icon: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />, value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'MS and PHD' },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = summaryLoading ? 0 : idx * 55;
             const t = summaryLoading ? 'opacity 0.15s ease-in, transform 0.15s ease-in' : `opacity 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms, transform 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms`;
@@ -599,8 +611,9 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
+        </>)}
 
-        {/* ══ Charts ════════════════════════════════════════════════════════ */}
+        {!isGuestUser && (
         <div className="chart-section">
           <div>
             {/* Mode toggle */}
@@ -628,8 +641,8 @@ function AcademicSection({ user, isPublicView = false }) {
             {/* Bar / Trend toggle */}
             <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
               {['Bar', 'Trend'].map(mode => (
-                <button key={mode} onClick={() => setChartType(mode)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: chartType === mode ? '#667eea' : '#e9ecef', color: chartType === mode ? '#fff' : '#333', fontWeight: chartType === mode ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>
-                  {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                <button key={mode} onClick={() => setChartType(mode)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: chartType === mode ? '#667eea' : '#e9ecef', color: chartType === mode ? '#fff' : '#333', fontWeight: chartType === mode ? '600' : '400', fontSize: '13px', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {mode === 'Bar' ? <><BarChartIcon htmlColor="#009688" fontSize="small" /> Bar</> : <><TrendingUpIcon htmlColor="#1976d2" fontSize="small" /> Trend</>}
                 </button>
               ))}
             </div>
@@ -915,6 +928,7 @@ function AcademicSection({ user, isPublicView = false }) {
             )}
           </div>
         </div>
+        )}
 
         <DataUploadModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} tableName="student_table" token={token} />
       </div>

@@ -2,11 +2,16 @@ import { useState } from 'react';
 import './Page.css';
 import './IndustryConnectMinimal.css';
 
+import BusinessIcon from '@mui/icons-material/Business';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import TrackChangesIcon from '@mui/icons-material/TrackChanges';
+
 import IcsrSection from './IcsrSection';
 import ConclaveSection from './ConclaveSection';
 import IndustryAdministrativeSection from './IndustryAdministrativeSection';
 
 function IndustryConnectPublicView({ user }) {
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -15,7 +20,7 @@ function IndustryConnectPublicView({ user }) {
       title: 'Faculty Industry Stint',
       subtitle: '',
       expandedTitle: 'Bridging academia and industry through practical learning experiences',
-      icon: '🏢',
+      icon: <BusinessIcon htmlColor="#607d8b" fontSize="inherit" />,
       component: IndustryAdministrativeSection
     },
     {
@@ -23,7 +28,7 @@ function IndustryConnectPublicView({ user }) {
       title: 'Industry Events',
       subtitle: '',
       expandedTitle: 'Fostering innovation through dynamic industry-academia collaboration.',
-      icon: '🤝',
+      icon: <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />,
       component: IcsrSection
     },
     {
@@ -31,7 +36,7 @@ function IndustryConnectPublicView({ user }) {
       title: 'Industry Academic Conclave',
       subtitle: '',
       expandedTitle: 'Building bridges between industry leaders and academic excellence.',
-      icon: '🎯',
+      icon: <TrackChangesIcon htmlColor="#1976d2" fontSize="inherit" />,
       component: ConclaveSection
     }
   ];
@@ -53,19 +58,33 @@ function IndustryConnectPublicView({ user }) {
 
         {/* Card Grid View */}
         <div className={`industry-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
-          {sections.map((section, index) => (
-            <div
-              key={section.id}
-              className="industry-section-card"
-              onClick={() => handleCardClick(section.id)}
-              style={{ animationDelay: `${index * 0.08}s` }}
-            >
-              <div className="industry-card-icon">{section.icon}</div>
-              <h3 className="industry-card-title">{section.title}</h3>
-              <p className="industry-card-subtitle">{section.subtitle}</p>
+          {/* Faculty Industry Stint */}
+          {!isGuestUser && (
+            <div className="industry-section-card" onClick={() => handleCardClick('administrative')} style={{ animationDelay: '0s' }}>
+              <div className="industry-card-icon"><BusinessIcon htmlColor="#607d8b" fontSize="inherit" /></div>
+              <h3 className="industry-card-title">Faculty Industry Stint</h3>
+              <p className="industry-card-subtitle"></p>
               <div className="industry-card-arrow">→</div>
             </div>
-          ))}
+          )}
+          {/* Industry Events */}
+          {!isGuestUser && (
+            <div className="industry-section-card" onClick={() => handleCardClick('icsr')} style={{ animationDelay: '0.08s' }}>
+              <div className="industry-card-icon"><HandshakeIcon htmlColor="#e91e63" fontSize="inherit" /></div>
+              <h3 className="industry-card-title">Industry Events</h3>
+              <p className="industry-card-subtitle"></p>
+              <div className="industry-card-arrow">→</div>
+            </div>
+          )}
+          {/* Industry Academic Conclave */}
+          {!isGuestUser && (
+            <div className="industry-section-card" onClick={() => handleCardClick('conclave')} style={{ animationDelay: '0.16s' }}>
+              <div className="industry-card-icon"><TrackChangesIcon htmlColor="#1976d2" fontSize="inherit" /></div>
+              <h3 className="industry-card-title">Industry Academic Conclave</h3>
+              <p className="industry-card-subtitle"></p>
+              <div className="industry-card-arrow">→</div>
+            </div>
+          )}
         </div>
 
         {/* Expanded Section View */}

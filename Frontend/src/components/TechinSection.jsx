@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -26,6 +26,11 @@ import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
 import ExportMenu from './ExportMenu';
+
+import BarChartIcon from '@mui/icons-material/BarChart';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import FolderIcon from '@mui/icons-material/Folder';
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -97,9 +102,9 @@ function injectStyle() {
 
 /* ─── view configs ─────────────────────────────────────────────────────────── */
 const VIEWS = [
-  { id: 'programs', label: 'Programs Trend', color: '#667eea', icon: '📊' },
-  { id: 'skillDev', label: 'Skill Dev Trend', color: '#f093fb', icon: '🎯' },
-  { id: 'startups', label: 'Startups Growth', color: '#43e97b', icon: '🚀' },
+  { id: 'programs', label: 'Programs Trend', color: '#667eea', icon: <BarChartIcon htmlColor="#009688" fontSize="inherit" /> },
+  { id: 'skillDev', label: 'Skill Dev Trend', color: '#f093fb', icon: <GpsFixedIcon htmlColor="#f44336" fontSize="inherit" /> },
+  { id: 'startups', label: 'Startups Growth', color: '#43e97b', icon: <RocketLaunchIcon htmlColor="#f44336" fontSize="inherit" /> },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -110,7 +115,7 @@ function TechinSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
@@ -239,7 +244,7 @@ function TechinSection({ user, isPublicView = false }) {
     <div style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}>
       {data.length === 0 && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-          <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
+          <span style={{ fontSize: '40px', marginBottom: '10px', display: 'flex' }}><BarChartIcon htmlColor="#009688" fontSize="inherit" /></span>
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
@@ -642,7 +647,7 @@ function TechinSection({ user, isPublicView = false }) {
 function EmptyState({ msg }) {
   return (
     <div style={{ height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-      <span style={{ fontSize: '36px', marginBottom: '10px' }}>🗂️</span>
+      <span style={{ fontSize: '36px', marginBottom: '10px', display: 'flex' }}><FolderIcon htmlColor="#ffb300" fontSize="inherit" /></span>
       <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>{msg || 'No data available for the selected filters.'}</p>
     </div>
   );

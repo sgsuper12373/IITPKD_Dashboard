@@ -1,10 +1,15 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend,
   PieChart, Pie, Cell, LineChart, Line, LabelList
 } from 'recharts';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import SchoolIcon from '@mui/icons-material/School';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import PeopleIcon from '@mui/icons-material/People';
 import {
   fetchFilterOptions, fetchFacultyFilterOptions,
   fetchFacultyExpertiseMatrix, fetchYearwiseStrength, fetchGenderDistribution,
@@ -38,8 +43,8 @@ const SERIES_META = [
 ];
 
 const REGULAR_VIEWS = [
-  { value: 'yearwise', label: 'Yearwise Strength', icon: '📈' },
-  { value: 'department', label: 'Faculty Strength', icon: '📊' },
+  { value: 'yearwise', label: 'Yearwise Strength', icon: <TrendingUpIcon htmlColor="#1976d2" fontSize="inherit" /> },
+  { value: 'department', label: 'Faculty Strength', icon: <BarChartIcon htmlColor="#009688" fontSize="inherit" /> },
   { value: 'gender', label: 'Gender Ratio', icon: '🥧' },
 ];
 
@@ -74,7 +79,7 @@ const ENGAGEMENT_CARD_META = [
   { type: 'Adjunct', label: 'Adjunct Faculty', icon: '👨‍🏫', grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.25)' },
   { type: 'Honorary', label: 'Honorary Faculty', icon: '🏅', grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.25)' },
   { type: 'Visiting', label: 'Visiting Faculty', icon: '✈️', grad: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.25)' },
-  { type: 'PoP', label: 'Professor of Practice', icon: '🎓', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.25)' },
+  { type: 'PoP', label: 'Professor of Practice', icon: <SchoolIcon htmlColor="#f57c00" fontSize="inherit" />, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.25)' },
 ];
 
 const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 'Visiting', PoP: 'PoP' };
@@ -146,7 +151,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -739,8 +744,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
             </div>
 
             {[
-              { label: 'Total Employees', icon: '👥', data: allYearwise, grad: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)' },
-              { label: 'Faculty', icon: '🎓', data: teachingYearwise, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)' },
+              { label: 'Total Employees', icon: <PeopleIcon htmlColor="#2196f3" fontSize="inherit" />, data: allYearwise, grad: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)' },
+              { label: 'Faculty', icon: <SchoolIcon htmlColor="#f57c00" fontSize="inherit" />, data: teachingYearwise, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)' },
               { label: 'Staff', icon: '🏢', data: nonTeachingYearwise, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.2)' },
             ].map(({ label, icon, data, grad, shadow }) => {
               const val = selectedYear === 'All'
@@ -1256,8 +1261,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
               {/* Chart type toggle */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
                 {[
-                  { mode: 'Bar', icon: '📊' },
-                  { mode: 'Trend', icon: '📈' },
+                  { mode: 'Bar', icon: <BarChartIcon htmlColor="#009688" fontSize="inherit" /> },
+                  { mode: 'Trend', icon: <TrendingUpIcon htmlColor="#1976d2" fontSize="inherit" /> },
                 ].map(({ mode, icon }) => (
                   <button
                     key={mode}
@@ -1368,8 +1373,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
               {/* Chart type toggle */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
                 {[
-                  { mode: 'Bar', icon: '📊' },
-                  { mode: 'Line', icon: '📈' },
+                  { mode: 'Bar', icon: <BarChartIcon htmlColor="#009688" fontSize="inherit" /> },
+                  { mode: 'Line', icon: <TrendingUpIcon htmlColor="#1976d2" fontSize="inherit" /> },
                 ].map(({ mode, icon }) => (
                   <button
                     key={mode}

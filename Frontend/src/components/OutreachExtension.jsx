@@ -5,58 +5,67 @@ import OutreachPublicView from './OutreachPublicView';
 import './Page.css';
 import './PeopleCampus.css';
 
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AgricultureIcon from '@mui/icons-material/Agriculture';
+import ScienceIcon from '@mui/icons-material/Science';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import PublicIcon from '@mui/icons-material/Public';
+import SchoolIcon from '@mui/icons-material/School';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+
 const OUTREACH_EXTENSION_SECTIONS = [
   {
-    code: '🏛️',
+    code: <AccountBalanceIcon htmlColor="#3f51b5" fontSize="inherit" />,
     title: 'Open House',
     description: 'Community Engagement Events',
     route: '/outreach-extension/open-house',
     allowedRoles: [3]
   },
   {
-    code: '📚',
+    code: <MenuBookIcon htmlColor="#8d6e63" fontSize="inherit" />,
     title: 'NPTEL - CCE',
     description: 'Centre for Continuing Education',
     route: '/outreach-extension/nptel',
     allowedRoles: [3]
   },
   {
-    code: '🌾',
+    code: <AgricultureIcon htmlColor="#4CAF50" fontSize="inherit" />,
     title: 'Unnat Bharat Abhiyan',
     description: 'Rural Development Initiative',
     route: '/outreach-extension/uba',
     allowedRoles: [3]
   },
   {
-    code: '🔬',
+    code: <ScienceIcon htmlColor="#00bcd4" fontSize="inherit" />,
     title: 'Science Quest',
     description: 'Science outreach and laboratory programmes for school students',
     route: '/outreach-extension/outreach?program=science_quest',
     allowedRoles: [3]
   },
   {
-    code: '📐',
+    code: <CalculateIcon htmlColor="#3f51b5" fontSize="inherit" />,
     title: 'Palakkad Math Circle',
     description: 'Mathematics enrichment sessions for school students',
     route: '/outreach-extension/outreach?program=palakkad_math_circle',
     allowedRoles: [3]
   },
   {
-    code: '🌠',
+    code: <PublicIcon htmlColor="#4caf50" fontSize="inherit" />,
     title: 'Pale Blue Dot',
     description: 'Astronomy and space science public lecture series',
     route: '/outreach-extension/outreach?program=pale_blue_dot',
     allowedRoles: [3]
   },
   {
-    code: '🏫',
+    code: <SchoolIcon htmlColor="#f57c00" fontSize="inherit" />,
     title: 'Institute Visits',
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     route: '/outreach-extension/outreach?program=institute_visits',
     allowedRoles: [3]
   },
   {
-    code: '🤝',
+    code: <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />,
     title: 'NSS Activities',
     description: 'National Service Scheme community service initiatives',
     route: '/outreach-extension/outreach?program=nss_activities',
@@ -118,7 +127,7 @@ function OutreachExtension({ user }) {
 
             return (
               <Link key={section.route} to={section.route} className="people-campus-card">
-                <div className="card-icon">{section.code}</div>
+                <div className="card-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{section.code}</div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>
                 <div className="card-arrow">→</div>

@@ -3,18 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 
-const SIDEBAR_LINKS = [
-  {
-    label: 'Quick Navigation',
-    items: [
-      { icon: '🏠', label: 'Home', path: '/' },
-      { icon: '🎓', label: 'Student Overview', path: '/people-campus/academic-section' },
-      { icon: '👥', label: 'Employee Overview', path: '/people-campus/administrative-section' },
-      { icon: '📝', label: 'Patents', path: '/patents' },
-      { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
-    ],
-  },
-];
+import HomeIcon from '@mui/icons-material/Home';
+import SchoolIcon from '@mui/icons-material/School';
+import PeopleIcon from '@mui/icons-material/People';
+import ArticleIcon from '@mui/icons-material/Article';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+
 
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -213,21 +207,59 @@ function Header({ user, onLogout, isGuest }) {
                         </button>
                     </div>
 
-                    {SIDEBAR_LINKS.map((section) => (
-                        <div key={section.label}>
-                            <p className="sidebar-section-label">{section.label}</p>
-                            {section.items.map((item) => (
-                                <button
-                                    key={item.path}
-                                    className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                                    onClick={() => { navigate(item.path); setSidebarOpen(false); }}
-                                >
-                                    <span className="sidebar-nav-icon">{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    ))}
+                    <div>
+                        <p className="sidebar-section-label">Quick Navigation</p>
+                        {/* Home */}
+                        {!isGuest && (
+                            <button
+                                className={`sidebar-nav-item ${location.pathname === '/' ? 'active' : ''}`}
+                                onClick={() => { navigate('/'); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon"><HomeIcon htmlColor="#1976d2" /></span>
+                                <span>Home</span>
+                            </button>
+                        )}
+                        {/* Student Overview */}
+                        {!isGuest && (
+                            <button
+                                className={`sidebar-nav-item ${location.pathname === '/people-campus/academic-section' ? 'active' : ''}`}
+                                onClick={() => { navigate('/people-campus/academic-section'); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon"><SchoolIcon htmlColor="#f57c00" /></span>
+                                <span>Student Overview</span>
+                            </button>
+                        )}
+                        {/* Employee Overview */}
+                        {!isGuest && (
+                            <button
+                                className={`sidebar-nav-item ${location.pathname === '/people-campus/administrative-section' ? 'active' : ''}`}
+                                onClick={() => { navigate('/people-campus/administrative-section'); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon"><PeopleIcon htmlColor="#2196f3" /></span>
+                                <span>Employee Overview</span>
+                            </button>
+                        )}
+                        {/* Patents */}
+                        {!isGuest && (
+                            <button
+                                className={`sidebar-nav-item ${location.pathname === '/patents' ? 'active' : ''}`}
+                                onClick={() => { navigate('/patents'); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon"><ArticleIcon htmlColor="#1976d2" /></span>
+                                <span>Patents</span>
+                            </button>
+                        )}
+                        {/* Collaborations */}
+                        {!isGuest && (
+                            <button
+                                className={`sidebar-nav-item ${location.pathname === '/mou-collaborations' ? 'active' : ''}`}
+                                onClick={() => { navigate('/mou-collaborations'); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon"><HandshakeIcon htmlColor="#e91e63" /></span>
+                                <span>Collaborations</span>
+                            </button>
+                        )}
+                    </div>
 
                     <div className="sidebar-divider" />
 

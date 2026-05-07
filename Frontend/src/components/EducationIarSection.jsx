@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -27,6 +27,11 @@ import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
 import '../DesignSystem.css';
+
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import UploadIcon from '@mui/icons-material/Upload';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 const IAR_MOU_COLOR = '#14b8a6'; // Teal color to distinguish from ICSR purple
 
@@ -59,7 +64,7 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -156,7 +161,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                   color: 'white',
                 }}
               >
-                🤝
+                <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />
               </span>
               {isPublicView
                 ? 'Education Collaborations'
@@ -171,8 +176,9 @@ function EducationIarSection({ user, isPublicView = false }) {
               <button
                 className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                <span>📤</span> Upload MoUs
+                <UploadIcon htmlColor="#9c27b0" fontSize="small" /> Upload MoUs
               </button>
             </div>
           )}
@@ -203,7 +209,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 }} />
                 <div style={{ position: 'relative', zIndex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>🤝</span>
+                    <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px', display: 'flex' }}><HandshakeIcon htmlColor="#e91e63" fontSize="inherit" /></span>
                     <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>Total IAR MoUs</span>
                   </div>
                   <div style={{ fontSize: '34px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
@@ -224,7 +230,7 @@ function EducationIarSection({ user, isPublicView = false }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div className="chart-header">
                   <h2 style={{ margin: 0, color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>{viewType === 'trend' ? '📈' : '📋'}</span> {viewType === 'trend' ? 'IAR MoUs Trend' : 'IAR MoUs Directory'}
+                    <span style={{ fontSize: '24px', display: 'flex' }}>{viewType === 'trend' ? <TrendingUpIcon htmlColor="#1976d2" fontSize="inherit" /> : <FormatListBulletedIcon htmlColor="#607d8b" fontSize="inherit" />}</span> {viewType === 'trend' ? 'IAR MoUs Trend' : 'IAR MoUs Directory'}
                   </h2>
                 </div>
                 <ExportMenu
@@ -272,10 +278,10 @@ function EducationIarSection({ user, isPublicView = false }) {
                     border: viewType === 'trend' ? `1px solid ${IAR_MOU_COLOR}` : '1px solid #e2e8f0',
                     backgroundColor: viewType === 'trend' ? '#ccfbf1' : '#fff',
                     color: viewType === 'trend' ? '#0f766e' : '#333',
-                    cursor: 'pointer'
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
                   }}
                 >
-                  📈 Trend Overview
+                  <TrendingUpIcon htmlColor="#1976d2" fontSize="small" /> Trend Overview
                 </button>
 
                 <button
@@ -287,10 +293,10 @@ function EducationIarSection({ user, isPublicView = false }) {
                     border: viewType === 'directory' ? '1px solid #0ea5e9' : '1px solid #e2e8f0',
                     backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
                     color: viewType === 'directory' ? '#0369a1' : '#333',
-                    cursor: 'pointer'
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
                   }}
                 >
-                  📋 MoUs Directory
+                  <FormatListBulletedIcon htmlColor="#607d8b" fontSize="small" /> MoUs Directory
                 </button>
               </div>
 

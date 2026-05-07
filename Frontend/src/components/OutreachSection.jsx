@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
@@ -6,6 +6,14 @@ import DataUploadModal from './DataUploadModal';
 import ExportMenu from './ExportMenu';
 import './Page.css';
 import './OutreachMinimal.css';
+
+import ScienceIcon from '@mui/icons-material/Science';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import PublicIcon from '@mui/icons-material/Public';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import InboxIcon from '@mui/icons-material/Inbox';
 
 // ─── Field definitions ───────────────────────────────────────────────────────
 
@@ -39,7 +47,7 @@ const PROGRAM_CONFIGS = [
     key: 'science_quest',
     tableKey: 'outreach_science_quest',
     title: 'Science Quest',
-    icon: '🔬',
+    icon: <ScienceIcon htmlColor="#00bcd4" fontSize="inherit" />,
     description: 'Science outreach and laboratory programmes for school students',
     match: (name) => name?.toLowerCase().includes('science quest'),
     specificFields: [
@@ -53,7 +61,7 @@ const PROGRAM_CONFIGS = [
     key: 'palakkad_math_circle',
     tableKey: 'outreach_math_circle',
     title: 'Palakkad Math Circle',
-    icon: '📐',
+    icon: <CalculateIcon htmlColor="#3f51b5" fontSize="inherit" />,
     description: 'Mathematics enrichment sessions for school students',
     match: (name) =>
       name?.toLowerCase().includes('math circle') ||
@@ -68,7 +76,7 @@ const PROGRAM_CONFIGS = [
     key: 'pale_blue_dot',
     tableKey: 'outreach_pale_blue_dot',
     title: 'Pale Blue Dot',
-    icon: '🌍',
+    icon: <PublicIcon htmlColor="#4caf50" fontSize="inherit" />,
     description: 'Astronomy and space science public lecture series',
     match: (name) => name?.toLowerCase().includes('pale blue dot'),
     specificFields: [
@@ -81,7 +89,7 @@ const PROGRAM_CONFIGS = [
     key: 'institute_visits',
     tableKey: 'outreach_institute_visits',
     title: 'Institute Visits',
-    icon: '🏛️',
+    icon: <AccountBalanceIcon htmlColor="#3f51b5" fontSize="inherit" />,
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     match: (name) => name?.toLowerCase().includes('institute visit'),
     specificFields: [
@@ -94,7 +102,7 @@ const PROGRAM_CONFIGS = [
     key: 'nss_activities',
     tableKey: 'outreach_nss_activities',
     title: 'NSS Activities',
-    icon: '🤝',
+    icon: <HandshakeIcon htmlColor="#e91e63" fontSize="inherit" />,
     description: 'National Service Scheme community service initiatives',
     match: (name) => name?.toLowerCase().includes('nss'),
     specificFields: NSS_FIELDS,
@@ -238,7 +246,7 @@ function GridRecordCard({ record, slNo, onClick }) {
 
       {(record.start_date || record.end_date) && (
         <div style={{ fontSize: '0.85rem', color: '#555', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1rem' }}>📅</span>
+          <span style={{ fontSize: '1rem', display: 'flex' }}><CalendarMonthIcon htmlColor="#e91e63" fontSize="inherit" /></span>
           {record.start_date ? new Date(record.start_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
           {record.end_date && record.start_date !== record.end_date && ` - ${new Date(record.end_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`}
         </div>
@@ -292,7 +300,7 @@ function RecordExpandedView({ record, programConfig, onBack }) {
         </div>
       </div>
 
-      <div style={{ padding: '2rem' }}>
+      <div style={{ padding: '2rem', maxHeight: '500px', overflowY: 'auto' }}>
         <SectionHeading>General Information</SectionHeading>
         {COMMON_FIELDS.map(({ key, label }) => (
           <FieldRow key={key} label={label} value={record[key]} />
@@ -377,14 +385,14 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
         </div>
 
         {/* Records */}
-        <div style={{ padding: '1.5rem' }}>
+        <div style={{ padding: '1.5rem', maxHeight: selectedRecord ? 'none' : '450px', overflowY: selectedRecord ? 'visible' : 'auto' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#6e6e73' }}>
               <p style={{ margin: 0 }}>Loading records...</p>
             </div>
           ) : matching.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#6e6e73' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📭</div>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'center' }}><InboxIcon htmlColor="#9c27b0" fontSize="inherit" /></div>
               <p style={{ margin: 0 }}>No records found for <strong>{programConfig.title}</strong>.</p>
               {user?.role_id >= 2 && (
                 <p style={{ marginTop: '0.4rem', fontSize: '0.85rem' }}>
@@ -441,7 +449,7 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
   const uploadVersion = useUploadRefresh();
   const token = localStorage.getItem('authToken');
 
-  const isGuestUser = !user;
+  const isGuestUser = !user || user?.role_id === 1 || user?.isGuest === true;
   const isReadOnlyView = isPublicView || isGuestUser;
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
