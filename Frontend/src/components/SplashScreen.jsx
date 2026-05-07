@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import backgroundImage from '../assets/iitpkd_dashboard_bgi.jpg';
+import backgroundImage from '../assets/iitpkd_dashboard_bgi.avif';
 import logoImage from '../assets/IIT_Palakkad_Logo.svg.png';
 import './SplashScreen.css';
 

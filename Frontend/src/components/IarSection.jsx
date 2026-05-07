@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,7 +24,7 @@ import {
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -35,6 +35,61 @@ import ExportMenu from './ExportMenu';
 import { CustomTooltip } from '../utils/chartUtils';
 
 const PIE_COLORS = ['#667eea', '#764ba2', '#f093fb', '#43e97b', '#fa709a', '#00f2fe', '#f59e0b', '#a78bfa'];
+const OTHERS_PIE_COLOR = '#94a3b8'; // neutral slate for the "Others" catch-all slice
+
+function makePieTooltip(total) {
+  return function PieTooltip({ active, payload }) {
+    if (!active || !payload?.length) return null;
+    const { name, value } = payload[0];
+    const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+    return (
+      <div style={{
+        background: '#fff', border: '1px solid #e0e0e0',
+        borderRadius: '8px', padding: '10px 14px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)', fontSize: '13px'
+      }}>
+        <p style={{ margin: '0 0 4px', fontWeight: 700, color: '#333' }}>{name}</p>
+        <p style={{ margin: '0 0 2px', color: '#555' }}>Count: <strong>{value}</strong></p>
+        <p style={{ margin: 0, color: '#555' }}>Share: <strong>{pct}%</strong></p>
+      </div>
+    );
+  };
+}
+
+function PieDistributionTable({ data, nameKey, total, colors }) {
+  if (!data?.length) return null;
+  return (
+    <div style={{ marginTop: '16px', overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <thead>
+          <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
+            <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
+            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>Count</th>
+            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>% of Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((entry, index) => {
+            const fill = entry.fill || colors[index % colors.length];
+            const pct = total > 0 ? ((entry.count / total) * 100).toFixed(1) : '0.0';
+            return (
+              <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                <td style={{ padding: '7px 10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: fill, flexShrink: 0, display: 'inline-block' }} />
+                    {entry[nameKey]}
+                  </div>
+                </td>
+                <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 500 }}>{entry.count}</td>
+                <td style={{ padding: '7px 10px', textAlign: 'right', color: '#667eea', fontWeight: 600 }}>{pct}%</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 const STATE_BAR_COLOR = '#67e8f9';
 const HIGHER_BAR_COLOR = '#43e97b';
 const CORPORATE_BAR_COLOR = '#fa709a';
@@ -74,21 +129,36 @@ function IarSection({ user, isPublicView = false }) {
       .slice(0, 10);
   }, [outcomeBreakdown]);
 
-  // Top 5 states, excluding 'Not Found'
+  // Top 5 states + one "Others" arc for the rest
   const stateTop10 = useMemo(() => {
-    return [...stateDistribution]
+    const sorted = [...stateDistribution]
       .filter(item => item.state !== 'Not Found')
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .sort((a, b) => b.count - a.count);
+    const top5 = sorted.slice(0, 5);
+    const rest = sorted.slice(5);
+    if (rest.length > 0) {
+      top5.push({ state: 'Others', count: rest.reduce((s, i) => s + i.count, 0), fill: OTHERS_PIE_COLOR });
+    }
+    return top5;
   }, [stateDistribution]);
 
-  // Top 5 countries, excluding 'Other'
+  // Top 5 countries + one "Others" arc for the rest
   const countryTop10 = useMemo(() => {
-    return [...countryDistribution]
+    const sorted = [...countryDistribution]
       .filter(item => item.country !== 'Other')
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .sort((a, b) => b.count - a.count);
+    const top5 = sorted.slice(0, 5);
+    const rest = sorted.slice(5);
+    if (rest.length > 0) {
+      top5.push({ country: 'Others', count: rest.reduce((s, i) => s + i.count, 0), fill: OTHERS_PIE_COLOR });
+    }
+    return top5;
   }, [countryDistribution]);
+
+  const stateTotal = useMemo(() => stateDistribution.reduce((s, i) => s + i.count, 0), [stateDistribution]);
+  const countryTotal = useMemo(() => countryDistribution.reduce((s, i) => s + i.count, 0), [countryDistribution]);
+  const StatePieTooltip = useMemo(() => makePieTooltip(stateTotal), [stateTotal]);
+  const CountryPieTooltip = useMemo(() => makePieTooltip(countryTotal), [countryTotal]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -580,16 +650,18 @@ function IarSection({ user, isPublicView = false }) {
                             <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        {stateTop10.length > 0 && <Tooltip content={<CustomTooltip />} />}
-                        {stateTop10.length > 0 && <Legend />}
+                        {stateTop10.length > 0 && <Tooltip content={<StatePieTooltip />} />}
                       </PieChart>
                     </ResponsiveContainer>
+                    {stateTop10.length > 0 && (
+                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+                    )}
 
                     {/* Chart Statistics */}
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#67e8f9', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.reduce((sum, item) => sum + item.count, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.length}</div><div style={{ color: '#666', fontSize: '11px' }}>States Represented</div></div>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{stateDistribution.length > 0 ? Math.max(...stateDistribution.map(item => item.count)) : 0}</div><div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div></div>
+                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
+                      <h3 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
+                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '18px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state !== 'Not Found').length}</span> Indian States
+                      </h3>
                     </div>
                   </div>
                 </div>
@@ -626,38 +698,24 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-country-dist-container" className="chart-container">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-                      <div style={{ flex: '0 0 280px' }}>
-                        <ResponsiveContainer width={280} height={280}>
-                          <PieChart>
-                            <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1 }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={120} labelLine={false}>
-                              {(countryTop10.length > 0 ? countryTop10 : [{ country: '' }]).map((entry, index) => (
-                                <Cell key={index} fill={countryTop10.length > 0 ? PIE_COLORS[index % PIE_COLORS.length] : '#f0f0f0'} />
-                              ))}
-                            </Pie>
-                            {countryTop10.length > 0 && <Tooltip content={<CustomTooltip />} />}
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {countryTop10.map((entry, index) => {
-                          const total = countryTop10.reduce((s, i) => s + i.count, 0);
-                          const pct = total ? ((entry.count / total) * 100).toFixed(1) : '0.0';
-                          return (
-                            <div key={entry.country} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <span style={{ width: 12, height: 12, borderRadius: '50%', background: PIE_COLORS[index % PIE_COLORS.length], flexShrink: 0 }} />
-                              <span style={{ fontSize: '13px', fontWeight: 600, color: '#333', flex: 1 }}>{entry.country}</span>
-                              <span style={{ fontSize: '12px', color: '#666' }}>{entry.count} alumni</span>
-                              <span style={{ fontSize: '11px', color: '#999', width: '40px', textAlign: 'right' }}>{pct}%</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Countries</div></div>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.reduce((sum, item) => sum + item.count, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
-                      <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{countryDistribution.length > 0 ? Math.max(...countryDistribution.map(item => item.count)) : 0}</div><div style={{ color: '#666', fontSize: '11px' }}>Highest Count</div></div>
+                    <ResponsiveContainer width="100%" height={380}>
+                      <PieChart>
+                        <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                          {(countryTop10.length > 0 ? countryTop10 : [{ country: '', fill: '#f0f0f0' }]).map((entry, index) => (
+                            <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        {countryTop10.length > 0 && <Tooltip content={<CountryPieTooltip />} />}
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {countryTop10.length > 0 && (
+                      <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} />
+                    )}
+                    {/* Chart Statistics */}
+                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
+                      <h3 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
+                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '18px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{(summary?.total_alumni || 0) - (countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0))}</span> settled across <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{countryDistribution.length}</span> Countries
+                      </h3>
                     </div>
                   </div>
                 </div>

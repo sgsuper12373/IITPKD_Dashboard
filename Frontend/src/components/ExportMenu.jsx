@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+// html2canvas + jsPDF are only needed on-click — dynamic imports keep them
+// out of every route's initial bundle (~580 kB combined, minified).
+// jsPDF / jspdf-autotable are loaded only inside downloadPDF (currently
+// commented-out) so their imports have been removed entirely.
 
 const ExportMenu = ({
   elementId,
@@ -35,9 +36,11 @@ const ExportMenu = ({
       // Small delay to ensure the menu is closed before capturing
       await new Promise(resolve => setTimeout(resolve, 100));
 
+      // Load html2canvas only when user actually requests a PNG export
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
+        scale: 2,
         logging: false,
         useCORS: true
       });

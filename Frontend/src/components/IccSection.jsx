@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 
 import { fetchIccSummary, fetchIccYearly } from '../services/grievanceStats';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';

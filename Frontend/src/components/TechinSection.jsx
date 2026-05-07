@@ -21,7 +21,7 @@ import {
   fetchTechinFilterOptions
 } from '../services/techinStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';

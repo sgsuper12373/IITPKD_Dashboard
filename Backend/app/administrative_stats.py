@@ -93,13 +93,58 @@ def _read_common_filters():
 # ======================================================================== #
 
 
+_FILTER_COLUMN_MAP = {
+    'department': 'department',
+    'designation': 'designation',
+    'gender': 'gender',
+    'emp_type': 'emp_type',
+    'empstatus': 'empstatus',
+    'group_name': 'group_name',
+    'appointed_category': 'appointed_category',
+}
+
+
+def _cascading_conditions(active_filters, exclude_field):
+    """Build SQL conditions for all active filters except `exclude_field`.
+
+    Used by the filter-options endpoint to compute distinct values for one
+    dimension while keeping every other dimension's selection applied.
+    Returns (list_of_condition_strings, list_of_params).
+    """
+    conditions = []
+    params = []
+    for filter_name, value in active_filters.items():
+        if filter_name == exclude_field:
+            continue
+        if value is None or value == '' or value == 'All':
+            continue
+        column_name = _FILTER_COLUMN_MAP.get(filter_name)
+        if not column_name:
+            continue
+        # Mirror build_filter_query: NULL emp_type is treated as Teaching
+        if column_name == 'emp_type' and value == 'Teaching':
+            conditions.append("(emp_type = %s OR emp_type IS NULL)")
+        else:
+            conditions.append(f"{column_name} = %s")
+        params.append(value)
+    return conditions, params
+
+
 @administrative_bp.route('/stats/filter-options', methods=['GET'])
 @token_optional
 def get_filter_options(current_user_id):
     """
     Fetches distinct values for each filter field from the employees table.
-    If ?faculty_only=true, Department / Designation / Group are scoped to
-    active teaching faculty (emp_type='Teaching', designation!='Director').
+
+    Cascading behaviour: when the request includes any of department,
+    designation, gender, emp_type, empstatus, group_name, appointed_category
+    as query parameters, every dimension's distinct list is computed by
+    applying ALL OTHER active filters (each dimension excludes itself, so
+    its own dropdown still shows the values reachable given the rest).
+
+    If ?faculty_only=true, Department / Designation / Group are additionally
+    scoped to active teaching faculty (emp_type='Teaching',
+    designation!='Director', doj<=today, dor in future or null).
     """
     conn = None
     cur = None
@@ -110,48 +155,45 @@ def get_filter_options(current_user_id):
 
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         faculty_only = request.args.get('faculty_only', '').lower() == 'true'
+        active_filters = _read_common_filters()
 
-        # Scope clause for department / designation / group_name when faculty_only
         faculty_scope = (
             "emp_type = 'Teaching' AND designation != 'Director' "
             "AND doj <= CURRENT_DATE AND (dor IS NULL OR dor > CURRENT_DATE)"
         ) if faculty_only else None
 
-        filter_options = {}
+        def distinct_values(column, exclude_field, extra_scope=None):
+            base = [f"{column} IS NOT NULL"]
+            if extra_scope:
+                base.append(extra_scope)
+            cond, params = _cascading_conditions(active_filters, exclude_field)
+            where_clause = "WHERE " + " AND ".join(base + cond)
+            cur.execute(
+                f"SELECT DISTINCT {column} AS val FROM employees {where_clause} ORDER BY val;",
+                params,
+            )
+            return [row['val'] for row in cur.fetchall()]
 
-        # Department
-        dept_where = f"WHERE department IS NOT NULL AND {faculty_scope}" if faculty_scope else "WHERE department IS NOT NULL"
-        cur.execute(f"SELECT DISTINCT department FROM employees {dept_where} ORDER BY department;")
-        filter_options['department'] = [row['department'] for row in cur.fetchall()]
+        filter_options = {
+            'department': distinct_values('department', 'department', faculty_scope),
+            'designation': distinct_values('designation', 'designation', faculty_scope),
+            'gender': distinct_values('gender', 'gender'),
+            'emp_type': distinct_values('emp_type', 'emp_type'),
+            'empstatus': distinct_values('empstatus', 'empstatus'),
+            'group_name': distinct_values('group_name', 'group_name', faculty_scope),
+            'appointed_category': distinct_values('appointed_category', 'appointed_category'),
+        }
 
-        # Designation
-        desig_where = f"WHERE designation IS NOT NULL AND {faculty_scope}" if faculty_scope else "WHERE designation IS NOT NULL"
-        cur.execute(f"SELECT DISTINCT designation FROM employees {desig_where} ORDER BY designation;")
-        filter_options['designation'] = [row['designation'] for row in cur.fetchall()]
-
-        # Gender
-        cur.execute("SELECT DISTINCT gender FROM employees WHERE gender IS NOT NULL ORDER BY gender;")
-        filter_options['gender'] = [row['gender'] for row in cur.fetchall()]
-
-        # Employee Type (Teaching / Non Teaching)
-        cur.execute("SELECT DISTINCT emp_type FROM employees WHERE emp_type IS NOT NULL ORDER BY emp_type;")
-        filter_options['emp_type'] = [row['emp_type'] for row in cur.fetchall()]
-
-        # Employee Status
-        cur.execute("SELECT DISTINCT empstatus FROM employees WHERE empstatus IS NOT NULL ORDER BY empstatus;")
-        filter_options['empstatus'] = [row['empstatus'] for row in cur.fetchall()]
-
-        # Group Name
-        group_where = f"WHERE group_name IS NOT NULL AND {faculty_scope}" if faculty_scope else "WHERE group_name IS NOT NULL"
-        cur.execute(f"SELECT DISTINCT group_name FROM employees {group_where} ORDER BY group_name;")
-        filter_options['group_name'] = [row['group_name'] for row in cur.fetchall()]
-
-        # Appointed Category
-        cur.execute("SELECT DISTINCT appointed_category FROM employees WHERE appointed_category IS NOT NULL ORDER BY appointed_category;")
-        filter_options['appointed_category'] = [row['appointed_category'] for row in cur.fetchall()]
-
-        # Years of Joining (doj)
-        cur.execute("SELECT DISTINCT EXTRACT(YEAR FROM doj)::int as year FROM employees WHERE doj IS NOT NULL ORDER BY year DESC;")
+        # Years of Joining (doj) — NOT cascaded. Year is a per-chart filter
+        # (regYearFD/YW/GR, summary card selectedYear) and shrinking this list
+        # based on dimensional filters would silently invalidate the user's
+        # current year selection and return empty chart data. Keep it stable.
+        year_where = "WHERE doj IS NOT NULL"
+        if faculty_scope:
+            year_where += f" AND {faculty_scope}"
+        cur.execute(
+            f"SELECT DISTINCT EXTRACT(YEAR FROM doj)::int AS year FROM employees {year_where} ORDER BY year DESC;"
+        )
         filter_options['years'] = [row['year'] for row in cur.fetchall()]
 
         return jsonify(filter_options), 200
@@ -470,13 +512,13 @@ def get_gender_distribution(current_user_id):
             doj <= make_date(%s, 12, 31)
             AND (dor IS NULL OR dor >= make_date(%s, 12, 31))
         """
-        params = [selected_year, selected_year] + params
-
-        # ⛔ ORIGINAL BLOCK KEPT (just replaced condition variable)
+        # date_condition is APPENDED to where_clause below, so its %s
+        # placeholders come AFTER the filter %s. Append year params to match.
         if where_clause:
             where_clause += f" AND {date_condition}"
         else:
             where_clause = f"WHERE {date_condition}"
+        params = params + [selected_year, selected_year]
 
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
 
@@ -549,13 +591,13 @@ def get_category_distribution(current_user_id):
             doj <= make_date(%s, 12, 31)
             AND (dor IS NULL OR dor >= make_date(%s, 12, 31))
         """
-        params = [selected_year, selected_year] + params
-
-        # ⛔ ORIGINAL STRUCTURE KEPT
+        # date_condition is APPENDED to where_clause below, so its %s
+        # placeholders come AFTER the filter %s. Append year params to match.
         if where_clause:
             where_clause += f" AND {date_condition}"
         else:
             where_clause = f"WHERE {date_condition}"
+        params = params + [selected_year, selected_year]
 
         # ⛔ KEEP ORIGINAL FUNCTION
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
@@ -738,9 +780,15 @@ def get_yearwise_strength(current_user_id):
     An employee is counted for year Y if:
       doj <= Y-12-31  AND  (dor IS NULL OR dor >= Y-12-31)
 
-    Teaching  : employmentnature = 'Regular', emp_type = 'Teaching', designation != 'Director'
-    Non Teaching: employmentnature = 'Regular', emp_type = 'Non Teaching'
-    All       : union of the two above
+    Teaching    : emp_type = 'Teaching', designation != 'Director'
+    NonTeaching : emp_type = 'NonTeaching'
+    All         : union of the two above (i.e. excluding Research and Director)
+
+    Note: emp_type values in DB are 'Teaching' / 'NonTeaching' / 'Research'.
+    'Non Teaching' (with a space) is accepted as a backward-compat alias.
+    The previous `employmentnature = 'Regular'` filter has been dropped — DB
+    values are Contract/Permanent/Temporary; "Regular" doesn't exist there.
+    Non-regular faculty live in the separate `faculty_engagement` table.
     """
     conn = None
     cur = None
@@ -760,24 +808,20 @@ def get_yearwise_strength(current_user_id):
         # ✅ ADD THIS
         selected_year      = request.args.get('year', type=int)
 
-        # Hard-coded emp_type filter
+        # emp_type literals in the DB are 'Teaching' and 'NonTeaching'
+        # (no space). Accept 'Non Teaching' as a backward-compat alias.
         if emp_type == 'Teaching':
             emp_filter = (
-                "e.employmentnature = 'Regular' "
-                "AND e.emp_type = 'Teaching' "
+                "e.emp_type = 'Teaching' "
                 "AND e.designation != 'Director'"
             )
-        elif emp_type == 'Non Teaching':
-            emp_filter = (
-                "e.employmentnature = 'Regular' "
-                "AND e.emp_type = 'Non Teaching'"
-            )
+        elif emp_type in ('NonTeaching', 'Non Teaching'):
+            emp_filter = "e.emp_type = 'NonTeaching'"
         else:
             emp_filter = (
-                "e.employmentnature = 'Regular' "
-                "AND ("
+                "("
                 "  (e.emp_type = 'Teaching' AND e.designation != 'Director') "
-                "  OR e.emp_type = 'Non Teaching'"
+                "  OR e.emp_type = 'NonTeaching'"
                 ")"
             )
 

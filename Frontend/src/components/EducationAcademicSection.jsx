@@ -10,7 +10,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);

@@ -24,7 +24,7 @@ import {
 } from '../services/innovationStats';
 import './Page.css';
 import './PeopleCampus.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];

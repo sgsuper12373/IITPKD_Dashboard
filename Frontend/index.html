@@ -2,12 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IIT Palakkad Dashboard</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!--
+      Preload the favicon so it appears before the browser's normal
+      discovery pass (avoids a late repaint in the tab bar).
+    -->
+    <link rel="preload" as="image" href="/favicon.png" />
+
+    <!--
+      Open an early TCP+TLS connection to the API server so the first
+      authenticated request (fired right after the JS bundle boots) finds
+      the socket already warm.  %VITE_API_BASE_URL% is replaced at build
+      time by Vite; in dev it reads from .env.
+    -->
+    <link rel="preconnect" href="%VITE_API_BASE_URL%" crossorigin />
+    <link rel="dns-prefetch" href="%VITE_API_BASE_URL%" />
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      Vite injects <link rel="modulepreload"> hints for the entry chunk and
+      its eager imports automatically during `vite build`.  The lazy chunks
+      (route components) are NOT preloaded here — they are fetched on demand
+      when the user first visits that route, which is the whole point of
+      code splitting.
+    -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

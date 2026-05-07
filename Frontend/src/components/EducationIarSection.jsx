@@ -19,7 +19,7 @@ import {
   fetchIarMouList,
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import { CustomTooltip } from '../utils/chartUtils';
 

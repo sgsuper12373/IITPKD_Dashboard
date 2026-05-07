@@ -2,7 +2,7 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import './Page.css';
 import './OutreachMinimal.css';

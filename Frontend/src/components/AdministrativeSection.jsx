@@ -14,7 +14,7 @@ import {
   fetchSummary, fetchDepartmentBreakdown, fetchYearTrend,
   fetchTypeDistribution, fetchFacultyEngagementList
 } from '../services/educationStats';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import { CustomTooltip, getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
@@ -216,7 +216,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
     Promise.all([
       fetchYearwiseStrength({ num_years: 100 }, token),
       fetchYearwiseStrength({ emp_type: 'Teaching', num_years: 100 }, token),
-      fetchYearwiseStrength({ emp_type: 'Non Teaching', num_years: 100 }, token),
+      fetchYearwiseStrength({ emp_type: 'NonTeaching', num_years: 100 }, token),
     ]).then(([rAll, rTeaching, rNonTeaching]) => {
       const data = (r) => r.data || [];
       const allData = data(rAll);
@@ -227,18 +227,29 @@ function AdministrativeSection({ user, isPublicView = false }) {
     }).catch(() => { });
   }, [token, uploadVersion]);
 
+  // Cascade filter options against the current `filters` state.
+  // A short debounce + ignore-stale-response guard avoids flicker when the
+  // user clicks through several dropdowns quickly.
   useEffect(() => {
-    fetchFilterOptions(token)
-      .then(opts => setFilterOptions(opts))
-      .catch(() => setRegError('Failed to load filter options.'));
-  }, [token, uploadVersion]);
+    let cancelled = false;
+    const handle = setTimeout(() => {
+      fetchFilterOptions(token, filters)
+        .then(opts => { if (!cancelled) setFilterOptions(opts); })
+        .catch(() => { if (!cancelled) setRegError('Failed to load filter options.'); });
+    }, 120);
+    return () => { cancelled = true; clearTimeout(handle); };
+  }, [token, uploadVersion, filters]);
 
   useEffect(() => {
     if (activeView !== 'department') return;
-    fetchFacultyFilterOptions(token)
-      .then(opts => setFacultyFilterOptions(opts))
-      .catch(() => { });
-  }, [token, activeView, uploadVersion]);
+    let cancelled = false;
+    const handle = setTimeout(() => {
+      fetchFacultyFilterOptions(token, filters)
+        .then(opts => { if (!cancelled) setFacultyFilterOptions(opts); })
+        .catch(() => { });
+    }, 120);
+    return () => { cancelled = true; clearTimeout(handle); };
+  }, [token, activeView, uploadVersion, filters]);
 
   useEffect(() => {
     if (activeView !== 'department') return;
@@ -984,6 +995,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           animationDuration={800}
         >
           <LabelList
+            offset={10}
             dataKey={type}
             position="top"
             style={{ fontSize: '10px', fontWeight: 600, fill: color }}
@@ -1074,7 +1086,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 {/* Bar chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={350}>
-                    <BarChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                    <BarChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
@@ -1108,7 +1120,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 {/* Trend (Line) chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={350}>
-                    <LineChart data={yearwiseData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                    <LineChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }}>
                       <defs>
                         {SERIES_META.map(({ gradientId, color }) => (
                           <linearGradient key={gradientId} id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -1140,7 +1152,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       />
                       {SERIES_META.map(({ key, color, label }) => (
                         <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={2} hide={!visibleSeries[key]}>
-                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                          <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
                         </Line>
                       ))}
                     </LineChart>
@@ -1498,7 +1510,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   </div>
                 )}
                 <ResponsiveContainer width="100%" height={420}>
-                  <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                  <PieChart margin={{ top: 40, right: 10, bottom: 10, left: 10 }}>
                     <Pie
                       data={eduPieData}
                       cx="50%"

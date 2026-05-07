@@ -23,7 +23,7 @@ import {
 } from '../services/educationStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import '../DesignSystem.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import { useNavigate } from 'react-router-dom';

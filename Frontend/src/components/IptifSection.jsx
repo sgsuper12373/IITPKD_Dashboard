@@ -22,7 +22,7 @@ import {
   fetchIptifFilterOptions
 } from '../services/iptifStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
 import ExportMenu from './ExportMenu';

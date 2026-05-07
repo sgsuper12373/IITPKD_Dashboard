@@ -25,7 +25,7 @@ body {
   overflow-x: hidden;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   background: var(--off-white);
-  background-image: url('../assets/iitpkd_dashboard_bgi.jpg');
+  background-image: url('../assets/iitpkd_dashboard_bgi.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

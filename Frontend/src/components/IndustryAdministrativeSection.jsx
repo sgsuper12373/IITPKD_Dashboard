@@ -21,7 +21,7 @@ import {
 } from '../services/researchStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 
 import './Page.css';
 import './AcademicSection.css';

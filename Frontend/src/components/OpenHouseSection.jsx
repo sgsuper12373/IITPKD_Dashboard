@@ -21,7 +21,7 @@ import {
 } from '../services/outreachExtensionStats';
 import './Page.css';
 import './AcademicSection.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);

@@ -16,7 +16,7 @@ import {
 } from 'recharts';
 
 import { fetchEwdSummary, fetchEwdYearly } from '../services/ewdStats';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';

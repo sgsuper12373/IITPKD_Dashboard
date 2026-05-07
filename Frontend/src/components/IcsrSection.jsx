@@ -24,7 +24,7 @@ import {
   fetchIcsrEvents,
   fetchIcsrFilterOptions
 } from '../services/industryConnectStats';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import { CustomTooltip } from '../utils/chartUtils';
 import './Page.css';

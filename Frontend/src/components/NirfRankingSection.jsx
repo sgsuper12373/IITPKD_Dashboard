@@ -5,7 +5,7 @@ import './EwdSection.css'; // Use EWD styles for cards
 import axios from 'axios';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 
 const NirfRankingSection = ({ user }) => {
     const uploadVersion = useUploadRefresh();

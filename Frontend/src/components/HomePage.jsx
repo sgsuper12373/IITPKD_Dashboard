@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import './Page.css';
 import './HomePage.css';
 import SplashScreen from './SplashScreen';
-import ImageSlider from './ImageSlider';
 import NirfRankingSection from './NirfRankingSection';
+
+// ImageSlider carries its own CSS and animation logic; defer it so it doesn't
+// block the initial paint of the welcome text and splash screen.
+const ImageSlider = lazy(() => import('./ImageSlider'));
 
 // ⚙️ INSTRUCTIONS: Add your IIT Palakkad images here
 // Step 1: Place your images in: Frontend/src/assets/images/iit-palakkad/
@@ -12,11 +15,11 @@ import NirfRankingSection from './NirfRankingSection';
 // Step 3: Add them to the images array in the ImageSlider component
 
 // Example imports (uncomment and modify when you add images):
-import iitImage1 from '../assets/images/iit-palakkad/image1.jpg';
-import iitImage2 from '../assets/images/iit-palakkad/image2.jpg';
-import iitImage3 from '../assets/images/iit-palakkad/image3.jpg';
-import iitImage4 from '../assets/images/iit-palakkad/image4.jpg';
-import iitImage5 from '../assets/images/iit-palakkad/image5.png';
+import iitImage1 from '../assets/images/iit-palakkad/image1.avif';
+import iitImage2 from '../assets/images/iit-palakkad/image2.avif';
+import iitImage3 from '../assets/images/iit-palakkad/image3.avif';
+import iitImage4 from '../assets/images/iit-palakkad/image4.avif';
+import iitImage5 from '../assets/images/iit-palakkad/image5.avif';
 import iitImage6 from '../assets/images/iit-palakkad/image6.jpg';
 
 
@@ -49,7 +52,9 @@ function HomePage({ user }) {
             <h1>Exploring the Vision that shapes Indian Institute of Technology Palakkad</h1>
 
             {/* Image Slider - IIT Palakkad Images */}
-            <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
+            <Suspense fallback={<div style={{ height: 320, background: '#f0f0f0', borderRadius: 8 }} />}>
+              <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
+            </Suspense>
 
             <div className="content-card">
 

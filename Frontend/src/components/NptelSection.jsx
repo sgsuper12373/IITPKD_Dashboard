@@ -18,7 +18,7 @@ import {
 import './Page.css';
 import './AcademicSection.css';
 import '../DesignSystem.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import { CustomTooltip } from '../utils/chartUtils';
 import ExportMenu from './ExportMenu';

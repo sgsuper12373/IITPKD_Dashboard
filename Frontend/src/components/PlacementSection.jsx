@@ -34,7 +34,7 @@ import { CustomTooltip } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 
 const GENDER_COLORS = ['#6366f1', '#ec4899', '#f97316'];
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];

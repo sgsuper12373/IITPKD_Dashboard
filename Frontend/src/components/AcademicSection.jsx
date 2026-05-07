@@ -9,7 +9,7 @@ import {
   fetchProgramTrends, fetchCumulativeStudentSummary, fetchOnrollSummary
 } from '../services/academicStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-import DataUploadModal from './DataUploadModal';
+import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import '../DesignSystem.css';
