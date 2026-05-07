@@ -3,7 +3,6 @@
 /* Matching People & Campus style for uniformity */
 /* ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
 
 :root {
   --accent-orange: #f7a600;
@@ -111,7 +110,7 @@
   cursor: pointer;
   overflow: hidden;
 
-  transition: all 0.35s var(--transition-smooth);
+  transition: transform 0.35s var(--transition-smooth), box-shadow 0.35s var(--transition-smooth), border-color 0.35s var(--transition-smooth);
 }
 
 .research-section-card::before {

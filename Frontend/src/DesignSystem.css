@@ -161,7 +161,7 @@
   padding: 12px 24px;
   border-radius: 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
 }
 
 .subtle-spinner {
@@ -204,7 +204,7 @@
   font-weight: 500;
   color: #6c757d;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(3px);
   border-radius: 12px;
   opacity: 1;
   transform: translateY(0) scale(1);

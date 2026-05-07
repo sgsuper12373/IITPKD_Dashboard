@@ -10,7 +10,7 @@
   justify-content: center;
   overflow: hidden;
   opacity: 1;
-  animation: fadeOut 0.3s ease-out 1.7s forwards;
+  animation: fadeOut 0.25s ease-out 1.0s forwards;
 }
 
 .splash-screen.visible {
@@ -59,9 +59,9 @@
   /* ⚙️ ADJUST BLUR: backdrop-filter blurs the background image behind the oval */
   /* Higher values = more blur (e.g., 20px = heavy blur, 5px = light blur) */
   /* Set to 0px or remove property to disable blur effect */
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   /* ⚙️ Change blur amount: 0px = no blur, 5px = light, 10px = medium, 20px = heavy */
-  -webkit-backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(4px);
   /* Browser compatibility for Safari */
 
   border-radius: 50%;
@@ -74,7 +74,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: slideDownOval 1.5s ease-out forwards;
+  animation: slideDownOval 0.9s ease-out forwards;
   opacity: 0;
   /* ⚙️ NOTE: This opacity is for animation only - don't change here for transparency */
   min-width: 500px;
@@ -84,7 +84,7 @@
 }
 
 .splash-logo-container {
-  animation: slideDownLogo 1.5s ease-out forwards;
+  animation: slideDownLogo 0.9s ease-out forwards;
   opacity: 0;
   margin-bottom: 15px;
   /* ⚙️ ADJUST SPACING: Space between logo and text (reduced to bring text closer to logo) */
@@ -99,7 +99,7 @@
 }
 
 .splash-text-container {
-  animation: slideDownText 1.5s ease-out 0.2s forwards;
+  animation: slideDownText 0.9s ease-out 0.1s forwards;
   opacity: 0;
 }
 

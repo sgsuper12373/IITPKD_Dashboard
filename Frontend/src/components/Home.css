@@ -25,12 +25,6 @@ body {
   overflow-x: hidden;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   background: var(--off-white);
-  background-image: url('../assets/iitpkd_dashboard_bgi.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  /* Keeps background fixed while scrolling */
   color: var(--text-main);
 }
 
@@ -38,6 +32,7 @@ body {
 body {
   padding-top: 130px;
   /* Total height: ~72px (header) + ~54px (navbar) + buffer */
+  background: transparent;
 }
 
 #root {
@@ -506,4 +501,16 @@ body {
   height: 1px;
   background: var(--border-light);
   margin: 8px 16px;
+}
+
+/* Fixed bg on its own GPU layer — avoids expensive repaints from background-attachment: fixed */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url('../assets/iitpkd_dashboard_bgi.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
 }
