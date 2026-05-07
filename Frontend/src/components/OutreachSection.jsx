@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
@@ -129,7 +129,7 @@ function formatValue(value) {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function FieldRow({ label, value }) {
+const FieldRow = memo(({ label, value }) => {
   const formatted = formatValue(value);
   if (!isNonNull(formatted)) return null;
   return (
@@ -157,9 +157,9 @@ function FieldRow({ label, value }) {
       </span>
     </div>
   );
-}
+});
 
-function SectionHeading({ children }) {
+const SectionHeading = memo(({ children }) => {
   return (
     <div style={{
       fontSize: '0.72rem',
@@ -173,9 +173,9 @@ function SectionHeading({ children }) {
       {children}
     </div>
   );
-}
+});
 
-function ExtraDataSection({ data }) {
+const ExtraDataSection = memo(({ data }) => {
   if (!data || typeof data !== 'object') return null;
   const entries = Object.entries(data).filter(([, v]) => isNonNull(v));
   if (entries.length === 0) return null;
@@ -187,9 +187,9 @@ function ExtraDataSection({ data }) {
       ))}
     </>
   );
-}
+});
 
-function GridRecordCard({ record, slNo, onClick }) {
+const GridRecordCard = memo(({ record, slNo, onClick }) => {
   return (
     <div
       onClick={onClick}
@@ -253,9 +253,9 @@ function GridRecordCard({ record, slNo, onClick }) {
       )}
     </div>
   );
-}
+});
 
-function RecordExpandedView({ record, programConfig, onBack }) {
+const RecordExpandedView = memo(({ record, programConfig, onBack }) => {
   const hasSpecificData = programConfig.specificFields.some(({ key }) => isNonNull(record[key]));
   const hasNssData =
     programConfig.key !== 'nss_activities' &&
@@ -328,9 +328,9 @@ function RecordExpandedView({ record, programConfig, onBack }) {
       </div>
     </div>
   );
-}
+});
 
-function ProgramDetailView({ programConfig, records, user, token, loading }) {
+const ProgramDetailView = memo(({ programConfig, records, user, token, loading }) => {
   const navigate = useNavigate();
   const matching = records.filter((r) => programConfig.match(r.program_name));
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -440,7 +440,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
       />
     </div>
   );
-}
+});
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
