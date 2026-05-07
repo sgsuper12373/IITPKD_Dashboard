@@ -483,7 +483,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                     <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Funded + Consultancy</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Sponsored + Consultancy</span>
                   </div>
                 </div>
               </div>
@@ -500,7 +500,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div style={{ position: 'relative', zIndex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎯</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Funded Projects</h3>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Sponsored Projects</h3>
                   </div>
                   <div className="metric-value" style={{ color: 'white' }}>
                     {formatNumber(summary.funded_projects)}
@@ -531,7 +531,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                     <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Client engagements</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + Completed</span>
                   </div>
                 </div>
               </div>
@@ -548,14 +548,14 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div style={{ position: 'relative', zIndex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                     <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💰</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Revenue</h3>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Project Value</h3>
                   </div>
                   <div className="metric-value-sm" style={{ color: 'white' }} title={`₹${formatNumber(summary.consultancy_revenue)}`}>
                     {formatCompactCurrency(summary.consultancy_revenue)}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                     <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Sanctioned amount</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}> Sponsored + Consultancy  </span>
                   </div>
                 </div>
               </div>

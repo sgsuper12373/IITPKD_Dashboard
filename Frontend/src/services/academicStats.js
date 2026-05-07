@@ -66,6 +66,39 @@ export const fetchGenderDistributionFiltered = async (filters, token) => {
   }
 };
 
+export const fetchStateDistributionFiltered = async (filters, token) => {
+  try {
+    const params = new URLSearchParams();
+
+    Object.keys(filters).forEach(key => {
+      const value = filters[key];
+      if (value !== null && value !== undefined && value !== '') {
+        if (key === 'yearofadmission' && value === 'All') {
+          params.append(key, 'All');
+        } else {
+          params.append(key, value);
+        }
+      }
+    });
+
+    const response = await axios.get(
+      `${API_BASE_URL}/stats/state-distribution?${params.toString()}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching state distribution:', error);
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Failed to fetch state distribution');
+    }
+    throw new Error('Network error. Please check if the backend server is running.');
+  }
+};
+
 /**
  * Fetches student strength data grouped by program based on provided filters.
  * @param {Object} filters - Filter object

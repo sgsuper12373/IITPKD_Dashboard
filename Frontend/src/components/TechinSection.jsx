@@ -432,8 +432,9 @@ function TechinSection({ user, isPublicView = false }) {
             ← Back to Innovation &amp; Entrepreneurship
           </button>
         )}
+        
 
-        <h1 style={{ marginBottom: '5px' }}>TechIn</h1>
+        <h1 style={{ marginTop: '20px' ,  marginBottom: '10px' }}>TechIn</h1>
 
         {/* Upload Buttons */}
         {!isReadOnlyView && isAdmin && (
@@ -456,7 +457,7 @@ function TechinSection({ user, isPublicView = false }) {
 
         {/* Summary header + export */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>TechIn Summary</h2>
+          
           <ExportMenu
             elementId="techin-summary-cards-container"
             data={[summary]}
@@ -493,8 +494,8 @@ function TechinSection({ user, isPublicView = false }) {
           <ExportMenu
             elementId="techin-revenue-metrics-container"
             data={[summary]}
-            headers={['Total Revenue', 'Highest Revenue', 'Average Revenue', 'Lowest Revenue']}
-            keys={['total_startup_revenue', 'highest_revenue', 'average_revenue', 'lowest_revenue']}
+            headers={['Total Revenue', 'Highest Revenue', 'Average Revenue']}
+            keys={['total_startup_revenue', 'highest_revenue', 'average_revenue']}
             filename="techin_revenue_metrics"
             title="Startup Revenue Metrics"
           />
@@ -503,8 +504,7 @@ function TechinSection({ user, isPublicView = false }) {
           {[
             { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
             { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
-            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue },
-            { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', shadow: '0 8px 20px rgba(239,68,68,0.2)', label: 'Lowest Revenue', value: summary.lowest_revenue },
+            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
           ].map(({ bg, shadow, label, value }) => (
             <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />

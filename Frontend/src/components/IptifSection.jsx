@@ -495,7 +495,7 @@ function IptifSection({ user, isPublicView = false }) {
 
         {/* Summary header + export */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-          <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>IPTIF Summary</h2>
+          
           <ExportMenu
             elementId="iptif-summary-cards-container"
             data={[summary]}

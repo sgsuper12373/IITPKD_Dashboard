@@ -469,7 +469,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
               transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            🏭 Industry Collaborations
+            🏭 Research Collaborations
           </button>
           <button
             onClick={() => setActiveTab('education')}
@@ -482,7 +482,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
               transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            🎓 Education Collaborations
+            🎓 Academic Collaborations
           </button>
         </div>
 

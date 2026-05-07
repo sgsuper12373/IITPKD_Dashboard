@@ -159,7 +159,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 🤝
               </span>
               {isPublicView
-                ? 'Education Collaborations'
+                ? 'Acadamic Collaborations'
                 : 'International & Alumni Relations MoUs'
               }
 

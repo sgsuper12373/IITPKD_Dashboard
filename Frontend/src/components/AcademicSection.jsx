@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
   fetchFilterOptions, fetchGenderDistributionFiltered, fetchGenderTrends,
-  fetchProgramTrends, fetchCumulativeStudentSummary, fetchOnrollSummary
+  fetchProgramTrends, fetchCumulativeStudentSummary, fetchOnrollSummary, fetchStateDistributionFiltered
 } from '../services/academicStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
@@ -21,6 +21,44 @@ const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
 // UG / PG / Research grouping colours (match summary cards)
 const GROUP_COLORS = { UG: '#4f46e5', PG: '#f97316', Research: '#06b6d4', Total: '#22c55e' };
+
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316'];
+const OTHERS_PIE_COLOR = '#a1a1aa';
+
+function PieDistributionTable({ data, nameKey, total, colors }) {
+  if (!data?.length) return null;
+  return (
+    <div style={{ marginTop: '16px', overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <thead>
+          <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
+            <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
+            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>Count</th>
+            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>% of Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((entry, index) => {
+            const fill = entry.fill || colors[index % colors.length];
+            const pct = total > 0 ? ((entry.count / total) * 100).toFixed(1) : '0.0';
+            return (
+              <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                <td style={{ padding: '7px 10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: fill, flexShrink: 0, display: 'inline-block' }} />
+                    {entry[nameKey]}
+                  </div>
+                </td>
+                <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 500 }}>{entry.count}</td>
+                <td style={{ padding: '7px 10px', textAlign: 'right', color: '#667eea', fontWeight: 600 }}>{pct}%</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 // Gender colours per group — for stacked bars
 const GENDER_PALETTE = {
@@ -100,21 +138,22 @@ const InlineLegend = ({ payload, totalLabel, totalValue }) => (
 const fs = { padding: '0.28rem 1.6rem 0.28rem 0.45rem', fontSize: '0.75rem', borderRadius: '7px' };
 
 function SharedFilters({
-  mode,            // 'gender' | 'program'
+  mode,            // 'gender' | 'program' | 'state'
   filterOptions,
-  // gender-breakdown state
   selectedGender, setSelectedGender,
   trendYears, setTrendYears,
   genderTrendFilters, handleGenderTrendFilterChange, handleClearGenderTrendFilters,
-  // program-group state
   programTrendFilters, handleProgramTrendFilterChange, handleClearProgramTrendFilters,
-  // stacked gender toggle (program mode)
+  stateDistributionFilters, handleStateDistributionFilterChange, handleClearStateDistributionFilters,
   stackGender, setStackGender,
 }) {
   const isGender = mode === 'gender';
-  const filters = isGender ? genderTrendFilters : programTrendFilters;
-  const onChange = isGender ? handleGenderTrendFilterChange : handleProgramTrendFilterChange;
-  const onClear = isGender ? handleClearGenderTrendFilters : handleClearProgramTrendFilters;
+  const isProgram = mode === 'program';
+  const isState = mode === 'state';
+
+  const filters = isGender ? genderTrendFilters : (isProgram ? programTrendFilters : stateDistributionFilters);
+  const onChange = isGender ? handleGenderTrendFilterChange : (isProgram ? handleProgramTrendFilterChange : handleStateDistributionFilterChange);
+  const onClear = isGender ? handleClearGenderTrendFilters : (isProgram ? handleClearProgramTrendFilters : handleClearStateDistributionFilters);
 
   return (
     <div style={{ background: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '0.85rem' }}>
@@ -125,22 +164,31 @@ function SharedFilters({
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: '0.5rem' }}>
 
-        {/* Gender selector — only shown in gender mode */}
-        {isGender && (
+        {/* Gender selector */}
+        {(isGender || isState) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
             <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>Gender</label>
-            <select value={selectedGender} onChange={e => setSelectedGender(e.target.value)} className="filter-select" style={fs}>
-              <option value="All">M:F:T</option>
-              <option value="Total">Total</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Transgender">Transgender</option>
-            </select>
+            {isGender ? (
+              <select value={selectedGender} onChange={e => setSelectedGender(e.target.value)} className="filter-select" style={fs}>
+                <option value="All">M:F:T</option>
+                <option value="Total">Total</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Transgender">Transgender</option>
+              </select>
+            ) : (
+              <select value={filters.gender || 'All'} onChange={e => onChange('gender', e.target.value)} className="filter-select" style={fs}>
+                <option value="All">M:F:T</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Transgender">Transgender</option>
+              </select>
+            )}
           </div>
         )}
 
         {/* Stack gender toggle — only shown in program mode */}
-        {!isGender && (
+        {isProgram && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
             <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>Gender Stack</label>
             <select value={stackGender ? 'yes' : 'no'} onChange={e => setStackGender(e.target.value === 'yes')} className="filter-select" style={fs}>
@@ -202,39 +250,8 @@ function SharedFilters({
           </select>
         </div>
 
-        {/* PWD 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>PWD</label>
-          <select
-            value={filters.pwd === true ? 'true' : filters.pwd === false ? 'false' : 'All'}
-            onChange={e => {
-              const v = e.target.value;
-              onChange('pwd', v === 'true' ? true : v === 'false' ? false : null);
-            }}
-            className="filter-select" style={fs}
-          >
-            <option value="All">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div> */}
-
         {/* No. of Years — shown in gender mode */}
-        {isGender && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>No. of Years</label>
-            <select value={trendYears} onChange={e => setTrendYears(parseInt(e.target.value, 10))} className="filter-select" style={fs}>
-              <option value={1}>Last 1 Yr</option>
-              <option value={2}>Last 2 Yrs</option>
-              <option value={3}>Last 3 Yrs</option>
-              <option value={5}>Last 5 Yrs</option>
-              <option value={10}>Last 10 Yrs</option>
-            </select>
-          </div>
-        )}
-
-        {/* No. of Years — shown in program mode too */}
-        {!isGender && (
+        {(isGender || isProgram) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
             <label style={{ fontSize: '0.7rem', fontWeight: 600, color: '#1a1a1a' }}>No. of Years</label>
             <select value={trendYears} onChange={e => setTrendYears(parseInt(e.target.value, 10))} className="filter-select" style={fs}>
@@ -284,7 +301,7 @@ function AcademicSection({ user, isPublicView = false }) {
   const [selectedGender, setSelectedGender] = useState('All');
   const [chartType, setChartType] = useState('Bar');
   const [trendYears, setTrendYears] = useState(10);
-  const [programChartMode, setProgramChartMode] = useState('gender'); // 'gender' | 'program'
+  const [programChartMode, setProgramChartMode] = useState('gender'); // 'gender' | 'program' | 'state'
   const [stackGender, setStackGender] = useState(false); // stacked gender in program chart
 
   // Gender trend data
@@ -303,6 +320,15 @@ function AcademicSection({ user, isPublicView = false }) {
   const [programTrendFilters, setProgramTrendFilters] = useState({
     program: null, batch: null, department: null, state: null, category: null, pwd: null
   });
+
+  // State distribution data
+  const [stateDistribution, setStateDistribution] = useState([]);
+  const [stateDistributionLoading, setStateDistributionLoading] = useState(true);
+  const [stateDistributionFilters, setStateDistributionFilters] = useState({
+    gender: null, program: null, batch: null, department: null, state: null
+  });
+
+
 
   const token = localStorage.getItem('authToken');
 
@@ -399,6 +425,19 @@ function AcademicSection({ user, isPublicView = false }) {
     load();
   }, [programTrendFilters, token, uploadVersion]);
 
+  // ── State distribution ───────────────────────────────────────────────────
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setStateDistributionLoading(true);
+        const r = await fetchStateDistributionFiltered(stateDistributionFilters, token);
+        setStateDistribution(r.data || []);
+      } catch (err) { console.error(err); }
+      finally { setStateDistributionLoading(false); }
+    };
+    load();
+  }, [stateDistributionFilters, token, uploadVersion]);
+
   // ── Derived display data ──────────────────────────────────────────────────
   const displayGenderTrendData = useMemo(() => {
     if (!genderTrendData || genderTrendData.length === 0) return [];
@@ -441,11 +480,28 @@ function AcademicSection({ user, isPublicView = false }) {
   const hasTrendData = displayGenderTrendData.some(d => (d.Total || 0) > 0 || (d.Male || 0) > 0 || (d.Female || 0) > 0);
   const hasProgramTrendData = ugPgResearchTrend.length > 0 && ugPgResearchTrend.some(d => d.Total > 0);
 
+  // Top 5 states + one "Others" arc for the rest
+  const stateTop10 = useMemo(() => {
+    const sorted = [...stateDistribution]
+      .filter(item => item.state && item.state !== 'Not Found' && item.state.toLowerCase() !== 'unknown')
+      .sort((a, b) => b.count - a.count);
+    const top5 = sorted.slice(0, 5);
+    const rest = sorted.slice(5);
+    if (rest.length > 0) {
+      top5.push({ state: 'Others', count: rest.reduce((s, i) => s + i.count, 0), fill: '#a1a1aa' });
+    }
+    return top5;
+  }, [stateDistribution]);
+  
+  const stateTotal = useMemo(() => stateDistribution.reduce((s, i) => s + i.count, 0), [stateDistribution]);
+
   // ── Filter handlers ───────────────────────────────────────────────────────
   const handleGenderTrendFilterChange = (n, v) => setGenderTrendFilters(prev => ({ ...prev, [n]: v === 'All' ? null : v }));
   const handleClearGenderTrendFilters = () => { setGenderTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(10); setSelectedGender('All'); setChartType('Bar'); };
   const handleProgramTrendFilterChange = (n, v) => setProgramTrendFilters(prev => ({ ...prev, [n]: v === 'All' ? null : v }));
   const handleClearProgramTrendFilters = () => { setProgramTrendFilters({ program: null, batch: null, department: null, state: null, category: null, pwd: null }); setTrendYears(10); setStackGender(false); };
+  const handleStateDistributionFilterChange = (n, v) => setStateDistributionFilters(prev => ({ ...prev, [n]: v === 'All' ? null : v }));
+  const handleClearStateDistributionFilters = () => { setStateDistributionFilters({ gender: null, program: null, batch: null, department: null, state: null }); };
 
   const areaKeys = selectedGender === 'All' ? ['Male', 'Female', 'Transgender'] : [selectedGender];
 
@@ -605,7 +661,7 @@ function AcademicSection({ user, isPublicView = false }) {
           <div>
             {/* Mode toggle */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-              {[{ key: 'gender', label: 'Gender Breakdown' }, { key: 'program', label: 'UG / PG / Research' }].map(({ key, label }) => (
+              {[{ key: 'gender', label: 'Gender Breakdown' }, { key: 'program', label: 'UG / PG / Research' }, { key: 'state', label: 'State Distribution' }].map(({ key, label }) => (
                 <button key={key} onClick={() => setProgramChartMode(key)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: programChartMode === key ? '#667eea' : '#e9ecef', color: programChartMode === key ? '#fff' : '#333', fontWeight: programChartMode === key ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>{label}</button>
               ))}
             </div>
@@ -622,17 +678,22 @@ function AcademicSection({ user, isPublicView = false }) {
               programTrendFilters={programTrendFilters}
               handleProgramTrendFilterChange={handleProgramTrendFilterChange}
               handleClearProgramTrendFilters={handleClearProgramTrendFilters}
+              stateDistributionFilters={stateDistributionFilters}
+              handleStateDistributionFilterChange={handleStateDistributionFilterChange}
+              handleClearStateDistributionFilters={handleClearStateDistributionFilters}
               stackGender={stackGender} setStackGender={setStackGender}
             />
 
             {/* Bar / Trend toggle */}
-            <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
-              {['Bar', 'Trend'].map(mode => (
-                <button key={mode} onClick={() => setChartType(mode)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: chartType === mode ? '#667eea' : '#e9ecef', color: chartType === mode ? '#fff' : '#333', fontWeight: chartType === mode ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>
-                  {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
-                </button>
-              ))}
-            </div>
+            {(programChartMode === 'gender' || programChartMode === 'program') && (
+              <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
+                {['Bar', 'Trend'].map(mode => (
+                  <button key={mode} onClick={() => setChartType(mode)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: chartType === mode ? '#667eea' : '#e9ecef', color: chartType === mode ? '#fff' : '#333', fontWeight: chartType === mode ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>
+                    {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* ── Gender breakdown charts ── */}
             {programChartMode === 'gender' && (
@@ -910,6 +971,70 @@ function AcademicSection({ user, isPublicView = false }) {
                       )}
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+            
+            {/* ── State Distribution View ── */}
+            {programChartMode === 'state' && (
+              <div className={`bar-chart-container trend-chart ${stateTop10.length > 0 ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                  <h3 className="chart-heading" style={{ margin: 0 }}>
+                    State Wise Distribution
+                    <span style={{ fontSize: '0.75rem', color: '#666', marginLeft: '8px', fontWeight: 400 }}>(Students in India)</span>
+                  </h3>
+                  <ExportMenu
+                    elementId="academic-state-dist-container"
+                    data={stateTop10}
+                    headers={['State', 'Count']}
+                    keys={['state', 'count']}
+                    filename="academic_state_distribution"
+                    title="State Wise Distribution"
+                  />
+                </div>
+                
+                <div style={{ position: 'relative' }}>
+                  {stateTop10.length === 0 && (
+                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
+                      <span style={{ fontSize: '40px', marginBottom: '10px' }}>🗺️</span>
+                      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No state distribution data to display.</p>
+                    </div>
+                  )}
+                  <div id="academic-state-dist-container" className="chart-container">
+                    <ResponsiveContainer width="100%" height={380}>
+                      <PieChart>
+                        <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                          {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
+                            <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        {stateTop10.length > 0 && <Tooltip content={(props) => {
+                          const { active, payload } = props;
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+                                <p style={{ margin: 0, fontWeight: 'bold' }}>{data.state}</p>
+                                <p style={{ margin: 0 }}>Count: {data.count}</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} />}
+                      </PieChart>
+                    </ResponsiveContainer>
+                    
+                    {stateTop10.length > 0 && (
+                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+                    )}
+
+                    {/* Chart Statistics */}
+                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
+                      <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
+                        Total Students in India : <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '22px' }}>{stateTotal}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state && s.state !== 'Not Found' && s.state.toLowerCase() !== 'unknown').length}</span> Indian States
+                      </h2>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

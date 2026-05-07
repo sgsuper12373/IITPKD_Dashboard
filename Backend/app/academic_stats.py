@@ -225,6 +225,68 @@ def get_gender_distribution_filtered(current_user_id):
             release_db_connection(conn)
 
 
+@academic_bp.route('/stats/state-distribution', methods=['GET'])
+@token_optional
+def get_state_distribution(current_user_id):
+    """Fetches student state distribution based on provided filters."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        if conn is None:
+            return jsonify({'message': 'Database connection failed!'}), 500
+
+        filters = {
+            'yearofadmission': request.args.get('yearofadmission', type=str),
+            'program': request.args.get('program', type=str),
+            'batch': request.args.get('batch', type=str),
+            'department': request.args.get('department', type=str),
+            'gender': request.args.get('gender', type=str),
+            'state': request.args.get('state', type=str),
+        }
+        
+
+
+        where_clause, params = build_filter_query(filters)
+
+        if where_clause:
+            query = f"""
+                SELECT state, COUNT(*) as count
+                FROM {STUDENT_TABLE}
+                {where_clause} AND state IS NOT NULL AND TRIM(state) != ''
+                GROUP BY state
+                ORDER BY count DESC;
+            """
+        else:
+            query = f"""
+                SELECT state, COUNT(*) as count
+                FROM {STUDENT_TABLE}
+                WHERE state IS NOT NULL AND TRIM(state) != ''
+                GROUP BY state
+                ORDER BY count DESC;
+            """
+
+        cur = conn.cursor()
+        cur.execute(query, params)
+        results = cur.fetchall()
+
+        data = []
+        for row in results:
+            data.append({
+                'state': row['state'],
+                'count': row['count']
+            })
+
+        return jsonify({'data': data}), 200
+
+    except Exception as e:
+        print(f"Error fetching state distribution: {e}")
+        return jsonify({'message': 'An error occurred while fetching state distribution.'}), 500
+    finally:
+        if conn:
+            cur.close()
+            release_db_connection(conn)
+
+
 @academic_bp.route('/stats/student-strength', methods=['GET'])
 @token_optional
 def get_student_strength(current_user_id):

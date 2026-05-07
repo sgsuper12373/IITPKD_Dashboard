@@ -27,7 +27,7 @@ function ResearchPublicView({ user }) {
     },
     {
       id: 'icsr-mous',
-      title: 'Industry Collaboration',
+      title: 'Research Collaboration',
       subtitle: '',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
       icon: '🤝',
