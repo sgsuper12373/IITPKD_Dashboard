@@ -321,7 +321,7 @@ def get_icsr_events(current_user_id):
 @industry_connect_bp.route('/icsr/filter-options', methods=['GET'])
 @token_optional
 def get_icsr_filter_options(current_user_id):
-    """Get filter options for ICSR events."""
+    """Get filter options for ICSR events with cross-filtering."""
     if not _data_available():
         return jsonify({'message': 'Industry connect tables are missing.'}), 500
 
@@ -332,19 +332,29 @@ def get_icsr_filter_options(current_user_id):
         if conn is None:
             return jsonify({'message': 'Database connection failed.'}), 500
 
+        active_event_type = request.args.get('event_type')
+        active_year = request.args.get('year')
+        def clean(v): return None if (v is None or v in ('', 'All')) else v
+        active_event_type = clean(active_event_type)
+        active_year = clean(active_year)
+
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        # Get distinct event types
-        cur.execute(f"SELECT DISTINCT event_type FROM {INDUSTRY_EVENTS_TABLE} WHERE event_type IS NOT NULL ORDER BY event_type;")
+        # Event types: filter by year only
+        year_cond = "WHERE COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) = %s AND event_type IS NOT NULL" if active_year else "WHERE event_type IS NOT NULL"
+        year_params = [int(active_year)] if active_year else []
+        cur.execute(f"SELECT DISTINCT event_type FROM {INDUSTRY_EVENTS_TABLE} {year_cond} ORDER BY event_type;", year_params)
         event_types = [row['event_type'] for row in cur.fetchall()]
 
-        # Get distinct years (from 'year' column or date_of_event)
+        # Years: filter by event_type only
+        type_cond = "WHERE event_type = %s AND COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL" if active_event_type else "WHERE COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL"
+        type_params = [active_event_type] if active_event_type else []
         cur.execute(f"""
             SELECT DISTINCT COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) as year
             FROM {INDUSTRY_EVENTS_TABLE}
-            WHERE COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL
+            {type_cond}
             ORDER BY year DESC;
-        """)
+        """, type_params)
         years = [row['year'] for row in cur.fetchall()]
 
         return jsonify({

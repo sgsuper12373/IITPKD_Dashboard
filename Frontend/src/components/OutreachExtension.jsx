@@ -68,8 +68,8 @@ function OutreachExtension({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  // Show public view for unauthenticated users or role_id === 1
-  if (!user || roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 0
+  if (!user || roleId === 0 || roleId === 1) {
     return <OutreachPublicView user={user} />;
   }
 
@@ -95,7 +95,8 @@ function OutreachExtension({ user }) {
     <div className="page-container">
       <div className="page-content">
         {/* Public view button for non-public users */}
-        <div style={{ marginBottom: '1rem' }}>
+        {roleId !== 0 && roleId !== 1 && (
+          <div style={{ marginBottom: '1rem' }}>
           <button
             className="page-upload-btn"
             onClick={() => setShowPublicView(true)}
@@ -103,6 +104,7 @@ function OutreachExtension({ user }) {
             View Public Page
           </button>
         </div>
+        )}
 
         <div className="people-campus-grid">
           {OUTREACH_EXTENSION_SECTIONS.map((section) => {
@@ -110,6 +112,7 @@ function OutreachExtension({ user }) {
             const isSuperAdmin = roleId === 3;
             const isAllowed =
               isSuperAdmin ||
+              roleId === 1 ||
               (section.allowedRoles && section.allowedRoles.includes(roleId));
 
             if (!isAllowed) {

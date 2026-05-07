@@ -75,9 +75,9 @@ export const fetchIptifFacilities = async (filters, token) => {
 };
 
 // Filter Options
-export const fetchIptifFilterOptions = async (token) => {
+export const fetchIptifFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/filter-options`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/filter-options${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch IPTIF filter options');

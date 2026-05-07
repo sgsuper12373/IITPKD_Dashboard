@@ -29,7 +29,8 @@ function PieDistributionTable({ data, nameKey, total, colors }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
           <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
             <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
@@ -56,6 +57,7 @@ function PieDistributionTable({ data, nameKey, total, colors }) {
           })}
         </tbody>
       </table>
+)}</>
     </div>
   );
 }
@@ -139,7 +141,7 @@ const fs = { padding: '0.28rem 1.6rem 0.28rem 0.45rem', fontSize: '0.75rem', bor
 
 function SharedFilters({
   mode,            // 'gender' | 'program' | 'state'
-  filterOptions,
+  token,
   selectedGender, setSelectedGender,
   trendYears, setTrendYears,
   genderTrendFilters, handleGenderTrendFilterChange, handleClearGenderTrendFilters,
@@ -154,6 +156,51 @@ function SharedFilters({
   const filters = isGender ? genderTrendFilters : (isProgram ? programTrendFilters : stateDistributionFilters);
   const onChange = isGender ? handleGenderTrendFilterChange : (isProgram ? handleProgramTrendFilterChange : handleStateDistributionFilterChange);
   const onClear = isGender ? handleClearGenderTrendFilters : (isProgram ? handleClearProgramTrendFilters : handleClearStateDistributionFilters);
+
+  const [localOptions, setLocalOptions] = useState({
+    program: [], batch: [], branch: [], department: [], category: [], state: []
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadOptions = async () => {
+      try {
+        const options = await fetchFilterOptions(filters, token);
+        if (!isMounted) return;
+        setLocalOptions(options);
+
+        // Auto-correct invalid filter selections
+        const activeFilters = { ...filters };
+        let hasChanges = false;
+        
+        ['program', 'batch', 'department', 'state'].forEach(key => {
+          if (activeFilters[key] && activeFilters[key] !== 'All' && options[key] && !options[key].includes(activeFilters[key])) {
+            activeFilters[key] = null; // 'All' translates to null in the parent state
+            hasChanges = true;
+          }
+        });
+
+        if (hasChanges) {
+          if (isGender) {
+            ['program', 'batch', 'department', 'state'].forEach(k => {
+              if (activeFilters[k] === null && genderTrendFilters[k] !== null) handleGenderTrendFilterChange(k, 'All');
+            });
+          } else if (isProgram) {
+            ['program', 'batch', 'department', 'state'].forEach(k => {
+              if (activeFilters[k] === null && programTrendFilters[k] !== null) handleProgramTrendFilterChange(k, 'All');
+            });
+          } else if (isState) {
+            ['program', 'batch', 'department', 'state'].forEach(k => {
+              if (activeFilters[k] === null && stateDistributionFilters[k] !== null) handleStateDistributionFilterChange(k, 'All');
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load local filter options', err);
+      }
+    };
+    loadOptions();
+  }, [filters, token]);
 
   return (
     <div style={{ background: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '0.85rem' }}>
@@ -207,7 +254,7 @@ function SharedFilters({
             className="filter-select" style={fs}
           >
             <option value="All">All</option>
-            {filterOptions.program.map(p => <option key={p} value={p}>{p}</option>)}
+            {localOptions.program.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
         </div>
 
@@ -220,7 +267,7 @@ function SharedFilters({
             className="filter-select" style={fs}
           >
             <option value="All">All</option>
-            {filterOptions.batch.map(b => <option key={b} value={b}>{b}</option>)}
+            {localOptions.batch.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
 
@@ -233,7 +280,7 @@ function SharedFilters({
             className="filter-select" style={fs}
           >
             <option value="All">All</option>
-            {filterOptions.department.map(d => <option key={d} value={d}>{d}</option>)}
+            {localOptions.department.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
 
@@ -246,7 +293,7 @@ function SharedFilters({
             className="filter-select" style={fs}
           >
             <option value="All">All</option>
-            {filterOptions.state.map(s => <option key={s} value={s}>{s}</option>)}
+            {localOptions.state.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
 
@@ -346,20 +393,30 @@ function AcademicSection({ user, isPublicView = false }) {
     return ['All', ...years.map(String)];
   }, [filterOptions.yearofadmission]);
 
-  // ── Fetch filter options ──────────────────────────────────────────────────
+  // ── Fetch global filter options (for top level) ──────────────────────────────────
   useEffect(() => {
+    let isMounted = true;
     const load = async () => {
       try {
         setLoading(true); setError(null);
-        const options = await fetchFilterOptions(token);
+        // Only fetch base options without filters to populate the top-level year dropdown
+        const options = await fetchFilterOptions(null, token);
+        if (!isMounted) return;
         setFilterOptions(options);
-        if (options.latest_year) {
+        
+        // Always ensure yearofadmission is set to latest year on mount if not set
+        if (!filters.yearofadmission && options.latest_year) {
           setFilters(prev => ({ ...prev, yearofadmission: options.latest_year }));
         }
-      } catch { setError('Failed to load filter options. Please try again.'); }
-      finally { setLoading(false); }
+      } catch { 
+        if (isMounted) setError('Failed to load filter options. Please try again.'); 
+      }
+      finally { 
+        if (isMounted) setLoading(false); 
+      }
     };
     load();
+    return () => { isMounted = false; };
   }, [token, uploadVersion]);
 
   // ── Cumulative summary ───────────────────────────────────────────────────
@@ -571,7 +628,8 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Students On Roll"
           />
         </div>
-        <div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {[
             { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
             { label: 'UG', icon: '📘', value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
@@ -598,6 +656,7 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
+)}</>
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
@@ -610,7 +669,8 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Student Summary"
           />
         </div>
-        <div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {/* Year filter card */}
           <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(168,85,247,0.3)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
@@ -655,6 +715,7 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
+)}</>
 
         {/* ══ Charts ════════════════════════════════════════════════════════ */}
         <div className="chart-section">
@@ -712,7 +773,8 @@ function AcademicSection({ user, isPublicView = false }) {
 
                 {/* Trend (line) */}
                 <div id="academic-gender-trend-chart" className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={340}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={340}>
                     <LineChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <AreaGradients />
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
@@ -759,11 +821,13 @@ function AcademicSection({ user, isPublicView = false }) {
                       ))}
                     </LineChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
 
                 {/* Bar */}
                 <div id="academic-gender-bar-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={340}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={340}>
                     <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -813,6 +877,7 @@ function AcademicSection({ user, isPublicView = false }) {
                       {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} /></Bar>}
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             )}
@@ -842,7 +907,8 @@ function AcademicSection({ user, isPublicView = false }) {
 
                 {/* Bar chart */}
                 <div id="academic-program-strength-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={stackGender ? 480 : 420}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={stackGender ? 480 : 420}>
                     <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -909,11 +975,13 @@ function AcademicSection({ user, isPublicView = false }) {
                       ))}
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
 
                 {/* Trend (line) chart */}
                 <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={420}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                     <LineChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -971,6 +1039,7 @@ function AcademicSection({ user, isPublicView = false }) {
                       )}
                     </LineChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             )}
@@ -1001,7 +1070,8 @@ function AcademicSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="academic-state-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -1023,9 +1093,12 @@ function AcademicSection({ user, isPublicView = false }) {
                         }} />}
                       </PieChart>
                     </ResponsiveContainer>
+)}</>
                     
                     {stateTop10.length > 0 && (
-                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+)}</>
                     )}
 
                     {/* Chart Statistics */}

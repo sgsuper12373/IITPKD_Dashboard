@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -166,11 +166,16 @@ function PlacementSection({ user, isPublicView = false }) {
     }
   };
 
+  const currentFilters = getCurrentFilters();
+  const serializedFilters = JSON.stringify(currentFilters);
+
   // ── Filter options ────────────────────────────────────────────────────────
   useEffect(() => {
+    let isMounted = true;
     const load = async () => {
       try {
-        const options = await fetchPlacementFilterOptions(token);
+        const options = await fetchPlacementFilterOptions(currentFilters, token);
+        if (!isMounted) return;
         const rawGenders = Array.isArray(options?.genders) ? options.genders : [];
         setFilterOptions({
           years: Array.isArray(options?.years) ? options.years : [],
@@ -178,13 +183,39 @@ function PlacementSection({ user, isPublicView = false }) {
           genders: rawGenders.length > 0 ? rawGenders : ['Male', 'Female', 'Transgender'],
           sectors: Array.isArray(options?.sectors) ? options.sectors : []
         });
+
+        // Auto-correct invalid filter selections
+        let hasChanges = false;
+        const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
+        const corrections = {};
+
+        if (activeFields.includes('year') && currentFilters.year !== 'All' && options.years && !options.years.includes(currentFilters.year)) {
+          corrections.year = 'All'; hasChanges = true;
+        }
+        if (activeFields.includes('program') && currentFilters.program !== 'All' && options.programs && !options.programs.includes(currentFilters.program)) {
+          corrections.program = 'All'; hasChanges = true;
+        }
+        if (activeFields.includes('gender') && currentFilters.gender !== 'All' && options.genders && !options.genders.includes(currentFilters.gender)) {
+          corrections.gender = 'All'; hasChanges = true;
+        }
+        if (activeFields.includes('sector') && currentFilters.sector !== 'All' && options.sectors && !options.sectors.includes(currentFilters.sector)) {
+          corrections.sector = 'All'; hasChanges = true;
+        }
+
+        if (hasChanges) {
+          Object.entries(corrections).forEach(([field, val]) => handleFilterChange(field, val));
+        }
+
       } catch (err) {
-        console.error('Failed to fetch placement filter options:', err);
-        setError(err.message || 'Failed to load placement filter options.');
+        if (isMounted) {
+          console.error('Failed to fetch placement filter options:', err);
+          setError(err.message || 'Failed to load placement filter options.');
+        }
       }
     };
     load();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion, viewType]);
 
   // ── Data loaders ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -600,7 +631,8 @@ function PlacementSection({ user, isPublicView = false }) {
           />
         </div>
 
-        <div id="placement-summary-cards-container" style={{
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="placement-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '24px',
@@ -683,6 +715,7 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           </div>
         </div>
+)}</>
 
         {/* ── Unified Filter + Chart Container ── */}
         <div style={{
@@ -730,7 +763,8 @@ function PlacementSection({ user, isPublicView = false }) {
                     }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                   ))}
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   {trendChartMode === 'bar' ? (
                     <BarChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -764,6 +798,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </LineChart>
                   )}
                 </ResponsiveContainer>
+)}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div className="metric-value-sm" style={{ color: '#6366f1' }}>{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
@@ -803,7 +838,8 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${genderBarData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
@@ -818,6 +854,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+)}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
                   {genderBarData.map((item, index) => (
                     <div key={item.gender} style={{ textAlign: 'center', minWidth: '120px' }}>
@@ -853,7 +890,8 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${programStatusChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   <BarChart data={programStatusChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
@@ -867,6 +905,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+)}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px' }}>
                   {programStatusChartData.map((item) => (
                     <div key={item.program} style={{ textAlign: 'center', minWidth: '80px' }}>
@@ -900,7 +939,8 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${recruiterChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   <BarChart data={recruiterChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -914,6 +954,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+)}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
@@ -950,7 +991,8 @@ function PlacementSection({ user, isPublicView = false }) {
                   const pieData = [...top5];
                   if (otherTotal > 0) pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal });
                   return (
-                    <ResponsiveContainer width="100%" height={350}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                       <PieChart>
                         <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                           {pieData.map((entry, index) => (
@@ -961,6 +1003,7 @@ function PlacementSection({ user, isPublicView = false }) {
                         <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
                       </PieChart>
                     </ResponsiveContainer>
+)}</>
                   );
                 })()}
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
@@ -993,7 +1036,8 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${packageTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   <LineChart data={packageTrendChartData} margin={{ top: 10, right: 20, left: 50, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -1010,6 +1054,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Line>
                   </LineChart>
                 </ResponsiveContainer>
+)}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.average_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.highest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div></div>
@@ -1039,7 +1084,8 @@ function PlacementSection({ user, isPublicView = false }) {
               </div>
               <div id="placement-top-recruiters-table">
                 <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-                  <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
                     <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                       <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
                         <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
@@ -1074,6 +1120,7 @@ function PlacementSection({ user, isPublicView = false }) {
                       )}
                     </tbody>
                   </table>
+)}</>
                 </div>
                 {topRecruiters.length > 0 && (
                   <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>

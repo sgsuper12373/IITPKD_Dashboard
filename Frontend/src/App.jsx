@@ -112,7 +112,7 @@ function App() {
 
   const handleGuestAccess = () => {
     setIsGuestMode(true);
-    setUser({ username: 'Guest', display_name: 'Guest', role_id: 1, isGuest: true });
+    setUser({ username: 'Guest', display_name: 'Guest', role_id: 0, isGuest: true });
   };
 
   const handleLogout = () => {
@@ -155,6 +155,15 @@ function App() {
   const AuthRoute = ({ children }) =>
     token ? children : <Navigate to="/login" replace />;
 
+  const AdminRoute = ({ children }) => {
+    // Restrict role 0 from accessing individual admin sections
+    if (!user || user.role_id === 0) {
+      return <Navigate to="/" replace />;
+    }
+    return children;
+  };
+
+
   return (
     <Router>
       <ScrollToTop />
@@ -177,35 +186,35 @@ function App() {
           >
             <Route index element={<HomePage user={user} />} />
             <Route path="people-campus" element={<PeopleCampus user={user} />} />
-            <Route path="people-campus/academic-section" element={<AcademicSection user={user} />} />
-            <Route path="people-campus/administrative-section" element={<AdministrativeSection user={user} />} />
-            <Route path="people-campus/igrc" element={<IgrcSection user={user} />} />
-            <Route path="people-campus/icc" element={<IccSection user={user} />} />
-            <Route path="people-campus/ewd" element={<EwdSection user={user} />} />
-            <Route path="people-campus/iar" element={<IarSection user={user} />} />
+            <Route path="people-campus/academic-section" element={<AdminRoute><AcademicSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/administrative-section" element={<AdminRoute><AdministrativeSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/igrc" element={<AdminRoute><IgrcSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/icc" element={<AdminRoute><IccSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/ewd" element={<AdminRoute><EwdSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/iar" element={<AdminRoute><IarSection user={user} /></AdminRoute>} />
             <Route path="research" element={<Research user={user} />} />
-            <Route path="research/icsr" element={<ResearchIcsrSection user={user} />} />
-            <Route path="patents" element={<Patents user={user} />} />
-            <Route path="mou-collaborations" element={<MoUCollaborations user={user} />} />
-            <Route path="research/administrative-section" element={<IndustryAdministrativeSection user={user} />} />
-            <Route path="research/library" element={<ResearchLibrarySection user={user} />} />
+            <Route path="research/icsr" element={<AdminRoute><ResearchIcsrSection user={user} /></AdminRoute>} />
+            <Route path="patents" element={<AdminRoute><Patents user={user} /></AdminRoute>} />
+            <Route path="mou-collaborations" element={<AdminRoute><MoUCollaborations user={user} /></AdminRoute>} />
+            <Route path="research/administrative-section" element={<AdminRoute><IndustryAdministrativeSection user={user} /></AdminRoute>} />
+            <Route path="research/library" element={<AdminRoute><ResearchLibrarySection user={user} /></AdminRoute>} />
             <Route path="education" element={<Education user={user} />} />
-            <Route path="education/placements" element={<PlacementSection user={user} />} />
-            <Route path="education/academic-section" element={<EducationAcademicSection user={user} />} />
-            <Route path="education/iar" element={<EducationIarSection user={user} />} />
+            <Route path="education/placements" element={<AdminRoute><PlacementSection user={user} /></AdminRoute>} />
+            <Route path="education/academic-section" element={<AdminRoute><EducationAcademicSection user={user} /></AdminRoute>} />
+            <Route path="education/iar" element={<AdminRoute><EducationIarSection user={user} /></AdminRoute>} />
             <Route path="industry-connect" element={<IndustryConnect user={user} />} />
             <Route path="innovation-entrepreneurship" element={<InnovationEntrepreneurship user={user} />} />
-            <Route path="innovation-entrepreneurship/iptif" element={<IptifSection user={user} />} />
-            <Route path="innovation-entrepreneurship/techin" element={<TechinSection user={user} />} />
-            <Route path="industry-connect/icsr" element={<IcsrSection user={user} />} />
-            <Route path="industry-connect/conclave" element={<ConclaveSection user={user} />} />
+            <Route path="innovation-entrepreneurship/iptif" element={<AdminRoute><IptifSection user={user} /></AdminRoute>} />
+            <Route path="innovation-entrepreneurship/techin" element={<AdminRoute><TechinSection user={user} /></AdminRoute>} />
+            <Route path="industry-connect/icsr" element={<AdminRoute><IcsrSection user={user} /></AdminRoute>} />
+            <Route path="industry-connect/conclave" element={<AdminRoute><ConclaveSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension" element={<OutreachExtension user={user} />} />
-            <Route path="outreach-extension/open-house" element={<OpenHouseSection user={user} />} />
-            <Route path="outreach-extension/nptel" element={<NptelSection user={user} />} />
-            <Route path="outreach-extension/uba" element={<UbaSection user={user} />} />
-            <Route path="outreach-extension/social-engagements" element={<SocialEngagement user={user} />} />
-            <Route path="outreach-extension/students-engagement" element={<StudentsEngagementSection user={user} />} />
-            <Route path="outreach-extension/outreach" element={<OutreachSection user={user} />} />
+            <Route path="outreach-extension/open-house" element={<AdminRoute><OpenHouseSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/nptel" element={<AdminRoute><NptelSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/uba" element={<AdminRoute><UbaSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/social-engagements" element={<AdminRoute><SocialEngagement user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/students-engagements" element={<AdminRoute><StudentsEngagementSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/outreach" element={<AdminRoute><OutreachSection user={user} /></AdminRoute>} />
             {/* Public view sub-routes — social engagement */}
             <Route path="outreach-extension/social-engagement" element={<SocialEngagement user={user} />} />
             <Route path="outreach-extension/social-engagement/UBA" element={<UbaSection user={user} isPublicView={true} />} />
@@ -213,6 +222,7 @@ function App() {
             <Route path="outreach-extension/social-engagement/InstituteVisits" element={<OutreachSection user={user} isPublicView={true} programKey="institute_visits" />} />
             <Route path="outreach-extension/social-engagement/NSS" element={<OutreachSection user={user} isPublicView={true} programKey="nss_activities" />} />
             {/* Public view sub-routes — students engagement */}
+            <Route path="outreach-extension/students-engagement" element={<StudentsEngagementSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/students-engagement/nptel" element={<NptelSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/students-engagement/pmc" element={<OutreachSection user={user} isPublicView={true} programKey="palakkad_math_circle" />} />
             <Route path="outreach-extension/students-engagement/pbd" element={<OutreachSection user={user} isPublicView={true} programKey="pale_blue_dot" />} />

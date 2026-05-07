@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
@@ -317,8 +317,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
   // EDUCATION — DATA FETCHING
   // ══════════════════════════════════════════════════════════════════════════
 
+  const serializedEduFilters = JSON.stringify(eduFilters);
   useEffect(() => {
-    fetchEduFilterOptions(token).then(options => {
+    let isMounted = true;
+    fetchEduFilterOptions(eduFilters, token).then(options => {
+      if (!isMounted) return;
       const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
       setEduFilterOptions({
         years: fetchedYears,
@@ -326,12 +329,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
         departments: Array.isArray(options?.departments) ? options.departments : [],
         engagement_types: Array.isArray(options?.engagement_types) ? options.engagement_types : []
       });
+      // Only set default year if currently 'All'
       const defaultYear = options?.current_year
         ? String(options.current_year)
         : fetchedYears.length > 0 ? String(fetchedYears[0]) : 'All';
       setEduFilters(prev => prev.year === 'All' ? { ...prev, year: defaultYear } : prev);
     }).catch(err => setEduError(err.message || 'Failed to load education filter options.'));
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedEduFilters, token, uploadVersion]);
 
   useEffect(() => {
     const loadEduData = async () => {
@@ -722,7 +727,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
               title="Employee Summary"
             />
           </div>
-          <div id="admin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="admin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
             {/* Year picker card */}
             <div style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -777,6 +783,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               );
             })}
           </div>
+)}</>
         </>
       );
     }
@@ -815,7 +822,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
           </div>
         </div>
         <div id={exportId} style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#f8fafc' }}>
               <tr>
                 <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
@@ -835,6 +843,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               )}
             </tbody>
           </table>
+)}</>
         </div>
       </div>
     );
@@ -851,7 +860,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
             title="Non-Regular Faculty Summary"
           />
         </div>
-        <div
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div
           id="nonreg-summary-cards-container"
           style={{
             display: 'grid',
@@ -937,6 +947,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             );
           })}
         </div>
+)}</>
 
         {selectedCardType && section === 'education' && (
           <DrilldownTable
@@ -1085,7 +1096,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Bar chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={350}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                     <BarChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -1115,11 +1127,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       ))}
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
 
                 {/* Trend (Line) chart */}
                 <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={350}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                     <LineChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }}>
                       <defs>
                         {SERIES_META.map(({ gradientId, color }) => (
@@ -1157,6 +1171,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       ))}
                     </LineChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             </>
@@ -1189,7 +1204,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   </div>
                 )}
                 <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
-                  <ResponsiveContainer width="100%" height={420}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                     <BarChart data={expertiseData} margin={{ top: 5, right: 20, left: 0, bottom: 130 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
@@ -1200,6 +1216,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             </>
@@ -1229,7 +1246,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No gender data matches the current filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={420}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                   <PieChart>
                     <Pie
                       data={genderData.length > 0 ? genderData : [{ name: '', value: 1, fill: '#f0f0f0' }]}
@@ -1250,6 +1268,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     )}
                   </PieChart>
                 </ResponsiveContainer>
+)}</>
                 {genderData.length > 0 && (
                   <div style={{ textAlign: 'center', fontWeight: 700, color: '#1a1a1a', fontSize: '0.85rem', marginTop: '10px' }}>
                     Total Employees: {genderTotal}
@@ -1306,7 +1325,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Bar chart */}
                 <div className={`chart-wrapper ${eduDeptChartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={400}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
@@ -1334,11 +1354,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
 
                 {/* Trend (Line) chart */}
                 <div className={`chart-wrapper ${eduDeptChartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={400}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
@@ -1366,6 +1388,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             </>
@@ -1423,7 +1446,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Bar chart */}
                 <div className={`chart-wrapper ${eduTrendChartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={400}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
@@ -1450,11 +1474,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
 
                 {/* Line chart */}
                 <div className={`chart-wrapper ${eduTrendChartType === 'Line' ? 'active' : 'inactive'}`}>
-                  <ResponsiveContainer width="100%" height={400}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
@@ -1481,6 +1507,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>
+)}</>
                 </div>
               </div>
             </>
@@ -1509,7 +1536,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={420}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                   <PieChart margin={{ top: 40, right: 10, bottom: 10, left: 10 }}>
                     <Pie
                       data={eduPieData}
@@ -1559,6 +1587,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     />
                   </PieChart>
                 </ResponsiveContainer>
+)}</>
               </div>
             </>
           )}
@@ -1592,7 +1621,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#94a3b8' }}>No engagement data available for the selected filters.</p>
                   </div>
                 )}
-                <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
                   <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
                     <tr>
                       {['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks'].map(h => (
@@ -1612,6 +1642,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     ))}
                   </tbody>
                 </table>
+)}</>
               </div>
             </>
           )}

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import InnovationPublicView from './InnovationPublicView';
 import {
@@ -151,18 +151,37 @@ function InnovationSectionContent({ user, isPublicView }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load filter options on mount
+  // Cross-filtering: reload options whenever filters change
+  const serializedFilters = JSON.stringify({ status: filters.status, sector: filters.sector, year: filters.year });
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchFilterOptions(token);
+        const options = await fetchFilterOptions({ status: filters.status, sector: filters.sector, year: filters.year }, token);
+        if (!isMounted) return;
         setFilterOptions(options);
+
+        // Auto-correct invalid selections
+        const corrections = {};
+        if (filters.status !== 'All' && filters.status && options.statuses && !options.statuses.includes(filters.status)) {
+          corrections.status = 'All';
+        }
+        if (filters.sector !== 'All' && filters.sector && options.sectors && !options.sectors.includes(filters.sector)) {
+          corrections.sector = 'All';
+        }
+        if (filters.year !== 'All' && filters.year && options.years && !options.years.includes(filters.year) && !options.years.map(String).includes(String(filters.year))) {
+          corrections.year = 'All';
+        }
+        if (Object.keys(corrections).length > 0) {
+          setFilters(prev => ({ ...prev, ...corrections }));
+        }
       } catch (err) {
-        console.error('Error loading filter options:', err);
+        if (isMounted) console.error('Error loading filter options:', err);
       }
     };
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   useEffect(() => {
     const loadSummary = async () => {
@@ -930,7 +949,8 @@ function InnovationSectionContent({ user, isPublicView }) {
 
             {yearlyChartData.length > 0 ? (
               <div id="innovation-yearly-growth-container" className="chart-container">
-                <ResponsiveContainer width="100%" height={400}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                   <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis
@@ -984,6 +1004,7 @@ function InnovationSectionContent({ user, isPublicView }) {
 </Line>
                   </LineChart>
                 </ResponsiveContainer>
+)}</>
 
                 {/* Chart Statistics */}
                 <div style={{
@@ -1055,7 +1076,8 @@ function InnovationSectionContent({ user, isPublicView }) {
 
             {sectorPieData.length > 0 ? (
               <div id="innovation-sector-dist-container" className="chart-container">
-                <ResponsiveContainer width="100%" height={450}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={450}>
                   <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
                     <Pie
                       data={sectorPieData}
@@ -1101,6 +1123,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                     />
                   </PieChart>
                 </ResponsiveContainer>
+)}</>
 
                 {/* Sector Statistics */}
                 <div style={{
@@ -1183,7 +1206,8 @@ function InnovationSectionContent({ user, isPublicView }) {
             {startupsList.length > 0 ? (
               <div>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="grievance-table" style={{
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="grievance-table" style={{
                     width: '100%',
                     borderCollapse: 'collapse',
                     backgroundColor: '#fff',
@@ -1257,6 +1281,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                       ))}
                     </tbody>
                   </table>
+)}</>
                 </div>
 
                 {/* Table Statistics */}

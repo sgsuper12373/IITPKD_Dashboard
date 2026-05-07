@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -202,18 +202,23 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
     }
   };
 
-  // Fetch filter options
+  const currentFilters = getCurrentFilters();
+  const serializedFilters = JSON.stringify(currentFilters);
+
+  // Fetch filter options — cross-filtering: refetch when current filters change
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchFilterOptions(token);
+        const options = await fetchFilterOptions(currentFilters, token);
+        if (!isMounted) return;
         const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
         setFilterOptions({
           years: fetchedYears,
           departments: Array.isArray(options?.departments) ? options.departments : [],
           engagement_types: Array.isArray(options?.engagement_types) ? options.engagement_types : []
         });
-        
+
         // Automatically set the latest year as default if currently 'All'
         if (fetchedYears.length > 0) {
           const latestYear = fetchedYears[0].toString();
@@ -224,16 +229,32 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           setDetailsFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
           setHonoraryFilters(prev => prev.year === 'All' ? { ...prev, year: latestYear } : prev);
         }
-        
+
+        // Auto-correct invalid filter selections
+        const corrections = {};
+        let hasChanges = false;
+        if (currentFilters.year !== 'All' && currentFilters.year && fetchedYears.length && !fetchedYears.map(String).includes(String(currentFilters.year))) {
+          corrections.year = 'All'; hasChanges = true;
+        }
+        if (currentFilters.department !== 'All' && currentFilters.department && options.departments && !options.departments.includes(currentFilters.department)) {
+          corrections.department = 'All'; hasChanges = true;
+        }
+        if (hasChanges) {
+          Object.entries(corrections).forEach(([field, val]) => handleFilterChange(field, val));
+        }
+
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch filter options:', err);
-        setError(err.message || 'Failed to load filter options.');
+        if (isMounted) {
+          console.error('Failed to fetch filter options:', err);
+          setError(err.message || 'Failed to load filter options.');
+        }
       }
     };
 
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion, viewType]);
 
   // Fetch summary data
   useEffect(() => {
@@ -707,7 +728,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-summary-cards-container" style={{
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="education-summary-cards-container" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                 gap: '1.5rem',
@@ -792,6 +814,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
                 )}
               </div>
+)}</>
 
               {summary.overall_total > 0 && (
                 <div style={{
@@ -874,7 +897,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                     <div id="education-summary-drilldown-table" style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                           <tr style={{ backgroundColor: '#f8fafc' }}>
                             <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
@@ -898,6 +922,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           )}
                         </tbody>
                       </table>
+)}</>
                     </div>
                 </div>
               )}
@@ -1012,7 +1037,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No department data available for the selected filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={400}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                   <BarChart data={departmentChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                     <XAxis
@@ -1052,6 +1078,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     })}
                   </BarChart>
                 </ResponsiveContainer>
+)}</>
               </div>
             </div>
           </div>
@@ -1164,7 +1191,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No trend data available for the selected filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={400}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                   <LineChart data={yearTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                     <XAxis
@@ -1202,6 +1230,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     })}
                   </LineChart>
                 </ResponsiveContainer>
+)}</>
               </div>
             </div>
           </div>
@@ -1314,7 +1343,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={400}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                   <PieChart>
                     <Pie
                       data={pieChartData}
@@ -1340,6 +1370,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     />
                   </PieChart>
                 </ResponsiveContainer>
+)}</>
               </div>
             </div>
           </div>
@@ -1452,7 +1483,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       <p>No engagement data available for the selected filters.</p>
                     </div>
                   )}
-                  <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
                     <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
                       <tr>
                         <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
@@ -1474,6 +1506,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       ))}
                     </tbody>
                   </table>
+)}</>
                 </div>
               )}
             </div>
@@ -1587,7 +1620,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       <p>No honorary professors found for the selected filters.</p>
                     </div>
                   )}
-                  <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
                     <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
                       <tr>
                         <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
@@ -1609,6 +1643,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       ))}
                     </tbody>
                   </table>
+)}</>
                 </div>
               )}
             </div>

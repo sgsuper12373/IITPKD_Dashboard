@@ -65,11 +65,11 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const [iarChartMode, setIarChartMode] = useState('bar');
   const [iarUploadOpen, setIarUploadOpen] = useState(false);
 
-  // Load ICSR filter options
+  // Load ICSR filter options (cross-filtered by active mou_year)
   useEffect(() => {
     const load = async () => {
       try {
-        const opts = await fetchResearchFilterOptions(token);
+        const opts = await fetchResearchFilterOptions({ mou_year: icsrFilters.mou_year }, token);
         setIcsrFilterOpts({
           mou_years: opts?.mou_years ? [...opts.mou_years].sort((a, b) => b - a) : [],
         });
@@ -78,7 +78,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
       }
     };
     load();
-  }, [token, uploadVersion]);
+  }, [icsrFilters.mou_year, token, uploadVersion]);
 
   // Load ICSR MoU data
   useEffect(() => {
@@ -99,18 +99,18 @@ function MoUCollaborations({ user, isPublicView = false }) {
     load();
   }, [icsrFilters, token, uploadVersion]);
 
-  // Load IAR filter options
+  // Load IAR filter options (cross-filtered by active mou_year)
   useEffect(() => {
     const load = async () => {
       try {
-        const opts = await fetchIarMouFilterOptions(token);
+        const opts = await fetchIarMouFilterOptions({ mou_year: iarFilters.mou_year }, token);
         setIarFilterOpts({ mou_years: opts?.mou_years || [] });
       } catch (e) {
         console.error('Failed to load IAR filter options:', e);
       }
     };
     load();
-  }, [token, uploadVersion]);
+  }, [iarFilters.mou_year, token, uploadVersion]);
 
   // Load IAR MoU data
   useEffect(() => {
@@ -264,7 +264,8 @@ function MoUCollaborations({ user, isPublicView = false }) {
               <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
-              <ResponsiveContainer width="100%" height={400}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                 {chartMode === 'bar' ? (
                   <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -291,6 +292,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                   </LineChart>
                 )}
               </ResponsiveContainer>
+)}</>
             </div>
           </>
         )}
@@ -303,7 +305,8 @@ function MoUCollaborations({ user, isPublicView = false }) {
               className="table-responsive"
               style={{ maxHeight: '450px', overflowY: 'auto' }}
             >
-              <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                 <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
                   <tr>
                     {showIarColumns ? (
@@ -358,6 +361,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                   )}
                 </tbody>
               </table>
+)}</>
             </div>
           </>
         )}

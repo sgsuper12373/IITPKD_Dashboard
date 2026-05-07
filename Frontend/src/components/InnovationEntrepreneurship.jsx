@@ -21,8 +21,8 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
   ];
   const [showPublicView, setShowPublicView] = useState(false);
 
-  // Show public view for unauthenticated users or role_id === 1
-  if (!user || roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 0
+  if (!user || roleId === 0 || roleId === 1) {
     return <InnovationPublicView user={user} />;
   }
 
@@ -48,7 +48,8 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
     <div className="page-container">
       <div className="page-content">
         {/* Public view button for non-public users */}
-        <div style={{ marginBottom: '1rem' }}>
+        {roleId !== 0 && roleId !== 1 && (
+          <div style={{ marginBottom: '1rem' }}>
           <button
             className="page-upload-btn"
             onClick={() => setShowPublicView(true)}
@@ -56,6 +57,7 @@ function InnovationEntrepreneurship({ user, isPublicView }) {
             View Public Page
           </button>
         </div>
+        )}
 
         <div className="people-campus-grid" style={{ marginTop: '2rem' }}>
           {sections.map((section, index) => {

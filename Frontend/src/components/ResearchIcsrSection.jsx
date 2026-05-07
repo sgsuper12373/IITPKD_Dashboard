@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -187,10 +187,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     transition: 'all 0.2s ease'
   });
 
+  const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchResearchFilterOptions(token);
+        const options = await fetchResearchFilterOptions(filters, token);
+        if (!isMounted) return;
         setFilterOptions({
           project_departments: Array.isArray(options?.project_departments) ? options.project_departments : [],
           project_years: Array.isArray(options?.project_years)
@@ -206,13 +209,15 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         });
         setError(null);
       } catch (err) {
-        console.error('Failed to load research filter options:', err);
-        setError(err.message || 'Failed to load filter options.');
+        if (isMounted) {
+          console.error('Failed to load research filter options:', err);
+          setError(err.message || 'Failed to load filter options.');
+        }
       }
     };
-
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -456,7 +461,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         </div>
 
         {/* Modern Summary Cards */}
-        <div id="icsr-summary-cards-container" style={{
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="icsr-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
@@ -612,6 +618,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             </div>
           )}
         </div>
+)}</>
 
         {/* ✅ GLOBAL FILTER BLOCK — hidden when MoU view (MoU has its own unified container) */}
         {viewType !== 'mou' && (
@@ -850,7 +857,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div className={`section-empty-state ${projectTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   {projectsChartMode === 'bar' ? (
                     <BarChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -889,6 +897,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     </LineChart>
                   )}
                 </ResponsiveContainer>
+)}</>
               </div>
             </section>
           )}
@@ -936,7 +945,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div className={`section-empty-state ${patentTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                   {patentsChartMode === 'bar' ? (
                     <BarChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -973,6 +983,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     </LineChart>
                   )}
                 </ResponsiveContainer>
+)}</>
               </div>
             </section>
           )}
@@ -1007,7 +1018,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               </div>
 
               <div id="research-projects-directory-table" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                   <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                     <tr>
                       <th style={{ padding: '10px' }}>Title</th>
@@ -1038,6 +1050,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     )}
                   </tbody>
                 </table>
+)}</>
               </div>
             </section>
           )}
@@ -1217,7 +1230,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                         <p>No information available for the selected filter</p>
                       </div>
-                      <ResponsiveContainer width="100%" height={450}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={450}>
                         {mouChartMode === 'bar' ? (
                           <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1252,6 +1266,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           </LineChart>
                         )}
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </>
                 )}
@@ -1263,7 +1278,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     className="table-responsive"
                     style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}
                   >
-                    <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                       <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
                         <tr>
                           <th style={{ padding: '10px' }}>Partner</th>
@@ -1290,6 +1306,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         )}
                       </tbody>
                     </table>
+)}</>
                   </div>
                 )}
 

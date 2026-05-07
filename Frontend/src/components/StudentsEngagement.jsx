@@ -162,8 +162,6 @@ function StudentsEngagementSection({ user, isPublicView = false }) {
 
   const content = activeSection ? expandedView : grid;
 
-  if (isPublicView) return content;
-
   return (
     <div className="page-container">
       <div className="page-content">

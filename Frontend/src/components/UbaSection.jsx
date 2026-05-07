@@ -416,7 +416,8 @@ function UbaSection({ user, isPublicView = false }) {
               border: '1px solid #e0e0e0',
               borderRadius: '8px'
             }}>
-              <table style={{
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{
                 width: '100%',
                 borderCollapse: 'collapse',
                 fontSize: '14px',
@@ -463,6 +464,7 @@ function UbaSection({ user, isPublicView = false }) {
                   ))}
                 </tbody>
               </table>
+)}</>
             </div>
           )}
         </div>

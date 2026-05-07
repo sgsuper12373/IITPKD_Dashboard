@@ -27,9 +27,9 @@ const handleError = (error, defaultMessage) => {
   throw new Error('Network error. Please check if the backend server is running.');
 };
 
-export const fetchFilterOptions = async (token) => {
+export const fetchFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/filter-options`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/filter-options${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch filter options');

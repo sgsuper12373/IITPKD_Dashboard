@@ -552,7 +552,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   </p>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={350}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                 <LineChart data={timeline}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
@@ -577,6 +578,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   </Line>
                 </LineChart>
               </ResponsiveContainer>
+)}</>
             </div>
           )}
 
@@ -602,7 +604,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   </p>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={350}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                 <BarChart data={timeline}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
@@ -623,6 +626,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+)}</>
             </div>
           )}
         </div>
@@ -755,7 +759,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
 
 
         <div id="openhouse-events-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table style={{
+          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{
             width: '100%',
             borderCollapse: 'collapse',
             backgroundColor: '#fff',
@@ -852,6 +857,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               )}
             </tbody>
           </table>
+)}</>
         </div>
 
         {/* Pagination */}

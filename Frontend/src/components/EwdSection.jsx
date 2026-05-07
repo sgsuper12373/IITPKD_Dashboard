@@ -230,7 +230,8 @@ function EwdSection({ user, isPublicView = false }) {
               />
             </div>
             {/* Modern Summary Cards */}
-            <div id="ewd-summary-cards-container" style={{
+            <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="ewd-summary-cards-container" style={{
               display: 'grid',
               gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
               gap: '20px',
@@ -335,6 +336,7 @@ function EwdSection({ user, isPublicView = false }) {
                 </div>
               </div>
             </div>
+)}</>
 
             {selectedYearData && (
               <div style={{
@@ -584,7 +586,8 @@ function EwdSection({ user, isPublicView = false }) {
                     </div>
                     {/* Bar chart */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={380}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={380}>
                         <BarChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -596,10 +599,12 @@ function EwdSection({ user, isPublicView = false }) {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                     {/* Trend chart */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={380}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={380}>
                         <LineChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -611,6 +616,7 @@ function EwdSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </div>
                 )}
@@ -658,7 +664,8 @@ function EwdSection({ user, isPublicView = false }) {
                   <div id="ewd-percapita-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={400}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                         <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -676,10 +683,12 @@ function EwdSection({ user, isPublicView = false }) {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                     {/* Trend chart */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={400}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                         <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -697,6 +706,7 @@ function EwdSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </div>
                 )}
@@ -744,7 +754,8 @@ function EwdSection({ user, isPublicView = false }) {
                   <div id="ewd-environment-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={370}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={370}>
                         <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -756,10 +767,12 @@ function EwdSection({ user, isPublicView = false }) {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                     {/* Trend (Area) chart */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={370}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={370}>
                         <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
                           <defs>
                             <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
@@ -777,6 +790,7 @@ function EwdSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </div>
                 )}

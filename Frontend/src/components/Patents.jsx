@@ -46,20 +46,29 @@ function Patents({ user, isPublicView = false }) {
   const [viewType, setViewType] = useState('trend');
   const [chartMode, setChartMode] = useState('bar');
 
+  const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
+    let isMounted = true;
     const load = async () => {
       try {
-        const opts = await fetchResearchFilterOptions(token);
-        setFilterOptions({
-          patent_years: opts?.patent_years ? [...opts.patent_years].sort((a, b) => b - a) : [],
-          patent_statuses: opts?.patent_statuses || [],
-        });
+        const opts = await fetchResearchFilterOptions({ patent_year: filters.patent_year, patent_status: filters.patent_status }, token);
+        if (!isMounted) return;
+        const patent_years = opts?.patent_years ? [...opts.patent_years].sort((a, b) => b - a) : [];
+        const patent_statuses = opts?.patent_statuses || [];
+        setFilterOptions({ patent_years, patent_statuses });
+
+        // Auto-correct invalid selections
+        const corrections = {};
+        if (filters.patent_year !== 'All' && filters.patent_year && !patent_years.map(String).includes(String(filters.patent_year))) corrections.patent_year = 'All';
+        if (filters.patent_status !== 'All' && filters.patent_status && !patent_statuses.includes(filters.patent_status)) corrections.patent_status = 'All';
+        if (Object.keys(corrections).length > 0) setFilters(prev => ({ ...prev, ...corrections }));
       } catch (e) {
-        console.error('Failed to load patent filter options:', e);
+        if (isMounted) console.error('Failed to load patent filter options:', e);
       }
     };
     load();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   useEffect(() => {
     const load = async () => {
@@ -328,7 +337,8 @@ function Patents({ user, isPublicView = false }) {
                   <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
                     <p>No information available for the selected filter</p>
                   </div>
-                  <ResponsiveContainer width="100%" height={350}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                     {chartMode === 'bar' ? (
                       <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -361,6 +371,7 @@ function Patents({ user, isPublicView = false }) {
                       </LineChart>
                     )}
                   </ResponsiveContainer>
+)}</>
                 </div>
               </>
             )}
@@ -393,7 +404,8 @@ function Patents({ user, isPublicView = false }) {
                   className="table-responsive"
                   style={{ maxHeight: '450px', overflowY: 'auto' }}
                 >
-                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                     <thead style={{ position: 'sticky', top: 0, backgroundColor: PATENT_COLORS.Filed, color: 'white' }}>
                       <tr>
                         <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
@@ -431,6 +443,7 @@ function Patents({ user, isPublicView = false }) {
                       )}
                     </tbody>
                   </table>
+)}</>
                 </div>
               </>
             )}

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -159,20 +159,21 @@ function IptifSection({ user, isPublicView = false }) {
   const [animKey, setAnimKey] = useState(0);
   const bump = useCallback(() => setAnimKey(k => k + 1), []);
 
-  /* ── initial load ── */
+  /* ── load filter options (cross-filtered by active project filters) ── */
+  const serializedProjectFilters = JSON.stringify(projectFilters);
   useEffect(() => {
     const load = async () => {
       try {
         const [sumData, filterOps] = await Promise.all([
           fetchIptifSummary(token),
-          fetchIptifFilterOptions(token)
+          fetchIptifFilterOptions(projectFilters, token)
         ]);
         if (sumData) setSummary(sumData);
         if (filterOps) setFilterOptions(filterOps);
       } catch (err) { setError(err.message || 'Failed to initialize IPTIF data'); }
     };
     load();
-  }, [token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [serializedProjectFilters, token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let m = true;
@@ -252,7 +253,8 @@ function IptifSection({ user, isPublicView = false }) {
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
         {chartMode === 'bar' ? (
           <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -277,6 +279,7 @@ function IptifSection({ user, isPublicView = false }) {
           </LineChart>
         )}
       </ResponsiveContainer>
+)}</>
     </div>
   );
 
@@ -507,7 +510,8 @@ function IptifSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Summary Cards ── */}
-        <div id="iptif-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="iptif-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
           {[
             { view: 'projects', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Projects', value: summary.total_projects },
             { view: 'programs', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Total Programs', value: summary.total_programs },
@@ -525,6 +529,7 @@ function IptifSection({ user, isPublicView = false }) {
             </div>
           ))}
         </div>
+)}</>
 
         {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}
         <div

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -96,27 +96,33 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
+  const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchResearchFilterOptions(token);
-        setFilterOptions({
-          externship_departments: Array.isArray(options?.externship_departments)
-            ? options.externship_departments
-            : [],
-          externship_years: Array.isArray(options?.externship_years)
-            ? [...options.externship_years].sort((a, b) => b - a)
-            : []
-        });
+        const options = await fetchResearchFilterOptions(filters, token);
+        if (!isMounted) return;
+        const externship_departments = Array.isArray(options?.externship_departments) ? options.externship_departments : [];
+        const externship_years = Array.isArray(options?.externship_years) ? [...options.externship_years].sort((a, b) => b - a) : [];
+        setFilterOptions({ externship_departments, externship_years });
         setError(null);
+
+        // Auto-correct invalid selections
+        const corrections = {};
+        if (filters.department !== 'All' && filters.department && !externship_departments.includes(filters.department)) corrections.department = 'All';
+        if (filters.externship_year !== 'All' && filters.externship_year && !externship_years.map(String).includes(String(filters.externship_year))) corrections.externship_year = 'All';
+        if (Object.keys(corrections).length > 0) setFilters(prev => ({ ...prev, ...corrections }));
       } catch (err) {
-        console.error('Failed to fetch externship filter options:', err);
-        setError(err.message || 'Failed to load filter options.');
+        if (isMounted) {
+          console.error('Failed to fetch externship filter options:', err);
+          setError(err.message || 'Failed to load filter options.');
+        }
       }
     };
-
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   useEffect(() => {
     const loadExternshipData = async () => {
@@ -306,7 +312,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           />
         </div>
         {/* Modern Summary Cards */}
-        <div id="externship-summary-cards-container" style={{
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="externship-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
           gap: '20px',
@@ -411,6 +418,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             </div>
           </div>
         </div>
+)}</>
 
         <div className="contain-layout" style={{ position: 'relative', minHeight: '520px', transition: 'opacity 0.3s ease' }}>
           {/* Main Chart Section - Persistently Mounted */}
@@ -550,7 +558,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
               <div id="externships-yearly-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height="100%">
                   <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                     <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
@@ -569,6 +578,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     ))}
                   </BarChart>
                 </ResponsiveContainer>
+)}</>
               </div>
             </div>
 
@@ -615,7 +625,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               <div id="externships-dept-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={400}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                       <BarChart data={departmentComparisonData} margin={{ top: 10, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                         <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
@@ -626,6 +637,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
+)}</>
                   ) : (
                     <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No department data available
@@ -634,7 +646,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 </div>
                 <div className={`chart-wrapper ${deptChartType === 'trend' ? 'active' : 'inactive'}`}>
                   {departmentYearlyTrendData.trendData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={400}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                       <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
@@ -654,6 +667,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         ))}
                       </LineChart>
                     </ResponsiveContainer>
+)}</>
                   ) : (
                     <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No trend data available
@@ -686,7 +700,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   />
                 </div>
                 <div id="externship-directory-table" className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-                  <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
+                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
                     <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
                       <tr style={{ backgroundColor: '#f97316' }}>
                         {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
@@ -726,6 +741,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       )}
                     </tbody>
                   </table>
+)}</>
                 </div>
               </div>
             )}

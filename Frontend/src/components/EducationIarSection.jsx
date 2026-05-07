@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -67,7 +67,7 @@ function EducationIarSection({ user, isPublicView = false }) {
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        const opts = await fetchIarMouFilterOptions(token);
+        const opts = await fetchIarMouFilterOptions({ mou_year: filters.mou_year }, token);
         setFilterOptions({
           mou_years: opts?.mou_years || []
         });
@@ -76,7 +76,7 @@ function EducationIarSection({ user, isPublicView = false }) {
       }
     };
     loadOptions();
-  }, [token, uploadVersion]);
+  }, [filters.mou_year, token, uploadVersion]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -311,7 +311,8 @@ function EducationIarSection({ user, isPublicView = false }) {
                     <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                       <p>No information available for the selected filter</p>
                     </div>
-                    <ResponsiveContainer width="100%" height={350} minWidth={0}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350} minWidth={0}>
                       {chartMode === 'bar' ? (
                         <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -338,6 +339,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                         </LineChart>
                       )}
                     </ResponsiveContainer>
+)}</>
                   </div>
                 </>
               )}
@@ -347,7 +349,8 @@ function EducationIarSection({ user, isPublicView = false }) {
                 <>
                   <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} records found</p>
                   <div id="iar-mou-directory-table" className="table-responsive" style={{ maxHeight: '350px', height: '350px', overflowY: 'auto' }}>
-                    <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                       <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                         <tr>
                           <th style={{ padding: '10px' }}>Sl. No.</th>
@@ -380,6 +383,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                         )}
                       </tbody>
                     </table>
+)}</>
                   </div>
                 </>
               )}

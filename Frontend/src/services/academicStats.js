@@ -4,17 +4,38 @@ const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/academic`;
 
 /**
  * Fetches filter options including distinct values for each filter field
- * and the latest year of admission.
+ * and the latest year of admission, supporting cross-filtering.
+ * @param {Object} filters - Active filter object
  * @param {string} token - Authentication token
  * @returns {Promise<Object>} Filter options object
  */
-export const fetchFilterOptions = async (token) => {
+export const fetchFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/stats/filter-options`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const params = new URLSearchParams();
+
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        const value = filters[key];
+        if (value !== null && value !== undefined && value !== '') {
+          if (key === 'pwd' && typeof value === 'boolean') {
+            params.append(key, value.toString());
+          } else if (key === 'yearofadmission' && value === 'All') {
+            params.append(key, 'All');
+          } else {
+            params.append(key, value);
+          }
+        }
+      });
+    }
+
+    const response = await axios.get(
+      `${API_BASE_URL}/stats/filter-options${params.toString() ? `?${params.toString()}` : ''}`, 
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error('Error fetching filter options:', error);

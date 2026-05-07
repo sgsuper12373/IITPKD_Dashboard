@@ -442,7 +442,7 @@ def get_startups(current_user_id):
 @innovation_bp.route('/filter-options', methods=['GET'])
 @token_optional
 def get_filter_options(current_user_id):
-    """Get filter options for startups and projects."""
+    """Get filter options for startups and projects with cross-filtering."""
     if not _data_available():
         return jsonify({'message': 'Innovation tables are missing.'}), 500
 
@@ -452,36 +452,48 @@ def get_filter_options(current_user_id):
         conn = get_db_connection()
         if conn is None:
             return jsonify({'message': 'Database connection failed.'}), 500
-        
+
+        # Active filters
+        active_status = request.args.get('status')
+        active_sector = request.args.get('sector')
+        active_year   = request.args.get('year')
+        def clean(v): return None if (v is None or v in ('', 'All')) else v
+        active_status = clean(active_status)
+        active_sector = clean(active_sector)
+        active_year   = clean(active_year)
+
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        
-        # Get distinct statuses
-        cur.execute(f"SELECT DISTINCT status FROM {STARTUPS_TABLE} ORDER BY status;")
+
+        # Statuses: filter by sector + year (exclude status itself)
+        conds, params = [], []
+        if active_sector: conds.append("sector = %s"); params.append(active_sector)
+        if active_year:   conds.append("year_of_incubation = %s"); params.append(int(active_year))
+        w = ("WHERE " + " AND ".join(conds) + " AND ") if conds else "WHERE "
+        cur.execute(f"SELECT DISTINCT status FROM {STARTUPS_TABLE} {w}status IS NOT NULL ORDER BY status;", params)
         statuses = [row['status'] for row in cur.fetchall() if row['status']]
-        
-        # Get distinct sectors
-        cur.execute(f"""
-            SELECT DISTINCT sector 
-            FROM {STARTUPS_TABLE} 
-            WHERE sector IS NOT NULL AND sector != ''
-            ORDER BY sector;
-        """)
+
+        # Sectors: filter by status + year
+        conds, params = [], []
+        if active_status: conds.append("status = %s"); params.append(active_status)
+        if active_year:   conds.append("year_of_incubation = %s"); params.append(int(active_year))
+        w = ("WHERE " + " AND ".join(conds) + " AND ") if conds else "WHERE "
+        cur.execute(f"SELECT DISTINCT sector FROM {STARTUPS_TABLE} {w}sector IS NOT NULL AND sector != '' ORDER BY sector;", params)
         sectors = [row['sector'] for row in cur.fetchall() if row['sector']]
-        
-        # Get distinct years
-        cur.execute(f"""
-            SELECT DISTINCT year_of_incubation as year
-            FROM {STARTUPS_TABLE}
-            ORDER BY year DESC;
-        """)
+
+        # Years: filter by status + sector
+        conds, params = [], []
+        if active_status: conds.append("status = %s"); params.append(active_status)
+        if active_sector: conds.append("sector = %s"); params.append(active_sector)
+        w = ("WHERE " + " AND ".join(conds) + " AND ") if conds else "WHERE "
+        cur.execute(f"SELECT DISTINCT year_of_incubation as year FROM {STARTUPS_TABLE} {w}year_of_incubation IS NOT NULL ORDER BY year DESC;", params)
         years = [row['year'] for row in cur.fetchall() if row['year']]
-        
+
         return jsonify({
             'statuses': statuses,
             'sectors': sectors,
             'years': years
         }), 200
-        
+
     except Exception as e:
         print(f"Innovation filter options error: {e}")
         return jsonify({'message': 'Failed to fetch filter options.'}), 500

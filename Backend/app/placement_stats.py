@@ -111,26 +111,74 @@ def get_filter_options(current_user_id):
         if conn is None:
             return jsonify({'message': 'Database connection failed.'}), 500
         cur = conn.cursor()
-        cur.execute(
-            """
-            SELECT
-                ARRAY(SELECT DISTINCT placement_year FROM placement_summary ORDER BY placement_year DESC) AS years,
-                ARRAY(SELECT DISTINCT program FROM placement_summary ORDER BY program) AS programs,
-                ARRAY(SELECT DISTINCT gender::text FROM placement_summary ORDER BY gender::text) AS genders,
-                ARRAY(
-                    SELECT DISTINCT sector FROM placement_companies
-                    WHERE sector IS NOT NULL AND sector <> ''
-                    ORDER BY sector
-                ) AS sectors
-            """
-        )
-        row = cur.fetchone() or {}
-        return jsonify({
-            'years': row.get('years') or [],
-            'programs': row.get('programs') or [],
-            'genders': row.get('genders') or [],
-            'sectors': row.get('sectors') or []
-        }), 200
+
+        current_filters = {
+            'year': request.args.get('year'),
+            'program': request.args.get('program'),
+            'gender': request.args.get('gender'),
+            'sector': request.args.get('sector'),
+        }
+
+        # Handle 'All'
+        for k, v in current_filters.items():
+            if v == 'All' or v == '':
+                current_filters[k] = None
+
+        def get_summary_where_except(exclude_key):
+            temp_filters = {k: v for k, v in current_filters.items() if k != exclude_key}
+            where, params = build_where_clause(
+                {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+                temp_filters
+            )
+            # Apply sector filter if it exists and is not excluded
+            if temp_filters.get('sector'):
+                subquery = "placement_year IN (SELECT DISTINCT placement_year FROM placement_companies WHERE sector = %s)"
+                where += (" AND " if where else "WHERE ") + subquery
+                params.append(temp_filters['sector'])
+            return where, params
+
+        def get_company_where_except(exclude_key):
+            temp_filters = {k: v for k, v in current_filters.items() if k != exclude_key}
+            where, params = build_where_clause(
+                {'year': 'placement_year', 'sector': 'sector'},
+                temp_filters
+            )
+            # Apply program/gender filter if they exist and are not excluded
+            if temp_filters.get('program') or temp_filters.get('gender'):
+                sub_where, sub_params = build_where_clause(
+                    {'program': 'program', 'gender': 'gender::text'},
+                    temp_filters
+                )
+                if sub_where:
+                    subquery = f"placement_year IN (SELECT DISTINCT placement_year FROM placement_summary {sub_where})"
+                    where += (" AND " if where else "WHERE ") + subquery
+                    params.extend(sub_params)
+            return where, params
+
+        filter_options = {}
+
+        # Years
+        where, params = get_summary_where_except('year')
+        cur.execute(f"SELECT DISTINCT placement_year FROM {PLACEMENT_SUMMARY_TABLE} {where} ORDER BY placement_year DESC", params)
+        filter_options['years'] = [row['placement_year'] for row in cur.fetchall() if row['placement_year']]
+
+        # Programs
+        where, params = get_summary_where_except('program')
+        cur.execute(f"SELECT DISTINCT program FROM {PLACEMENT_SUMMARY_TABLE} {where} ORDER BY program", params)
+        filter_options['programs'] = [row['program'] for row in cur.fetchall() if row['program']]
+
+        # Genders
+        where, params = get_summary_where_except('gender')
+        cur.execute(f"SELECT DISTINCT gender::text FROM {PLACEMENT_SUMMARY_TABLE} {where} ORDER BY gender::text", params)
+        filter_options['genders'] = [row['gender'] for row in cur.fetchall() if row['gender']]
+
+        # Sectors
+        where, params = get_company_where_except('sector')
+        cur.execute(f"SELECT DISTINCT sector FROM {PLACEMENT_COMPANY_TABLE} {where} {'AND' if where else 'WHERE'} sector IS NOT NULL AND sector <> '' ORDER BY sector", params)
+        filter_options['sectors'] = [row['sector'] for row in cur.fetchall() if row['sector']]
+
+        return jsonify(filter_options), 200
+
     except UndefinedTable:
         return jsonify({
             'message': (

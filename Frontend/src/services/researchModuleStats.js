@@ -27,9 +27,9 @@ const handleError = (error, defaultMessage) => {
   throw new Error(defaultMessage);
 };
 
-export const fetchResearchFilterOptions = async (token) => {
+export const fetchResearchFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/filter-options`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/filter-options${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch research filters');

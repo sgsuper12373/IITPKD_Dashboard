@@ -72,9 +72,9 @@ export const fetchIcsrEvents = async (filters, page = 1, perPage = 50, token) =>
   }
 };
 
-export const fetchIcsrFilterOptions = async (token) => {
+export const fetchIcsrFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/icsr/filter-options`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/icsr/filter-options${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch ICSR filter options');

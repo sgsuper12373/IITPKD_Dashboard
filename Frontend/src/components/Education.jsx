@@ -35,8 +35,8 @@ function Education({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  // Show public view for unauthenticated users or role_id === 1
-  if (!user || roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 0
+  if (!user || roleId === 0 || roleId === 1) {
     return <EducationPublicView user={user} />;
   }
 
@@ -60,7 +60,7 @@ function Education({ user }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        {roleId === 3 && (
+        {roleId !== 0 && roleId !== 1 && (
           <div style={{ marginBottom: '2rem' }}>
             <button className="page-upload-btn" onClick={() => setShowPublicView(true)}>
               View Public Page
@@ -72,10 +72,11 @@ function Education({ user }) {
           {EDUCATION_SECTIONS.map((section) => {
 
             // 🔹 ADDITION: role-based visibility logic
-            const isPublicUser = roleId === 1;
+            const isPublicUser = false;
             const isSuperAdmin = roleId === 3;
             const isAllowed =
               isSuperAdmin ||
+              roleId === 1 ||
               (section.allowedRoles && section.allowedRoles.includes(roleId));
 
             // 🔒 Public users should not see section tabs

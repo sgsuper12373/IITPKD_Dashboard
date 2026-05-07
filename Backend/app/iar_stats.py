@@ -109,24 +109,37 @@ def get_filter_options(current_user_id):
         if conn is None:
             return jsonify({'message': 'Database connection failed.'}), 500
 
+        current_filters = {
+            'year': request.args.get('year'),
+            'department': request.args.get('department'),
+            'course_type': request.args.get('course_type'),
+        }
+        for k, v in current_filters.items():
+            if v == 'All' or v == '':
+                current_filters[k] = None
+
+        def where_except(exclude_key):
+            temp = {k: v for k, v in current_filters.items() if k != exclude_key}
+            return build_filter_query(temp)
+
         cur = conn.cursor()
-        cur.execute("""
-            SELECT
-                ARRAY(SELECT DISTINCT year_of_graduation FROM alumni
-                      WHERE year_of_graduation IS NOT NULL
-                      ORDER BY year_of_graduation DESC) AS years,
-                ARRAY(SELECT DISTINCT department FROM alumni
-                      WHERE department IS NOT NULL AND department != ''
-                      ORDER BY department) AS departments,
-                ARRAY(SELECT DISTINCT course_type FROM alumni
-                      WHERE course_type IS NOT NULL
-                      ORDER BY course_type) AS course_types
-        """)
-        row = cur.fetchone()
+
+        where, params = where_except('year')
+        cur.execute(f"SELECT DISTINCT year_of_graduation FROM alumni {where} {'AND' if where else 'WHERE'} year_of_graduation IS NOT NULL ORDER BY year_of_graduation DESC", params)
+        years = [row['year_of_graduation'] for row in cur.fetchall() if row['year_of_graduation'] is not None]
+
+        where, params = where_except('department')
+        cur.execute(f"SELECT DISTINCT department FROM alumni {where} {'AND' if where else 'WHERE'} department IS NOT NULL AND department != '' ORDER BY department", params)
+        departments = [row['department'] for row in cur.fetchall() if row['department']]
+
+        where, params = where_except('course_type')
+        cur.execute(f"SELECT DISTINCT course_type FROM alumni {where} {'AND' if where else 'WHERE'} course_type IS NOT NULL ORDER BY course_type", params)
+        course_types = [row['course_type'] for row in cur.fetchall() if row['course_type']]
+
         return jsonify({
-            'years': row['years'] if row and row.get('years') else [],
-            'departments': row['departments'] if row and row.get('departments') else [],
-            'course_types': row['course_types'] if row and row.get('course_types') else [],
+            'years': years,
+            'departments': departments,
+            'course_types': course_types,
         }), 200
     except Exception as exc:
         print(f"IAR filter options error: {exc}")

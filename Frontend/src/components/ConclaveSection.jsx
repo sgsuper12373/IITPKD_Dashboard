@@ -116,7 +116,8 @@ function ConclaveSection({ user, isPublicView = false }) {
         </div>
 
         {/* Summary Cards - Modern Design */}
-        <div id="conclave-summary-cards-container" style={{
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="conclave-summary-cards-container" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '24px',
@@ -285,6 +286,7 @@ function ConclaveSection({ user, isPublicView = false }) {
             </div>
           </div>
         </div>
+)}</>
 
         {/* Conclave Cards */}
         {loading ? (

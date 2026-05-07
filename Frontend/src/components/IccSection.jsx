@@ -150,7 +150,8 @@ function IccSection({ user, isPublicView = false }) {
               />
             </div>
             {/* Modern Summary Cards */}
-            <div id="icc-summary-cards-container" style={{
+            <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="icc-summary-cards-container" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: '20px',
@@ -256,6 +257,7 @@ function IccSection({ user, isPublicView = false }) {
               </div>
 
             </div>
+)}</>
 
 
 
@@ -441,7 +443,8 @@ function IccSection({ user, isPublicView = false }) {
                   <div id="icc-trend-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart — Complaints, Resolved, Pending */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={350}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                         <BarChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -459,11 +462,13 @@ function IccSection({ user, isPublicView = false }) {
                           </Bar>}
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
 
                     {/* Trend (Line) chart — complaints only */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={350}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                         <LineChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -475,6 +480,7 @@ function IccSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </div>
                 )}
@@ -532,7 +538,8 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
                 ) : (
                   <div id="icc-yearly-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-                    <table style={{
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{
                       width: '100%',
                       borderCollapse: 'collapse',
                       fontSize: '14px'
@@ -593,6 +600,7 @@ function IccSection({ user, isPublicView = false }) {
                         })}
                       </tbody>
                     </table>
+)}</>
                   </div>
                 )}
               </div>

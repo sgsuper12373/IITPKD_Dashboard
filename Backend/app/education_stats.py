@@ -219,23 +219,38 @@ def get_filter_options(current_user_id):
         if conn is None:
             return jsonify({'message': 'Database connection failed.'}), 500
         cur = conn.cursor()
+
+        current_filters = {
+            'year': request.args.get('year'),
+            'department': request.args.get('department'),
+            'engagement_type': request.args.get('engagement_type')
+        }
+        for k, v in current_filters.items():
+            if v == 'All' or v == '':
+                current_filters[k] = None
+
+        def get_where_except(exclude_key):
+            temp_filters = {k: v for k, v in current_filters.items() if k != exclude_key}
+            return build_filter_query(temp_filters)
+
+        filter_options = {}
+
+        # Departments
+        where_clause, params = get_where_except('department')
+        cur.execute(f"SELECT DISTINCT department FROM faculty_engagement {where_clause} {'AND' if where_clause else 'WHERE'} department IS NOT NULL AND department <> '' ORDER BY department", params)
+        filter_options['departments'] = [row['department'] for row in cur.fetchall() if row['department']]
+
+        # Years (Calculate min/max based on other filters)
+        where_clause, params = get_where_except('year')
         cur.execute(
-            """
+            f"""
             SELECT
                 MIN(EXTRACT(YEAR FROM startdate))::int AS min_year,
                 MAX(EXTRACT(YEAR FROM enddate))::int AS max_year,
-                MAX(EXTRACT(YEAR FROM startdate))::int AS max_start_year,
-                ARRAY(
-                    SELECT DISTINCT department FROM faculty_engagement
-                    WHERE department IS NOT NULL AND department <> ''
-                    ORDER BY department
-                ) AS departments,
-                ARRAY(
-                    SELECT DISTINCT engagement_type FROM faculty_engagement
-                    ORDER BY engagement_type
-                ) AS engagement_types
+                MAX(EXTRACT(YEAR FROM startdate))::int AS max_start_year
             FROM faculty_engagement
-            """
+            {where_clause}
+            """, params
         )
         row = cur.fetchone()
 
@@ -245,7 +260,7 @@ def get_filter_options(current_user_id):
             min_y = row['min_year']
 
             cur.execute(
-                "SELECT EXISTS(SELECT 1 FROM faculty_engagement WHERE enddate IS NULL) AS has_ongoing_flag"
+                f"SELECT EXISTS(SELECT 1 FROM faculty_engagement {where_clause} {'AND' if where_clause else 'WHERE'} enddate IS NULL) AS has_ongoing_flag", params
             )
             ongoing_row = cur.fetchone()
             has_ongoing = ongoing_row['has_ongoing_flag'] if ongoing_row else False
@@ -262,12 +277,12 @@ def get_filter_options(current_user_id):
             max_y = max(max_y, current_year)
             years = list(range(max_y, min_y - 1, -1))
 
-        return jsonify({
-            'years': years,
-            'current_year': current_year,
-            'departments': row['departments'] if row and row['departments'] else [],
-            'engagement_types': ENGAGEMENT_TYPES
-        }), 200
+        filter_options['years'] = years
+        filter_options['current_year'] = current_year
+        filter_options['engagement_types'] = ENGAGEMENT_TYPES
+
+        return jsonify(filter_options), 200
+
     except Exception as exc:
         print(f"Education filter options error: {exc}")
         return jsonify({'message': 'Failed to fetch filter options.'}), 500

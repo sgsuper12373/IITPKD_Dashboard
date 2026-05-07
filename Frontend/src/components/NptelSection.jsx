@@ -339,7 +339,8 @@ function NptelSection({ user, isPublicView = false }) {
               <h3 style={{ marginBottom: '20px', color: '#333' }}>
                 {viewType === 'courses_trend' ? 'Courses Trend' : 'Enrollments Trend'}
               </h3>
-              <ResponsiveContainer width="100%" height={350}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                 <LineChart data={trendData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
@@ -357,6 +358,7 @@ function NptelSection({ user, isPublicView = false }) {
                   </Line>
                 </LineChart>
               </ResponsiveContainer>
+)}</>
             </div>
           ) : (
             <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
@@ -380,7 +382,8 @@ function NptelSection({ user, isPublicView = false }) {
           />
         </div>
         <div id="nptel-course-list-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-          <table className="grievance-table" style={{
+          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table className="grievance-table" style={{
             width: '100%',
             minWidth: '800px',
             borderCollapse: 'collapse',
@@ -424,6 +427,7 @@ function NptelSection({ user, isPublicView = false }) {
               )}
             </tbody>
           </table>
+)}</>
         </div>
       </div>
 

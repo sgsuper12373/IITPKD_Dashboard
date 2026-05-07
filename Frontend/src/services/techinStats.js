@@ -66,9 +66,10 @@ export const fetchTechinStartups = async (filters, token) => {
   }
 };
 
-export const fetchTechinFilterOptions = async (token) => {
+export const fetchTechinFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/filter-options`, getHeaders(token));
+    const query = buildQuery(filters);
+    const response = await axios.get(`${BASE_URL}/filter-options${query}`, getHeaders(token));
     return response.data;
   } catch (error) {
     console.error('Error fetching TechIn filter options:', error);

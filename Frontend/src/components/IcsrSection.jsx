@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
@@ -158,14 +158,14 @@ function IcsrSection({ user, isPublicView = false }) {
 
   const loadFilterOptions = useCallback(async () => {
     try {
-      const o = await fetchIcsrFilterOptions(token);
+      const o = await fetchIcsrFilterOptions({ event_type: filters.event_type, year: filters.year }, token);
       setFilterOptions({
         event_types: o?.event_types || [],
         departments: o?.departments || [],
         years: o?.years || []
       });
     } catch (err) { console.error(err); }
-  }, [token, uploadVersion]);
+  }, [token, filters.event_type, filters.year, uploadVersion]);
 
   const refreshData = () => {
     loadSummary(); loadYearlyDistribution();
@@ -456,7 +456,8 @@ function IcsrSection({ user, isPublicView = false }) {
                   ) : (
                     <>
                       <div style={{ display: chartMode === 'bar' ? 'block' : 'none', flex: '1 1 auto' }}>
-                        <ResponsiveContainer width="100%" height={400}>
+                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                           <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { fill: '#666', fontSize: 14, fontWeight: 'bold' } }} />
@@ -468,10 +469,12 @@ function IcsrSection({ user, isPublicView = false }) {
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
+)}</>
                       </div>
 
                       <div style={{ display: chartMode === 'trend' ? 'block' : 'none', flex: '1 1 auto' }}>
-                        <ResponsiveContainer width="100%" height={400}>
+                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={400}>
                           <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { fill: '#666', fontSize: 14, fontWeight: 'bold' } }} />
@@ -483,6 +486,7 @@ function IcsrSection({ user, isPublicView = false }) {
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
+)}</>
                       </div>
 
                       {/* Chart Statistics */}
@@ -523,7 +527,8 @@ function IcsrSection({ user, isPublicView = false }) {
                   ) : (
                     <>
                       <div style={{ flex: '1 1 auto' }}>
-                        <ResponsiveContainer width="100%" height={440}>
+                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={440}>
                           <PieChart margin={{ top: 40, right: 20, left: 20, bottom: 10 }}>
                             <Pie data={eventTypesPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={140} label={false} isAnimationActive>
                               {eventTypesPieData.map((_, index) => (
@@ -534,6 +539,7 @@ function IcsrSection({ user, isPublicView = false }) {
                             <Legend layout="horizontal" align="center" verticalAlign="top" wrapperStyle={{ top: 0, left: 0, width: '100%', paddingBottom: '30px', fontWeight: 'bold', fontSize: '11px' }} iconType="circle" iconSize={10} />
                           </PieChart>
                         </ResponsiveContainer>
+)}</>
                       </div>
 
                       <div style={{ marginTop: 'auto', padding: '12px 14px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px' }}>
@@ -574,7 +580,7 @@ function IcsrSection({ user, isPublicView = false }) {
                         </div>
 
                         {/* Scrollable body */}
-                        <div style={{ flex: '1 1 auto', overflowY: 'auto', overflowX: 'auto', flex: '1 1 0', overflowY: 'auto' }}>
+                        <div style={{ flex: '1 1 0', overflowY: 'auto', overflowX: 'auto' }}>
                           {eventsList.map((event, index) => (
                             <div
                               key={event.project_id || index}

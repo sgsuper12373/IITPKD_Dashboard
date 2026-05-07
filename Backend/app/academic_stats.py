@@ -84,7 +84,7 @@ def build_filter_query(filters):
 @academic_bp.route('/stats/filter-options', methods=['GET'])
 @token_optional
 def get_filter_options(current_user_id):
-    """Fetches distinct values for each filter field."""
+    """Fetches distinct values for each filter field, supporting cross-filtering."""
     conn = None
     try:
         conn = get_db_connection()
@@ -93,35 +93,57 @@ def get_filter_options(current_user_id):
 
         cur = conn.cursor()
 
+        # 1. Parse current active filters from request args
+        current_filters = {
+            'yearofadmission': request.args.get('yearofadmission', type=str),
+            'program': request.args.get('program', type=str),
+            'batch': request.args.get('batch', type=str),
+            'branch': request.args.get('branch', type=str),
+            'department': request.args.get('department', type=str),
+            'category': request.args.get('category', type=str),
+            'gender': request.args.get('gender', type=str),
+            'state': request.args.get('state', type=str),
+            'pwd': request.args.get('pwd', type=str)
+        }
+
+        # Handle 'All' and pwd conversions
+        for k, v in current_filters.items():
+            if v == 'All':
+                current_filters[k] = None
+        
+        if current_filters.get('pwd') == 'true':
+            current_filters['pwd'] = True
+        elif current_filters.get('pwd') == 'false':
+            current_filters['pwd'] = False
+
+        # Helper to build WHERE clause excluding a specific filter
+        def build_where_except(exclude_key):
+            filters_to_apply = {k: v for k, v in current_filters.items() if k != exclude_key}
+            return build_filter_query(filters_to_apply)
+
         filter_options = {}
 
-        # Year of Admission (admission_year)
-        cur.execute(f"SELECT DISTINCT admission_year FROM {STUDENT_TABLE} WHERE admission_year IS NOT NULL ORDER BY admission_year DESC;")
-        filter_options['yearofadmission'] = [row['admission_year'] for row in cur.fetchall()]
+        # Columns to fetch distinct options for
+        columns = [
+            ('yearofadmission', 'admission_year', 'DESC'),
+            ('program', 'programme_current', 'ASC'),
+            ('batch', 'admission_batch', 'ASC'),
+            ('branch', 'stream_current', 'ASC'),
+            ('department', 'department_current', 'ASC'),
+            ('category', 'original_category', 'ASC'),
+            ('state', 'state', 'ASC')
+        ]
 
-        # Program (programme_current)
-        cur.execute(f"SELECT DISTINCT programme_current FROM {STUDENT_TABLE} WHERE programme_current IS NOT NULL ORDER BY programme_current;")
-        filter_options['program'] = [row['programme_current'] for row in cur.fetchall()]
-
-        # Batch (admission_batch)
-        cur.execute(f"SELECT DISTINCT admission_batch FROM {STUDENT_TABLE} WHERE admission_batch IS NOT NULL ORDER BY admission_batch;")
-        filter_options['batch'] = [row['admission_batch'] for row in cur.fetchall()]
-
-        # Branch (stream_current)
-        cur.execute(f"SELECT DISTINCT stream_current FROM {STUDENT_TABLE} WHERE stream_current IS NOT NULL ORDER BY stream_current;")
-        filter_options['branch'] = [row['stream_current'] for row in cur.fetchall()]
-
-        # Department (department_current)
-        cur.execute(f"SELECT DISTINCT department_current FROM {STUDENT_TABLE} WHERE department_current IS NOT NULL ORDER BY department_current;")
-        filter_options['department'] = [row['department_current'] for row in cur.fetchall()]
-
-        # Category (original_category)
-        cur.execute(f"SELECT DISTINCT original_category FROM {STUDENT_TABLE} WHERE original_category IS NOT NULL ORDER BY original_category;")
-        filter_options['category'] = [row['original_category'] for row in cur.fetchall()]
-
-        # State
-        cur.execute(f"SELECT DISTINCT state FROM {STUDENT_TABLE} WHERE state IS NOT NULL ORDER BY state;")
-        filter_options['state'] = [row['state'] for row in cur.fetchall()]
+        for filter_key, db_col, order in columns:
+            where_clause, params = build_where_except(filter_key)
+            query = f"""
+                SELECT DISTINCT {db_col} 
+                FROM {STUDENT_TABLE} 
+                {where_clause} {"AND" if where_clause else "WHERE"} {db_col} IS NOT NULL 
+                ORDER BY {db_col} {order};
+            """
+            cur.execute(query, params)
+            filter_options[filter_key] = [row[db_col] for row in cur.fetchall()]
 
         # Get latest year
         latest_year = get_latest_year()

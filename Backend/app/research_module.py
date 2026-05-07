@@ -172,6 +172,27 @@ def get_filter_options(current_user_id):
     cur = None
     try:
         conn = get_db_connection()
+
+        # Read current active filters
+        department = request.args.get('department')
+        project_year = request.args.get('project_year')
+        status = request.args.get('status')
+        patent_year = request.args.get('patent_year')
+        patent_status = request.args.get('patent_status')
+        publication_year = request.args.get('publication_year')
+        publication_type = request.args.get('publication_type')
+        mou_year = request.args.get('mou_year')
+
+        def clean(v): return None if (v is None or v in ('', 'All')) else v
+        department = clean(department)
+        project_year = clean(project_year)
+        status = clean(status)
+        patent_year = clean(patent_year)
+        patent_status = clean(patent_status)
+        publication_year = clean(publication_year)
+        publication_type = clean(publication_type)
+        mou_year = clean(mou_year)
+
         filters: Dict[str, List[Any]] = {
             'project_departments': [],
             'project_years': [],
@@ -189,103 +210,76 @@ def get_filter_options(current_user_id):
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        # Collect project departments from both icsr tables
-        depts = set()
-        years = set()
-        statuses = set()
+        # --- Project filters: cross-filter using status & year (but not the one being fetched) ---
+        depts = set(); years = set(); statuses = set()
 
         if _table_exists(conn, 'icsr_sponsered_projects'):
-            cur.execute(
-                "SELECT DISTINCT principal_investigator_department AS dept FROM icsr_sponsered_projects WHERE principal_investigator_department IS NOT NULL"
-            )
+            # Departments: filter by year+status
+            wc_d, p_d = _build_project_filters(None, project_year, status, 'principal_investigator_department')
+            cur.execute(f"SELECT DISTINCT principal_investigator_department AS dept FROM icsr_sponsered_projects {wc_d} WHERE principal_investigator_department IS NOT NULL" if not wc_d else f"SELECT DISTINCT principal_investigator_department AS dept FROM icsr_sponsered_projects {wc_d} AND principal_investigator_department IS NOT NULL", p_d)
             depts.update(row['dept'] for row in cur.fetchall())
-            cur.execute(
-                "SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(start_date, end_date))::INT AS year FROM icsr_sponsered_projects WHERE start_date IS NOT NULL OR end_date IS NOT NULL"
-            )
+            # Years: filter by dept+status
+            wc_y, p_y = _build_project_filters(department, None, status, 'principal_investigator_department')
+            cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(start_date, end_date))::INT AS year FROM icsr_sponsered_projects {wc_y} {'AND' if wc_y else 'WHERE'} (start_date IS NOT NULL OR end_date IS NOT NULL)", p_y)
             years.update(int(row['year']) for row in cur.fetchall() if row['year'] is not None)
-            cur.execute("SELECT DISTINCT status FROM icsr_sponsered_projects WHERE status IS NOT NULL")
+            # Statuses: filter by dept+year
+            wc_s, p_s = _build_project_filters(department, project_year, None, 'principal_investigator_department')
+            cur.execute(f"SELECT DISTINCT status FROM icsr_sponsered_projects {wc_s} {'AND' if wc_s else 'WHERE'} status IS NOT NULL", p_s)
             statuses.update(row['status'] for row in cur.fetchall())
 
         if _table_exists(conn, 'icsr_consultancy_projects'):
-            cur.execute(
-                "SELECT DISTINCT department AS dept FROM icsr_consultancy_projects WHERE department IS NOT NULL"
-            )
+            wc_d, p_d = _build_project_filters(None, project_year, status, 'department')
+            cur.execute(f"SELECT DISTINCT department AS dept FROM icsr_consultancy_projects {wc_d} {'AND' if wc_d else 'WHERE'} department IS NOT NULL", p_d)
             depts.update(row['dept'] for row in cur.fetchall())
-            cur.execute(
-                "SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(start_date, end_date))::INT AS year FROM icsr_consultancy_projects WHERE start_date IS NOT NULL OR end_date IS NOT NULL"
-            )
+            wc_y, p_y = _build_project_filters(department, None, status, 'department')
+            cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(start_date, end_date))::INT AS year FROM icsr_consultancy_projects {wc_y} {'AND' if wc_y else 'WHERE'} (start_date IS NOT NULL OR end_date IS NOT NULL)", p_y)
             years.update(int(row['year']) for row in cur.fetchall() if row['year'] is not None)
-            cur.execute("SELECT DISTINCT status FROM icsr_consultancy_projects WHERE status IS NOT NULL")
+            wc_s, p_s = _build_project_filters(department, project_year, None, 'department')
+            cur.execute(f"SELECT DISTINCT status FROM icsr_consultancy_projects {wc_s} {'AND' if wc_s else 'WHERE'} status IS NOT NULL", p_s)
             statuses.update(row['status'] for row in cur.fetchall())
 
         filters['project_departments'] = sorted(depts)
         filters['project_years'] = sorted(years, reverse=True)
         filters['project_statuses'] = sorted(statuses)
-        filters['project_types'] = ['Funded', 'Consultancy']  # Fixed list — each table is a type
+        filters['project_types'] = ['Funded', 'Consultancy']
 
         if _table_exists(conn, 'research_mous'):
-            cur.execute(
-                """
-                SELECT DISTINCT EXTRACT(YEAR FROM date_signed)::INT AS year
-                FROM research_mous
-                ORDER BY year DESC
-                """
-            )
+            cur.execute("SELECT DISTINCT EXTRACT(YEAR FROM date_signed)::INT AS year FROM research_mous ORDER BY year DESC")
             filters['mou_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
 
         if _table_exists(conn, 'research_patents'):
-            cur.execute(
-                """
-                SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT AS year
-                FROM research_patents
-                WHERE filing_date IS NOT NULL OR grant_date IS NOT NULL
-                ORDER BY year DESC
-                """
-            )
+            # Patent years: filter by patent_status
+            py_cond = "WHERE patent_status = %s AND (filing_date IS NOT NULL OR grant_date IS NOT NULL)" if patent_status else "WHERE filing_date IS NOT NULL OR grant_date IS NOT NULL"
+            py_params = [patent_status] if patent_status else []
+            cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT AS year FROM research_patents {py_cond} ORDER BY year DESC", py_params)
             filters['patent_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
 
-            cur.execute(
-                "SELECT DISTINCT patent_status FROM research_patents ORDER BY patent_status"
-            )
+            # Patent statuses: filter by patent_year
+            ps_cond = "WHERE EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT = %s AND patent_status IS NOT NULL" if patent_year else "WHERE patent_status IS NOT NULL"
+            ps_params = [int(patent_year)] if patent_year else []
+            cur.execute(f"SELECT DISTINCT patent_status FROM research_patents {ps_cond} ORDER BY patent_status", ps_params)
             filters['patent_statuses'] = [row['patent_status'] for row in cur.fetchall()]
 
         if _table_exists(conn, 'research_publications'):
-            cur.execute(
-                "SELECT DISTINCT department FROM research_publications WHERE department IS NOT NULL ORDER BY department"
-            )
+            # Publication departments: filter by pub_year + pub_type
+            pub_d_wc, pub_d_p = _build_publication_filters(None, publication_year, publication_type)
+            cur.execute(f"SELECT DISTINCT department FROM research_publications {pub_d_wc} {'AND' if pub_d_wc else 'WHERE'} department IS NOT NULL ORDER BY department", pub_d_p)
             filters['publication_departments'] = [row['department'] for row in cur.fetchall()]
 
-            cur.execute(
-                "SELECT DISTINCT publication_year FROM research_publications ORDER BY publication_year DESC"
-            )
-            filters['publication_years'] = [
-                int(row['publication_year']) for row in cur.fetchall() if row['publication_year'] is not None
-            ]
+            # Publication years: filter by dept + pub_type
+            pub_y_wc, pub_y_p = _build_publication_filters(department, None, publication_type)
+            cur.execute(f"SELECT DISTINCT publication_year FROM research_publications {pub_y_wc} {'AND' if pub_y_wc else 'WHERE'} publication_year IS NOT NULL ORDER BY publication_year DESC", pub_y_p)
+            filters['publication_years'] = [int(row['publication_year']) for row in cur.fetchall() if row['publication_year'] is not None]
 
-            cur.execute(
-                "SELECT DISTINCT publication_type FROM research_publications ORDER BY publication_type"
-            )
+            # Publication types: filter by dept + pub_year
+            pub_t_wc, pub_t_p = _build_publication_filters(department, publication_year, None)
+            cur.execute(f"SELECT DISTINCT publication_type FROM research_publications {pub_t_wc} {'AND' if pub_t_wc else 'WHERE'} publication_type IS NOT NULL ORDER BY publication_type", pub_t_p)
             filters['publication_types'] = [row['publication_type'] for row in cur.fetchall()]
 
         if _table_exists(conn, 'externship_info'):
-            cur.execute(
-                """
-                SELECT DISTINCT EXTRACT(YEAR FROM startdate)::INT AS year
-                FROM externship_info
-                WHERE startdate IS NOT NULL
-                ORDER BY year DESC
-                """
-            )
+            cur.execute("SELECT DISTINCT EXTRACT(YEAR FROM startdate)::INT AS year FROM externship_info WHERE startdate IS NOT NULL ORDER BY year DESC")
             filters['externship_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
-            
-            cur.execute(
-                """
-                SELECT DISTINCT department
-                FROM externship_info
-                WHERE department IS NOT NULL
-                ORDER BY department
-                """
-            )
+            cur.execute("SELECT DISTINCT department FROM externship_info WHERE department IS NOT NULL ORDER BY department")
             filters['externship_departments'] = [row['department'] for row in cur.fetchall()]
 
         return jsonify(filters)

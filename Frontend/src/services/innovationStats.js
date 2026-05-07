@@ -16,6 +16,17 @@ const handleError = (error, defaultMessage) => {
   throw new Error(defaultMessage);
 };
 
+const buildQuery = (filters = {}) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '' && value !== 'All') {
+      params.append(key, value);
+    }
+  });
+  const query = params.toString();
+  return query ? `?${query}` : '';
+};
+
 export const fetchInnovationSummary = async (token) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/summary`, authHeaders(token));
@@ -64,9 +75,9 @@ export const fetchStartups = async (filters, page = 1, perPage = 50, token) => {
   }
 };
 
-export const fetchFilterOptions = async (token) => {
+export const fetchFilterOptions = async (filters, token) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/filter-options`, authHeaders(token));
+    const response = await axios.get(`${API_BASE_URL}/filter-options${buildQuery(filters)}`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch filter options');

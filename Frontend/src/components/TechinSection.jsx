@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -154,20 +154,21 @@ function TechinSection({ user, isPublicView = false }) {
   const [animKey, setAnimKey] = useState(0);
   const bump = useCallback(() => setAnimKey(k => k + 1), []);
 
-  /* ── initial load ── */
+  /* ── load filter options (cross-filtered by active program filters) ── */
+  const serializedProgramFilters = JSON.stringify(programFilters);
   useEffect(() => {
     const load = async () => {
       try {
         const [sumData, filterOps] = await Promise.all([
           fetchTechinSummary(token),
-          fetchTechinFilterOptions(token)
+          fetchTechinFilterOptions(programFilters, token)
         ]);
         if (sumData) setSummary(sumData);
         if (filterOps) setFilterOptions(filterOps);
       } catch (err) { setError(err.message || 'Failed to initialize TechIn data'); }
     };
     load();
-  }, [token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [serializedProgramFilters, token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let m = true;
@@ -243,7 +244,8 @@ function TechinSection({ user, isPublicView = false }) {
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
         {chartMode === 'bar' ? (
           <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -268,6 +270,7 @@ function TechinSection({ user, isPublicView = false }) {
           </LineChart>
         )}
       </ResponsiveContainer>
+)}</>
     </div>
   );
 
@@ -469,7 +472,8 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Summary Cards ── */}
-        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
           {[
             { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
             { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
@@ -487,6 +491,7 @@ function TechinSection({ user, isPublicView = false }) {
             </div>
           ))}
         </div>
+)}</>
 
         {/* ── Revenue Metrics ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>

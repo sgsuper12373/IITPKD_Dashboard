@@ -60,7 +60,8 @@ function PieDistributionTable({ data, nameKey, total, colors }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
           <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
             <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
@@ -87,6 +88,7 @@ function PieDistributionTable({ data, nameKey, total, colors }) {
           })}
         </tbody>
       </table>
+)}</>
     </div>
   );
 }
@@ -174,21 +176,39 @@ function IarSection({ user, isPublicView = false }) {
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
+  const serializedFilters = JSON.stringify(filters);
+
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchFilterOptions(token);
-        setFilterOptions({
-          departments: Array.isArray(options?.departments) ? options.departments : [],
-          course_types: Array.isArray(options?.course_types) ? options.course_types : [],
-        });
+        const options = await fetchFilterOptions(filters, token);
+        if (!isMounted) return;
+        const departments = Array.isArray(options?.departments) ? options.departments : [];
+        const course_types = Array.isArray(options?.course_types) ? options.course_types : [];
+        setFilterOptions({ departments, course_types });
+
+        // Auto-correct invalid selections
+        const corrections = {};
+        if (filters.department !== 'All' && filters.department && !departments.includes(filters.department)) {
+          corrections.department = 'All';
+        }
+        if (filters.course_type !== 'All' && filters.course_type && !course_types.includes(filters.course_type)) {
+          corrections.course_type = 'All';
+        }
+        if (Object.keys(corrections).length > 0) {
+          setFilters(prev => ({ ...prev, ...corrections }));
+        }
       } catch (err) {
-        console.error('Failed to load filter options:', err);
-        setError(err.message || 'Failed to load filter options.');
+        if (isMounted) {
+          console.error('Failed to load filter options:', err);
+          setError(err.message || 'Failed to load filter options.');
+        }
       }
     };
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   const loadData = async () => {
     try {
@@ -285,7 +305,8 @@ function IarSection({ user, isPublicView = false }) {
             />
           </div>
           {/* Modern Summary Cards */}
-          <div id="iar-summary-cards-container" style={{
+          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="iar-summary-cards-container" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: '20px',
@@ -390,6 +411,7 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
+)}</>
 
           {/* View selector for different IAR charts */}
           <div style={{
@@ -561,7 +583,8 @@ function IarSection({ user, isPublicView = false }) {
                   )}
                   <div id="iar-outcome-trend-container" className="chart-container">
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={350}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                         <BarChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -579,9 +602,11 @@ function IarSection({ user, isPublicView = false }) {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={350}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                         <LineChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -599,6 +624,7 @@ function IarSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
 
                     {/* Chart Statistics */}
@@ -643,7 +669,8 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-state-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -653,8 +680,11 @@ function IarSection({ user, isPublicView = false }) {
                         {stateTop10.length > 0 && <Tooltip content={<StatePieTooltip />} />}
                       </PieChart>
                     </ResponsiveContainer>
+)}</>
                     {stateTop10.length > 0 && (
-                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+)}</>
                     )}
 
                     {/* Chart Statistics */}
@@ -698,7 +728,8 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-country-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(countryTop10.length > 0 ? countryTop10 : [{ country: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -708,8 +739,11 @@ function IarSection({ user, isPublicView = false }) {
                         {countryTop10.length > 0 && <Tooltip content={<CountryPieTooltip />} />}
                       </PieChart>
                     </ResponsiveContainer>
+)}</>
                     {countryTop10.length > 0 && (
-                      <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} />
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} />
+)}</>
                     )}
                     {/* Chart Statistics */}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
@@ -769,7 +803,8 @@ function IarSection({ user, isPublicView = false }) {
                       ))}
                     </div>
                     <div id="iar-dept-outcome-container" className="chart-container">
-                      <ResponsiveContainer width="100%" height={350}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={350}>
                         <BarChart data={sortedOutcomeBreakdown} margin={{ top: 10, right: 20, left: 40, bottom: 80 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
@@ -783,6 +818,7 @@ function IarSection({ user, isPublicView = false }) {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
 
                       {/* Chart Statistics */}
                       <div style={{
@@ -843,7 +879,8 @@ function IarSection({ user, isPublicView = false }) {
                       </div>
 
                       <div id="iar-dept-outcome-table" className="table-responsive" style={{ overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
-                        <table style={{
+                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{
                           width: '100%',
                           borderCollapse: 'collapse',
                           fontSize: '13px'
@@ -867,6 +904,7 @@ function IarSection({ user, isPublicView = false }) {
                             ))}
                           </tbody>
                         </table>
+)}</>
                       </div>
                     </div>
                   </>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis,
   Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell, LabelList
@@ -75,22 +75,32 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
   const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
+  const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
+    let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchResearchFilterOptions(token);
-        setFilterOptions({
-          publication_departments: Array.isArray(options?.publication_departments) ? options.publication_departments : [],
-          publication_years: Array.isArray(options?.publication_years) ? [...options.publication_years].sort((a, b) => b - a) : [],
-          publication_types: Array.isArray(options?.publication_types) ? options.publication_types : []
-        });
+        const options = await fetchResearchFilterOptions(filters, token);
+        if (!isMounted) return;
+        const publication_departments = Array.isArray(options?.publication_departments) ? options.publication_departments : [];
+        const publication_years = Array.isArray(options?.publication_years) ? [...options.publication_years].sort((a, b) => b - a) : [];
+        const publication_types = Array.isArray(options?.publication_types) ? options.publication_types : [];
+        setFilterOptions({ publication_departments, publication_years, publication_types });
         setError(null);
+
+        // Auto-correct invalid selections
+        const corrections = {};
+        if (filters.department !== 'All' && filters.department && !publication_departments.includes(filters.department)) corrections.department = 'All';
+        if (filters.publication_year !== 'All' && filters.publication_year && !publication_years.map(String).includes(String(filters.publication_year))) corrections.publication_year = 'All';
+        if (filters.publication_type !== 'All' && filters.publication_type && !publication_types.includes(filters.publication_type)) corrections.publication_type = 'All';
+        if (Object.keys(corrections).length > 0) setFilters(prev => ({ ...prev, ...corrections }));
       } catch (err) {
-        setError(err.message || 'Failed to load filter options.');
+        if (isMounted) setError(err.message || 'Failed to load filter options.');
       }
     };
     loadFilterOptions();
-  }, [token, uploadVersion]);
+    return () => { isMounted = false; };
+  }, [serializedFilters, token, uploadVersion]);
 
   useEffect(() => {
     const loadLibraryData = async () => {
@@ -424,7 +434,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         </div>
 
         {/* Summary Cards */}
-        <div id="library-summary-cards-container" style={{
+        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="library-summary-cards-container" style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
           gap: '16px', marginBottom: '30px'
         }}>
@@ -449,6 +460,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             </div>
           ))}
         </div>
+)}</>
 
         {/* ── Publication Trend ─────────────────────────────────────────────── */}
         {viewType === 'trend' && (
@@ -494,7 +506,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               {!trendChartData.length && (
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
-              <ResponsiveContainer width="100%" height={300}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={300}>
                 {trendChartMode === 'bar' ? (
                   <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -519,6 +532,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   </LineChart>
                 )}
               </ResponsiveContainer>
+)}</>
             </div>
           </section>
         )}
@@ -552,7 +566,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               {!departmentChartData.length && (
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
-              <ResponsiveContainer width="100%" height={300}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={300}>
                 <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
@@ -563,6 +578,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
+)}</>
             </div>
           </section>
         )}
@@ -596,7 +612,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               {!typePieData.length && (
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
-              <ResponsiveContainer width="100%" height={300}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie data={typePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
@@ -606,6 +623,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
+)}</>
             </div>
           </section>
         )}
@@ -636,7 +654,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             </div>
 
             <div id="library-publications-table-container" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-              <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                 <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
                   <tr>
                     {['Title', 'Faculty', 'Dept', 'Type', 'Year', 'Journal'].map(h => (
@@ -663,6 +682,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   )}
                 </tbody>
               </table>
+)}</>
             </div>
           </section>
         )}

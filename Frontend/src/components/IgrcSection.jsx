@@ -140,7 +140,8 @@ function IgrcSection({ user, isPublicView = false }) {
               />
             </div>
             {/* Modern Gradient Summary Cards */}
-            <div id="igrc-summary-cards-container" style={{
+            <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<div id="igrc-summary-cards-container" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
               gap: '20px',
@@ -300,6 +301,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 </div>
               </div>
             </div>
+)}</>
 
             <div className="chart-section">
               <h2 style={{ margin: '0 0 10px 0', color: '#333', fontSize: '20px' }}>
@@ -428,7 +430,8 @@ function IgrcSection({ user, isPublicView = false }) {
                   <div id="igrc-yearly-chart-container" className="chart-container" style={{ padding: '10px' }}>
                     {/* Bar chart */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={420}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                           {sharedAxisProps.grid}
                           {sharedAxisProps.xAxis}
@@ -446,11 +449,13 @@ function IgrcSection({ user, isPublicView = false }) {
                           </Bar>}
                         </BarChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
 
                     {/* Trend (Line) chart — complaints filed only */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <ResponsiveContainer width="100%" height={420}>
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+<ResponsiveContainer width="100%" height={420}>
                         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                           {sharedAxisProps.grid}
                           {sharedAxisProps.xAxis}
@@ -462,6 +467,7 @@ function IgrcSection({ user, isPublicView = false }) {
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
+)}</>
                     </div>
                   </div>
                 );
