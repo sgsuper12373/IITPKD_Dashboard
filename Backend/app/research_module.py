@@ -119,7 +119,7 @@ def _build_patent_filters(
         try:
             year_int = int(patent_year)
             conditions.append(
-                "EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT = %s"
+                "EXTRACT(YEAR FROM filing_date)::INT = %s"
             )
             params.append(year_int)
         except ValueError:
@@ -249,13 +249,13 @@ def get_filter_options(current_user_id):
 
         if _table_exists(conn, 'research_patents'):
             # Patent years: filter by patent_status
-            py_cond = "WHERE patent_status = %s AND (filing_date IS NOT NULL OR grant_date IS NOT NULL)" if patent_status else "WHERE filing_date IS NOT NULL OR grant_date IS NOT NULL"
+            py_cond = "WHERE patent_status = %s AND filing_date IS NOT NULL" if patent_status else "WHERE filing_date IS NOT NULL"
             py_params = [patent_status] if patent_status else []
-            cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT AS year FROM research_patents {py_cond} ORDER BY year DESC", py_params)
+            cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM filing_date)::INT AS year FROM research_patents {py_cond} ORDER BY year DESC", py_params)
             filters['patent_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
 
             # Patent statuses: filter by patent_year
-            ps_cond = "WHERE EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT = %s AND patent_status IS NOT NULL" if patent_year else "WHERE patent_status IS NOT NULL"
+            ps_cond = "WHERE EXTRACT(YEAR FROM filing_date)::INT = %s AND patent_status IS NOT NULL" if patent_year else "WHERE patent_status IS NOT NULL"
             ps_params = [int(patent_year)] if patent_year else []
             cur.execute(f"SELECT DISTINCT patent_status FROM research_patents {ps_cond} ORDER BY patent_status", ps_params)
             filters['patent_statuses'] = [row['patent_status'] for row in cur.fetchall()]
@@ -718,7 +718,7 @@ def patent_stats(current_user_id):
 
         query = f"""
             SELECT
-                EXTRACT(YEAR FROM COALESCE(grant_date::date, filing_date))::INT AS year,
+                EXTRACT(YEAR FROM filing_date)::INT AS year,
                 patent_status,
                 COUNT(*) AS total
             FROM research_patents
