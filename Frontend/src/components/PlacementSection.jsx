@@ -651,90 +651,90 @@ function PlacementSection({ user, isPublicView = false }) {
         </div>
 
         <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="placement-summary-cards-container" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '24px',
-          marginBottom: '40px'
-        }}>
-          {/* Registered */}
-          <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(99,102,241,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered {summary.year && `(${summary.year})`}</h3>
-              </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.registered)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Eligible students</span>
+          <div id="placement-summary-cards-container" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '24px',
+            marginBottom: '40px'
+          }}>
+            {/* Registered */}
+            <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(99,102,241,0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
+                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered {summary.year && `(${summary.year})`}</h3>
+                </div>
+                <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.registered)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Eligible students</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Placed */}
-          <div style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(16,185,129,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed {summary.year && `(${summary.year})`}</h3>
-              </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.placed)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successful outcomes</span>
+            {/* Placed */}
+            <div style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(16,185,129,0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
+                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed {summary.year && `(${summary.year})`}</h3>
+                </div>
+                <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.placed)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successful outcomes</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Placement % */}
-          <div style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(245,158,11,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📈</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement % {summary.year && `(${summary.year})`}</h3>
-              </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatPercentage(summary.placement_percentage)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Success rate</span>
+            {/* Placement % */}
+            <div style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(245,158,11,0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📈</span>
+                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement % {summary.year && `(${summary.year})`}</h3>
+                </div>
+                <div className="metric-value" style={{ color: 'white' }}>{formatPercentage(summary.placement_percentage)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Success rate</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Highest Package */}
-          <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(168,85,247,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
-              </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.highest_package)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Top package</span>
+            {/* Highest Package */}
+            <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(168,85,247,0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
+                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
+                </div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.highest_package)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Top package</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Average Package */}
-          <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(14,165,233,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📈</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Average {summary.year && `(${summary.year})`}</span>
-              </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.average_package)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Mean package</span>
+            {/* Average Package */}
+            <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(14,165,233,0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📈</span>
+                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Average {summary.year && `(${summary.year})`}</span>
+                </div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.average_package)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Mean package</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-)}</>
+        )}</>
 
         {/* ── Unified Filter + Chart Container ── */}
         <div style={{
@@ -783,41 +783,41 @@ function PlacementSection({ user, isPublicView = false }) {
                   ))}
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  {trendChartMode === 'bar' ? (
-                    <BarChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                      <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
-                      <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
-                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                      </Bar>
-                      <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
-                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                      </Bar>
-                    </BarChart>
-                  ) : (
-                    <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                      <Legend wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="linear" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }}>
-                        <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
-                      </Line>
-                      <Line type="linear" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }}>
-                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                      </Line>
-                      <Line type="linear" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }}>
-                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                      </Line>
-                    </LineChart>
-                  )}
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    {trendChartMode === 'bar' ? (
+                      <BarChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                        <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                        <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
+                        <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        </Bar>
+                        <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Bar>
+                      </BarChart>
+                    ) : (
+                      <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                        <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                        <Legend wrapperStyle={{ fontSize: '11px' }} />
+                        <Line type="linear" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }}>
+                          <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                        </Line>
+                        <Line type="linear" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Line>
+                        <Line type="linear" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        </Line>
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                )}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div className="metric-value-sm" style={{ color: '#6366f1' }}>{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
@@ -858,22 +858,22 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                    <Legend wrapperStyle={{ fontSize: '12px' }} iconType="rect" />
-                    <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32}>
-                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[0] }} />
-                    </Bar>
-                    <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[4, 4, 0, 0]} barSize={32}>
-                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[1] }} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} iconType="rect" />
+                      <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32}>
+                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[0] }} />
+                      </Bar>
+                      <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[4, 4, 0, 0]} barSize={32}>
+                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[1] }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
                   {genderBarData.map((item, index) => (
                     <div key={item.gender} style={{ textAlign: 'center', minWidth: '120px' }}>
@@ -910,21 +910,21 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={programStatusChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                    <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                    </Bar>
-                    <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={programStatusChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                      <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
+                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                      </Bar>
+                      <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30}>
+                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px' }}>
                   {programStatusChartData.map((item) => (
                     <div key={item.program} style={{ textAlign: 'center', minWidth: '80px' }}>
@@ -959,21 +959,21 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={recruiterChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                    <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
-                    </Bar>
-                    <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="offers" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={recruiterChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                      <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
+                        <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                      </Bar>
+                      <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30}>
+                        <LabelList dataKey="offers" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
@@ -1011,18 +1011,18 @@ function PlacementSection({ user, isPublicView = false }) {
                   if (otherTotal > 0) pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal });
                   return (
                     <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                      <PieChart>
-                        <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                          {pieData.map((entry, index) => (
-                            <Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />
-                          ))}
-                        </Pie>
-                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                        <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-)}</>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <PieChart>
+                          <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                            {pieData.map((entry, index) => (
+                              <Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />
+                            ))}
+                          </Pie>
+                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                          <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}</>
                   );
                 })()}
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
@@ -1056,24 +1056,24 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={packageTrendChartData} margin={{ top: 10, right: 20, left: 50, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                    <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
-                    </Line>
-                    <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="highest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#3b82f6" }} />
-                    </Line>
-                    <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="lowest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#ef4444" }} />
-                    </Line>
-                  </LineChart>
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    <LineChart data={packageTrendChartData} margin={{ top: 10, right: 20, left: 50, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                      <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
+                        <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
+                      </Line>
+                      <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                        <LabelList offset={5} dataKey="highest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#3b82f6" }} />
+                      </Line>
+                      <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                        <LabelList offset={5} dataKey="lowest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#ef4444" }} />
+                      </Line>
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}</>
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.average_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.highest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div></div>
@@ -1104,42 +1104,42 @@ function PlacementSection({ user, isPublicView = false }) {
               <div id="placement-top-recruiters-table">
                 <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
                   <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                      <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Company</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {topRecruiters.map((row, index) => (
-                        <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
-                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>
-                            {row.sector && (
-                              <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
-                                {row.sector}
-                              </span>
-                            )}
-                          </td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
+                    <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
+                      <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                        <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Company</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
                         </tr>
-                      ))}
-                      {!topRecruiters.length && (
-                        <tr>
-                          <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                            No information available for the selected filter
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-)}</>
+                      </thead>
+                      <tbody>
+                        {topRecruiters.map((row, index) => (
+                          <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
+                            <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>
+                              {row.sector && (
+                                <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
+                                  {row.sector}
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
+                          </tr>
+                        ))}
+                        {!topRecruiters.length && (
+                          <tr>
+                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                              No information available for the selected filter
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  )}</>
                 </div>
                 {topRecruiters.length > 0 && (
                   <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
@@ -1156,31 +1156,31 @@ function PlacementSection({ user, isPublicView = false }) {
 
 
         <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(241, 229, 196, 1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div>
-            <span style={{ width:'100px', height: '100px'}}></span>
-            <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore Careere Development Center of IIT Palakkad</h3>
-            <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Empowering students for successful careers through training, internships, and placements at Career Development Centre IIT Palakkad
-</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div>
+              <span style={{ width: '100px', height: '100px' }}></span>
+              <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore Careere Development Center of IIT Palakkad</h3>
+              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Empowering students for successful careers through training, internships, and placements at Career Development Centre IIT Palakkad
+              </p>
+            </div>
           </div>
+          <a
+            href="https://cdc.iitpkd.ac.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+          >
+            Visit  → cdc.iitpkd.ac.in
+          </a>
         </div>
-        <a
-          href="https://cdc.iitpkd.ac.in/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
-        >
-          Visit  → cdc.iitpkd.ac.in
-        </a>
-      </div>
 
       </div>
 
 
-      
-      
+
+
 
       <DataUploadModal
         isOpen={isUploadModalOpen}
