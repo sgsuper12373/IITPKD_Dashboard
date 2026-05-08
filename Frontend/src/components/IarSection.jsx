@@ -588,7 +588,7 @@ function IarSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip />} />
+                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
                             <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
@@ -610,7 +610,7 @@ function IarSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip />} />
+                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }}>
                             <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
@@ -808,7 +808,7 @@ function IarSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip />} />
+                          <Tooltip content={<CustomTooltip denominatorKey="total" />} />
                           <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12}>
                             <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: HIGHER_BAR_COLOR }} />
                           </Bar>
