@@ -57,16 +57,16 @@ const formatPercentage = (value) => {
 
 // Which filter fields each view uses
 const VIEW_FILTER_FIELDS = {
-  placementTrend: ['year', 'program', 'gender'],
-  genderWise: ['year', 'program', 'gender'],
-  programWise: ['year', 'program', 'gender'],
+  placementTrend: ['year', 'program', 'gender', 'branch'],
+  genderWise: ['year', 'program', 'gender', 'branch'],
+  programWise: ['year', 'program', 'gender', 'branch'],
   recruiters: ['year', 'sector'],
   sectorWise: ['year', 'sector'],
   packageTrend: ['year', 'program', 'sector'],
   topRecruiters: ['year', 'program', 'sector'],
 };
 
-const DEFAULT_FILTERS = { year: 'All', program: 'All', gender: 'All', sector: 'All' };
+const DEFAULT_FILTERS = { year: 'All', program: 'All', gender: 'All', branch: 'All', sector: 'All' };
 
 function PlacementSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
@@ -78,6 +78,7 @@ function PlacementSection({ user, isPublicView = false }) {
     years: [],
     programs: [],
     genders: [],
+    branches: [],
     sectors: []
   });
 
@@ -180,6 +181,7 @@ function PlacementSection({ user, isPublicView = false }) {
           years: Array.isArray(options?.years) ? options.years : [],
           programs: Array.isArray(options?.programs) ? options.programs : [],
           genders: rawGenders.length > 0 ? rawGenders : ['Male', 'Female', 'Transgender'],
+          branches: Array.isArray(options?.branches) ? options.branches : [],
           sectors: Array.isArray(options?.sectors) ? options.sectors : []
         });
 
@@ -196,6 +198,9 @@ function PlacementSection({ user, isPublicView = false }) {
         }
         if (activeFields.includes('gender') && currentFilters.gender !== 'All' && options.genders && !options.genders.includes(currentFilters.gender)) {
           corrections.gender = 'All'; hasChanges = true;
+        }
+        if (activeFields.includes('branch') && currentFilters.branch !== 'All' && options.branches && !options.branches.includes(currentFilters.branch)) {
+          corrections.branch = 'All'; hasChanges = true;
         }
         if (activeFields.includes('sector') && currentFilters.sector !== 'All' && options.sectors && !options.sectors.includes(currentFilters.sector)) {
           corrections.sector = 'All'; hasChanges = true;
@@ -530,6 +535,22 @@ function PlacementSection({ user, isPublicView = false }) {
                 <option value="All">All Genders</option>
                 {filterOptions.genders.map((gender) => (
                   <option key={gender} value={gender}>{gender}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {activeFields.includes('branch') && (
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Branch</label>
+              <select
+                value={currentFilters.branch}
+                onChange={(e) => handleFilterChange('branch', e.target.value)}
+                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+              >
+                <option value="All">All Branches</option>
+                {filterOptions.branches.map((branch) => (
+                  <option key={branch} value={branch}>{branch}</option>
                 ))}
               </select>
             </div>

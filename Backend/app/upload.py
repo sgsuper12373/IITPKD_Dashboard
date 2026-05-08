@@ -34,7 +34,7 @@ UPDATABLE_TABLES = {
     'ewd_yearwise':                 ['ewd_year'],
     'faculty_engagement':           ['engagement_code'],
     # Placement
-    'placement_summary':            ['placement_year', 'program', 'gender'],
+    'placement_summary':            ['placement_year', 'program', 'gender', 'branch'],
     'placement_companies':          ['company_id'],
     'placement_packages':           ['placement_year', 'program'],
     # Research

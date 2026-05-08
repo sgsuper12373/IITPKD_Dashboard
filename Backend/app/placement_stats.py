@@ -127,7 +127,7 @@ def get_filter_options(current_user_id):
         def get_summary_where_except(exclude_key):
             temp_filters = {k: v for k, v in current_filters.items() if k != exclude_key}
             where, params = build_where_clause(
-                {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+                {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
                 temp_filters
             )
             # Apply sector filter if it exists and is not excluded
@@ -146,7 +146,7 @@ def get_filter_options(current_user_id):
             # Apply program/gender filter if they exist and are not excluded
             if temp_filters.get('program') or temp_filters.get('gender'):
                 sub_where, sub_params = build_where_clause(
-                    {'program': 'program', 'gender': 'gender::text'},
+                    {'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
                     temp_filters
                 )
                 if sub_where:
@@ -171,6 +171,11 @@ def get_filter_options(current_user_id):
         where, params = get_summary_where_except('gender')
         cur.execute(f"SELECT DISTINCT gender::text FROM {PLACEMENT_SUMMARY_TABLE} {where} ORDER BY gender::text", params)
         filter_options['genders'] = [row['gender'] for row in cur.fetchall() if row['gender']]
+
+        # Branches
+        where, params = get_summary_where_except('branch')
+        cur.execute(f"SELECT DISTINCT branch FROM {PLACEMENT_SUMMARY_TABLE} {where} ORDER BY branch", params)
+        filter_options['branches'] = [row['branch'] for row in cur.fetchall() if row['branch']]
 
         # Sectors
         where, params = get_company_where_except('sector')
@@ -230,11 +235,12 @@ def get_placement_summary(current_user_id):
         'year': year_filter,
         'program': program_filter,
         'gender': gender_filter,
+        'branch': request.args.get('branch'),
         'sector': sector_filter,
     }
 
     summary_where, summary_params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
         filters
     )
     # placement_packages has year and program but no gender column
@@ -314,9 +320,10 @@ def get_percentage_trend(current_user_id):
         'year': request.args.get('year'),
         'program': request.args.get('program'),
         'gender': request.args.get('gender'),
+        'branch': request.args.get('branch'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
         filters
     )
 
@@ -371,9 +378,10 @@ def get_gender_breakdown(current_user_id):
         'year': request.args.get('year'),
         'program': request.args.get('program'),
         'gender': request.args.get('gender'),
+        'branch': request.args.get('branch'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
         filters
     )
 
@@ -428,9 +436,10 @@ def get_program_status(current_user_id):
         'year': request.args.get('year'),
         'program': request.args.get('program'),
         'gender': request.args.get('gender'),
+        'branch': request.args.get('branch'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender', 'branch': 'branch'},
         filters
     )
 
