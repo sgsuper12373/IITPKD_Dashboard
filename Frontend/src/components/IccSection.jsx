@@ -333,61 +333,46 @@ function IccSection({ user, isPublicView = false }) {
                       Year-wise Complaint Trend
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="metric-toggle-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
+                    {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
                       <button
+                        key={key}
                         type="button"
-                        onClick={() => setVisibleMetrics(prev => ({ ...prev, total: !prev.total }))}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: visibleMetrics.total ? AREA_COLORS.total : '#f0f0f0',
-                          color: visibleMetrics.total ? 'white' : '#666',
-                          border: 'none',
-                          borderRadius: '20px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '500',
-                          transition: 'all 0.2s ease'
+                        className="metric-toggle active"
+                        style={{ 
+                          minWidth: '100px', 
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          backgroundColor: AREA_COLORS[key]
                         }}
+                        onClick={() => setVisibleMetrics(prev => {
+                          const next = { ...prev, [key]: false };
+                          if (Object.values(next).every(v => !v)) return prev;
+                          return next;
+                        })}
                       >
-                        Complaints Received
+                        {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)} ✕
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setVisibleMetrics(prev => ({ ...prev, resolved: !prev.resolved }))}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: visibleMetrics.resolved ? AREA_COLORS.resolved : '#f0f0f0',
-                          color: visibleMetrics.resolved ? 'white' : '#666',
-                          border: 'none',
-                          borderRadius: '20px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Resolved
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setVisibleMetrics(prev => ({ ...prev, pending: !prev.pending }))}
-                        style={{
-                          padding: '6px 12px',
-                          backgroundColor: visibleMetrics.pending ? AREA_COLORS.pending : '#f0f0f0',
-                          color: visibleMetrics.pending ? 'white' : '#666',
-                          border: 'none',
-                          borderRadius: '20px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Pending
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                </div>
+                  {Object.values(visibleMetrics).some(v => !v) && (
+                    <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
+                      {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
+                        <button
+                          key={key}
+                          type="button"
+                          className="metric-toggle"
+                          style={{ minWidth: '100px', opacity: 0.6, borderStyle: 'dashed' }}
+                          onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
+                        >
+                          + {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>            </div>
 
                 {/* Bar / Trend toggle */}
                 <div style={{
@@ -448,17 +433,17 @@ function IccSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip content={<CustomTooltip />} />
+                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          {visibleMetrics.total && <Bar dataKey="total" name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
-                          </Bar>}
-                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />
-                          </Bar>}
-                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
-                          </Bar>}
+                          <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
+                            {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
+                          </Bar>
+                          <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
+                            {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
+                          </Bar>
+                          <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
+                            {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
 )}</>
@@ -472,7 +457,7 @@ function IccSection({ user, isPublicView = false }) {
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip content={<CustomTooltip />} />
+                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
                           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
                           <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
                             <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
