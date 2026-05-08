@@ -1173,3 +1173,196 @@ def get_techin_filter_options(current_user_id):
         if conn:
             release_db_connection(conn)
 
+
+# ==========================================
+#         HOME GROUND STARTUPS ENDPOINTS
+# ==========================================
+# Only entries where LOWER(startup_origin) = 'internal' are considered.
+# Both iptif_startup_table and techin_startup_table are queried together.
+
+def _home_ground_available():
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        return _table_exists(conn, IPTIF_STARTUP_TABLE) or _table_exists(conn, TECHIN_STARTUP_TABLE)
+    finally:
+        release_db_connection(conn)
+
+
+@innovation_bp.route('/home-ground/summary', methods=['GET'])
+@token_optional
+def get_home_ground_summary(current_user_id):
+    """Summary stats for internal-origin startups from both IPTIF and TechIn tables."""
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed.'}), 500
+
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+        internal_filter = "LOWER(COALESCE(startup_origin, '')) = 'internal'"
+
+        union_base = f"""
+            SELECT revenue, number_of_jobs FROM {IPTIF_STARTUP_TABLE}
+            WHERE {internal_filter}
+            UNION ALL
+            SELECT revenue, number_of_jobs FROM {TECHIN_STARTUP_TABLE}
+            WHERE {internal_filter}
+        """
+
+        cur.execute(f"SELECT COUNT(*) as total FROM ({union_base}) AS combined;")
+        total_startups = cur.fetchone()['total'] or 0
+
+        cur.execute(f"""
+            SELECT
+                COALESCE(SUM(revenue), 0) as total_revenue,
+                COALESCE(MAX(revenue), 0) as highest_revenue,
+                COALESCE(AVG(revenue), 0) as average_revenue
+            FROM ({union_base}) AS combined
+            WHERE revenue IS NOT NULL;
+        """)
+        rev_stats = cur.fetchone()
+
+        cur.execute(f"""
+            SELECT COALESCE(SUM(number_of_jobs), 0) as total_jobs
+            FROM ({union_base}) AS combined;
+        """)
+        jobs_row = cur.fetchone()
+
+        return jsonify({
+            'total_startups': total_startups,
+            'total_revenue': float(rev_stats['total_revenue']),
+            'highest_revenue': float(rev_stats['highest_revenue']),
+            'average_revenue': float(rev_stats['average_revenue']),
+            'total_jobs': int(jobs_row['total_jobs'])
+        }), 200
+
+    except Exception as e:
+        print(f"Home ground summary error: {e}")
+        return jsonify({'message': 'Failed to fetch home ground summary.'}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            release_db_connection(conn)
+
+
+@innovation_bp.route('/home-ground/trends/startups', methods=['GET'])
+@token_optional
+def get_home_ground_startups(current_user_id):
+    """Startup growth trend and list for internal-origin startups from both tables."""
+    filters = {
+        'domain': request.args.get('domain'),
+        'status': request.args.get('status')
+    }
+
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed.'}), 500
+
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+        conditions = ["LOWER(COALESCE(startup_origin, '')) = 'internal'"]
+        params = []
+        if filters['domain'] and filters['domain'] != 'All':
+            conditions.append("domain = %s")
+            params.append(filters['domain'])
+        if filters['status'] and filters['status'] != 'All':
+            conditions.append("status = %s")
+            params.append(filters['status'])
+
+        where_clause = "WHERE " + " AND ".join(conditions)
+
+        union_query = f"""
+            SELECT startup_name, domain, status, number_of_jobs, revenue, incubated_date
+            FROM {IPTIF_STARTUP_TABLE}
+            {where_clause}
+            UNION ALL
+            SELECT startup_name, domain, status, number_of_jobs, revenue, incubated_date
+            FROM {TECHIN_STARTUP_TABLE}
+            {where_clause}
+        """
+
+        trend_query = f"""
+            SELECT EXTRACT(YEAR FROM incubated_date)::INT as year, COUNT(*) as count
+            FROM ({union_query}) AS combined
+            GROUP BY year
+            ORDER BY year ASC;
+        """
+        cur.execute(trend_query, params + params)
+        trend = [dict(row) for row in cur.fetchall() if row['year']]
+
+        list_query = f"""
+            SELECT startup_name, domain, status, number_of_jobs, revenue, incubated_date
+            FROM ({union_query}) AS combined
+            ORDER BY incubated_date DESC;
+        """
+        cur.execute(list_query, params + params)
+        data_list = [dict(row) for row in cur.fetchall()]
+
+        return jsonify({'trend': trend, 'data': data_list}), 200
+
+    except Exception as e:
+        print(f"Home ground startups error: {e}")
+        return jsonify({'message': 'Failed to fetch home ground startups data.'}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            release_db_connection(conn)
+
+
+@innovation_bp.route('/home-ground/filter-options', methods=['GET'])
+@token_optional
+def get_home_ground_filter_options(current_user_id):
+    """Filter options (domain, status) for internal-origin startups from both tables."""
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'message': 'Database connection failed.'}), 500
+
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+        internal_filter = "LOWER(COALESCE(startup_origin, '')) = 'internal'"
+
+        cur.execute(f"""
+            SELECT DISTINCT domain FROM (
+                SELECT domain FROM {IPTIF_STARTUP_TABLE} WHERE {internal_filter}
+                UNION ALL
+                SELECT domain FROM {TECHIN_STARTUP_TABLE} WHERE {internal_filter}
+            ) AS combined
+            WHERE domain IS NOT NULL
+            ORDER BY domain;
+        """)
+        domains = [row['domain'] for row in cur.fetchall()]
+
+        cur.execute(f"""
+            SELECT DISTINCT status FROM (
+                SELECT status FROM {IPTIF_STARTUP_TABLE} WHERE {internal_filter}
+                UNION ALL
+                SELECT status FROM {TECHIN_STARTUP_TABLE} WHERE {internal_filter}
+            ) AS combined
+            WHERE status IS NOT NULL
+            ORDER BY status;
+        """)
+        statuses = [row['status'] for row in cur.fetchall()]
+
+        return jsonify({'domains': domains, 'statuses': statuses}), 200
+
+    except Exception as e:
+        print(f"Home ground filter options error: {e}")
+        return jsonify({'message': 'Failed to fetch filter options.'}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            release_db_connection(conn)
+

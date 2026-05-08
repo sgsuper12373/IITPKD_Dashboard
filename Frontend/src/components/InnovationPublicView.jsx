@@ -4,6 +4,7 @@ import './InnovationMinimal.css';
 
 import IptifSection from './IptifSection';
 import TechinSection from './TechinSection';
+import HomeGroundStartup from './HomeGroundStartup';
 
 function InnovationPublicView({ user }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -24,6 +25,14 @@ function InnovationPublicView({ user }) {
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: '🚀',
       component: TechinSection
+    },
+    {
+      id: 'home-ground-startup',
+      title: 'Home Ground Startup',
+      subtitle: 'Internal Startups',
+      expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
+      icon: '🏠',
+      component: HomeGroundStartup
     }
   ];
 

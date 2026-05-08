@@ -47,6 +47,7 @@ const InnovationEntrepreneurship = lazy(() => import('./components/InnovationEnt
 const InnovationSection = lazy(() => import('./components/InnovationSection'));
 const IptifSection = lazy(() => import('./components/IptifSection'));
 const TechinSection = lazy(() => import('./components/TechinSection'));
+const HomeGroundStartup = lazy(() => import('./components/HomeGroundStartup'));
 
 // Outreach & Extension
 const OutreachExtension = lazy(() => import('./components/OutreachExtension'));
@@ -206,6 +207,7 @@ function App() {
             <Route path="innovation-entrepreneurship" element={<InnovationEntrepreneurship user={user} />} />
             <Route path="innovation-entrepreneurship/iptif" element={<AdminRoute><IptifSection user={user} /></AdminRoute>} />
             <Route path="innovation-entrepreneurship/techin" element={<AdminRoute><TechinSection user={user} /></AdminRoute>} />
+            <Route path="innovation-entrepreneurship/home-ground-startup" element={<HomeGroundStartup user={user} />} />
             <Route path="industry-connect/icsr" element={<AdminRoute><IcsrSection user={user} /></AdminRoute>} />
             <Route path="industry-connect/conclave" element={<AdminRoute><ConclaveSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension" element={<OutreachExtension user={user} />} />

@@ -12,6 +12,8 @@ const ExportMenu = ({
   filename = 'export',
   exportType = 'both' // 'chart', 'table', or 'both'
 }) => {
+  const isGuest = !localStorage.getItem('authToken');
+
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -117,6 +119,8 @@ const ExportMenu = ({
     doc.save(`${filename}.pdf`);
     setIsOpen(false);
   };*/
+
+  if (isGuest) return null;
 
   return (
     <div ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>

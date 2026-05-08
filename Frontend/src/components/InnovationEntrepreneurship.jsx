@@ -17,6 +17,11 @@ function InnovationEntrepreneurship({ user }) {
       title: 'TechIn',
       route: '/innovation-entrepreneurship/techin',
       description: 'Entrepreneurship'
+    },
+    {
+      title: 'Home Ground Startup',
+      route: '/innovation-entrepreneurship/home-ground-startup',
+      description: 'Internal Startups'
     }
   ];
   const [showPublicView, setShowPublicView] = useState(false);
@@ -68,7 +73,7 @@ function InnovationEntrepreneurship({ user }) {
                 className="people-campus-card"
               >
                 <div className="card-icon">
-                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : '🚀'}
+                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : section.title === 'Home Ground Startup' ? '🏠' : '🚀'}
                 </div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>
