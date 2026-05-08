@@ -789,7 +789,7 @@ function PlacementSection({ user, isPublicView = false }) {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip denominatorKey="registered" />} />
                       <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
                       <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
                         <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
@@ -803,7 +803,7 @@ function PlacementSection({ user, isPublicView = false }) {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip denominatorKey="registered" />} />
                       <Legend wrapperStyle={{ fontSize: '11px' }} />
                       <Line type="linear" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }}>
                         <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
@@ -863,7 +863,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip denominatorKey="registered" />} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} iconType="rect" />
                     <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[4, 4, 0, 0]} barSize={32}>
                       <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GENDER_COLORS[0] }} />
@@ -915,7 +915,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip denominatorKey="registered" />} />
                     <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
                       <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
                     </Bar>
@@ -964,7 +964,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                     <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
                       <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
                     </Bar>
@@ -1018,7 +1018,7 @@ function PlacementSection({ user, isPublicView = false }) {
                             <Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />
                           ))}
                         </Pie>
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                         <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
                       </PieChart>
                     </ResponsiveContainer>
@@ -1061,7 +1061,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                     <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
                       <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
                     </Line>

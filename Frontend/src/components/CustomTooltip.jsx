@@ -5,17 +5,23 @@ import React from 'react';
  * Total is the denominator — individual entries are expressed as % of Total.
  * The "Total" entry itself does not show a percentage.
  */
-const CustomTooltip = ({ active, payload, label, formatter, hidePercentage }) => {
+const CustomTooltip = ({ active, payload, label, formatter, hidePercentage, denominatorKey }) => {
   if (active && payload && payload.length) {
     // Find an explicit "Total" entry in the payload if present
     const totalEntry = payload.find(e => e.name === 'Total');
 
     // Denominator:
-    //   • If there's an explicit "Total" bar/line, use its value.
+    //   • If denominatorKey is provided, use its value from the first payload item's data.
+    //   • Otherwise, if there's an explicit "Total" bar/line, use its value.
     //   • Otherwise sum only non-Total entries (all entries when no Total exists).
-    const denominator = totalEntry
-      ? Number(totalEntry.value) || 0
-      : payload.reduce((sum, e) => sum + (Number(e.value) || 0), 0);
+    const firstPayload = payload[0]?.payload;
+    const denominatorValue = (denominatorKey && firstPayload && firstPayload[denominatorKey] !== undefined)
+      ? Number(firstPayload[denominatorKey])
+      : null;
+
+    const denominator = denominatorValue !== null
+      ? denominatorValue
+      : (totalEntry ? Number(totalEntry.value) || 0 : payload.reduce((sum, e) => sum + (Number(e.value) || 0), 0));
 
     return (
       <div style={{
