@@ -223,7 +223,7 @@ function UbaSection({ user, isPublicView = false }) {
               </div>
             </div >
           </div >
-        )}
+        
 
         {/* Total Events Card */}
         < div style={{
