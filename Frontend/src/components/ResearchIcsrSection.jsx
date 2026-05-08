@@ -451,163 +451,163 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
         {/* Modern Summary Cards */}
         <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="icsr-summary-cards-container" style={{
-          display: 'grid',
-          gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px',
-          marginBottom: '10px'
-        }}>
-          {!mouOnly && (
-            <>
-              {/* Total Sanctioned Projects Card */}
+          <div id="icsr-summary-cards-container" style={{
+            display: 'grid',
+            gridTemplateColumns: mouOnly ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '24px',
+            marginBottom: '10px'
+          }}>
+            {!mouOnly && (
+              <>
+                {/* Total Sanctioned Projects Card */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  boxShadow: '0 10px 25px rgba(79, 70, 229, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📊</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Projects</h3>
+                    </div>
+                    <div className="metric-value" style={{ color: 'white' }}>
+                      {formatNumber(summary.total_projects)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Sponsored + Consultancy</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Externally Funded Projects Card */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  boxShadow: '0 10px 25px rgba(59, 130, 246, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎯</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Sponsored Projects</h3>
+                    </div>
+                    <div className="metric-value" style={{ color: 'white' }}>
+                      {formatNumber(summary.funded_projects)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + completed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Consultancy Projects Card */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  boxShadow: '0 10px 25px rgba(249, 115, 22, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Consultancy</h3>
+                    </div>
+                    <div className="metric-value" style={{ color: 'white' }}>
+                      {formatNumber(summary.consultancy_projects)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + Completed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Consultancy Revenue Card */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  boxShadow: '0 10px 25px rgba(20, 184, 166, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💰</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Project Value</h3>
+                    </div>
+                    <div className="metric-value-sm" style={{ color: 'white' }} title={`₹${formatNumber(summary.consultancy_revenue)}`}>
+                      {formatCompactCurrency(summary.consultancy_revenue)}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}> Sponsored + Consultancy  </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Patents Card */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                  borderRadius: '20px',
+                  padding: '24px',
+                  boxShadow: '0 10px 25px rgba(236, 72, 153, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Patents</h3>
+                    </div>
+                    <div className="metric-value-sm" style={{ color: 'white' }}>
+                      {formatNumber(summary.total_patents)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Filed</span> / {formatNumber(summary.patent_breakdown.Granted)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Granted</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP stats</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* MoU Summary Card */}
+            {(!isReadOnlyView || mouOnly) && (
               <div style={{
-                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+                background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
                 borderRadius: '20px',
                 padding: '24px',
-                boxShadow: '0 10px 25px rgba(79, 70, 229, 0.2)',
+                boxShadow: '0 10px 25px rgba(168, 85, 247, 0.2)',
                 position: 'relative',
                 overflow: 'hidden'
               }}>
                 <div style={{ position: 'relative', zIndex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📊</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Projects</h3>
+                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🤝</span>
+                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total MoUs</h3>
                   </div>
                   <div className="metric-value" style={{ color: 'white' }}>
-                    {formatNumber(summary.total_projects)}
+                    {formatNumber(totalMous)}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                     <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Sponsored + Consultancy</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>External collaborations</span>
                   </div>
                 </div>
               </div>
-
-              {/* Externally Funded Projects Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                borderRadius: '20px',
-                padding: '24px',
-                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎯</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Sponsored Projects</h3>
-                  </div>
-                  <div className="metric-value" style={{ color: 'white' }}>
-                    {formatNumber(summary.funded_projects)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + completed</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Consultancy Projects Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                borderRadius: '20px',
-                padding: '24px',
-                boxShadow: '0 10px 25px rgba(249, 115, 22, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Consultancy</h3>
-                  </div>
-                  <div className="metric-value" style={{ color: 'white' }}>
-                    {formatNumber(summary.consultancy_projects)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active + Completed</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Consultancy Revenue Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-                borderRadius: '20px',
-                padding: '24px',
-                boxShadow: '0 10px 25px rgba(20, 184, 166, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💰</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Project Value</h3>
-                  </div>
-                  <div className="metric-value-sm" style={{ color: 'white' }} title={`₹${formatNumber(summary.consultancy_revenue)}`}>
-                    {formatCompactCurrency(summary.consultancy_revenue)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}> Sponsored + Consultancy  </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Patents Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-                borderRadius: '20px',
-                padding: '24px',
-                boxShadow: '0 10px 25px rgba(236, 72, 153, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Patents</h3>
-                  </div>
-                  <div className="metric-value-sm" style={{ color: 'white' }}>
-                    {formatNumber(summary.total_patents)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Filed</span> / {formatNumber(summary.patent_breakdown.Granted)} <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Granted</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP stats</span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* MoU Summary Card */}
-          {(!isReadOnlyView || mouOnly) && (
-            <div style={{
-              background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-              borderRadius: '20px',
-              padding: '24px',
-              boxShadow: '0 10px 25px rgba(168, 85, 247, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🤝</span>
-                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total MoUs</h3>
-                </div>
-                <div className="metric-value" style={{ color: 'white' }}>
-                  {formatNumber(totalMous)}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                  <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>External collaborations</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-)}</>
+            )}
+          </div>
+        )}</>
 
         {/* ✅ GLOBAL FILTER BLOCK — hidden when MoU view (MoU has its own unified container) */}
         {viewType !== 'mou' && (
@@ -847,46 +847,46 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  {projectsChartMode === 'bar' ? (
-                    <BarChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis
-                        stroke="#666"
-                        tick={{ fontSize: 11 }}
-                        domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                      />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                      <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18}>
-                        <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                      </Bar>
-                      <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18}>
-                        <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                      </Bar>
-                    </BarChart>
-                  ) : (
-                    <LineChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis
-                        stroke="#666"
-                        tick={{ fontSize: 11 }}
-                        domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                      />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
-                        <LabelList dataKey="funded" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                      </Line>
-                      <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }}>
-                        <LabelList dataKey="consultancy" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                      </Line>
-                    </LineChart>
-                  )}
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    {projectsChartMode === 'bar' ? (
+                      <BarChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fontSize: 11 }}
+                          domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18}>
+                          <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        </Bar>
+                        <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18}>
+                          <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Bar>
+                      </BarChart>
+                    ) : (
+                      <LineChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fontSize: 11 }}
+                          domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ fontSize: '11px' }} />
+                        <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
+                          <LabelList dataKey="funded" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        </Line>
+                        <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }}>
+                          <LabelList dataKey="consultancy" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Line>
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                )}</>
               </div>
             </section>
           )}
@@ -935,44 +935,44 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                  {patentsChartMode === 'bar' ? (
-                    <BarChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis
-                        stroke="#666"
-                        tick={{ fontSize: 11 }}
-                        domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                      />
-                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                      {PATENT_STATUS_ORDER.map((status) => (
-                        <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18}>
-                          <LabelList dataKey={status} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
-                        </Bar>
-                      ))}
-                    </BarChart>
-                  ) : (
-                    <LineChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis
-                        stroke="#666"
-                        tick={{ fontSize: 11 }}
-                        domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                      />
-                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                      {PATENT_STATUS_ORDER.map((status) => (
-                        <Line key={status} type="linear" dataKey={status} name={status} stroke={PATENT_COLORS[status]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[status] }} activeDot={{ r: 7 }}>
-                          <LabelList dataKey={status} offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
-                        </Line>
-                      ))}
-                    </LineChart>
-                  )}
-                </ResponsiveContainer>
-)}</>
+                  <ResponsiveContainer width="100%" height={350}>
+                    {patentsChartMode === 'bar' ? (
+                      <BarChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fontSize: 11 }}
+                          domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                        />
+                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        {PATENT_STATUS_ORDER.map((status) => (
+                          <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18}>
+                            <LabelList dataKey={status} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
+                          </Bar>
+                        ))}
+                      </BarChart>
+                    ) : (
+                      <LineChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          stroke="#666"
+                          tick={{ fontSize: 11 }}
+                          domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                        />
+                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                        {PATENT_STATUS_ORDER.map((status) => (
+                          <Line key={status} type="linear" dataKey={status} name={status} stroke={PATENT_COLORS[status]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[status] }} activeDot={{ r: 7 }}>
+                            <LabelList dataKey={status} offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
+                          </Line>
+                        ))}
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                )}</>
               </div>
             </section>
           )}
@@ -1008,38 +1008,38 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
               <div id="research-projects-directory-table" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
-                    <tr>
-                      <th style={{ padding: '10px' }}>Title</th>
-                      <th style={{ padding: '10px' }}>PI</th>
-                      <th style={{ padding: '10px' }}>Type</th>
-                      <th style={{ padding: '10px' }}>Dept</th>
-                      <th style={{ padding: '10px' }}>Amount</th>
-                      <th style={{ padding: '10px' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {projectList.map((p, i) => (
-                      <tr key={p.project_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                        <td style={{ padding: '8px' }}>{p.project_title}</td>
-                        <td style={{ padding: '8px' }}>{p.principal_investigator}</td>
-                        <td style={{ padding: '8px' }}>{p.project_type}</td>
-                        <td style={{ padding: '8px' }}>{p.department}</td>
-                        <td style={{ padding: '8px' }}>{formatCurrency(p.amount_sanctioned)}</td>
-                        <td style={{ padding: '8px' }}>{p.status}</td>
-                      </tr>
-                    ))}
-                    {!projectList.length && (
+                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                       <tr>
-                        <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                          No information available for the selected filter
-                        </td>
+                        <th style={{ padding: '10px' }}>Title</th>
+                        <th style={{ padding: '10px' }}>PI</th>
+                        <th style={{ padding: '10px' }}>Type</th>
+                        <th style={{ padding: '10px' }}>Dept</th>
+                        <th style={{ padding: '10px' }}>Amount</th>
+                        <th style={{ padding: '10px' }}>Status</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-)}</>
+                    </thead>
+                    <tbody>
+                      {projectList.map((p, i) => (
+                        <tr key={p.project_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                          <td style={{ padding: '8px' }}>{p.project_title}</td>
+                          <td style={{ padding: '8px' }}>{p.principal_investigator}</td>
+                          <td style={{ padding: '8px' }}>{p.project_type}</td>
+                          <td style={{ padding: '8px' }}>{p.department}</td>
+                          <td style={{ padding: '8px' }}>{formatCurrency(p.amount_sanctioned)}</td>
+                          <td style={{ padding: '8px' }}>{p.status}</td>
+                        </tr>
+                      ))}
+                      {!projectList.length && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                            No information available for the selected filter
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                )}</>
               </div>
             </section>
           )}
@@ -1220,42 +1220,42 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         <p>No information available for the selected filter</p>
                       </div>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={450}>
-                        {mouChartMode === 'bar' ? (
-                          <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                            <YAxis
-                              stroke="#666"
-                              tick={{ fontSize: 11 }}
-                              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                            <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
-                              <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
-                            </Bar>
-                          </BarChart>
-                        ) : (
-                          <LineChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                            <YAxis
-                              stroke="#666"
-                              tick={{ fontSize: 11 }}
-                              domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                            <Line type="linear" dataKey="total" name="MoUs Signed"
-                              stroke={MOU_COLOR} strokeWidth={3}
-                              dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>
-                              <LabelList dataKey="total" offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
-                            </Line>
-                          </LineChart>
-                        )}
-                      </ResponsiveContainer>
-)}</>
+                        <ResponsiveContainer width="100%" height={450}>
+                          {mouChartMode === 'bar' ? (
+                            <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                              <YAxis
+                                stroke="#666"
+                                tick={{ fontSize: 11 }}
+                                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                              />
+                              <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                              <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
+                                <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+                              </Bar>
+                            </BarChart>
+                          ) : (
+                            <LineChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                              <YAxis
+                                stroke="#666"
+                                tick={{ fontSize: 11 }}
+                                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                              />
+                              <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                              <Line type="linear" dataKey="total" name="MoUs Signed"
+                                stroke={MOU_COLOR} strokeWidth={3}
+                                dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>
+                                <LabelList dataKey="total" offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
+                              </Line>
+                            </LineChart>
+                          )}
+                        </ResponsiveContainer>
+                      )}</>
                     </div>
                   </>
                 )}
@@ -1268,34 +1268,34 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}
                   >
                     <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                      <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
-                        <tr>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Focus</th>
-                          <th style={{ padding: '10px' }}>Signed</th>
-                          <th style={{ padding: '10px' }}>Valid Till</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {mouList.map((m, i) => (
-                          <tr key={m.mou_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
-                          </tr>
-                        ))}
-                        {!mouList.length && (
+                      <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                        <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
                           <tr>
-                            <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                              No information available for the selected filter
-                            </td>
+                            <th style={{ padding: '10px' }}>Partner</th>
+                            <th style={{ padding: '10px' }}>Focus</th>
+                            <th style={{ padding: '10px' }}>Signed</th>
+                            <th style={{ padding: '10px' }}>Valid Till</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
-)}</>
+                        </thead>
+                        <tbody>
+                          {mouList.map((m, i) => (
+                            <tr key={m.mou_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            </tr>
+                          ))}
+                          {!mouList.length && (
+                            <tr>
+                              <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                                No information available for the selected filter
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    )}</>
                   </div>
                 )}
 
