@@ -93,17 +93,6 @@ function ConclaveSection({ user, isPublicView = false }) {
 
         {/* FIX 1: Restored proper <h2> tag that was broken */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-          <h2
-            style={{
-              textDecoration: "underline",
-              color: isPublicView ? "#000000" : "#ffffff",
-              textShadow: isPublicView ? "0 1px 2px rgba(255,255,255,0.6)" : "0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6)",
-              margin: 0,
-              fontSize: "20px"
-            }}
-          >
-            Conclave Summary
-          </h2>
           <ExportMenu
             elementId="conclave-summary-cards-container"
             data={[summary]}
@@ -297,9 +286,6 @@ function ConclaveSection({ user, isPublicView = false }) {
           <div>
             {/* FIX 2: Removed stray "Students On Roll" h2; kept only "Conclave Directory" */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-              <h2 style={{ textDecoration: 'underline', color: '#000', margin: 0, fontSize: '20px' }}>
-                Conclave Directory
-              </h2>
               <ExportMenu
                 elementId="conclave-directory-container"
                 data={conclaves}
