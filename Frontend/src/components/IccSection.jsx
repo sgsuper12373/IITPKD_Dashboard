@@ -150,113 +150,113 @@ function IccSection({ user, isPublicView = false }) {
             </div>
             {/* Modern Summary Cards */}
             <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="icc-summary-cards-container" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '20px',
-              marginBottom: '30px'
-            }}>
-              {/* Total Complaints Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
+              <div id="icc-summary-cards-container" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '20px',
+                marginBottom: '30px'
               }}>
+                {/* Total Complaints Card */}
                 <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '100px',
-                  height: '100px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Total Complaints</span>
-                  </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                    {summary.total}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Received over the years</span>
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-20px',
+                    right: '-20px',
+                    width: '100px',
+                    height: '100px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '50%'
+                  }} />
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
+                      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Total Complaints</span>
+                    </div>
+                    <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                      {summary.total}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Received over the years</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Resolved Complaints Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
+                {/* Resolved Complaints Card */}
                 <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '100px',
-                  height: '100px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Resolved</span>
-                  </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                    {summary.resolved}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successfully resolved</span>
+                  background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-20px',
+                    right: '-20px',
+                    width: '100px',
+                    height: '100px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '50%'
+                  }} />
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
+                      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Resolved</span>
+                    </div>
+                    <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                      {summary.resolved}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successfully resolved</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Pending Complaints Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
+                {/* Pending Complaints Card */}
                 <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '100px',
-                  height: '100px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Pending</span>
-                  </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                    {summary.pending}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Under review</span>
+                  background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-20px',
+                    right: '-20px',
+                    width: '100px',
+                    height: '100px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '50%'
+                  }} />
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
+                      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Pending</span>
+                    </div>
+                    <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                      {summary.pending}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Under review</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-            </div>
-)}</>
+              </div>
+            )}</>
 
 
 
@@ -334,45 +334,45 @@ function IccSection({ user, isPublicView = false }) {
                     </p>
                   </div>
                   <div className="metric-toggle-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
-                    {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
-                      <button
-                        key={key}
-                        type="button"
-                        className="metric-toggle active"
-                        style={{ 
-                          minWidth: '100px', 
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                          backgroundColor: AREA_COLORS[key]
-                        }}
-                        onClick={() => setVisibleMetrics(prev => {
-                          const next = { ...prev, [key]: false };
-                          if (Object.values(next).every(v => !v)) return prev;
-                          return next;
-                        })}
-                      >
-                        {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)} ✕
-                      </button>
-                    ))}
-                  </div>
-                  {Object.values(visibleMetrics).some(v => !v) && (
-                    <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
-                      {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
+                    <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
+                      {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
                         <button
                           key={key}
                           type="button"
-                          className="metric-toggle"
-                          style={{ minWidth: '100px', opacity: 0.6, borderStyle: 'dashed' }}
-                          onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
+                          className="metric-toggle active"
+                          style={{
+                            minWidth: '100px',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            backgroundColor: AREA_COLORS[key]
+                          }}
+                          onClick={() => setVisibleMetrics(prev => {
+                            const next = { ...prev, [key]: false };
+                            if (Object.values(next).every(v => !v)) return prev;
+                            return next;
+                          })}
                         >
-                          + {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)}
+                          {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)} ✕
                         </button>
                       ))}
                     </div>
-                  )}
-                </div>            </div>
+                    {Object.values(visibleMetrics).some(v => !v) && (
+                      <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
+                        {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
+                          <button
+                            key={key}
+                            type="button"
+                            className="metric-toggle"
+                            style={{ minWidth: '100px', opacity: 0.6, borderStyle: 'dashed' }}
+                            onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
+                          >
+                            + {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>            </div>
 
                 {/* Bar / Trend toggle */}
                 <div style={{
@@ -428,43 +428,43 @@ function IccSection({ user, isPublicView = false }) {
                     {/* Bar chart — Complaints, Resolved, Pending */}
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                        <BarChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                          <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
-                            {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
-                          </Bar>
-                          <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
-                            {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
-                          </Bar>
-                          <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
-                            {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-)}</>
+                        <ResponsiveContainer width="100%" height={350}>
+                          <BarChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                            <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
+                            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                            <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
+                              {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
+                            </Bar>
+                            <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
+                              {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
+                            </Bar>
+                            <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
+                              {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )}</>
                     </div>
 
                     {/* Trend (Line) chart — complaints only */}
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                          <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                          <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                          <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
-                          </Line>
-                        </LineChart>
-                      </ResponsiveContainer>
-)}</>
+                        <ResponsiveContainer width="100%" height={350}>
+                          <LineChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                            <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
+                            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                            <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
+                              <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
+                            </Line>
+                          </LineChart>
+                        </ResponsiveContainer>
+                      )}</>
                     </div>
                   </div>
                 )}
@@ -523,68 +523,68 @@ function IccSection({ user, isPublicView = false }) {
                 ) : (
                   <div id="icc-yearly-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
                     <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{
-                      width: '100%',
-                      borderCollapse: 'collapse',
-                      fontSize: '14px'
-                    }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Year</th>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Total Complaints</th>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Pending</th>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Resolved</th>
-                          <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {yearlyData.map((row, index) => {
-                          const statusLabel =
-                            row.pending === 0 ? (
-                              <span style={{
-                                backgroundColor: '#fee2e2',
-                                color: '#991b1b',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '500'
-                              }}>All Pending</span>
-                            ) : row.resolved === 0 ? (
-                              <span style={{
-                                backgroundColor: '#dcfce7',
-                                color: '#166534',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '500'
-                              }}>All Resolved</span>
-                            ) : (
-                              <span style={{
-                                backgroundColor: '#fef3c7',
-                                color: '#92400e',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '500'
-                              }}>Mixed</span>
-                            );
+                      <table style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '14px'
+                      }}>
+                        <thead>
+                          <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
+                            <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Year</th>
+                            <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Total Complaints</th>
+                            <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Pending</th>
+                            <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Resolved</th>
+                            <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {yearlyData.map((row, index) => {
+                            const statusLabel =
+                              row.pending === 0 ? (
+                                <span style={{
+                                  backgroundColor: '#dcfce7',
+                                  color: '#166534',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: '500'
+                                }}>All Resolved</span>
+                              ) : row.resolved === 0 ? (
+                                <span style={{
+                                  backgroundColor: '#fee2e2',
+                                  color: '#991b1b',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: '500'
+                                }}>All Pending</span>
+                              ) : (
+                                <span style={{
+                                  backgroundColor: '#fef3c7',
+                                  color: '#92400e',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: '500'
+                                }}>Mixed</span>
+                              );
 
-                          return (
-                            <tr key={row.year} style={{
-                              backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                              borderBottom: '1px solid #e0e0e0'
-                            }}>
-                              <td style={{ padding: '12px', fontWeight: '500' }}>{row.year}</td>
-                              <td style={{ padding: '12px' }}>{row.total}</td>
-                              <td style={{ padding: '12px', color: '#f97316', fontWeight: '500' }}>{row.pending}</td>
-                              <td style={{ padding: '12px', color: '#22c55e', fontWeight: '500' }}>{row.resolved}</td>
-                              <td style={{ padding: '12px' }}>{statusLabel}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-)}</>
+                            return (
+                              <tr key={row.year} style={{
+                                backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
+                                borderBottom: '1px solid #e0e0e0'
+                              }}>
+                                <td style={{ padding: '12px', fontWeight: '500' }}>{row.year}</td>
+                                <td style={{ padding: '12px' }}>{row.total}</td>
+                                <td style={{ padding: '12px', color: '#f97316', fontWeight: '500' }}>{row.pending}</td>
+                                <td style={{ padding: '12px', color: '#22c55e', fontWeight: '500' }}>{row.resolved}</td>
+                                <td style={{ padding: '12px' }}>{statusLabel}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}</>
                   </div>
                 )}
               </div>
