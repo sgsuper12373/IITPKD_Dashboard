@@ -187,7 +187,7 @@ function NptelSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.total_courses)}
+              {summary.total_courses === 0 ? "To Be Updated" : formatNumber(summary.total_courses)}
             </div>
             <div style={{
               display: 'flex',
@@ -272,7 +272,7 @@ function NptelSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.total_enrollments)}
+              {summary.total_enrollments === 0 ? "To Be Updated" : formatNumber(summary.total_enrollments)}
             </div>
             <div style={{
               display: 'flex',

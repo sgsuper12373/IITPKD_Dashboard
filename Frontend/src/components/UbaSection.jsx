@@ -137,16 +137,13 @@ function UbaSection({ user, isPublicView = false }) {
       {/* Impact Summary Cards */}
       < div id="uba-summary-cards-container" style={{
         display: 'grid',
-        gridTemplateColumns: summary.total_projects > 0
-          ? 'repeat(2, 1fr)'
-          : '1fr',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '24px',
         marginBottom: '40px'
       }
       }>
         {/* Total Projects Card */}
-        {Number(summary.total_projects) > 0 && (
-          < div style={{
+        < div style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             borderRadius: '20px',
             padding: '28px',
@@ -203,7 +200,7 @@ function UbaSection({ user, isPublicView = false }) {
                 marginBottom: '8px',
                 lineHeight: '1.2'
               }}>
-                {formatNumber(summary.total_projects)}
+                {summary.total_projects === 0 ? "To Be Updated" : formatNumber(summary.total_projects)}
               </div>
               <div style={{
                 display: 'flex',
@@ -286,7 +283,7 @@ function UbaSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.total_events)}
+              {summary.total_events === 0 ? "To Be Updated" : formatNumber(summary.total_events)}
             </div>
             <div style={{
               display: 'flex',

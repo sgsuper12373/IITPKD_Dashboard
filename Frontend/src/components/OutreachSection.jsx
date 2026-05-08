@@ -552,11 +552,9 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
                   <div className="outreach-card-icon">{config.icon}</div>
                   <h3 className="outreach-card-title">{config.title}</h3>
                   <p className="outreach-card-subtitle">{config.description}</p>
-                  {count > 0 && (
-                    <div style={{ marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: '600', color: '#f7a600' }}>
-                      {count} {count === 1 ? 'record' : 'records'}
-                    </div>
-                  )}
+                  <div style={{ marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: '600', color: '#f7a600' }}>
+                    {count > 0 ? `${count} ${count === 1 ? 'record' : 'records'}` : 'To Be Updated'}
+                  </div>
                   <div className="outreach-card-arrow">→</div>
                 </div>
               );
