@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -575,7 +575,7 @@ function TechinSection({ user, isPublicView = false }) {
             <div>
               <h2 style={{ margin: '0 0 4px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px' }}>
                 <span style={{ fontSize: '22px' }}>{currentView?.icon}</span>
-                {currentView?.label}
+`                {currentView?.label}
               </h2>
               <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>
                 {viewType === 'programs' && 'Yearly trend of programs by type and association'}
@@ -631,6 +631,26 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
         {/* end unified panel */}
 
+        <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div>
+              <span style={{ width:'100px', height: '100px'}}></span>
+              <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on TechIn</h3>
+              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Visit our website to explore our services and solutions.</p>
+            </div>
+          </div>
+          <a
+            href="https://techin-iitpkd.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+          >
+            Visit Techin.com →
+          </a>
+        </div>
+
       </div>
 
       <DataUploadModal
@@ -639,6 +659,7 @@ function TechinSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
+
     </div>
   );
 }

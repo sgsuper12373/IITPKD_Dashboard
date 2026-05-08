@@ -911,6 +911,27 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
+
+          <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div>
+              <span style={{ width:'100px', height: '100px'}}></span>
+              <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About our Alumni</h3>
+              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
+            </div>
+          </div>
+          <a
+            href="https://iar.iitpkd.ac.in/home"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+          >
+            Visit iar.iitpkd.ac.in →
+          </a>
+        </div>
+        
         </div>
 
         {/* Upload Modal */}
@@ -921,6 +942,8 @@ function IarSection({ user, isPublicView = false }) {
           token={token}
         />
       </div>
+      
+
     </div>
   );
 }
