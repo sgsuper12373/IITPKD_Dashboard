@@ -33,7 +33,7 @@ const NirfRankingSection = ({ user }) => {
         fetchData();
     }, [uploadVersion]);
 
-    const canUpload = user && [2, 3, 4].includes(user.role_id);
+    const canUpload = user && [3].includes(user.role_id);
     const token = localStorage.getItem('authToken');
 
     if (loading) {
@@ -205,8 +205,7 @@ const NirfRankingSection = ({ user }) => {
 
                             {/* Right: area chart */}
                             <div style={{ flex: 1, minWidth: '220px', height: 160 }}>
-                                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     {chartType === 'bar' ? (
                                         <BarChart data={rankData} margin={{ top: 20, right: 8, left: -20, bottom: 0 }} barCategoryGap="15%">
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -249,7 +248,6 @@ const NirfRankingSection = ({ user }) => {
                                         </LineChart>
                                     )}
                                 </ResponsiveContainer>
-)}</>
                             </div>
                         </div>
                     </div>
@@ -291,8 +289,7 @@ const NirfRankingSection = ({ user }) => {
                                 </div>
                             </div>
                             <div style={{ height: 80 }}>
-                                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     {chartType === 'bar' ? (
                                         <BarChart data={recentData} margin={{ top: 15, right: 4, left: -30, bottom: 0 }} barCategoryGap="15%">
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -326,7 +323,6 @@ const NirfRankingSection = ({ user }) => {
                                         </LineChart>
                                     )}
                                 </ResponsiveContainer>
-)}</>
                             </div>
                         </div>
                     );

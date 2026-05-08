@@ -265,21 +265,22 @@ function EducationIarSection({ user, isPublicView = false }) {
                 >
                   📈 Trend Overview
                 </button>
-
-                <button
-                  onClick={() => setViewType('directory')}
-                  style={{
-                    padding: '6px 14px',
-                    fontSize: '13px',
-                    borderRadius: '6px',
-                    border: viewType === 'directory' ? '1px solid #0ea5e9' : '1px solid #e2e8f0',
-                    backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
-                    color: viewType === 'directory' ? '#0369a1' : '#333',
-                    cursor: 'pointer'
-                  }}
-                >
-                  📋 MoUs Directory
-                </button>
+                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                  <button
+                    onClick={() => setViewType('directory')}
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: '13px',
+                      borderRadius: '6px',
+                      border: viewType === 'directory' ? '1px solid #0ea5e9' : '1px solid #e2e8f0',
+                      backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
+                      color: viewType === 'directory' ? '#0369a1' : '#333',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📋 MoUs Directory
+                  </button>
+                )}
               </div>
 
               {/* Trend View */}
@@ -299,8 +300,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                     <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                       <p>No information available for the selected filter</p>
                     </div>
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350} minWidth={0}>
+                    <ResponsiveContainer width="100%" height={350} minWidth={0}>
                       {chartMode === 'bar' ? (
                         <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -322,12 +322,11 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <Line type="linear" dataKey="total" name="MoUs Signed"
                             stroke={IAR_MOU_COLOR} strokeWidth={3}
                             dot={{ r: 6, fill: IAR_MOU_COLOR }} activeDot={{ r: 8 }}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+                            <LabelList offset={15} dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
                           </Line>
                         </LineChart>
                       )}
                     </ResponsiveContainer>
-)}</>
                   </div>
                 </>
               )}
@@ -338,40 +337,40 @@ function EducationIarSection({ user, isPublicView = false }) {
                   <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{mouList.length} records found</p>
                   <div id="iar-mou-directory-table" className="table-responsive" style={{ maxHeight: '350px', height: '350px', overflowY: 'auto' }}>
                     <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                      <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
-                        <tr>
-                          <th style={{ padding: '10px' }}>Sl. No.</th>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Framework</th>
-                          <th style={{ padding: '10px' }}>Country</th>
-                          <th style={{ padding: '10px' }}>Collaboration Nature</th>
-                          <th style={{ padding: '10px' }}>Signed</th>
-                          <th style={{ padding: '10px' }}>Valid Till</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sortedMouList.map((m, i) => (
-                          <tr key={m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                            <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td> {/* ✅ Sl. No. */}
-                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                            <td style={{ padding: '8px' }}>{m.framework}</td>
-                            <td style={{ padding: '8px' }}>{m.country}</td>
-                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
-                          </tr>
-                        ))}
-                        {!mouList.length && (
+                      <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                        <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
                           <tr>
-                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                              No information available for the selected filter
-                            </td>
+                            <th style={{ padding: '10px' }}>Sl. No.</th>
+                            <th style={{ padding: '10px' }}>Partner</th>
+                            <th style={{ padding: '10px' }}>Framework</th>
+                            <th style={{ padding: '10px' }}>Country</th>
+                            <th style={{ padding: '10px' }}>Collaboration Nature</th>
+                            <th style={{ padding: '10px' }}>Signed</th>
+                            <th style={{ padding: '10px' }}>Valid Till</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
-)}</>
+                        </thead>
+                        <tbody>
+                          {sortedMouList.map((m, i) => (
+                            <tr key={m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                              <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td> {/* ✅ Sl. No. */}
+                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                              <td style={{ padding: '8px' }}>{m.framework}</td>
+                              <td style={{ padding: '8px' }}>{m.country}</td>
+                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            </tr>
+                          ))}
+                          {!mouList.length && (
+                            <tr>
+                              <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                                No information available for the selected filter
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    )}</>
                   </div>
                 </>
               )}

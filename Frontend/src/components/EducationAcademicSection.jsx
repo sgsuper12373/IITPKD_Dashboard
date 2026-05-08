@@ -34,8 +34,7 @@ function CourseTable({ courses, headerColor, user }) {
       backgroundColor: '#fff',
       position: 'relative'
     }}>
-      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', minWidth: '800px' }}>
+      <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', minWidth: '800px' }}>
         <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
           <tr style={{ backgroundColor: headerColor, color: 'white' }}>
             {['Course Name', 'Category', 'Programme', 'Industry Partner', 'Coordinator', 'Status'].map(col => (
@@ -71,7 +70,6 @@ function CourseTable({ courses, headerColor, user }) {
           ))}
         </tbody>
       </table>
-)}</>
     </div>
   );
 }
@@ -173,8 +171,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           />
         </div>
         {/* Summary Cards — 2 primary cards */}
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="education-academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
+        <div id="education-academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
           {/* Active Courses */}
           <div
             onClick={() => setViewMode('all')}
@@ -219,7 +216,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             </div>
           </div>
         </div>
-)}</>
 
         {/* Content Area */}
         <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', position: 'relative', minHeight: '500px' }}>

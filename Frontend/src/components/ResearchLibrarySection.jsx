@@ -432,33 +432,31 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         </div>
 
         {/* Summary Cards */}
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-          <div id="library-summary-cards-container" style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: '16px', marginBottom: '30px'
-          }}>
-            {[
-              { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
-              { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
-              { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '🏢', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
-            ].map(({ gradient, shadow, icon, label, value, sub }) => (
-              <div key={label} style={{ background: gradient, borderRadius: '14px', padding: '16px', boxShadow: `0 8px 16px ${shadow}`, position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '70px', height: '70px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>{icon}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>{label}</span>
-                  </div>
-                  <div style={{ fontSize: '38px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{value}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>{sub}</span>
-                  </div>
+        <div id="library-summary-cards-container" style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+          gap: '16px', marginBottom: '30px'
+        }}>
+          {[
+            { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
+            { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
+            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '🏢', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
+          ].map(({ gradient, shadow, icon, label, value, sub }) => (
+            <div key={label} style={{ background: gradient, borderRadius: '14px', padding: '16px', boxShadow: `0 8px 16px ${shadow}`, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-15px', right: '-15px', width: '70px', height: '70px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>{icon}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>{label}</span>
+                </div>
+                <div style={{ fontSize: '38px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{value}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>{sub}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}</>
+            </div>
+          ))}
+        </div>
 
         {/* ── Publication Trend ─────────────────────────────────────────────── */}
         {viewType === 'trend' && (
@@ -504,33 +502,31 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               {!trendChartData.length && (
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                <ResponsiveContainer width="100%" height={300}>
-                  {trendChartMode === 'bar' ? (
-                    <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
-                      <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28}>
-                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
-                      </Bar>
-                    </BarChart>
-                  ) : (
-                    <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="linear" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
-                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
-                      </Line>
-                    </LineChart>
-                  )}
-                </ResponsiveContainer>
-              )}</>
+              <ResponsiveContainer width="100%" height={300}>
+                {trendChartMode === 'bar' ? (
+                  <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
+                    <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28}>
+                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
+                    </Bar>
+                  </BarChart>
+                ) : (
+                  <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
+                    <Line type="linear" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
+                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
+                    </Line>
+                  </LineChart>
+                )}
+              </ResponsiveContainer>
             </div>
           </section>
         )}
@@ -564,19 +560,17 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               {!departmentChartData.length && (
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20}>
-                      <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#22c55e' }} />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              )}</>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                  <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
+                  <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20}>
+                    <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#22c55e' }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </section>
         )}
@@ -606,35 +600,33 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             </div>
 
             <div id="library-publications-table-container" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
-                    <tr>
-                      {['Title', 'Faculty', 'Dept', 'Type', 'Year', 'Journal'].map(h => (
-                        <th key={h} style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>{h}</th>
-                      ))}
+              <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                <thead style={{ position: 'sticky', top: 0, backgroundColor: '#a855f7', color: 'white' }}>
+                  <tr>
+                    {['Title', 'Faculty', 'Dept', 'Type', 'Year', 'Journal'].map(h => (
+                      <th key={h} style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {publicationList.length > 0 ? publicationList.map((p, i) => (
+                    <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_title}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.faculty_name}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.department}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_type}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_year}</td>
+                      <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.journal_name}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {publicationList.length > 0 ? publicationList.map((p, i) => (
-                      <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_title}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.faculty_name}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.department}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_type}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.publication_year}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #eee' }}>{p.journal_name}</td>
-                      </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-                          No information available for the selected filter
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              )}</>
+                  )) : (
+                    <tr>
+                      <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+                        No information available for the selected filter
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </section>
         )}

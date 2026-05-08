@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -35,7 +35,7 @@ import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 
 const PIE_COLORS = ['#667eea', '#764ba2', '#f093fb', '#43e97b', '#fa709a', '#00f2fe', '#f59e0b', '#a78bfa'];
-const OTHERS_PIE_COLOR = '#94a3b8'; // neutral slate for the "Others" catch-all slice
+const OTHERS_PIE_COLOR = '#94a3b8';
 
 function makePieTooltip(total) {
   return function PieTooltip({ active, payload }) {
@@ -60,8 +60,7 @@ function PieDistributionTable({ data, nameKey, total, colors, user }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
-      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
           <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
             <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
@@ -88,16 +87,37 @@ function PieDistributionTable({ data, nameKey, total, colors, user }) {
           })}
         </tbody>
       </table>
-)}</>
     </div>
   );
 }
+
 const STATE_BAR_COLOR = '#67e8f9';
 const HIGHER_BAR_COLOR = '#43e97b';
 const CORPORATE_BAR_COLOR = '#fa709a';
 const TREND_TOTAL_COLOR = '#667eea';
 const TREND_HIGHER_COLOR = '#22d3ee';
 const TREND_CORPORATE_COLOR = '#f97316';
+
+// Custom label renderer that clips labels exceeding the chart top
+function ClippedLabel(props) {
+  const { x, y, width, value, fill } = props;
+  if (!value) return null;
+  const labelY = y - 4;
+  // Only show if there's at least 6px space above the bar
+  if (labelY < 6) return null;
+  return (
+    <text
+      x={x + width / 2}
+      y={labelY}
+      fill={fill}
+      textAnchor="middle"
+      dominantBaseline="auto"
+      style={{ fontSize: '10px', fontWeight: 600 }}
+    >
+      {value}
+    </text>
+  );
+}
 
 function IarSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
@@ -124,14 +144,15 @@ function IarSection({ user, isPublicView = false }) {
   const [countryDistribution, setCountryDistribution] = useState([]);
   const [outcomeBreakdown, setOutcomeBreakdown] = useState([]);
 
-  // Top 10 outcome departments sorted by total, capped at 10
+  // "Graph" or "Table" toggle for Department Outcome section
+  const [outcomeDisplayMode, setOutcomeDisplayMode] = useState('Graph');
+
   const sortedOutcomeBreakdown = useMemo(() => {
     return [...outcomeBreakdown]
       .sort((a, b) => (b.total || 0) - (a.total || 0))
       .slice(0, 10);
   }, [outcomeBreakdown]);
 
-  // Top 5 states + one "Others" arc for the rest
   const stateTop10 = useMemo(() => {
     const sorted = [...stateDistribution]
       .filter(item => item.state !== 'Not Found')
@@ -144,7 +165,6 @@ function IarSection({ user, isPublicView = false }) {
     return top5;
   }, [stateDistribution]);
 
-  // Top 5 countries + one "Others" arc for the rest
   const countryTop10 = useMemo(() => {
     const sorted = [...countryDistribution]
       .filter(item => item.country !== 'Other')
@@ -165,9 +185,8 @@ function IarSection({ user, isPublicView = false }) {
   const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // UI state to control which visualization block is visible
-  const [activeView, setActiveView] = useState('trend'); // 'trend' | 'state' | 'country' | 'outcome'
-  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
+  const [activeView, setActiveView] = useState('trend');
+  const [chartType, setChartType] = useState('Bar');
 
   const token = localStorage.getItem('authToken');
 
@@ -187,7 +206,6 @@ function IarSection({ user, isPublicView = false }) {
         const course_types = Array.isArray(options?.course_types) ? options.course_types : [];
         setFilterOptions({ departments, course_types });
 
-        // Auto-correct invalid selections
         const corrections = {};
         if (filters.department !== 'All' && filters.department && !departments.includes(filters.department)) {
           corrections.department = 'All';
@@ -236,10 +254,7 @@ function IarSection({ user, isPublicView = false }) {
   }, [filters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFilterChange = (field, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value
-    }));
+    setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleClearFilters = () => {
@@ -248,16 +263,14 @@ function IarSection({ user, isPublicView = false }) {
 
   const trendData = useMemo(() => summary.trend || [], [summary.trend]);
 
-  // Using shared CustomTooltip from chartUtils
+  // Fixed chart height shared between graph and table views
+  const OUTCOME_PANEL_HEIGHT = 450;
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
         {!isReadOnlyView && (
-          <button
-            className="page-back-btn"
-            onClick={() => navigate('/people-campus')}
-          >
+          <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
             ← Back to People & Campus
           </button>
         )}
@@ -267,13 +280,9 @@ function IarSection({ user, isPublicView = false }) {
             <div className="section-header-left">
               <h1>International and Alumni Relations</h1>
             </div>
-
             <div className="section-header-actions">
               {!isReadOnlyView && isAdmin && (
-                <button
-                  className="page-upload-btn"
-                  onClick={() => setIsUploadModalOpen(true)}
-                >
+                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
                   <span>📤</span> Upload Data
                 </button>
               )}
@@ -281,18 +290,16 @@ function IarSection({ user, isPublicView = false }) {
           </div>
         )}
 
-        {error && <div className="error-message" style={{
-          padding: '10px',
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          borderRadius: '4px',
-          marginBottom: '20px'
-        }}>{error}</div>}
+        {error && (
+          <div className="error-message" style={{
+            padding: '10px', backgroundColor: '#f8d7da', color: '#721c24',
+            borderRadius: '4px', marginBottom: '20px'
+          }}>{error}</div>
+        )}
 
         <div style={{ position: 'relative', minHeight: '600px' }}>
 
-
-          {/* ... Summary Cards ... */}
+          {/* Export + Summary Cards */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
             <ExportMenu
               elementId="iar-summary-cards-container"
@@ -303,40 +310,20 @@ function IarSection({ user, isPublicView = false }) {
               title="IAR Summary"
             />
           </div>
-          {/* Modern Summary Cards */}
-          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="iar-summary-cards-container" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-            marginBottom: '30px'
+
+          <div id="iar-summary-cards-container" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px', marginBottom: '30px'
           }}>
-            {/* Total Alumni Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
+            {/* Total Alumni */}
+            <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>👥</span>
                   <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Alumni</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
-                  {summary.total_alumni}
-                </div>
+                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.total_alumni}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
                   <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Alumni matched with filters</span>
@@ -344,32 +331,15 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* Higher Studies Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(34, 211, 238, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
+            {/* Higher Studies */}
+            <div style={{ background: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(34, 211, 238, 0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🎓</span>
                   <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Higher Studies</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
-                  {summary.higher_studies}
-                </div>
+                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.higher_studies}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
                   <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Pursuing research/education</span>
@@ -377,32 +347,15 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* Corporate Careers Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
+            {/* Corporate */}
+            <div style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
                   <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Corporate Careers</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>
-                  {summary.corporate}
-                </div>
+                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.corporate}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
                   <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Working in industry</span>
@@ -410,107 +363,37 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
-)}</>
 
-          {/* View selector for different IAR charts */}
+          {/* View Selector */}
           <div style={{
-            display: 'flex',
-            gap: '10px',
-            marginBottom: '20px',
-            borderBottom: '2px solid #e0e0e0',
-            paddingBottom: '10px',
-            flexWrap: 'wrap'
+            display: 'flex', gap: '10px', marginBottom: '20px',
+            borderBottom: '2px solid #e0e0e0', paddingBottom: '10px', flexWrap: 'wrap'
           }}>
-            <button
-              type="button"
-              onClick={() => setActiveView('trend')}
-              style={{
+            {[
+              { id: 'trend', label: 'Outcome Trend', icon: '📈', activeColor: '#667eea', activeText: 'white' },
+              { id: 'state', label: 'State Distribution', icon: '🗺️', activeColor: '#67e8f9', activeText: '#333' },
+              { id: 'country', label: 'Country Distribution', icon: '🌍', activeColor: '#764ba2', activeText: 'white' },
+              { id: 'outcome', label: 'Department Outcome', icon: '📊', activeColor: '#43e97b', activeText: 'white' },
+            ].map(({ id, label, icon, activeColor, activeText }) => (
+              <button key={id} type="button" onClick={() => setActiveView(id)} style={{
                 padding: '10px 24px',
-                backgroundColor: activeView === 'trend' ? '#667eea' : '#f8f9fa',
-                color: activeView === 'trend' ? 'white' : '#333',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: activeView === 'trend' ? '600' : '500',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>📈</span> Outcome Trend
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveView('state')}
-              style={{
-                padding: '10px 24px',
-                backgroundColor: activeView === 'state' ? '#67e8f9' : '#f8f9fa',
-                color: activeView === 'state' ? '#333' : '#333',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: activeView === 'state' ? '600' : '500',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>🗺️</span> State Distribution
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveView('country')}
-              style={{
-                padding: '10px 24px',
-                backgroundColor: activeView === 'country' ? '#764ba2' : '#f8f9fa',
-                color: activeView === 'country' ? 'white' : '#333',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: activeView === 'country' ? '600' : '500',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>🌍</span> Country Distribution
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveView('outcome')}
-              style={{
-                padding: '10px 24px',
-                backgroundColor: activeView === 'outcome' ? '#43e97b' : '#f8f9fa',
-                color: activeView === 'outcome' ? 'white' : '#333',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: activeView === 'outcome' ? '600' : '500',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>📊</span> Department Outcome
-            </button>
+                backgroundColor: activeView === id ? activeColor : '#f8f9fa',
+                color: activeView === id ? activeText : '#333',
+                border: 'none', borderRadius: '8px', cursor: 'pointer',
+                fontSize: '14px', fontWeight: activeView === id ? '600' : '500',
+                transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px'
+              }}>
+                <span>{icon}</span> {label}
+              </button>
+            ))}
           </div>
 
           <div className="chart-section" style={{
-            marginBottom: '30px',
-            padding: '20px',
-            backgroundColor: '#fff',
-            borderRadius: '10px',
+            marginBottom: '30px', padding: '20px',
+            backgroundColor: '#fff', borderRadius: '10px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            {/* ── Compact filter bar ── */}
+            {/* Compact filter bar */}
             <div style={{
               background: '#f8f9fa', border: '1px solid #e0e0e0',
               borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '20px'
@@ -544,9 +427,8 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* Outcome Trend View */}
+            {/* ── Outcome Trend View ── */}
             <div style={{ display: activeView === 'trend' ? 'block' : 'none' }}>
-              {/* Bar / Trend toggle — only for Outcome Trend view */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
                 {['Bar', 'Trend'].map(type => (
                   <button key={type} onClick={() => setChartType(type)} style={{
@@ -558,11 +440,9 @@ function IarSection({ user, isPublicView = false }) {
               </div>
               <div>
                 <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <div>
-                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '24px' }}>📈</span> Outcome Trend Over Years
-                    </h2>
-                  </div>
+                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '24px' }}>📈</span> Outcome Trend Over Years
+                  </h2>
                   <ExportMenu
                     elementId="iar-outcome-trend-container"
                     data={trendData}
@@ -582,51 +462,46 @@ function IarSection({ user, isPublicView = false }) {
                   )}
                   <div id="iar-outcome-trend-container" className="chart-container">
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                        <BarChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <BarChart data={trendData} margin={{ top: 24, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
+                            <LabelList dataKey="total" content={<ClippedLabel fill={TREND_TOTAL_COLOR} />} />
                           </Bar>
                           <Bar dataKey="higher" name="Higher Studies" fill={TREND_HIGHER_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
+                            <LabelList dataKey="higher" content={<ClippedLabel fill={TREND_HIGHER_COLOR} />} />
                           </Bar>
                           <Bar dataKey="corporate" name="Corporate" fill={TREND_CORPORATE_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
-                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
+                            <LabelList dataKey="corporate" content={<ClippedLabel fill={TREND_CORPORATE_COLOR} />} />
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
-)}</>
                     </div>
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <LineChart data={trendData} margin={{ top: 24, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_TOTAL_COLOR }} />
+                            <LabelList dataKey="total" content={<ClippedLabel fill={TREND_TOTAL_COLOR} />} />
                           </Line>
                           <Line type="linear" dataKey="higher" name="Higher Studies" stroke={TREND_HIGHER_COLOR} strokeWidth={2} dot={{ r: 3 }}>
-                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_HIGHER_COLOR }} />
+                            <LabelList dataKey="higher" content={<ClippedLabel fill={TREND_HIGHER_COLOR} />} />
                           </Line>
                           <Line type="linear" dataKey="corporate" name="Corporate" stroke={TREND_CORPORATE_COLOR} strokeWidth={2} dot={{ r: 3 }}>
-                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TREND_CORPORATE_COLOR }} />
+                            <LabelList dataKey="corporate" content={<ClippedLabel fill={TREND_CORPORATE_COLOR} />} />
                           </Line>
                         </LineChart>
                       </ResponsiveContainer>
-)}</>
                     </div>
 
-                    {/* Chart Statistics */}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                       <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#667eea' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
                       <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#22d3ee' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
@@ -638,7 +513,7 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* State Distribution View */}
+            {/* ── State Distribution View ── */}
             <div style={{ display: activeView === 'state' ? 'block' : 'none' }}>
               <div>
                 <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -646,9 +521,7 @@ function IarSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '24px' }}>🗺️</span> State-wise Alumni Distribution
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                      Top 5 states by alumni count
-                    </p>
+                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>Top 5 states by alumni count</p>
                   </div>
                   <ExportMenu
                     elementId="iar-state-dist-container"
@@ -659,7 +532,6 @@ function IarSection({ user, isPublicView = false }) {
                     title="State-wise Alumni Distribution"
                   />
                 </div>
-
                 <div style={{ position: 'relative' }}>
                   {stateDistribution.length === 0 && (
                     <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
@@ -668,8 +540,7 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-state-dist-container" className="chart-container">
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={380}>
+                    <ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -679,14 +550,9 @@ function IarSection({ user, isPublicView = false }) {
                         {stateTop10.length > 0 && <Tooltip content={<StatePieTooltip />} />}
                       </PieChart>
                     </ResponsiveContainer>
-)}</>
                     {stateTop10.length > 0 && (
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
-)}</>
+                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
                     )}
-
-                    {/* Chart Statistics */}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
                         Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state !== 'Not Found').length}</span> Indian States
@@ -697,7 +563,7 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* Country Distribution View */}
+            {/* ── Country Distribution View ── */}
             <div style={{ display: activeView === 'country' ? 'block' : 'none' }}>
               <div>
                 <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -705,9 +571,7 @@ function IarSection({ user, isPublicView = false }) {
                     <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '24px' }}>🌍</span> Global Alumni Reach
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
-                      Top 5 countries by alumni count
-                    </p>
+                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>Top 5 countries by alumni count</p>
                   </div>
                   <ExportMenu
                     elementId="iar-country-dist-container"
@@ -718,7 +582,6 @@ function IarSection({ user, isPublicView = false }) {
                     title="Global Alumni Reach"
                   />
                 </div>
-
                 <div style={{ position: 'relative' }}>
                   {countryDistribution.length === 0 && (
                     <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
@@ -727,8 +590,7 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-country-dist-container" className="chart-container">
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={380}>
+                    <ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(countryTop10.length > 0 ? countryTop10 : [{ country: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -738,13 +600,9 @@ function IarSection({ user, isPublicView = false }) {
                         {countryTop10.length > 0 && <Tooltip content={<CountryPieTooltip />} />}
                       </PieChart>
                     </ResponsiveContainer>
-)}</>
                     {countryTop10.length > 0 && (
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} user={user} />
-)}</>
+                      <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} user={user} />
                     )}
-                    {/* Chart Statistics */}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
                         Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{(summary?.total_alumni || 0) - (countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0))}</span> settled across <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{countryDistribution.length}</span> Countries
@@ -755,12 +613,13 @@ function IarSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* Outcome by Department View */}
+            {/* ── Outcome by Department View ── */}
             <div style={{ display: activeView === 'outcome' ? 'block' : 'none' }}>
               <div>
-                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                {/* Header row */}
+                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <div>
-                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h2 style={{ margin: '0 0 6px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '24px' }}>📊</span> Outcome by Department
                     </h2>
                     <p className="chart-description" style={{ color: '#666', margin: '0' }}>
@@ -777,6 +636,29 @@ function IarSection({ user, isPublicView = false }) {
                   />
                 </div>
 
+                {/* ── Graph / Table toggle buttons ── */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  {['Graph', 'Table'].map(mode => (
+                    <button
+                      key={mode}
+                      onClick={() => setOutcomeDisplayMode(mode)}
+                      style={{
+                        padding: '7px 22px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        fontSize: '13px',
+                        background: outcomeDisplayMode === mode ? '#43e97b' : '#e9ecef',
+                        color: outcomeDisplayMode === mode ? '#fff' : '#555',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {mode === 'Graph' ? '📊 Graph' : '📋 Table'}
+                    </button>
+                  ))}
+                </div>
+
                 <div style={{ position: 'relative' }}>
                   {outcomeBreakdown.length === 0 && (
                     <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
@@ -784,88 +666,55 @@ function IarSection({ user, isPublicView = false }) {
                       <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No departmental breakdown to display.</p>
                     </div>
                   )}
-                  <>
-                    {/* Custom legend — clean pill badges above the chart */}
-                    <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', justifyContent: 'flex-end' }}>
-                      {[
-                        { color: HIGHER_BAR_COLOR, label: 'Higher Studies' },
-                        { color: CORPORATE_BAR_COLOR, label: 'Corporate' },
-                      ].map(({ color, label }) => (
-                        <div key={label} style={{
-                          display: 'flex', alignItems: 'center', gap: '6px',
-                          background: '#f8f9fa', border: '1px solid #e0e0e0',
-                          borderRadius: '20px', padding: '4px 12px',
-                        }}>
-                          <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                          <span style={{ fontSize: '12px', fontWeight: 600, color: '#444' }}>{label}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div id="iar-dept-outcome-container" className="chart-container">
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
-                        <BarChart data={sortedOutcomeBreakdown} margin={{ top: 10, right: 20, left: 40, bottom: 80 }} barCategoryGap="20%">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                          <Tooltip content={<CustomTooltip denominatorKey="total" />} />
-                          <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12}>
-                            <LabelList dataKey="higher" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: HIGHER_BAR_COLOR }} />
-                          </Bar>
-                          <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12}>
-                            <LabelList dataKey="corporate" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: CORPORATE_BAR_COLOR }} />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-)}</>
 
-                      {/* Chart Statistics */}
-                      <div style={{
-                        marginTop: '20px',
-                        padding: '15px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
-                        gap: '10px'
-                      }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>
-                            {outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}
+                  {/* Fixed-height panel — same height for both Graph and Table */}
+                  <div style={{ height: `${OUTCOME_PANEL_HEIGHT}px`, overflow: 'hidden' }}>
+
+                    {/* ── GRAPH panel ── */}
+                    <div style={{ display: outcomeDisplayMode === 'Graph' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
+                      {/* Legend */}
+                      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', justifyContent: 'flex-end' }}>
+                        {[
+                          { color: HIGHER_BAR_COLOR, label: 'Higher Studies' },
+                          { color: CORPORATE_BAR_COLOR, label: 'Corporate' },
+                        ].map(({ color, label }) => (
+                          <div key={label} style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            background: '#f8f9fa', border: '1px solid #e0e0e0',
+                            borderRadius: '20px', padding: '4px 12px',
+                          }}>
+                            <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#444' }}>{label}</span>
                           </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#43e97b', fontWeight: 'bold', fontSize: '20px' }}>
-                            {outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#fa709a', fontWeight: 'bold', fontSize: '20px' }}>
-                            {outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Corporate</div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>
-                            {outcomeBreakdown.length}
-                          </div>
-                          <div style={{ color: '#666', fontSize: '11px' }}>Departments</div>
-                        </div>
+                        ))}
+                      </div>
+
+                      {/* Bar chart — takes remaining space */}
+                      <div id="iar-dept-outcome-container" style={{ flex: 1, minHeight: 0, maxHeight: '450px' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={sortedOutcomeBreakdown}
+                            margin={{ top: 24, right: 20, left: 10, bottom: 80 }}
+                            barCategoryGap="20%"
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} width={35} />
+                            <Tooltip content={<CustomTooltip denominatorKey="total" />} />
+                            <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12} maxBarSize={20}>
+                              <LabelList dataKey="higher" content={<ClippedLabel fill={HIGHER_BAR_COLOR} />} />
+                            </Bar>
+                            <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12} maxBarSize={20}>
+                              <LabelList dataKey="corporate" content={<ClippedLabel fill={CORPORATE_BAR_COLOR} />} />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
                       </div>
                     </div>
 
-                    {/* Departmental Outcome Summary Table */}
-                    <div className="grievance-table-wrapper" style={{ marginTop: '20px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                        <div className="chart-header">
-                          <h3 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '18px' }}>Departmental Outcome Summary</h3>
-                          <p className="chart-description" style={{ color: '#666', fontSize: '12px', margin: 0 }}>
-                            Tabular view listing counts per department.
-                          </p>
-                        </div>
+                    {/* ── TABLE panel ── */}
+                    <div style={{ display: outcomeDisplayMode === 'Table' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
                         <ExportMenu
                           elementId="iar-dept-outcome-table"
                           data={sortedOutcomeBreakdown}
@@ -876,15 +725,12 @@ function IarSection({ user, isPublicView = false }) {
                           exportType="table"
                         />
                       </div>
-
-                      <div id="iar-dept-outcome-table" className="table-responsive" style={{ overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
-                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{
-                          width: '100%',
-                          borderCollapse: 'collapse',
-                          fontSize: '13px'
-                        }}>
-                          <thead style={{ position: 'sticky', top: 0, backgroundColor: '#43e97b', color: 'white' }}>
+                      <div
+                        id="iar-dept-outcome-table"
+                        style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'auto', width: '100%', maxHeight: '450px' }}
+                      >
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                          <thead style={{ position: 'sticky', top: 0, backgroundColor: '#43e97b', color: 'white', zIndex: 1 }}>
                             <tr>
                               <th style={{ padding: '10px', textAlign: 'left' }}>Department</th>
                               <th style={{ padding: '10px', textAlign: 'left' }}>Total Alumni</th>
@@ -903,38 +749,59 @@ function IarSection({ user, isPublicView = false }) {
                             ))}
                           </tbody>
                         </table>
-)}</>
                       </div>
                     </div>
-                  </>
+                  </div>
+
+                  {/* Stats row — always visible below the panel */}
+                  <div style={{
+                    marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa',
+                    borderRadius: '8px', border: '1px solid #e0e0e0',
+                    display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px'
+                  }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>
+                      <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ color: '#43e97b', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}</div>
+                      <div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ color: '#fa709a', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}</div>
+                      <div style={{ color: '#666', fontSize: '11px' }}>Corporate</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.length}</div>
+                      <div style={{ color: '#666', fontSize: '11px' }}>Departments</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Alumni CTA Banner */}
           <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div>
-              <span style={{ width:'100px', height: '100px'}}></span>
-              <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About our Alumni</h3>
-              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div>
+                <h3 style={{ padding: '0 50px 0 0', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About our Alumni</h3>
+                <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
+              </div>
             </div>
+            <a
+              href="https://iar.iitpkd.ac.in/home"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+            >
+              Visit iar.iitpkd.ac.in →
+            </a>
           </div>
-          <a
-            href="https://iar.iitpkd.ac.in/home"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
-          >
-            Visit iar.iitpkd.ac.in →
-          </a>
-        </div>
-        
         </div>
 
-        {/* Upload Modal */}
         <DataUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
@@ -942,8 +809,6 @@ function IarSection({ user, isPublicView = false }) {
           token={token}
         />
       </div>
-      
-
     </div>
   );
 }

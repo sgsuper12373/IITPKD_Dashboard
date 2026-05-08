@@ -49,7 +49,7 @@ function HomePage({ user }) {
       <div className="page-container">
         <div className="page-content">
           <div className="welcome-section">
-            <h1>Exploring the Vision that shapes Indian Institute of Technology Palakkad</h1>
+            <h1>Exploring the Vision that shapes Us</h1>
 
             {/* Image Slider - IIT Palakkad Images */}
             <Suspense fallback={<div style={{ height: 320, background: '#f0f0f0', borderRadius: 8 }} />}>

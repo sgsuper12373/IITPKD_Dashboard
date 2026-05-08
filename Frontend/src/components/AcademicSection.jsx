@@ -30,8 +30,7 @@ function PieDistributionTable({ data, nameKey, total, colors, user }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
-      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
           <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
             <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
@@ -58,7 +57,6 @@ function PieDistributionTable({ data, nameKey, total, colors, user }) {
           })}
         </tbody>
       </table>
-)}</>
     </div>
   );
 }
@@ -173,7 +171,7 @@ function SharedFilters({
         // Auto-correct invalid filter selections
         const activeFilters = { ...filters };
         let hasChanges = false;
-        
+
         ['program', 'batch', 'department', 'state'].forEach(key => {
           if (activeFilters[key] && activeFilters[key] !== 'All' && options[key] && !options[key].includes(activeFilters[key])) {
             activeFilters[key] = null; // 'All' translates to null in the parent state
@@ -404,16 +402,16 @@ function AcademicSection({ user, isPublicView = false }) {
         const options = await fetchFilterOptions(null, token);
         if (!isMounted) return;
         setFilterOptions(options);
-        
+
         // Always ensure yearofadmission is set to latest year on mount if not set
         if (!filters.yearofadmission && options.latest_year) {
           setFilters(prev => ({ ...prev, yearofadmission: options.latest_year }));
         }
-      } catch { 
-        if (isMounted) setError('Failed to load filter options. Please try again.'); 
+      } catch {
+        if (isMounted) setError('Failed to load filter options. Please try again.');
       }
-      finally { 
-        if (isMounted) setLoading(false); 
+      finally {
+        if (isMounted) setLoading(false);
       }
     };
     load();
@@ -543,7 +541,7 @@ function AcademicSection({ user, isPublicView = false }) {
     }
     return top5;
   }, [stateDistribution]);
-  
+
   const stateTotal = useMemo(() => stateDistribution.reduce((s, i) => s + i.count, 0), [stateDistribution]);
 
   // ── Filter handlers ───────────────────────────────────────────────────────
@@ -622,8 +620,7 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Students On Roll"
           />
         </div>
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {[
             { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
             { label: 'UG', icon: '📘', value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
@@ -650,7 +647,6 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
-)}</>
 
         {/* ══ Student Summary ══════════════════════════════════════════════ */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
@@ -663,8 +659,7 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Student Summary"
           />
         </div>
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
           {/* Year filter card */}
           <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(168,85,247,0.3)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
@@ -709,7 +704,6 @@ function AcademicSection({ user, isPublicView = false }) {
             );
           })}
         </div>
-)}</>
 
         {/* ══ Charts ════════════════════════════════════════════════════════ */}
         <div className="chart-section">
@@ -767,8 +761,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
                 {/* Trend (line) */}
                 <div id="academic-gender-trend-chart" className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={340}>
+                  <ResponsiveContainer width="100%" height={340}>
                     <LineChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <AreaGradients />
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
@@ -815,13 +808,11 @@ function AcademicSection({ user, isPublicView = false }) {
                       ))}
                     </LineChart>
                   </ResponsiveContainer>
-)}</>
                 </div>
 
                 {/* Bar */}
                 <div id="academic-gender-bar-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={340}>
+                  <ResponsiveContainer width="100%" height={340}>
                     <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -871,7 +862,6 @@ function AcademicSection({ user, isPublicView = false }) {
                       {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} /></Bar>}
                     </BarChart>
                   </ResponsiveContainer>
-)}</>
                 </div>
               </div>
             )}
@@ -901,8 +891,7 @@ function AcademicSection({ user, isPublicView = false }) {
 
                 {/* Bar chart */}
                 <div id="academic-program-strength-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={stackGender ? 480 : 420}>
+                  <ResponsiveContainer width="100%" height={stackGender ? 480 : 420}>
                     <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -969,13 +958,11 @@ function AcademicSection({ user, isPublicView = false }) {
                       ))}
                     </BarChart>
                   </ResponsiveContainer>
-)}</>
                 </div>
 
                 {/* Trend (line) chart */}
                 <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={420}>
+                  <ResponsiveContainer width="100%" height={420}>
                     <LineChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
@@ -1033,11 +1020,10 @@ function AcademicSection({ user, isPublicView = false }) {
                       )}
                     </LineChart>
                   </ResponsiveContainer>
-)}</>
                 </div>
               </div>
             )}
-            
+
             {/* ── State Distribution View ── */}
             {programChartMode === 'state' && (
               <div className={`bar-chart-container trend-chart ${stateTop10.length > 0 ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
@@ -1055,7 +1041,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     title="State Wise Distribution"
                   />
                 </div>
-                
+
                 <div style={{ position: 'relative' }}>
                   {stateTop10.length === 0 && (
                     <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
@@ -1064,8 +1050,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="academic-state-dist-container" className="chart-container">
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={380}>
+                    <ResponsiveContainer width="100%" height={380}>
                       <PieChart>
                         <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
                           {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
@@ -1087,12 +1072,8 @@ function AcademicSection({ user, isPublicView = false }) {
                         }} />}
                       </PieChart>
                     </ResponsiveContainer>
-)}</>
-                    
                     {stateTop10.length > 0 && (
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
-)}</>
+                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
                     )}
 
                     {/* Chart Statistics */}

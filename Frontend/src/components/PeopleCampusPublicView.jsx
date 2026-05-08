@@ -36,7 +36,7 @@ function PeopleCampusPublicView({ user }) {
       subtitle: '',
       expandedTitle: 'Ensuring fairness, safety, and respect for all members of our community',
       icon: '⚖️',
-      isGrievances: true // Special flag to handle dual components
+      isGrievances: true
     },
     {
       id: 'ewd',
@@ -56,6 +56,11 @@ function PeopleCampusPublicView({ user }) {
     }
   ];
 
+  // Hide Grievances and Infrastructure for non-admin users (role_id !== 0) or unauthenticated users
+  const visibleSections = (typeof user === 'undefined' || user?.role_id === 0)
+    ? sections.filter(s => s.id !== 'grievances' && s.id !== 'ewd')
+    : sections;
+
   const handleCardClick = (sectionId) => {
     setActiveSection(activeSection === sectionId ? null : sectionId);
   };
@@ -69,7 +74,7 @@ function PeopleCampusPublicView({ user }) {
       <div className="page-content">
         {/* Card Grid View */}
         <div className={`minimal-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
-          {sections.map((section, index) => (
+          {visibleSections.map((section, index) => (
             <div
               key={section.id}
               className="minimal-section-card"
@@ -87,29 +92,23 @@ function PeopleCampusPublicView({ user }) {
         {/* Expanded Section View */}
         {activeSection && (
           <div className="expanded-section-view">
-            {sections.map((section) => {
+            {visibleSections.map((section) => {
               if (section.id === activeSection) {
                 return (
                   <div key={section.id} className="section-wrapper">
-                    {/* White Card Container */}
                     <div className="expanded-card-container">
-                      {/* Single Row: Back Button + Icon + Expanded Title */}
                       <div className="expanded-card-top-bar">
                         <button className="back-button-inline" onClick={handleBackClick}>
                           <span className="back-arrow">←</span>
                           <span>Back</span>
                         </button>
-
                         <div className="section-icon-header">{section.icon}</div>
                         <p className="section-overview-text">{section.expandedTitle}</p>
                       </div>
 
-                      {/* Section Content */}
                       <div className="expanded-card-content">
                         {section.isGrievances ? (
-                          // Special handling for Grievances - render both IGRC and ICC
                           <div className="grievances-combined-section">
-                            {/* IGRC Section */}
                             <div className="grievance-subsection">
                               <h2 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1a1a1a', fontSize: '1.5rem' }}>
                                 Internal Grievance Resolution Cell (IGRC)
@@ -118,8 +117,6 @@ function PeopleCampusPublicView({ user }) {
                                 <IgrcSection user={user} isPublicView={true} />
                               </div>
                             </div>
-
-                            {/* ICC Section */}
                             <div className="grievance-subsection" style={{ marginTop: '3rem', paddingTop: '3rem', borderTop: '1px solid #eee' }}>
                               <h2 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1a1a1a', fontSize: '1.5rem' }}>
                                 Internal Complaints Committee (ICC)
@@ -130,7 +127,6 @@ function PeopleCampusPublicView({ user }) {
                             </div>
                           </div>
                         ) : (
-                          // Normal single component rendering
                           (() => {
                             const SectionComponent = section.component;
                             return <SectionComponent user={user} isPublicView={true} />;

@@ -93,6 +93,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
+  // Whether the current user can see the Directory tab
+  const canViewDirectory = user !== undefined && user?.role_id !== 0;
+
   const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
     let isMounted = true;
@@ -306,113 +309,111 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           />
         </div>
         {/* Modern Summary Cards */}
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-          <div id="externship-summary-cards-container" style={{
-            display: 'grid',
-            gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-            gap: '20px',
-            marginBottom: '30px'
+        <div id="externship-summary-cards-container" style={{
+          display: 'grid',
+          gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+          gap: '20px',
+          marginBottom: '30px'
+        }}>
+          {/* Total Externships Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {/* Total Externships Card */}
             <div style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Faculty Industry Stints</span>
-                </div>
-                <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                  {formatNumber(summary.total)}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total industry engagements</span>
-                </div>
+              position: 'absolute',
+              top: '-20px',
+              right: '-20px',
+              width: '100px',
+              height: '100px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%'
+            }} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Faculty Industry Stints</span>
               </div>
-            </div>
-
-            {/* Participating Departments Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(34, 197, 94, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🏢</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Departments</span>
-                </div>
-                <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                  {formatNumber(participatingDepartments)}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active departments</span>
-                </div>
+              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                {formatNumber(summary.total)}
               </div>
-            </div>
-
-            {/* Timeline Coverage Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '50%'
-              }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Timeline Coverage</span>
-                </div>
-                <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                  {formatNumber(activeYears)}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Years of activity</span>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total industry engagements</span>
               </div>
             </div>
           </div>
-        )}</>
+
+          {/* Participating Departments Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 10px 20px rgba(34, 197, 94, 0.2)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: '-20px',
+              right: '-20px',
+              width: '100px',
+              height: '100px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%'
+            }} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🏢</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Departments</span>
+              </div>
+              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                {formatNumber(participatingDepartments)}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active departments</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Timeline Coverage Card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: '-20px',
+              right: '-20px',
+              width: '100px',
+              height: '100px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '50%'
+            }} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
+                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Timeline Coverage</span>
+              </div>
+              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                {formatNumber(activeYears)}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Years of activity</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="contain-layout" style={{ position: 'relative', minHeight: '520px', transition: 'opacity 0.3s ease' }}>
           {/* Main Chart Section - Persistently Mounted */}
@@ -480,19 +481,22 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     >
                       <span>🏢</span> Dept
                     </button>
-                    <button
-                      onClick={() => setViewType('externshipTable')}
-                      style={{
-                        flex: 1, padding: '7px 8px',
-                        backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent',
-                        color: viewType === 'externshipTable' ? 'white' : '#475569',
-                        border: 'none', borderRadius: '6px', cursor: 'pointer',
-                        fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
-                      }}
-                    >
-                      <span>📋</span> Dir
-                    </button>
+                    {/* Dir button — hidden for role_id 0 or undefined */}
+                    {canViewDirectory && (
+                      <button
+                        onClick={() => setViewType('externshipTable')}
+                        style={{
+                          flex: 1, padding: '7px 8px',
+                          backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent',
+                          color: viewType === 'externshipTable' ? 'white' : '#475569',
+                          border: 'none', borderRadius: '6px', cursor: 'pointer',
+                          fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
+                        }}
+                      >
+                        <span>📋</span> Dir
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -552,27 +556,25 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
               <div id="externships-yearly-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                      <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                      <YAxis stroke="#888" tick={{ fontSize: 12 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                      {externshipTypeKeys.map((type, index) => (
-                        <Bar
-                          key={type} dataKey={type} stackId="a"
-                          fill={TYPE_COLORS[index % TYPE_COLORS.length]}
-                          radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
-                          isAnimationActive={true} animationDuration={1000}
-                        >
-                          <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
-                        </Bar>
-                      ))}
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}</>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                    <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                    {externshipTypeKeys.map((type, index) => (
+                      <Bar
+                        key={type} dataKey={type} stackId="a"
+                        fill={TYPE_COLORS[index % TYPE_COLORS.length]}
+                        radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                        isAnimationActive={true} animationDuration={1000}
+                      >
+                        <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                      </Bar>
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
@@ -619,19 +621,17 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               <div id="externships-dept-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                      <ResponsiveContainer width="100%" height={400}>
-                        <BarChart data={departmentComparisonData} margin={{ top: 10, right: 30, left: 40, bottom: 80 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                          <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
-                          <YAxis stroke="#888" tick={{ fontSize: 12 }} />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Bar dataKey="count" name="Externships" fill="#22c55e" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000}>
-                            <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    )}</>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart data={departmentComparisonData} margin={{ top: 10, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                        <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
+                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey="count" name="Externships" fill="#22c55e" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000}>
+                          <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   ) : (
                     <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No department data available
@@ -640,28 +640,26 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 </div>
                 <div className={`chart-wrapper ${deptChartType === 'trend' ? 'active' : 'inactive'}`}>
                   {departmentYearlyTrendData.trendData.length > 0 ? (
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                      <ResponsiveContainer width="100%" height={400}>
-                        <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                          <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                          <YAxis stroke="#888" tick={{ fontSize: 12 }} />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                          {departmentYearlyTrendData.departments.map((dept, index) => (
-                            <Line
-                              key={dept} type="linear" dataKey={dept}
-                              stroke={TYPE_COLORS[index % TYPE_COLORS.length]}
-                              strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
-                              activeDot={{ r: 6, strokeWidth: 0 }}
-                              isAnimationActive={true} animationDuration={1000}
-                            >
-                              <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
-                            </Line>
-                          ))}
-                        </LineChart>
-                      </ResponsiveContainer>
-                    )}</>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        {departmentYearlyTrendData.departments.map((dept, index) => (
+                          <Line
+                            key={dept} type="linear" dataKey={dept}
+                            stroke={TYPE_COLORS[index % TYPE_COLORS.length]}
+                            strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                            activeDot={{ r: 6, strokeWidth: 0 }}
+                            isAnimationActive={true} animationDuration={1000}
+                          >
+                            <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                          </Line>
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
                   ) : (
                     <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No trend data available
@@ -671,8 +669,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* 3. Externship Directory Table - Conditionally Mounted for Performance */}
-            {viewType === 'externshipTable' && (
+            {/* 3. Externship Directory Table — hidden for role_id 0 or undefined */}
+            {canViewDirectory && viewType === 'externshipTable' && (
               <div className="chart-view active performance-render-auto">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div className="chart-header">
@@ -694,48 +692,46 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   />
                 </div>
                 <div id="externship-directory-table" className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                    <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
-                      <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                        <tr style={{ backgroundColor: '#f97316' }}>
-                          {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
-                            <th key={header} style={{ padding: '16px 12px', textAlign: 'left', color: 'white', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>
-                              {header}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {externshipList.length > 0 ? (
-                          externshipList.map((e, i) => (
-                            <tr
-                              key={e.externship_id}
-                              style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa', transition: 'background-color 0.2s' }}
-                              className="table-row-hover"
-                            >
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                                <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
-                                  {e.type}
-                                </span>
-                              </td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
-                              <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-                              No externship records found
+                  <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
+                    <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                      <tr style={{ backgroundColor: '#f97316' }}>
+                        {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
+                          <th key={header} style={{ padding: '16px 12px', textAlign: 'left', color: 'white', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>
+                            {header}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {externshipList.length > 0 ? (
+                        externshipList.map((e, i) => (
+                          <tr
+                            key={e.externship_id}
+                            style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa', transition: 'background-color 0.2s' }}
+                            className="table-row-hover"
+                          >
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                              <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
+                                {e.type}
+                              </span>
                             </td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
+                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  )}</>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+                            No externship records found
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
@@ -748,8 +744,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           onClose={() => setIsUploadModalOpen(false)}
           tableName="externship_info"
           token={token}
-        />     </div>
-    </div >
+        />
+      </div>
+    </div>
   );
 }
 
