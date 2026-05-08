@@ -35,10 +35,9 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
 
-const PATENT_STATUS_ORDER = ['Filed', 'Published', 'Granted'];
+const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
 const PATENT_COLORS = {
   Filed: '#6366f1',
-  Published: '#a855f7',
   Granted: '#22c55e',
 };
 
@@ -304,22 +303,11 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
   const patentTrendChartData = useMemo(() => {
     if (!patentStats.yearly.length) return [];
-    return patentStats.yearly.map((row) => {
-      const filedCount = Number(row.Filed) || 0;
-      const grantedCount = Number(row.Granted) || 0;
-      const publishedCount = Number(row.Published) || 0;
-
-      // As per user request: Filed bar = Filed + Granted + Published
-      const entry = {
-        year: row.year,
-        Filed: filedCount + grantedCount + publishedCount,
-        Published: publishedCount,
-        Granted: grantedCount,
-      };
-
-      entry.total = entry.Filed; // Total is now represented by the "Filed" bar
-      return entry;
-    });
+    return patentStats.yearly.map((row) => ({
+      year: row.year,
+      Filed: Number(row.Filed) || 0,
+      Granted: Number(row.Granted) || 0,
+    }));
   }, [patentStats.yearly]);
 
   const mouTrendChartData = useMemo(() =>

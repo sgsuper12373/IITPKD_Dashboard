@@ -714,41 +714,64 @@ def patent_stats(current_user_id):
             return jsonify({'overall': {}, 'yearly': []})
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        where_clause, params = _build_patent_filters(patent_year, patent_status)
 
-        query = f"""
-            SELECT
-                EXTRACT(YEAR FROM filing_date)::INT AS year,
-                patent_status,
-                COUNT(*) AS total
+        # Filed: count all patents grouped by filing_date year
+        filed_conditions = ["filing_date IS NOT NULL"]
+        filed_params: List[Any] = []
+        if patent_year and patent_year != 'All':
+            try:
+                filed_conditions.append("EXTRACT(YEAR FROM filing_date)::INT = %s")
+                filed_params.append(int(patent_year))
+            except ValueError:
+                pass
+        if patent_status and patent_status != 'All':
+            filed_conditions.append("patent_status = %s")
+            filed_params.append(patent_status)
+        filed_where = "WHERE " + " AND ".join(filed_conditions)
+
+        cur.execute(f"""
+            SELECT EXTRACT(YEAR FROM filing_date)::INT AS year, COUNT(*) AS total
             FROM research_patents
-            {where_clause}
-            GROUP BY year, patent_status
-            ORDER BY year
-        """
-        cur.execute(query, params)
-        status_keys = ['Filed', 'Granted', 'Published']
-        yearly_map: Dict[int, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
-        overall_counts = {key: 0 for key in status_keys}
-        for row in cur.fetchall():
-            year = row['year']
-            if year is None:
-                continue
-            status_value = row['patent_status']
-            total = int(row['total'])
-            yearly_map[year][status_value] += total
-            if status_value in overall_counts:
-                overall_counts[status_value] += total
-            else:
-                overall_counts[status_value] = total
+            {filed_where}
+            GROUP BY year ORDER BY year
+        """, filed_params)
+        filed_rows = cur.fetchall()
 
-        yearly = []
-        for year in sorted(yearly_map.keys()):
-            entry = {'year': int(year)}
-            for status_key in status_keys:
-                entry[status_key] = yearly_map[year].get(status_key, 0)
-            entry['total'] = sum(entry[status_key] for status_key in status_keys)
-            yearly.append(entry)
+        # Granted: count patents with status='Granted' grouped by grant_date year
+        granted_conditions = ["patent_status = 'Granted'", "grant_date IS NOT NULL"]
+        granted_params: List[Any] = []
+        if patent_year and patent_year != 'All':
+            try:
+                granted_conditions.append("EXTRACT(YEAR FROM grant_date::date)::INT = %s")
+                granted_params.append(int(patent_year))
+            except ValueError:
+                pass
+        granted_where = "WHERE " + " AND ".join(granted_conditions)
+
+        cur.execute(f"""
+            SELECT EXTRACT(YEAR FROM grant_date::date)::INT AS year, COUNT(*) AS total
+            FROM research_patents
+            {granted_where}
+            GROUP BY year ORDER BY year
+        """, granted_params)
+        granted_rows = cur.fetchall()
+
+        yearly_map: Dict[int, Dict[str, int]] = defaultdict(lambda: {'Filed': 0, 'Granted': 0})
+        for row in filed_rows:
+            if row['year'] is not None:
+                yearly_map[int(row['year'])]['Filed'] = int(row['total'])
+        for row in granted_rows:
+            if row['year'] is not None:
+                yearly_map[int(row['year'])]['Granted'] = int(row['total'])
+
+        yearly = [
+            {'year': y, 'Filed': yearly_map[y]['Filed'], 'Granted': yearly_map[y]['Granted']}
+            for y in sorted(yearly_map.keys())
+        ]
+        overall_counts = {
+            'Filed': sum(e['Filed'] for e in yearly),
+            'Granted': sum(e['Granted'] for e in yearly),
+        }
 
         return jsonify({'overall': overall_counts, 'yearly': yearly}), 200
     except Exception as exc:
