@@ -314,53 +314,41 @@ function IgrcSection({ user, isPublicView = false }) {
                     </p>
                   </div>
                 </div>
-                <div className="metric-toggle-group">
-                  <button
-                    type="button"
-                    className={`metric-toggle ${visibleMetrics.filed ? 'active' : ''}`}
-                    onClick={() =>
-                      setVisibleMetrics(prev => {
-                        const next = { ...prev, filed: !prev.filed };
-                        // Ensure at least one metric stays visible
-                        if (!next.filed && !next.pending && !next.resolved) {
-                          return prev;
-                        }
-                        return next;
-                      })
-                    }
-                  >
-                    Filed
-                  </button>
-                  <button
-                    type="button"
-                    className={`metric-toggle ${visibleMetrics.resolved ? 'active' : ''}`}
-                    onClick={() =>
-                      setVisibleMetrics(prev => {
-                        const next = { ...prev, resolved: !prev.resolved };
-                        if (!next.filed && !next.pending && !next.resolved) {
-                          return prev;
-                        }
-                        return next;
-                      })
-                    }
-                  >
-                    Resolved
-                  </button>
-                  <button
-                    type="button"
-                    className={`metric-toggle ${visibleMetrics.pending ? 'active' : ''}`}
-                    onClick={() =>
-                      setVisibleMetrics(prev => {
-                        const next = { ...prev, pending: !prev.pending };
-                        if (!next.filed && !next.pending && !next.resolved) {
-                          return prev;
-                        }
-                        return next;
-                      })
-                    }
-                  >
-                    Pending
-                  </button>
+                <div className="metric-toggle-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
+                    {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
+                      <button
+                        key={key}
+                        type="button"
+                        className="metric-toggle active"
+                        style={{ minWidth: '90px', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                        onClick={() => setVisibleMetrics(prev => {
+                          const next = { ...prev, [key]: false };
+                          if (Object.values(next).every(v => !v)) return prev;
+                          return next;
+                        })}
+                      >
+                        {key.charAt(0).toUpperCase() + key.slice(1)} ✕
+                      </button>
+                    ))}
+                  </div>
+                  {Object.values(visibleMetrics).some(v => !v) && (
+                    <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
+                      {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
+                        <button
+                          key={key}
+                          type="button"
+                          className="metric-toggle"
+                          style={{ minWidth: '90px', opacity: 0.6, borderStyle: 'dashed' }}
+                          onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
+                        >
+                          + {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -421,7 +409,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 const sharedAxisProps = {
                   xAxis: <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
                   yAxis: <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
-                  tooltip: <Tooltip content={<CustomTooltip />} />,
+                  tooltip: <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />,
                   legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />,
                   grid: <CartesianGrid strokeDasharray="3 3" stroke="#444" />,
                 };
@@ -437,15 +425,15 @@ function IgrcSection({ user, isPublicView = false }) {
                           {sharedAxisProps.yAxis}
                           {sharedAxisProps.tooltip}
                           {sharedAxisProps.legend}
-                          {visibleMetrics.filed && <Bar dataKey="filed" name="Filed" fill={BAR_COLORS.filed}>
-                            <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />
-                          </Bar>}
-                          {visibleMetrics.pending && <Bar dataKey="pending" name="Pending" fill={BAR_COLORS.pending}>
-                            <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.pending }} />
-                          </Bar>}
-                          {visibleMetrics.resolved && <Bar dataKey="resolved" name="Resolved" fill={BAR_COLORS.resolved}>
-                            <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.resolved }} />
-                          </Bar>}
+                          <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed} legendType={visibleMetrics.filed ? "rect" : "none"}>
+                            {visibleMetrics.filed && <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />}
+                          </Bar>
+                          <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending} legendType={visibleMetrics.pending ? "rect" : "none"}>
+                            {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.pending }} />}
+                          </Bar>
+                          <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved} legendType={visibleMetrics.resolved ? "rect" : "none"}>
+                            {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.resolved }} />}
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
 )}</>

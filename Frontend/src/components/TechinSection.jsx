@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -245,32 +245,32 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
       )}
       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
-        {chartMode === 'bar' ? (
-          <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="year" stroke="#666" />
-            <YAxis stroke="#666" />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
-              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-            </Bar>
-          </BarChart>
-        ) : (
-          <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-            <YAxis stroke="#666" />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-              <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-            </Line>
-          </LineChart>
-        )}
-      </ResponsiveContainer>
-)}</>
+        <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+          {chartMode === 'bar' ? (
+            <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="year" stroke="#666" />
+              <YAxis stroke="#666" />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
+                <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+              </Bar>
+            </BarChart>
+          ) : (
+            <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+              <YAxis stroke="#666" />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
+                <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+              </Line>
+            </LineChart>
+          )}
+        </ResponsiveContainer>
+      )}</>
     </div>
   );
 
@@ -435,9 +435,9 @@ function TechinSection({ user, isPublicView = false }) {
             ← Back to Innovation &amp; Entrepreneurship
           </button>
         )}
-        
 
-        <h1 style={{ marginTop: '20px' ,  marginBottom: '10px' }}>TechIn</h1>
+
+        <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>TechIn</h1>
 
         {/* Upload Buttons */}
         {!isReadOnlyView && isAdmin && (
@@ -460,7 +460,7 @@ function TechinSection({ user, isPublicView = false }) {
 
         {/* Summary header + export */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-          
+
           <ExportMenu
             elementId="techin-summary-cards-container"
             data={[summary]}
@@ -473,25 +473,25 @@ function TechinSection({ user, isPublicView = false }) {
 
         {/* ── Summary Cards ── */}
         <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
-          {[
-            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
-            { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
-            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
-          ].map(({ view, bg, shadow, label, value }) => (
-            <div
-              key={view}
-              className="techin-summary-card"
-              onClick={() => handleSummaryCard(view)}
-              style={{ background: bg, boxShadow: shadow }}
-            >
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
-              <div className="metric-value">{formatNumber(value)}</div>
-              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
-            </div>
-          ))}
-        </div>
-)}</>
+          <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
+            {[
+              { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
+              { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
+              { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
+            ].map(({ view, bg, shadow, label, value }) => (
+              <div
+                key={view}
+                className="techin-summary-card"
+                onClick={() => handleSummaryCard(view)}
+                style={{ background: bg, boxShadow: shadow }}
+              >
+                <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
+                <div className="metric-value">{formatNumber(value)}</div>
+                <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
+              </div>
+            ))}
+          </div>
+        )}</>
 
         {/* ── Revenue Metrics ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -575,7 +575,7 @@ function TechinSection({ user, isPublicView = false }) {
             <div>
               <h2 style={{ margin: '0 0 4px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px' }}>
                 <span style={{ fontSize: '22px' }}>{currentView?.icon}</span>
-`                {currentView?.label}
+                `                {currentView?.label}
               </h2>
               <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>
                 {viewType === 'programs' && 'Yearly trend of programs by type and association'}
@@ -634,8 +634,8 @@ function TechinSection({ user, isPublicView = false }) {
         <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div>
-              <span style={{ width:'100px', height: '100px'}}></span>
-              <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on TechIn</h3>
+              <span style={{ width: '100px', height: '100px' }}></span>
+              <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on TechIn</h3>
               <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Visit our website to explore our services and solutions.</p>
             </div>
           </div>
