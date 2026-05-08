@@ -1187,7 +1187,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
                       <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
                         <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
                       </Bar>
