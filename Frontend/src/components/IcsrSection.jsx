@@ -258,16 +258,7 @@ function IcsrSection({ user, isPublicView = false }) {
 
           {/* ── Summary Cards ─────────────────────────────────────── */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-            <h2 style={{
-              textDecoration: 'underline',
-              color: isPublicView ? '#000' : '#fff',
-              textShadow: isPublicView
-                ? '0 1px 2px rgba(255,255,255,0.6)'
-                : '0 2px 6px rgba(0,0,0,0.5)',
-              margin: 0, fontSize: '20px'
-            }}>
-              ICSR Summary
-            </h2>
+           
           </div>
 
           {/* ══════════════════════════════════════════════════════════

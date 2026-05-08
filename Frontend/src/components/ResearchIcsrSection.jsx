@@ -35,9 +35,10 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
 
-const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
+const PATENT_STATUS_ORDER = ['Filed', 'Published', 'Granted'];
 const PATENT_COLORS = {
   Filed: '#6366f1',
+  Published: '#a855f7',
   Granted: '#22c55e',
 };
 
@@ -304,11 +305,19 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const patentTrendChartData = useMemo(() => {
     if (!patentStats.yearly.length) return [];
     return patentStats.yearly.map((row) => {
-      const entry = { year: row.year };
-      PATENT_STATUS_ORDER.forEach((status) => {
-        entry[status] = Number(row[status]) || 0;
-      });
-      entry.total = PATENT_STATUS_ORDER.reduce((acc, status) => acc + entry[status], 0);
+      const filedCount = Number(row.Filed) || 0;
+      const grantedCount = Number(row.Granted) || 0;
+      const publishedCount = Number(row.Published) || 0;
+
+      // As per user request: Filed bar = Filed + Granted + Published
+      const entry = {
+        year: row.year,
+        Filed: filedCount + grantedCount + publishedCount,
+        Published: publishedCount,
+        Granted: grantedCount,
+      };
+
+      entry.total = entry.Filed; // Total is now represented by the "Filed" bar
       return entry;
     });
   }, [patentStats.yearly]);
@@ -936,7 +945,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         tick={{ fontSize: 11 }}
                         domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
                       />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
                       {PATENT_STATUS_ORDER.map((status) => (
                         <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18}>
@@ -953,7 +962,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         tick={{ fontSize: 11 }}
                         domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
                       />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
                       {PATENT_STATUS_ORDER.map((status) => (
                         <Line key={status} type="linear" dataKey={status} name={status} stroke={PATENT_COLORS[status]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[status] }} activeDot={{ r: 7 }}>

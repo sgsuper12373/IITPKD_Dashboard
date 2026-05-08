@@ -5,7 +5,7 @@ import React from 'react';
  * Total is the denominator — individual entries are expressed as % of Total.
  * The "Total" entry itself does not show a percentage.
  */
-const CustomTooltip = ({ active, payload, label, formatter }) => {
+const CustomTooltip = ({ active, payload, label, formatter, hidePercentage }) => {
   if (active && payload && payload.length) {
     // Find an explicit "Total" entry in the payload if present
     const totalEntry = payload.find(e => e.name === 'Total');
@@ -33,7 +33,7 @@ const CustomTooltip = ({ active, payload, label, formatter }) => {
             const isTotal = entry.name === 'Total';
 
             // Only show % for non-Total entries, using Total as denominator
-            const percentage = (!isTotal && denominator > 0)
+            const percentage = (!isTotal && !hidePercentage && denominator > 0)
               ? ((value / denominator) * 100).toFixed(1)
               : null;
 
