@@ -9,6 +9,11 @@ function InnovationEntrepreneurship({ user }) {
 
   const sections = [
     {
+      title: 'Home Ground Startup',
+      route: '/innovation-entrepreneurship/home-ground-startup',
+      description: 'Internal Startups'
+    },
+    {
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       route: '/innovation-entrepreneurship/iptif',
       description: 'Innovation'
@@ -17,11 +22,6 @@ function InnovationEntrepreneurship({ user }) {
       title: 'TechIn',
       route: '/innovation-entrepreneurship/techin',
       description: 'Entrepreneurship'
-    },
-    {
-      title: 'Home Ground Startup',
-      route: '/innovation-entrepreneurship/home-ground-startup',
-      description: 'Internal Startups'
     }
   ];
   const [showPublicView, setShowPublicView] = useState(false);
@@ -55,13 +55,13 @@ function InnovationEntrepreneurship({ user }) {
         {/* Public view button for non-public users */}
         {roleId !== 0 && roleId !== 1 && (
           <div style={{ marginBottom: '1rem' }}>
-          <button
-            className="page-upload-btn"
-            onClick={() => setShowPublicView(true)}
-          >
-            View Public Page
-          </button>
-        </div>
+            <button
+              className="page-upload-btn"
+              onClick={() => setShowPublicView(true)}
+            >
+              View Public Page
+            </button>
+          </div>
         )}
 
         <div className="people-campus-grid" style={{ marginTop: '2rem' }}>

@@ -4,11 +4,12 @@ import './ResearchMinimal.css';
 
 import ResearchIcsrSection from './ResearchIcsrSection';
 import ResearchLibrarySection from './ResearchLibrarySection';
+import Patents from './Patents';
 
 function ResearchPublicView({ user }) {
   const [activeSection, setActiveSection] = useState(null);
 
-  const sections = [
+  const baseSections = [
     {
       id: 'icsr',
       title: 'Sponsored and Consultancy Projects',
@@ -35,6 +36,20 @@ function ResearchPublicView({ user }) {
     }
   ];
 
+  const patentsSection = {
+    id: 'patents',
+    title: 'Patents',
+    subtitle: '',
+    expandedTitle: 'Explore patents and intellectual property contributions',
+    icon: '💡',
+    component: Patents
+  };
+
+  const sections =
+    user?.role_id === 0 || user?.role_id === 1
+      ? [...baseSections, patentsSection]
+      : baseSections;
+
   const handleCardClick = (sectionId) => {
     setActiveSection(activeSection === sectionId ? null : sectionId);
   };
@@ -46,11 +61,9 @@ function ResearchPublicView({ user }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        {/* Page Header - visible in both views */}
         <div className={`research-page-header ${activeSection ? 'header-minimized' : ''}`}>
         </div>
 
-        {/* Card Grid View */}
         <div className={`research-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
           {sections.map((section, index) => (
             <div
@@ -67,7 +80,6 @@ function ResearchPublicView({ user }) {
           ))}
         </div>
 
-        {/* Expanded Section View */}
         {activeSection && (
           <div className="research-expanded-view">
             {sections.map((section) => {
@@ -75,20 +87,15 @@ function ResearchPublicView({ user }) {
                 const SectionComponent = section.component;
                 return (
                   <div key={section.id} className="research-section-wrapper">
-                    {/* White Card Container */}
                     <div className="research-expanded-container">
-                      {/* Top Bar: Back Button + Icon + Title */}
                       <div className="research-top-bar">
                         <button className="research-back-button" onClick={handleBackClick}>
                           <span className="research-back-arrow">←</span>
                           <span>Back</span>
                         </button>
-
                         <div className="research-icon-header">{section.icon}</div>
                         <p className="research-overview-text">{section.expandedTitle}</p>
                       </div>
-
-                      {/* Section Content */}
                       <div className="research-content-area">
                         <SectionComponent user={user} isPublicView={true} />
                       </div>

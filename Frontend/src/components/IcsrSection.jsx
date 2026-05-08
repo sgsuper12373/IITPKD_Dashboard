@@ -258,7 +258,7 @@ function IcsrSection({ user, isPublicView = false }) {
 
           {/* ── Summary Cards ─────────────────────────────────────── */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-           
+
           </div>
 
           {/* ══════════════════════════════════════════════════════════
@@ -447,8 +447,7 @@ function IcsrSection({ user, isPublicView = false }) {
                   ) : (
                     <>
                       <div style={{ display: chartMode === 'bar' ? 'block' : 'none', flex: '1 1 auto' }}>
-                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+                        <ResponsiveContainer width="100%" height={400}>
                           <BarChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { fill: '#666', fontSize: 14, fontWeight: 'bold' } }} />
@@ -460,12 +459,10 @@ function IcsrSection({ user, isPublicView = false }) {
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
-)}</>
                       </div>
 
                       <div style={{ display: chartMode === 'trend' ? 'block' : 'none', flex: '1 1 auto' }}>
-                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+                        <ResponsiveContainer width="100%" height={400}>
                           <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { fill: '#666', fontSize: 14, fontWeight: 'bold' } }} />
@@ -477,7 +474,6 @@ function IcsrSection({ user, isPublicView = false }) {
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
-)}</>
                       </div>
 
                       {/* Chart Statistics */}
@@ -518,8 +514,7 @@ function IcsrSection({ user, isPublicView = false }) {
                   ) : (
                     <>
                       <div style={{ flex: '1 1 auto' }}>
-                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={440}>
+                        <ResponsiveContainer width="100%" height={440}>
                           <PieChart margin={{ top: 40, right: 20, left: 20, bottom: 10 }}>
                             <Pie data={eventTypesPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={140} label={false} isAnimationActive>
                               {eventTypesPieData.map((_, index) => (
@@ -530,7 +525,6 @@ function IcsrSection({ user, isPublicView = false }) {
                             <Legend layout="horizontal" align="center" verticalAlign="top" wrapperStyle={{ top: 0, left: 0, width: '100%', paddingBottom: '30px', fontWeight: 'bold', fontSize: '11px' }} iconType="circle" iconSize={10} />
                           </PieChart>
                         </ResponsiveContainer>
-)}</>
                       </div>
 
                       <div style={{ marginTop: 'auto', padding: '12px 14px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px' }}>
@@ -647,10 +641,10 @@ function IcsrSection({ user, isPublicView = false }) {
           <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(241, 229, 196, 1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div>
-                <span style={{ width:'100px', height: '100px'}}></span>
-                <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About ICSR section IIT Palakkad</h3>
+                <span style={{ width: '100px', height: '100px' }}></span>
+                <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About ICSR section IIT Palakkad</h3>
                 <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Discover our impactful industry partnerships and sponsored research projects at IC&SR IIT Palakkad
-</p>
+                </p>
               </div>
             </div>
             <a

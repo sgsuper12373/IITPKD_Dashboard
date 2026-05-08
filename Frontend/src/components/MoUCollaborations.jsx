@@ -41,6 +41,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
 
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || !user;
 
   const [activeTab, setActiveTab] = useState('industry');
@@ -173,18 +174,20 @@ function MoUCollaborations({ user, isPublicView = false }) {
               >
                 📈 MoUs Trend
               </button>
-              <button
-                onClick={() => setViewType('directory')}
-                style={{
-                  padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
-                  border: viewType === 'directory' ? '2px solid #0ea5e9' : '1px solid #e2e8f0',
-                  backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
-                  color: viewType === 'directory' ? '#0369a1' : '#333',
-                  cursor: 'pointer', fontWeight: 600
-                }}
-              >
-                📋 MoUs Directory
-              </button>
+              {!isRestricted && (
+                <button
+                  onClick={() => setViewType('directory')}
+                  style={{
+                    padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
+                    border: viewType === 'directory' ? '2px solid #0ea5e9' : '1px solid #e2e8f0',
+                    backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
+                    color: viewType === 'directory' ? '#0369a1' : '#333',
+                    cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  📋 MoUs Directory
+                </button>
+              )}
             </div>
           </div>
           <button
@@ -264,8 +267,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
               <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+              <ResponsiveContainer width="100%" height={400}>
                 {chartMode === 'bar' ? (
                   <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -292,7 +294,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
                   </LineChart>
                 )}
               </ResponsiveContainer>
-)}</>
             </div>
           </>
         )}
@@ -305,63 +306,63 @@ function MoUCollaborations({ user, isPublicView = false }) {
               className="table-responsive"
               style={{ maxHeight: '450px', overflowY: 'auto' }}
             >
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
-                  <tr>
-                    {showIarColumns ? (
-                      <>
-                        <th style={{ padding: '10px' }}>Sl. No.</th>
-                        <th style={{ padding: '10px' }}>Partner</th>
-                        <th style={{ padding: '10px' }}>Framework</th>
-                        <th style={{ padding: '10px' }}>Country</th>
-                        <th style={{ padding: '10px' }}>Collaboration Nature</th>
-                        <th style={{ padding: '10px' }}>Signed</th>
-                        <th style={{ padding: '10px' }}>Valid Till</th>
-                      </>
-                    ) : (
-                      <>
-                        <th style={{ padding: '10px' }}>Partner</th>
-                        <th style={{ padding: '10px' }}>Focus</th>
-                        <th style={{ padding: '10px' }}>Signed</th>
-                        <th style={{ padding: '10px' }}>Valid Till</th>
-                      </>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {list.map((m, i) => (
-                    <tr key={m.mou_id ?? m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+            {viewType === 'directory' && !isRestricted && (
+              <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
+                    <tr>
                       {showIarColumns ? (
                         <>
-                          <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td>
-                          <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                          <td style={{ padding: '8px' }}>{m.framework}</td>
-                          <td style={{ padding: '8px' }}>{m.country}</td>
-                          <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                          <th style={{ padding: '10px' }}>Sl. No.</th>
+                          <th style={{ padding: '10px' }}>Partner</th>
+                          <th style={{ padding: '10px' }}>Framework</th>
+                          <th style={{ padding: '10px' }}>Country</th>
+                          <th style={{ padding: '10px' }}>Collaboration Nature</th>
+                          <th style={{ padding: '10px' }}>Signed</th>
+                          <th style={{ padding: '10px' }}>Valid Till</th>
                         </>
                       ) : (
                         <>
-                          <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                          <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                          <th style={{ padding: '10px' }}>Partner</th>
+                          <th style={{ padding: '10px' }}>Focus</th>
+                          <th style={{ padding: '10px' }}>Signed</th>
+                          <th style={{ padding: '10px' }}>Valid Till</th>
                         </>
                       )}
                     </tr>
-                  ))}
-                  {!list.length && (
-                    <tr>
-                      <td colSpan={showIarColumns ? 7 : 4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                        No information available for the selected filter
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
+                  </thead>
+                  <tbody>
+                    {list.map((m, i) => (
+                      <tr key={m.mou_id ?? m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                        {showIarColumns ? (
+                          <>
+                            <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td>
+                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                            <td style={{ padding: '8px' }}>{m.framework}</td>
+                            <td style={{ padding: '8px' }}>{m.country}</td>
+                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                          </>
+                        ) : (
+                          <>
+                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                    {!list.length && (
+                      <tr>
+                        <td colSpan={showIarColumns ? 7 : 4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                          No information available for the selected filter
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
               </table>
-)}</>
+            )}
             </div>
           </>
         )}

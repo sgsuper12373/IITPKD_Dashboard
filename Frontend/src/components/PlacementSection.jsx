@@ -68,9 +68,19 @@ const VIEW_FILTER_FIELDS = {
 
 const DEFAULT_FILTERS = { year: 'All', program: 'All', gender: 'All', branch: 'All', sector: 'All' };
 
+// Views that are restricted from role_id === 0 or undefined users
+const RESTRICTED_VIEWS = new Set(['placementTrend', 'topRecruiters', 'packageTrend']);
+
 function PlacementSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
+
+  // ── Role checks (defined early so they can be used in useState initialisers) ──
+  const isGuestUser = !user;
+  const isReadOnlyView = isPublicView || isGuestUser;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isRestrictedUser = typeof user === 'undefined' || !user || user?.role_id === 0;
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
@@ -82,7 +92,8 @@ function PlacementSection({ user, isPublicView = false }) {
     sectors: []
   });
 
-  const [viewType, setViewType] = useState('placementTrend');
+  // Restricted users default to 'genderWise' so they never land on a blank/forbidden view
+  const [viewType, setViewType] = useState(isRestrictedUser ? 'genderWise' : 'placementTrend');
   const [trendChartMode, setTrendChartMode] = useState('bar');
 
   // One filter state per view
@@ -93,6 +104,9 @@ function PlacementSection({ user, isPublicView = false }) {
   const [sectorFilters, setSectorFilters] = useState({ ...DEFAULT_FILTERS });
   const [packageFilters, setPackageFilters] = useState({ ...DEFAULT_FILTERS });
   const [topRecruitersFilters, setTopRecruitersFilters] = useState({ ...DEFAULT_FILTERS });
+
+  // Dedicated filter state for the always-visible summary cards
+  const [summaryFilters, setSummaryFilters] = useState({ ...DEFAULT_FILTERS });
 
   const [summary, setSummary] = useState({
     registered: 0, placed: 0, placement_percentage: 0,
@@ -107,7 +121,7 @@ function PlacementSection({ user, isPublicView = false }) {
   const [packageTrend, setPackageTrend] = useState([]);
   const [topRecruiters, setTopRecruiters] = useState([]);
   const [_loading, setLoading] = useState({
-    trend: false, gender: false, program: false,
+    summary: false, trend: false, gender: false, program: false,
     recruiters: false, sector: false, package: false, topRecruiters: false
   });
 
@@ -121,10 +135,6 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [filterOptions.years]);
 
   const token = localStorage.getItem('authToken');
-
-  const isGuestUser = !user;
-  const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // ── Helpers ──────────────────────────────────────────────────────────────
   const getCurrentFilters = useCallback(() => {
@@ -221,20 +231,47 @@ function PlacementSection({ user, isPublicView = false }) {
     return () => { isMounted = false; };
   }, [serializedFilters, token, uploadVersion, viewType, currentFilters, handleFilterChange]);
 
+  // ── Summary cards loader — runs for ALL users, independently of viewType ──
+  useEffect(() => {
+    let isMounted = true;
+    const load = async () => {
+      try {
+        setLoading(p => ({ ...p, summary: true }));
+        // Use latest year for summary cards when no year is selected
+        const resolvedFilters = { ...summaryFilters };
+        if (resolvedFilters.year === 'All' && latestYear) {
+          resolvedFilters.year = latestYear;
+        }
+        const summaryResp = await fetchPlacementSummary(resolvedFilters, token);
+        if (!isMounted) return;
+        setSummary(summaryResp?.data || {
+          registered: 0, placed: 0, placement_percentage: 0,
+          highest_package: null, lowest_package: null, average_package: null
+        });
+      } catch (err) {
+        if (isMounted) {
+          console.error('Failed to load summary data:', err);
+          setError(err.message || 'Failed to load placement summary.');
+        }
+      } finally {
+        if (isMounted) setLoading(p => ({ ...p, summary: false }));
+      }
+    };
+    load();
+    return () => { isMounted = false; };
+    // Re-fetch whenever latestYear resolves or upload happens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, uploadVersion, latestYear, JSON.stringify(summaryFilters)]);
+
   // ── Data loaders ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (viewType !== 'placementTrend') return;
+    if (isRestrictedUser) return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, trend: true }));
         setError(null);
-        const summaryFilters = { ...trendFilters };
-        if (summaryFilters.year === 'All' && latestYear) summaryFilters.year = latestYear;
-        const [summaryResp, trendResp] = await Promise.all([
-          fetchPlacementSummary(summaryFilters, token),
-          fetchPlacementTrend(trendFilters, token)
-        ]);
-        setSummary(summaryResp?.data || { registered: 0, placed: 0, placement_percentage: 0, highest_package: null, lowest_package: null, average_package: null });
+        const trendResp = await fetchPlacementTrend(trendFilters, token);
         setTrendData(trendResp?.data || []);
       } catch (err) {
         console.error('Failed to load trend data:', err);
@@ -244,7 +281,7 @@ function PlacementSection({ user, isPublicView = false }) {
       }
     };
     load();
-  }, [trendFilters, token, viewType, uploadVersion, latestYear]);
+  }, [trendFilters, token, viewType, uploadVersion, isRestrictedUser]);
 
   useEffect(() => {
     if (viewType !== 'genderWise') return;
@@ -316,6 +353,7 @@ function PlacementSection({ user, isPublicView = false }) {
 
   useEffect(() => {
     if (viewType !== 'packageTrend') return;
+    if (isRestrictedUser) return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, package: true }));
@@ -329,10 +367,11 @@ function PlacementSection({ user, isPublicView = false }) {
       }
     };
     load();
-  }, [packageFilters, token, viewType, uploadVersion]);
+  }, [packageFilters, token, viewType, uploadVersion, isRestrictedUser]);
 
   useEffect(() => {
     if (viewType !== 'topRecruiters') return;
+    if (isRestrictedUser) return;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, topRecruiters: true }));
@@ -346,7 +385,7 @@ function PlacementSection({ user, isPublicView = false }) {
       }
     };
     load();
-  }, [topRecruitersFilters, token, viewType, uploadVersion]);
+  }, [topRecruitersFilters, token, viewType, uploadVersion, isRestrictedUser]);
 
   // ── Chart data ────────────────────────────────────────────────────────────
   const placementTrendChartData = useMemo(() =>
@@ -394,8 +433,8 @@ function PlacementSection({ user, isPublicView = false }) {
       average: row.average && row.average !== 0 ? row.average : null,
     })), [packageTrend]);
 
-  // ── Radio buttons config ──────────────────────────────────────────────────
-  const radioButtons = [
+  // ── Radio buttons config — restricted views filtered out for restricted users ──
+  const ALL_RADIO_BUTTONS = [
     { id: 'placementTrend', label: 'Placement Trend', color: '#6366f1' },
     { id: 'genderWise', label: 'Gender-wise', color: '#ec4899' },
     { id: 'programWise', label: 'Program-wise', color: '#f97316' },
@@ -404,6 +443,10 @@ function PlacementSection({ user, isPublicView = false }) {
     { id: 'packageTrend', label: 'Package Trends', color: '#10b981' },
     { id: 'topRecruiters', label: 'Top Recruiters', color: '#8b5cf6' },
   ];
+
+  const radioButtons = ALL_RADIO_BUTTONS.filter(
+    btn => !isRestrictedUser || !RESTRICTED_VIEWS.has(btn.id)
+  );
 
   // ── Unified filter panel (dynamic fields) ────────────────────────────────
   const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
@@ -443,11 +486,12 @@ function PlacementSection({ user, isPublicView = false }) {
         </button>
       </div>
 
-      {/* Radio buttons */}
+      {/* Radio buttons — full width, each button stretches equally */}
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
         gap: '10px',
+        width: '100%',
         marginBottom: activeFields.length ? '16px' : '0',
         paddingBottom: activeFields.length ? '16px' : '0',
         borderBottom: activeFields.length ? '1px solid #dee2e6' : 'none'
@@ -458,9 +502,12 @@ function PlacementSection({ user, isPublicView = false }) {
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
               cursor: 'pointer',
               padding: '7px 16px',
+              flex: '1 1 0',
+              minWidth: '120px',
               backgroundColor: viewType === btn.id ? btn.color : 'transparent',
               color: viewType === btn.id ? 'white' : '#555',
               borderRadius: '40px',
@@ -747,8 +794,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {/* ── Chart Views ── */}
 
-          {/* Placement Trend */}
-          {viewType === 'placementTrend' && (
+          {/* Placement Trend — restricted to non-restricted users only */}
+          {viewType === 'placementTrend' && !isRestrictedUser && (
             <div className="chart-section" style={{ marginTop: '0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <div className="chart-header">
@@ -1022,8 +1069,8 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {/* Package Trend */}
-          {viewType === 'packageTrend' && (
+          {/* Package Trend — restricted to non-restricted users only */}
+          {viewType === 'packageTrend' && !isRestrictedUser && (
             <div className="chart-section" style={{ marginTop: '0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
                 <div className="section-header-left">
@@ -1069,8 +1116,8 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {/* Top Recruiters */}
-          {viewType === 'topRecruiters' && (
+          {/* Top Recruiters — restricted to non-restricted users only */}
+          {viewType === 'topRecruiters' && !isRestrictedUser && (
             <div className="chart-section" style={{ marginTop: '0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
                 <div className="chart-header">
@@ -1161,10 +1208,6 @@ function PlacementSection({ user, isPublicView = false }) {
         </div>
 
       </div>
-
-
-
-
 
       <DataUploadModal
         isOpen={isUploadModalOpen}

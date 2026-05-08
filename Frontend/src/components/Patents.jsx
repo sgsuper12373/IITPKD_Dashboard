@@ -38,6 +38,7 @@ function Patents({ user, isPublicView = false }) {
 
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
   const isReadOnlyView = isPublicView || !user;
+  const isRestrictedUser = typeof user === 'undefined' || user?.role_id === 0;
 
   const [filterOptions, setFilterOptions] = useState({ patent_years: [], patent_statuses: [] });
   const [filters, setFilters] = useState({ patent_year: 'All', patent_status: 'All' });
@@ -45,6 +46,12 @@ function Patents({ user, isPublicView = false }) {
   const [patentList, setPatentList] = useState([]);
   const [viewType, setViewType] = useState('trend');
   const [chartMode, setChartMode] = useState('bar');
+
+  // Prevent restricted users from accessing directory view
+  const safeSetViewType = (type) => {
+    if (isRestrictedUser && type === 'directory') return;
+    setViewType(type);
+  };
 
   const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
@@ -175,25 +182,6 @@ function Patents({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            borderRadius: '20px', padding: '24px',
-            boxShadow: '0 10px 25px rgba(99,102,241,0.2)',
-            position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📊</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Total Patents</h3>
-              </div>
-              <div className="metric-value" style={{ color: 'white' }}>{totalPatents}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP portfolio</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Filter + Chart/Directory Section */}
@@ -216,8 +204,9 @@ function Patents({ user, isPublicView = false }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {/* Trend button — always visible */}
                   <button
-                    onClick={() => setViewType('trend')}
+                    onClick={() => safeSetViewType('trend')}
                     style={{
                       padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
                       border: viewType === 'trend' ? '2px solid #6366f1' : '1px solid #e2e8f0',
@@ -228,18 +217,22 @@ function Patents({ user, isPublicView = false }) {
                   >
                     📈 Trend
                   </button>
-                  <button
-                    onClick={() => setViewType('directory')}
-                    style={{
-                      padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
-                      border: viewType === 'directory' ? '2px solid #ec4899' : '1px solid #e2e8f0',
-                      backgroundColor: viewType === 'directory' ? '#fdf2f8' : '#fff',
-                      color: viewType === 'directory' ? '#9d174d' : '#333',
-                      cursor: 'pointer', fontWeight: 600
-                    }}
-                  >
-                    📋 Directory
-                  </button>
+
+                  {/* Directory button — hidden for restricted users */}
+                  {!isRestrictedUser && (
+                    <button
+                      onClick={() => safeSetViewType('directory')}
+                      style={{
+                        padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
+                        border: viewType === 'directory' ? '2px solid #ec4899' : '1px solid #e2e8f0',
+                        backgroundColor: viewType === 'directory' ? '#fdf2f8' : '#fff',
+                        color: viewType === 'directory' ? '#9d174d' : '#333',
+                        cursor: 'pointer', fontWeight: 600
+                      }}
+                    >
+                      📋 Directory
+                    </button>
+                  )}
                 </div>
               </div>
               <button
@@ -337,8 +330,7 @@ function Patents({ user, isPublicView = false }) {
                   <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
                     <p>No information available for the selected filter</p>
                   </div>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={350}>
+                  <ResponsiveContainer width="100%" height={350}>
                     {chartMode === 'bar' ? (
                       <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -371,13 +363,12 @@ function Patents({ user, isPublicView = false }) {
                       </LineChart>
                     )}
                   </ResponsiveContainer>
-)}</>
                 </div>
               </>
             )}
 
-            {/* Directory View */}
-            {viewType === 'directory' && (
+            {/* Directory View — only for non-restricted users */}
+            {viewType === 'directory' && !isRestrictedUser && (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <div>
@@ -392,7 +383,7 @@ function Patents({ user, isPublicView = false }) {
                     elementId="patents-directory-table"
                     data={patentList}
                     headers={['Title', 'Inventors', 'Filed Date', 'Grant Date', 'Status']}
-                    keys={['patent_title', 'inventors', 'filing_date', 'grant_date', 'status']}
+                    keys={['patent_title', 'inventors', 'filing_date', 'grant_date', 'patent_status']}
                     filename="patents_directory"
                     title="Patents Directory"
                     exportType="table"
@@ -404,8 +395,7 @@ function Patents({ user, isPublicView = false }) {
                   className="table-responsive"
                   style={{ maxHeight: '450px', overflowY: 'auto' }}
                 >
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                     <thead style={{ position: 'sticky', top: 0, backgroundColor: PATENT_COLORS.Filed, color: 'white' }}>
                       <tr>
                         <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
@@ -426,10 +416,10 @@ function Patents({ user, isPublicView = false }) {
                             <span style={{
                               padding: '2px 8px', borderRadius: '12px',
                               fontSize: '11px', fontWeight: 600,
-                              backgroundColor: p.status === 'Granted' ? '#dcfce7' : '#ede9fe',
-                              color: p.status === 'Granted' ? '#15803d' : '#6d28d9'
+                              backgroundColor: p.patent_status === 'Granted' ? '#dcfce7' : '#ede9fe',
+                              color: p.patent_status === 'Granted' ? '#15803d' : '#6d28d9'
                             }}>
-                              {p.status}
+                              {p.patent_status}
                             </span>
                           </td>
                         </tr>
@@ -443,7 +433,6 @@ function Patents({ user, isPublicView = false }) {
                       )}
                     </tbody>
                   </table>
-)}</>
                 </div>
               </>
             )}

@@ -157,8 +157,8 @@ function App() {
     token ? children : <Navigate to="/login" replace />;
 
   const AdminRoute = ({ children }) => {
-    // Restrict role 0 from accessing individual admin sections
-    if (!user || user.role_id === 0) {
+    // role 0 users can now access these sections (they see restricted views)
+    if (!user) {
       return <Navigate to="/" replace />;
     }
     return children;

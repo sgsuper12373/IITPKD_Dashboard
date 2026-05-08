@@ -11,6 +11,14 @@ function InnovationPublicView({ user }) {
 
   const sections = [
     {
+      id: 'home-ground-startup',
+      title: 'Home Ground Startup',
+      subtitle: 'Internal Startups',
+      expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
+      icon: '🏠',
+      component: HomeGroundStartup
+    },
+    {
       id: 'startups',
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       subtitle: 'Innovation & Entrepreneurship',
@@ -25,14 +33,6 @@ function InnovationPublicView({ user }) {
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: '🚀',
       component: TechinSection
-    },
-    {
-      id: 'home-ground-startup',
-      title: 'Home Ground Startup',
-      subtitle: 'Internal Startups',
-      expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
-      icon: '🏠',
-      component: HomeGroundStartup
     }
   ];
 

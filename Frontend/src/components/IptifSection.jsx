@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -114,6 +114,7 @@ function IptifSection({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
+  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
@@ -222,7 +223,7 @@ function IptifSection({ user, isPublicView = false }) {
 
   const handleSummaryCard = (view) => {
     setViewType(view);
-    setChartMode('table');
+    setChartMode(isRestricted ? 'bar' : 'table');
     bump();
     setTimeout(() => {
       document.getElementById('iptif-content-region')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -253,8 +254,7 @@ function IptifSection({ user, isPublicView = false }) {
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
         {chartMode === 'bar' ? (
           <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -279,7 +279,6 @@ function IptifSection({ user, isPublicView = false }) {
           </LineChart>
         )}
       </ResponsiveContainer>
-)}</>
     </div>
   );
 
@@ -498,7 +497,7 @@ function IptifSection({ user, isPublicView = false }) {
 
         {/* Summary header + export */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-          
+
           <ExportMenu
             elementId="iptif-summary-cards-container"
             data={[summary]}
@@ -510,8 +509,7 @@ function IptifSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Summary Cards ── */}
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="iptif-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+        <div id="iptif-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
           {[
             { view: 'projects', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Projects', value: summary.total_projects },
             { view: 'programs', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Total Programs', value: summary.total_programs },
@@ -529,7 +527,6 @@ function IptifSection({ user, isPublicView = false }) {
             </div>
           ))}
         </div>
-)}</>
 
         {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}
         <div
@@ -543,7 +540,7 @@ function IptifSection({ user, isPublicView = false }) {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {VIEWS.map(({ id, label, color: c, icon }) => {
+            {VIEWS.filter(v => !isRestricted || v.id !== 'facilities').map(({ id, label, color: c, icon }) => {
               const active = viewType === id;
               return (
                 <button
@@ -594,7 +591,9 @@ function IptifSection({ user, isPublicView = false }) {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {['bar', 'trend', 'table'].map(mode => {
+              {['bar', 'trend', 'table']
+                .filter(mode => !isRestricted || mode !== 'table')
+                .map(mode => {
                 const modeActive = chartMode === mode;
                 const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
                 return (
@@ -635,7 +634,7 @@ function IptifSection({ user, isPublicView = false }) {
 
           {/* ── Animated content region ── */}
           <div key={animKey} className="iptif-anim" id={exportId}>
-            {chartMode === 'table'
+            {chartMode === 'table' && !isRestricted
               ? renderTable()
               : renderChart(trendData, color, trendLabel)
             }
@@ -645,8 +644,8 @@ function IptifSection({ user, isPublicView = false }) {
         <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(241, 229, 196, 1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div>
-              <span style={{ width:'100px', height: '100px'}}></span>
-              <h3 style={{ padding:'0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on IPTIF</h3>
+              <span style={{ width: '100px', height: '100px' }}></span>
+              <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on IPTIF</h3>
               <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Discover how IPTIF at IIT Palakkad is fostering innovation, incubation, and entrepreneurial excellence at IPTIF IIT Palakkad</p>
             </div>
           </div>

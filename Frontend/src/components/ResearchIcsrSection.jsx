@@ -493,30 +493,31 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   </div>
                 </div>
               </div>
-
-              <div style={{
-                background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-                borderRadius: '20px', padding: '24px',
-                boxShadow: '0 10px 25px rgba(236, 72, 153, 0.2)',
-                position: 'relative', overflow: 'hidden'
-              }}>
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
-                    <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Patents</h3>
-                  </div>
-                  <div className="metric-value-sm" style={{ color: 'white' }}>
-                    {formatNumber(summary.total_patents)}{' '}
-                    <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Filed</span> /{' '}
-                    {formatNumber(summary.patent_breakdown.Granted)}{' '}
-                    <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Granted</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP stats</span>
+              {!isRestrictedUser && (<>
+                <div style={{
+                  background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                  borderRadius: '20px', padding: '24px',
+                  boxShadow: '0 10px 25px rgba(236, 72, 153, 0.2)',
+                  position: 'relative', overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
+                      <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Patents</h3>
+                    </div>
+                    <div className="metric-value-sm" style={{ color: 'white' }}>
+                      {formatNumber(summary.total_patents)}{' '}
+                      <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Filed</span> /{' '}
+                      {formatNumber(summary.patent_breakdown.Granted)}{' '}
+                      <span style={{ fontSize: '0.5em', opacity: 0.8 }}>Granted</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
+                      <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Research IP stats</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>)}
             </>
           )}
 

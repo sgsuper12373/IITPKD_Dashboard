@@ -79,6 +79,7 @@ const CHART_COLOR = '#f97316';
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 function HomeGroundStartup({ user, isPublicView = false }) {
+  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   injectStyle();
 
   const uploadVersion = useUploadRefresh();
@@ -291,33 +292,37 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         </div>
 
         {/* ── Revenue Cards ── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Revenue Metrics</h3>
-          <ExportMenu
-            elementId="hg-revenue-container"
-            data={[summary]}
-            headers={['Total Revenue', 'Highest Revenue', 'Average Revenue']}
-            keys={['total_revenue', 'highest_revenue', 'average_revenue']}
-            filename="home_ground_revenue"
-            title="Home Ground Revenue Metrics"
-          />
-        </div>
-
-        <div id="hg-revenue-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-          {[
-            { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_revenue },
-            { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
-            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
-          ].map(({ bg, shadow, label, value }) => (
-            <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
-                <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
-              </div>
+        {(typeof user === 'undefined' || user?.role_id !== 0) && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Revenue Metrics</h3>
+              <ExportMenu
+                elementId="hg-revenue-container"
+                data={[summary]}
+                headers={['Total Revenue', 'Highest Revenue', 'Average Revenue']}
+                keys={['total_revenue', 'highest_revenue', 'average_revenue']}
+                filename="home_ground_revenue"
+                title="Home Ground Revenue Metrics"
+              />
             </div>
-          ))}
-        </div>
+
+            <div id="hg-revenue-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+              {[
+                { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_revenue },
+                { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
+                { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
+              ].map(({ bg, shadow, label, value }) => (
+                <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
+                    <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* ══════════════ STARTUP GROWTH PANEL ══════════════ */}
         <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -372,7 +377,9 @@ function HomeGroundStartup({ user, isPublicView = false }) {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {['bar', 'trend', 'table'].map(mode => {
+              {['bar', 'trend', 'table']
+                .filter(mode => !isRestricted || mode !== 'table')
+                .map(mode => {
                 const active = chartMode === mode;
                 const label = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
                 return (
@@ -407,7 +414,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
 
           {/* Chart / Table */}
           <div key={animKey} className="hg-anim" id={exportId}>
-            {chartMode === 'table' ? renderTable() : renderChart(startupsTrend)}
+            {(chartMode === 'table' && !isRestricted) ? renderTable() : renderChart(startupsTrend)}
           </div>
 
         </div>

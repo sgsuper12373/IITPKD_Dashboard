@@ -111,6 +111,7 @@ function TechinSection({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
+  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
@@ -207,7 +208,7 @@ function TechinSection({ user, isPublicView = false }) {
 
   const handleSummaryCard = (view) => {
     setViewType(view);
-    setChartMode('table');
+    setChartMode(isRestricted ? 'bar' : 'table');
     bump();
     setTimeout(() => {
       document.getElementById('techin-content-region')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -244,33 +245,31 @@ function TechinSection({ user, isPublicView = false }) {
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-        <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
-          {chartMode === 'bar' ? (
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="year" stroke="#666" />
-              <YAxis stroke="#666" />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
-                <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-              </Bar>
-            </BarChart>
-          ) : (
-            <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-              <YAxis stroke="#666" />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-                <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-              </Line>
-            </LineChart>
-          )}
-        </ResponsiveContainer>
-      )}</>
+      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+        {chartMode === 'bar' ? (
+          <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="year" stroke="#666" />
+            <YAxis stroke="#666" />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
+              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Bar>
+          </BarChart>
+        ) : (
+          <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
+            <YAxis stroke="#666" />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
+              <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+            </Line>
+          </LineChart>
+        )}
+      </ResponsiveContainer>
     </div>
   );
 
@@ -472,26 +471,24 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Summary Cards ── */}
-        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-          <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
-            {[
-              { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
-              { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
-              { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
-            ].map(({ view, bg, shadow, label, value }) => (
-              <div
-                key={view}
-                className="techin-summary-card"
-                onClick={() => handleSummaryCard(view)}
-                style={{ background: bg, boxShadow: shadow }}
-              >
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
-                <div className="metric-value">{formatNumber(value)}</div>
-                <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
-              </div>
-            ))}
-          </div>
-        )}</>
+        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
+          {[
+            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
+            { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
+            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
+          ].map(({ view, bg, shadow, label, value }) => (
+            <div
+              key={view}
+              className="techin-summary-card"
+              onClick={() => handleSummaryCard(view)}
+              style={{ background: bg, boxShadow: shadow }}
+            >
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
+              <div className="metric-value">{formatNumber(value)}</div>
+              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
+            </div>
+          ))}
+        </div>
 
         {/* ── Revenue Metrics ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -505,21 +502,23 @@ function TechinSection({ user, isPublicView = false }) {
             title="Startup Revenue Metrics"
           />
         </div>
-        <div id="techin-revenue-metrics-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-          {[
-            { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
-            { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
-            { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
-          ].map(({ bg, shadow, label, value }) => (
-            <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
-                <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+        {(typeof user === 'undefined' || user?.role_id !== 0) && (
+          <div id="techin-revenue-metrics-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+            {[
+              { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
+              { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
+              { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
+            ].map(({ bg, shadow, label, value }) => (
+              <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
+                  <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}
         <div
@@ -584,7 +583,9 @@ function TechinSection({ user, isPublicView = false }) {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {['bar', 'trend', 'table'].map(mode => {
+              {['bar', 'trend', 'table']
+                .filter(mode => !isRestricted || mode !== 'table')
+                .map(mode => {
                 const modeActive = chartMode === mode;
                 const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
                 return (
@@ -623,7 +624,7 @@ function TechinSection({ user, isPublicView = false }) {
 
           {/* Animated content region */}
           <div key={animKey} className="techin-anim" id={exportId}>
-            {chartMode === 'table'
+            {chartMode === 'table' && !isRestricted
               ? renderTable()
               : renderChart(trendData, color, trendLabel)
             }
