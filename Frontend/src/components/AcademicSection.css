@@ -660,13 +660,12 @@
 
 @media (max-width: 768px) {
   .chart-section {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .chart-view {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
-
 
   .header-left {
     width: 100%;
@@ -698,45 +697,31 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
+
+  /* Reduce fixed chart heights on tablet */
+  .chart-wrapper {
+    height: 300px;
+  }
+
+  .pie-chart,
+  .bar-chart-container {
+    min-height: 300px;
+  }
 }
 
 @media (max-width: 480px) {
   .chart-section {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .chart-view {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .filter-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
-  }
-
-  .filter-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .chart-tabs {
-    gap: 0.5rem;
-  }
-
-  .chart-tab {
-    font-size: 0.85rem;
-    padding: 0.55rem 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .chart-section {
-    padding: 1rem;
-  }
-
-  .chart-view {
-    padding: 1rem;
   }
 
   .filter-grid {
@@ -747,12 +732,32 @@
     padding: 1rem;
   }
 
+  .chart-tabs {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .chart-tab {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.9rem;
+  }
+
   .chart-header h2 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   .chart-heading {
-    font-size: 1.1rem;
+    font-size: 1rem;
+  }
+
+  /* Reduce fixed chart heights on mobile */
+  .chart-wrapper {
+    height: 240px;
+  }
+
+  .pie-chart,
+  .bar-chart-container {
+    min-height: 240px;
   }
 }
 

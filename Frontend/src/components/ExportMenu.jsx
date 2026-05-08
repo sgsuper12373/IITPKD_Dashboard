@@ -13,6 +13,8 @@ const ExportMenu = ({
   exportType = 'both' // 'chart', 'table', or 'both'
 }) => {
   const isGuest = !localStorage.getItem('authToken');
+  const storedUser = localStorage.getItem('authUser');
+  const roleId = storedUser ? JSON.parse(storedUser)?.role_id : undefined;
 
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -120,7 +122,7 @@ const ExportMenu = ({
     setIsOpen(false);
   };*/
 
-  if (isGuest) return null;
+  if (isGuest || roleId === 0) return null;
 
   return (
     <div ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>

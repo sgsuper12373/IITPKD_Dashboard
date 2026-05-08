@@ -25,13 +25,20 @@ body {
   overflow-x: hidden;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   background: var(--off-white);
+  color: var(--text-main);
+}
+
+/* Fixed background via pseudo-element avoids the scroll-repaint penalty
+   that background-attachment:fixed causes on every scroll frame. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
   background-image: url('../assets/iitpkd_dashboard_bgi.avif');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  /* Keeps background fixed while scrolling */
-  color: var(--text-main);
+  z-index: -1;
 }
 
 /* Offset page for FIXED HEADER CONTAINER (Header + Navbar) */
@@ -294,43 +301,86 @@ body {
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
+  /* Hide the wide nav-bar on tablet/mobile — sidebar handles navigation */
+  .main-navbar {
+    display: none;
+  }
+
+  /* Without the nav-bar row, the header is ~76px tall */
   body {
-    padding-top: 120px;
+    padding-top: 80px;
   }
 
   .main-header {
-    padding: 1rem 2rem;
-  }
-
-  /* Navbar top adjustment not needed anymore */
-
-  .nav-link {
-    padding: 0.8rem 1rem;
+    padding: 0.75rem 1.25rem;
   }
 
   .main-content {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 }
 
 @media (max-width: 640px) {
   body {
-    padding-top: 110px;
+    padding-top: 72px;
   }
 
-  /* Navbar top adjustment not needed anymore */
+  .main-header {
+    padding: 0.65rem 1rem;
+  }
 
   .logo-image {
-    height: 24px;
-    /* Mobile size */
+    height: 26px;
+  }
+
+  /* Truncate the full institute name so it doesn't overflow the header */
+  .logo-text-group {
+    max-width: 180px;
+    overflow: hidden;
   }
 
   .logo-text {
-    font-size: 1rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .logo-tagline {
-    font-size: 0.65rem;
+    display: none;
+  }
+
+  .main-content {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-top: 68px;
+  }
+
+  .main-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* On very small phones hide the text and show only the logo image */
+  .logo-text-group {
+    display: none;
+  }
+
+  .logo-image {
+    height: 28px;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 0.375rem;
   }
 }
 

@@ -85,7 +85,8 @@ const PageLoader = () => (
 function App() {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
-  const [isGuestMode, setIsGuestMode] = useState(false);
+
+  const isGuestMode = user?.email === 'guest@iitpkd.ac.in';
 
   // Rehydrate auth state on initial load
   useEffect(() => {
@@ -111,15 +112,9 @@ function App() {
     localStorage.setItem('authUser', JSON.stringify(receivedUser));
   };
 
-  const handleGuestAccess = () => {
-    setIsGuestMode(true);
-    setUser({ username: 'Guest', display_name: 'Guest', role_id: 0, isGuest: true });
-  };
-
   const handleLogout = () => {
     setToken(null);
     setUser(null);
-    setIsGuestMode(false);
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
   };
@@ -174,7 +169,7 @@ function App() {
             path="/login"
             element={
               (token || isGuestMode) ? <Navigate to="/" replace /> :
-                <Login onLoginSuccess={handleLoginSuccess} onGuestAccess={handleGuestAccess} />
+                <Login onLoginSuccess={handleLoginSuccess} />
             }
           />
           <Route

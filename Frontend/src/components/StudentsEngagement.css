@@ -33,22 +33,43 @@
     margin-bottom: 1rem;
 }
 
-/* Mobile */
-@media (max-width: 640px) {
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
     .page-content-studentsEngagement {
-        padding: 2rem;
+        padding: 1.75rem 1.5rem;
     }
 
     .page-content-studentsEngagement>h1 {
-        font-size: 26px;
-        -webkit-text-stroke: 0.8px #000000;
+        font-size: 1.75rem;
     }
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-    .page-content-studentsEngagement h1 {
-        font-size: 2rem;
+@media (max-width: 640px) {
+    .page-content-studentsEngagement {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .page-content-studentsEngagement>h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content-studentsEngagement {
+        padding: 1.25rem 1rem;
+        border-radius: 8px;
+    }
+
+    .page-content-studentsEngagement>h1 {
+        font-size: 1.3rem;
+    }
+
+    .page-content-studentsEngagement>p {
+        font-size: 0.95rem;
+    }
+
+    .page-content-studentsEngagement .grievance-table-wrapper {
+        padding: 1rem;
     }
 }
 

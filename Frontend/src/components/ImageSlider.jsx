@@ -94,10 +94,11 @@ function ImageSlider({ images = [], autoSlideInterval = 4000 }) {
               key={index}
               className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
             >
-              <img 
-                src={image} 
+              <img
+                src={image}
                 alt={`IIT Palakkad ${index + 1}`}
                 className="slider-image"
+                decoding="async"
               />
             </div>
           ))}

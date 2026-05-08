@@ -5,7 +5,7 @@ import './Login.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 // The Login component receives a prop `onLoginSuccess` from App.jsx
 // which it will call with the token and user data after a successful login/signup.
-function Login({ onLoginSuccess, onGuestAccess }) {
+function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
   // This state toggles between Login and Sign Up forms
   const [isLoginView] = useState(true);
@@ -19,9 +19,23 @@ function Login({ onLoginSuccess, onGuestAccess }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Handles the form submission for both login and signup.
-   */
+  const handleGuestLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        { email: 'guest@iitpkd.ac.in', password: 'Restricted4%^Public4Dashboard@' }
+      );
+      onLoginSuccess(response.data.token, response.data.user);
+      navigate('/');
+    } catch {
+      setError('Guest access is currently unavailable. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
@@ -119,7 +133,8 @@ function Login({ onLoginSuccess, onGuestAccess }) {
 
         <button
           type="button"
-          onClick={() => { onGuestAccess(); navigate('/'); }}
+          onClick={handleGuestLogin}
+          disabled={isLoading}
           style={{
             width: '100%',
             padding: '0.6rem',

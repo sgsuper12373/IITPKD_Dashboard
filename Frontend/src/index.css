@@ -46,6 +46,26 @@ html, body {
   background: var(--off-white);
 }
 
+/* Global mobile touch improvements */
+@media (max-width: 768px) {
+  * {
+    /* Prevent text size inflation on orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Ensure nothing causes unexpected horizontal scroll */
+  img, video, iframe, table {
+    max-width: 100%;
+  }
+
+  /* Friendlier tap targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 body {
   display: block;
   color: var(--text-main);

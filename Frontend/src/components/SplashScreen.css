@@ -208,20 +208,32 @@
   .splash-oval-container {
     padding: 30px 40px;
     /* ⚙️ ADJUST SMALL MOBILE PADDING */
-    min-width: 280px;
+    min-width: 260px;
     /* ⚙️ ADJUST SMALL MOBILE WIDTH */
-    min-height: 250px;
+    min-height: 230px;
     /* ⚙️ ADJUST SMALL MOBILE HEIGHT */
   }
 
   .splash-logo {
-    height: 200px;
-    /* ⚙️ ADJUST SMALL MOBILE LOGO SIZE: Doubled from 100px to 200px */
+    height: 180px;
+    /* ⚙️ ADJUST SMALL MOBILE LOGO SIZE */
   }
 
   .splash-text {
     font-size: 2.5rem;
     /* ⚙️ ADJUST SMALL MOBILE TEXT SIZE */
     letter-spacing: 1.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .splash-oval-container {
+    padding: 24px 28px;
+    min-width: 220px;
+    min-height: 200px;
+  }
+
+  .splash-logo {
+    height: 140px;
   }
 }
