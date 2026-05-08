@@ -241,7 +241,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.total_events)}
+              {summary.total_events === 0 ? "To Be Updated" : formatNumber(summary.total_events)}
             </div>
             <div style={{
               display: 'flex',
@@ -322,7 +322,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.total_visitors)}
+              {summary.total_visitors === 0 ? "To Be Updated" : formatNumber(summary.total_visitors)}
             </div>
             <div style={{
               display: 'flex',
@@ -403,7 +403,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               marginBottom: '8px',
               lineHeight: '1.2'
             }}>
-              {formatNumber(summary.departments_participated)}
+              {summary.departments_participated === 0 ? "To Be Updated" : formatNumber(summary.departments_participated)}
             </div>
             <div style={{
               display: 'flex',
