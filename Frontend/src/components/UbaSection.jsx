@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   fetchUbaSummary,
   fetchUbaProjects,
@@ -21,7 +21,6 @@ function UbaSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -35,7 +34,7 @@ function UbaSection({ user, isPublicView = false }) {
   const [projects, setProjects] = useState([]);
   const [events, setEvents] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Load summary data

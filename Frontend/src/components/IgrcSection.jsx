@@ -15,7 +15,7 @@ import './GrievanceSection.css';
 import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const BAR_COLORS = {
   filed: '#667eea',
@@ -48,7 +48,6 @@ function IgrcSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   useEffect(() => {

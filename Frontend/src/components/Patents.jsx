@@ -14,7 +14,7 @@ import {
 } from '../services/researchStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
@@ -68,7 +68,7 @@ function Patents({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion]);
+  }, [serializedFilters, filters.patent_status, filters.patent_year, token, uploadVersion]);
 
   useEffect(() => {
     const load = async () => {

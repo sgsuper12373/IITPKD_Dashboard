@@ -1,0 +1,148 @@
+﻿
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\AcademicSection.jsx
+  358:10   error  'trendTotal' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  396:9    error  'setLoading' is not defined                                                                 no-undef
+  448:13   error  'setLoading' is not defined                                                                 no-undef
+  448:112  error  'setGenderData' is not defined                                                              no-undef
+  448:135  error  'setTotal' is not defined                                                                   no-undef
+  450:17   error  'setLoading' is not defined                                                                 no-undef
+  458:13   error  'setGenderTrendLoading' is not defined                                                      no-undef
+  460:17   error  'setGenderTrendLoading' is not defined                                                      no-undef
+  469:9    error  'setProgramTrendLoading' is not defined                                                     no-undef
+  475:17   error  'setProgramTrendLoading' is not defined                                                     no-undef
+  484:9    error  'setStateDistributionLoading' is not defined                                                no-undef
+  488:17   error  'setStateDistributionLoading' is not defined                                                no-undef
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\AdministrativeSection.jsx
+  376:67  error  Parsing error: Unexpected token )
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\ConclaveSection.jsx
+  23:9  error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\EducationAcademicSection.jsx
+   1:21  error  'useMemo' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                            no-unused-vars
+  89:9   error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\EducationAdministrativeSection.jsx
+  128:10  error    'isCardDetailsLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                          no-unused-vars
+  134:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                      no-unused-vars
+  257:6   warning  React Hook useEffect has missing dependencies: 'currentFilters' and 'handleFilterChange'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  481:9   error    'isLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                     no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\EducationIarSection.jsx
+   45:10  error  'filterOptions' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+   57:10  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+   64:9   error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  111:9   error  'handleFilterChange' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\EwdSection.jsx
+   65:9  error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  159:9  error  'yearLabel' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                 no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\ExportMenu.jsx
+  13:3  error  'title' is assigned a value but never used  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\Header.jsx
+  80:11  error  'canUploadData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IarSection.jsx
+  165:10  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+  176:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  211:6   warning  React Hook useEffect has a missing dependency: 'filters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IccSection.jsx
+  50:9  error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IcsrSection.jsx
+  125:18  error  Parsing error: Cannot use keyword 'await' outside an async function
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IgrcSection.jsx
+  51:9  error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IndustryAdministrativeSection.jsx
+   19:3   error    'fetchExternshipSummary' is defined but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+   20:3   error    'fetchExternshipList' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+   89:10  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+   96:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  125:6   warning  React Hook useEffect has a missing dependency: 'filters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  150:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\InnovationEntrepreneurship.jsx
+  7:45  error  'isPublicView' is defined but never used  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\InnovationSection.jsx
+  115:9  error    'isSuperAdmin' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                            no-unused-vars
+  185:9  error    'setLoading' is not defined                                                                                                                                                                                                             no-undef
+  191:9  error    'setLoading' is not defined                                                                                                                                                                                                             no-undef
+  237:6  warning  React Hook useEffect has a missing dependency: 'pagination'. Either include it or remove the dependency array. You can also do a functional update 'setPagination(p => ...)' if you only need 'pagination' in the 'setPagination' call  react-hooks/exhaustive-deps
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\IptifSection.jsx
+    1:31  error    'useRef' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  186:47  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  196:47  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  206:47  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  216:48  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\Login.jsx
+  11:23  error  'setIsLoginView' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\NirfRankingSection.jsx
+  87:11  error  'latestStats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  88:11  error  'firstStats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\NptelSection.jsx
+  38:9   error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  50:10  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\OpenHouseSection.jsx
+   38:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                no-unused-vars
+   64:10  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                 no-unused-vars
+  114:6   warning  React Hook useEffect has a missing dependency: 'pagination'. Either include it or remove the dependency array. You can also do a functional update 'setPagination(p => ...)' if you only need 'pagination' in the 'setPagination' call  react-hooks/exhaustive-deps
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\OutreachSection.jsx
+  326:9  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+  446:9  error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  447:9  error  'isAdmin' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\Patents.jsx
+  71:6  warning  React Hook useEffect has missing dependencies: 'filters.patent_status' and 'filters.patent_year'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\Profile.jsx
+   1:20  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  14:9   error  'canUploadData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  49:9   error  'handleUploadClick' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\Research.jsx
+  11:9  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\ResearchIcsrSection.jsx
+  129:10  error    'patentList' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+  139:10  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+  146:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  220:6   warning  React Hook useEffect has a missing dependency: 'filters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  285:6   warning  React Hook useEffect has a missing dependency: 'mouOnly'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  315:9   error    'consultancyTrendChartData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\ResearchLibrarySection.jsx
+   68:10  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                     no-unused-vars
+   75:9   error    'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  103:6   warning  React Hook useEffect has a missing dependency: 'filters'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\SocialEngagement.jsx
+  68:43  error  'isPublicView' is assigned a value but never used  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\StudentsEngagement.jsx
+  66:44  error  'isPublicView' is assigned a value but never used  no-unused-vars
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\TechinSection.jsx
+  181:47  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  191:48  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  201:47  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+
+C:\Users\IIT_Admin\Music\IITPKD_Dashboard\Frontend\src\components\UbaSection.jsx
+  24:9   error  'canViewRestrictedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  38:10  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+
+Γ£û 82 problems (65 errors, 17 warnings)
+  0 errors and 8 warnings potentially fixable with the `--fix` option.
+

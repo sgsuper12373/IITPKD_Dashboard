@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -15,7 +15,7 @@ import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
-function CourseTable({ courses, headerColor }) {
+function CourseTable({ courses, headerColor, user }) {
   if (!courses.length) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
@@ -86,7 +86,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // Summary counts from /course-counts
@@ -258,6 +257,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
               <CourseTable
                 courses={viewMode === 'all' ? allCourses : industryCourses}
                 headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
+                user={user}
               />
             </div>
           </div>

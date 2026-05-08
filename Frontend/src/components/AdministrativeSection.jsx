@@ -16,7 +16,8 @@ import {
 } from '../services/educationStats';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip, getOrderedLegend } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
+import { getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 
@@ -112,31 +113,10 @@ const CustomXAxisTick = ({ x, y, payload }) => {
   );
 };
 
-// ── Reusable ordered legend renderer ─────────────────────────────────────
-// Mirrors the pattern used in AcademicSection.jsx via getOrderedLegend
-const makeOrderedLegendRenderer = (orderedKeys) => (props) => {
-  const ordered = getOrderedLegend(props.payload, orderedKeys);
-  return (
-    <ul style={{
-      display: 'flex', justifyContent: 'center', gap: '16px',
-      listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap'
-    }}>
-      {ordered.map(entry => (
-        <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{
-            width: 10, height: 10, backgroundColor: entry.color,
-            display: 'inline-block', borderRadius: 2, flexShrink: 0
-          }} />
-          <span>{entry.value}</span>
-        </li>
-      ))}
-    </ul>
-  );
-};
+
 
 // Pre-built ordered legend renderers for each chart family
-const regularLegendRenderer = makeOrderedLegendRenderer(SERIES_META.map(s => s.key));
-const eduLegendRenderer = makeOrderedLegendRenderer(EDU_ENGAGEMENT_ORDER);
+// (Removed unused regularLegendRenderer and eduLegendRenderer)
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
@@ -148,7 +128,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // ── Top-level section toggle ──────────────────────────────────────────────
@@ -199,7 +178,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const [selectedCardType, setSelectedCardType] = useState(null);
   const [cardDetailsData, setCardDetailsData] = useState([]);
   const [eduError, setEduError] = useState(null);
-  const [eduLoading, setEduLoading] = useState(false);
+
 
   // Chart type toggles for Education views
   const [eduDeptChartType, setEduDeptChartType] = useState('Bar');
@@ -336,12 +315,12 @@ function AdministrativeSection({ user, isPublicView = false }) {
       setEduFilters(prev => prev.year === 'All' ? { ...prev, year: defaultYear } : prev);
     }).catch(err => setEduError(err.message || 'Failed to load education filter options.'));
     return () => { isMounted = false; };
-  }, [serializedEduFilters, token, uploadVersion]);
+  }, [serializedEduFilters, token, uploadVersion, eduFilters]);
 
   useEffect(() => {
     const loadEduData = async () => {
       try {
-        setEduLoading(true);
+
         setEduError(null);
         const p = {};
         if (eduFilters.year !== 'All') p.year = eduFilters.year;
@@ -371,8 +350,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
         setEduEngagementList(Array.isArray(listResp?.data) ? listResp.data : []);
       } catch (err) {
         setEduError(err.message || 'Failed to load education data.');
-      } finally {
-        setEduLoading(false);
       }
     };
     loadEduData();
@@ -1546,7 +1523,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       outerRadius={140}
                       dataKey="value"
                       animationDuration={800}
-                      label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+                      label={({ cx, cy, midAngle, outerRadius, percent, name }) => {
                         const RADIAN = Math.PI / 180;
                         const radius = outerRadius + 28;
                         const x = cx + radius * Math.cos(-midAngle * RADIAN);

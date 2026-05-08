@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -173,7 +173,7 @@ function IptifSection({ user, isPublicView = false }) {
       } catch (err) { setError(err.message || 'Failed to initialize IPTIF data'); }
     };
     load();
-  }, [serializedProjectFilters, token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [serializedProjectFilters, projectFilters, token, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -183,7 +183,7 @@ function IptifSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingProjects(false); });
     return () => { m = false; };
-  }, [token, projectFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, projectFilters, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -193,7 +193,7 @@ function IptifSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingPrograms(false); });
     return () => { m = false; };
-  }, [token, programFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, programFilters, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -203,7 +203,7 @@ function IptifSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingStartups(false); });
     return () => { m = false; };
-  }, [token, startupFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, startupFilters, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -213,7 +213,7 @@ function IptifSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingFacilities(false); });
     return () => { m = false; };
-  }, [token, facilityFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, facilityFilters, uploadVersion]);
 
   const handleFilterChange = (setter) => (field, value) => setter(prev => ({ ...prev, [field]: value }));
 

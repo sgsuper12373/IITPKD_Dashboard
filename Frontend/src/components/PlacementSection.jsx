@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -29,7 +29,7 @@ import {
 } from '../services/placementStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -105,11 +105,11 @@ function PlacementSection({ user, isPublicView = false }) {
   const [sectorDistribution, setSectorDistribution] = useState([]);
   const [packageTrend, setPackageTrend] = useState([]);
   const [topRecruiters, setTopRecruiters] = useState([]);
-
-  const [loading, setLoading] = useState({
+  const [_loading, setLoading] = useState({
     trend: false, gender: false, program: false,
     recruiters: false, sector: false, package: false, topRecruiters: false
   });
+
   const [error, setError] = useState(null);
 
   const latestYear = useMemo(() => {
@@ -123,11 +123,10 @@ function PlacementSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // ── Helpers ──────────────────────────────────────────────────────────────
-  const getCurrentFilters = () => {
+  const getCurrentFilters = useCallback(() => {
     switch (viewType) {
       case 'placementTrend': return trendFilters;
       case 'genderWise': return genderFilters;
@@ -138,9 +137,9 @@ function PlacementSection({ user, isPublicView = false }) {
       case 'topRecruiters': return topRecruitersFilters;
       default: return trendFilters;
     }
-  };
+  }, [viewType, trendFilters, genderFilters, programFilters, recruitersFilters, sectorFilters, packageFilters, topRecruitersFilters]);
 
-  const handleFilterChange = (field, value) => {
+  const handleFilterChange = useCallback((field, value) => {
     const updater = prev => ({ ...prev, [field]: value });
     switch (viewType) {
       case 'placementTrend': setTrendFilters(updater); break;
@@ -151,7 +150,7 @@ function PlacementSection({ user, isPublicView = false }) {
       case 'packageTrend': setPackageFilters(updater); break;
       case 'topRecruiters': setTopRecruitersFilters(updater); break;
     }
-  };
+  }, [viewType]);
 
   const handleClearFilters = () => {
     const reset = { ...DEFAULT_FILTERS };
@@ -215,7 +214,7 @@ function PlacementSection({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion, viewType]);
+  }, [serializedFilters, token, uploadVersion, viewType, currentFilters, handleFilterChange]);
 
   // ── Data loaders ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -403,7 +402,6 @@ function PlacementSection({ user, isPublicView = false }) {
 
   // ── Unified filter panel (dynamic fields) ────────────────────────────────
   const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
-  const currentFilters = getCurrentFilters();
 
   const renderFilterPanel = () => (
     <div style={{

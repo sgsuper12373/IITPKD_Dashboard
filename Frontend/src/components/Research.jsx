@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 import './Page.css';
@@ -8,7 +8,6 @@ import './PeopleCampus.css';
 import ResearchPublicView from './ResearchPublicView';
 
 function Research({ user }) {
-  const navigate = useNavigate();
 
   // 🔹 ADDITION: get role_id safely
   const roleId = user?.role_id;

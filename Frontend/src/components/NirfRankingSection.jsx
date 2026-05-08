@@ -84,8 +84,7 @@ const NirfRankingSection = ({ user }) => {
         return null; // Don't show anything for regular users if no data
     }
 
-    const latestStats = data[data.length - 1];
-    const firstStats = data[0];
+
 
     // Limit to the most recent 7 years
     const recentData = data.slice(-7);

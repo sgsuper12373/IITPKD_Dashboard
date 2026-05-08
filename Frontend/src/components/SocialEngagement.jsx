@@ -65,7 +65,7 @@ const SECTIONS = [
   },
 ];
 
-function SocialEngagementsSection({ user, isPublicView = false }) {
+function SocialEngagementsSection({ user }) {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
 

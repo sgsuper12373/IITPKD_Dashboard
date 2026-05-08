@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   fetchNptelSummary,
   fetchNptelTrend,
@@ -20,7 +20,7 @@ import './AcademicSection.css';
 import '../DesignSystem.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -35,7 +35,6 @@ function NptelSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const [summary, setSummary] = useState({
@@ -47,7 +46,7 @@ function NptelSection({ user, isPublicView = false }) {
   const [trendData, setTrendData] = useState([]);
   const [listData, setListData] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Load data

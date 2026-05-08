@@ -16,7 +16,7 @@ import './GrievanceSection.css';
 import './ResearchSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const TYPE_COLORS = ['#6366f1', '#22d3ee', '#f97316', '#a855f7', '#14b8a6', '#facc15'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
@@ -65,14 +65,13 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
   const [departmentBreakdown, setDepartmentBreakdown] = useState([]);
   const [typeDistribution, setTypeDistribution] = useState([]);
   const [publicationList, setPublicationList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const serializedFilters = JSON.stringify(filters);
@@ -100,7 +99,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
     };
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion]);
+  }, [serializedFilters, filters, filters.department, filters.publication_year, filters.publication_type, token, uploadVersion]);
 
   useEffect(() => {
     const loadLibraryData = async () => {
@@ -130,7 +129,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
       }
     };
     loadLibraryData();
-  }, [filters, token, uploadVersion]);
+  }, [filters, filters.department, filters.publication_year, filters.publication_type, token, uploadVersion]);
 
   const trendChartData = useMemo(() =>
     trendData.map((row) => ({ year: row.year, publications: Number(row.total) || 0 })),

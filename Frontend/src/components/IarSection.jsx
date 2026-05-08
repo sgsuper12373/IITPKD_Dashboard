@@ -32,7 +32,7 @@ import './GrievanceSection.css';
 import './IarSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const PIE_COLORS = ['#667eea', '#764ba2', '#f093fb', '#43e97b', '#fa709a', '#00f2fe', '#f59e0b', '#a78bfa'];
 const OTHERS_PIE_COLOR = '#94a3b8'; // neutral slate for the "Others" catch-all slice
@@ -56,7 +56,7 @@ function makePieTooltip(total) {
   };
 }
 
-function PieDistributionTable({ data, nameKey, total, colors }) {
+function PieDistributionTable({ data, nameKey, total, colors, user }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
@@ -162,7 +162,7 @@ function IarSection({ user, isPublicView = false }) {
   const StatePieTooltip = useMemo(() => makePieTooltip(stateTotal), [stateTotal]);
   const CountryPieTooltip = useMemo(() => makePieTooltip(countryTotal), [countryTotal]);
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // UI state to control which visualization block is visible
@@ -173,7 +173,6 @@ function IarSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const serializedFilters = JSON.stringify(filters);
@@ -208,7 +207,7 @@ function IarSection({ user, isPublicView = false }) {
     };
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion]);
+  }, [serializedFilters, token, uploadVersion, filters]);
 
   const loadData = async () => {
     try {
@@ -683,7 +682,7 @@ function IarSection({ user, isPublicView = false }) {
 )}</>
                     {stateTop10.length > 0 && (
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
 )}</>
                     )}
 
@@ -742,7 +741,7 @@ function IarSection({ user, isPublicView = false }) {
 )}</>
                     {countryTop10.length > 0 && (
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} />
+<PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} user={user} />
 )}</>
                     )}
                     {/* Chart Statistics */}

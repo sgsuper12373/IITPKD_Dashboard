@@ -19,7 +19,7 @@ import {
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';

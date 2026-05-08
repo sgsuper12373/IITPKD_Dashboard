@@ -4,7 +4,7 @@ import InnovationPublicView from './InnovationPublicView';
 import './Page.css';
 import './PeopleCampus.css';
 
-function InnovationEntrepreneurship({ user, isPublicView }) {
+function InnovationEntrepreneurship({ user }) {
   const roleId = user?.role_id;
 
   const sections = [

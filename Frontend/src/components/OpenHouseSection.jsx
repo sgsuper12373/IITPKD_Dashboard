@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend, LabelList
 } from 'recharts';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 import ExportMenu from './ExportMenu';
 import {
   fetchOpenHouseSummary,
@@ -35,7 +35,6 @@ function OpenHouseSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // Chart type selection with radio buttons
@@ -61,7 +60,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
     year: ''
   });
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Load summary data
@@ -105,7 +104,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
           filters.year || null
         );
         setEventsList(result.events || []);
-        setPagination(result.pagination || pagination);
+        setPagination(prev => result.pagination || prev);
       } catch (err) {
         console.error('Error loading events:', err);
       }

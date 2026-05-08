@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Page.css';
 import './Profile.css';
@@ -10,8 +10,6 @@ function Profile({ user }) {
   const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
 
-  // Check if user has role_id 2 or 3
-  const canUploadData = user && (user.role_id === 2 || user.role_id === 3);
   const isAdmin = user && user.role_id === 3;
 
   // Active Panel State ('roles', 'users', 'export', or null)
@@ -46,9 +44,7 @@ function Profile({ user }) {
   const [exportError, setExportError] = useState('');
   const [exportSuccess, setExportSuccess] = useState('');
 
-  const handleUploadClick = () => {
-    navigate('/upload');
-  };
+
 
   const handleCreateUserClick = () => {
     navigate('/create-user');

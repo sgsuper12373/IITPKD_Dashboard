@@ -168,7 +168,7 @@ function TechinSection({ user, isPublicView = false }) {
       } catch (err) { setError(err.message || 'Failed to initialize TechIn data'); }
     };
     load();
-  }, [serializedProgramFilters, token, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [serializedProgramFilters, programFilters, token, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -178,7 +178,7 @@ function TechinSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingPrograms(false); });
     return () => { m = false; };
-  }, [token, programFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, programFilters, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -188,7 +188,7 @@ function TechinSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingSkillDev(false); });
     return () => { m = false; };
-  }, [token, skillDevFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, skillDevFilters, uploadVersion]);
 
   useEffect(() => {
     let m = true;
@@ -198,7 +198,7 @@ function TechinSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingStartups(false); });
     return () => { m = false; };
-  }, [token, startupFilters, uploadVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, startupFilters, uploadVersion]);
 
   const handleFilterChange = (setter) => (field, value) => setter(prev => ({ ...prev, [field]: value }));
 

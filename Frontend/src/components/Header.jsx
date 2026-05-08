@@ -77,7 +77,7 @@ function Header({ user, onLogout, isGuest }) {
         navigate('/login');
     };
 
-    const canUploadData = user && (user.role_id === 2 || user.role_id === 3 || user.role_id === 4);
+
 
     return (
         <>

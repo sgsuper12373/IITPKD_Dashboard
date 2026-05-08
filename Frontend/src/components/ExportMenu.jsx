@@ -10,7 +10,6 @@ const ExportMenu = ({
   headers,
   keys,
   filename = 'export',
-  title = '',
   exportType = 'both' // 'chart', 'table', or 'both'
 }) => {
   const [isOpen, setIsOpen] = useState(false);

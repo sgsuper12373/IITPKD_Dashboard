@@ -14,16 +14,17 @@ import {
 } from 'recharts';
 
 import {
-  fetchIarMouFilterOptions,
   fetchIarMouTrend,
   fetchIarMouList,
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 import './Page.css';
+// Version bump for cache refresh
+
 import './AcademicSection.css';
 import './ResearchSection.css';
 import '../DesignSystem.css';
@@ -42,9 +43,9 @@ function EducationIarSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const [filterOptions, setFilterOptions] = useState({
-    mou_years: []
-  });
+  // const [filterOptions, setFilterOptions] = useState({
+  //   mou_years: []
+  // });
 
   const [filters, setFilters] = useState({ mou_year: 'All' });
   const [totalMous, setTotalMous] = useState(0);
@@ -54,29 +55,16 @@ function EducationIarSection({ user, isPublicView = false }) {
   const [viewType, setViewType] = useState('trend'); // 'trend' | 'directory'
   const [chartMode, setChartMode] = useState('bar'); // 'bar' | 'trend'
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
-  useEffect(() => {
-    const loadOptions = async () => {
-      try {
-        const opts = await fetchIarMouFilterOptions({ mou_year: filters.mou_year }, token);
-        setFilterOptions({
-          mou_years: opts?.mou_years || []
-        });
-      } catch (err) {
-        console.error('Failed to load filter options:', err);
-      }
-    };
-    loadOptions();
-  }, [filters.mou_year, token, uploadVersion]);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,7 +96,7 @@ function EducationIarSection({ user, isPublicView = false }) {
     [mouTrend]
   );
 
-  const handleFilterChange = (field, value) => setFilters(prev => ({ ...prev, [field]: value }));
+  // const handleFilterChange = (field, value) => setFilters(prev => ({ ...prev, [field]: value }));
   const handleClearFilters = () => setFilters({ mou_year: 'All' });
 
   // Using shared CustomTooltip from chartUtils

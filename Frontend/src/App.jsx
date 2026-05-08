@@ -96,7 +96,7 @@ function App() {
       if (storedUser && storedUser !== 'undefined') {
         try {
           setUser(JSON.parse(storedUser));
-        } catch (e) {
+        } catch {
           localStorage.removeItem('authUser');
         }
       }

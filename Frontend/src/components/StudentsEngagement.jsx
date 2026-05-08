@@ -63,7 +63,7 @@ const SECTIONS = [
   },
 ];
 
-function StudentsEngagementSection({ user, isPublicView = false }) {
+function StudentsEngagementSection({ user }) {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
 

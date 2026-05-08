@@ -26,7 +26,7 @@ import {
 } from '../services/industryConnectStats';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
@@ -118,7 +118,7 @@ function IcsrSection({ user, isPublicView = false }) {
   const [filters, setFilters] = useState({ event_type: 'All', department: 'All', year: 'All', search: '' });
   const [pagination, setPagination] = useState({ page: 1, per_page: 50, total: 0, total_pages: 0 });
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeUploadTable] = useState('industry_events');
 
@@ -132,21 +132,21 @@ function IcsrSection({ user, isPublicView = false }) {
     } finally {
       setLoading(false);
     }
-  }, [token, filters, uploadVersion]);
+  }, [token, filters]);
 
   const loadYearlyDistribution = useCallback(async () => {
     try {
       const r = await fetchIcsrYearlyDistribution(filters, token);
       setYearlyDistribution(r.data || []);
     } catch (err) { console.error(err); }
-  }, [token, filters, uploadVersion]);
+  }, [token, filters]);
 
   const loadEventTypes = useCallback(async () => {
     try {
       const r = await fetchIcsrEventTypes(filters, token);
       setEventTypes(r.data || []);
     } catch (err) { console.error(err); }
-  }, [token, filters, uploadVersion]);
+  }, [token, filters]);
 
   const loadEvents = useCallback(async () => {
     try {
@@ -154,7 +154,7 @@ function IcsrSection({ user, isPublicView = false }) {
       setEventsList(r.data || []);
       setPagination(prev => r.pagination || prev);
     } catch (err) { console.error(err); }
-  }, [token, filters, pagination.page, pagination.per_page, uploadVersion]);
+  }, [token, filters, pagination.page, pagination.per_page]);
 
   const loadFilterOptions = useCallback(async () => {
     try {
@@ -165,17 +165,17 @@ function IcsrSection({ user, isPublicView = false }) {
         years: o?.years || []
       });
     } catch (err) { console.error(err); }
-  }, [token, filters.event_type, filters.year, uploadVersion]);
+  }, [token, filters.event_type, filters.year]);
 
   const refreshData = () => {
     loadSummary(); loadYearlyDistribution();
     loadEventTypes(); loadEvents(); loadFilterOptions();
   };
 
-  useEffect(() => { loadFilterOptions(); }, [loadFilterOptions]);
+  useEffect(() => { loadFilterOptions(); }, [loadFilterOptions, uploadVersion]);
   useEffect(() => { loadSummary(); loadYearlyDistribution(); loadEventTypes(); },
-    [loadSummary, loadYearlyDistribution, loadEventTypes]);
-  useEffect(() => { loadEvents(); }, [loadEvents]);
+    [loadSummary, loadYearlyDistribution, loadEventTypes, uploadVersion]);
+  useEffect(() => { loadEvents(); }, [loadEvents, uploadVersion]);
 
   /* ── filter handlers ─────────────────────────────────────────────── */
   const handleFilterChange = (field, value) => {
@@ -202,7 +202,7 @@ function IcsrSection({ user, isPublicView = false }) {
     return pie;
   }, [eventTypes]);
 
-  const showFundingCard = Number(summary.total_funding) > 25000;
+
   const hasActiveFilters =
     filters.event_type !== 'All' || filters.year !== 'All' || filters.search !== '';
 

@@ -8,7 +8,7 @@ import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 function Login({ onLoginSuccess, onGuestAccess }) {
   const navigate = useNavigate();
   // This state toggles between Login and Sign Up forms
-  const [isLoginView, setIsLoginView] = useState(true);
+  const [isLoginView] = useState(true);
 
   // Form fields state
   const [email, setEmail] = useState('');

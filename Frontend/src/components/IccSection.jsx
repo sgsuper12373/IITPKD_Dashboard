@@ -14,7 +14,7 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const AREA_COLORS = {
   total: '#667eea',
@@ -47,7 +47,6 @@ function IccSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   useEffect(() => {

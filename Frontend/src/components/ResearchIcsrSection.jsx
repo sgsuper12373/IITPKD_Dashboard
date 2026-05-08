@@ -17,16 +17,16 @@ import {
   fetchResearchFilterOptions,
   fetchIcsrSummary,
   fetchIcsrProjectTrend,
-  fetchConsultancyTrend,
+
   fetchIcsrProjectList,
   fetchPatentStats,
-  fetchPatentList,
+
   fetchMouTrend,
   fetchMouList,
 } from '../services/researchStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 import DataUploadModal from './LazyDataUploadModal';
 
@@ -123,10 +123,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   });
 
   const [projectTrend, setProjectTrend] = useState([]);
-  const [consultancyTrend, setConsultancyTrend] = useState([]);
   const [projectList, setProjectList] = useState([]);
   const [patentStats, setPatentStats] = useState({ overall: buildPatentBreakdown(), yearly: [] });
-  const [patentList, setPatentList] = useState([]);
+
 
   // MoU state
   const [mouFilters, setMouFilters] = useState({ mou_year: 'All' });
@@ -136,14 +135,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const [mouViewType, setMouViewType] = useState('trend'); // 'trend' | 'directory'
   const [mouChartMode, setMouChartMode] = useState('bar');
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const selectStyle = {
@@ -217,7 +215,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     };
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion]);
+  }, [serializedFilters, filters, token, uploadVersion]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -229,23 +227,13 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         const [
           summaryResp,
           projectTrendResp,
-          consultancyTrendResp,
           projectListResp,
-          patentStatsResp,
-          patentListResp
+          patentStatsResp
         ] = await Promise.all([
           fetchIcsrSummary(filters, token),
           fetchIcsrProjectTrend(filters, token),
-          fetchConsultancyTrend(filters, token),
           fetchIcsrProjectList(filters, token),
           fetchPatentStats(
-            {
-              patent_year: filters.patent_year,
-              patent_status: filters.patent_status
-            },
-            token
-          ),
-          fetchPatentList(
             {
               patent_year: filters.patent_year,
               patent_status: filters.patent_status
@@ -266,13 +254,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
         });
 
         setProjectTrend(projectTrendResp?.data || []);
-        setConsultancyTrend(consultancyTrendResp?.data || []);
         setProjectList(projectListResp?.data || []);
         setPatentStats({
           overall: buildPatentBreakdown(patentStatsResp?.overall),
           yearly: Array.isArray(patentStatsResp?.yearly) ? patentStatsResp.yearly : []
         });
-        setPatentList(patentListResp?.data || []);
+
       } catch (err) {
         console.error('Failed to load ICSR analytics:', err);
         setError(err.message || 'Failed to load ICSR analytics.');
@@ -282,7 +269,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     };
 
     loadData();
-  }, [filters, token, uploadVersion]);
+  }, [filters, filters.patent_year, filters.patent_status, token, uploadVersion, mouOnly]);
 
   // MoU data loading
   useEffect(() => {
@@ -312,14 +299,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     }));
   }, [projectTrend]);
 
-  const consultancyTrendChartData = useMemo(() => {
-    if (!consultancyTrend.length) return [];
-    return consultancyTrend.map((row) => ({
-      year: row.year,
-      funded_revenue: Number(row.funded_revenue) || 0,
-      consultancy_revenue: Number(row.consultancy_revenue) || 0
-    }));
-  }, [consultancyTrend]);
+
 
   const patentTrendChartData = useMemo(() => {
     if (!patentStats.yearly.length) return [];

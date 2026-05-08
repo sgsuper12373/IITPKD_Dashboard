@@ -176,7 +176,12 @@ def get_filter_options(current_user_id):
 
         filter_options = {
             'department': distinct_values('department', 'department', faculty_scope),
-            'designation': distinct_values('designation', 'designation', faculty_scope),
+            'designation': distinct_values(
+                'designation',
+                'designation',
+                "(designation != 'Director')" +
+                (f" AND {faculty_scope}" if faculty_scope else "")
+            ),
             'gender': distinct_values('gender', 'gender'),
             'emp_type': distinct_values('emp_type', 'emp_type'),
             'empstatus': distinct_values('empstatus', 'empstatus'),
@@ -781,7 +786,7 @@ def get_yearwise_strength(current_user_id):
       doj <= Y-12-31  AND  (dor IS NULL OR dor >= Y-12-31)
 
     Teaching    : emp_type = 'Teaching', designation != 'Director'
-    NonTeaching : emp_type = 'NonTeaching'
+    NonTeaching : emp_type = 'Non Teaching'
     All         : union of the two above (i.e. excluding Research and Director)
 
     Note: emp_type values in DB are 'Teaching' / 'NonTeaching' / 'Research'.
@@ -816,12 +821,12 @@ def get_yearwise_strength(current_user_id):
                 "AND e.designation != 'Director'"
             )
         elif emp_type in ('NonTeaching', 'Non Teaching'):
-            emp_filter = "e.emp_type = 'NonTeaching'"
+            emp_filter = "e.emp_type = 'Non Teaching'"
         else:
             emp_filter = (
                 "("
                 "  (e.emp_type = 'Teaching' AND e.designation != 'Director') "
-                "  OR e.emp_type = 'NonTeaching'"
+                "  OR e.emp_type = 'Non Teaching'"
                 ")"
             )
 

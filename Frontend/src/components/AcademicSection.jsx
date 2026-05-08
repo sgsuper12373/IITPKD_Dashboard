@@ -15,7 +15,8 @@ import './AcademicSection.css';
 import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip, getOrderedLegend } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
+import { getOrderedLegend } from '../utils/chartUtils';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
@@ -25,7 +26,7 @@ const GROUP_COLORS = { UG: '#4f46e5', PG: '#f97316', Research: '#06b6d4', Total:
 const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316'];
 const OTHERS_PIE_COLOR = '#a1a1aa';
 
-function PieDistributionTable({ data, nameKey, total, colors }) {
+function PieDistributionTable({ data, nameKey, total, colors, user }) {
   if (!data?.length) return null;
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
@@ -200,7 +201,8 @@ function SharedFilters({
       }
     };
     loadOptions();
-  }, [filters, token]);
+    return () => { isMounted = false; };
+  }, [filters, token, genderTrendFilters, handleGenderTrendFilterChange, handleProgramTrendFilterChange, handleStateDistributionFilterChange, isGender, isProgram, isState, programTrendFilters, stateDistributionFilters, handleClearGenderTrendFilters, handleClearProgramTrendFilters, handleClearStateDistributionFilters]);
 
   return (
     <div style={{ background: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '0.85rem' }}>
@@ -339,10 +341,10 @@ function AcademicSection({ user, isPublicView = false }) {
     yearofadmission: null, program: null, batch: null, branch: null,
     department: null, category: null, pwd: null
   });
-  const [genderData, setGenderData] = useState({ Male: 0, Female: 0, Transgender: 0 });
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [total, setTotal] = useState(0);
+  const [_total, setTotal] = useState(0);
+  const [_genderData, setGenderData] = useState({ Male: 0, Female: 0, Transgender: 0 });
 
   // Chart-level controls
   const [selectedGender, setSelectedGender] = useState('All');
@@ -353,24 +355,24 @@ function AcademicSection({ user, isPublicView = false }) {
 
   // Gender trend data
   const [genderTrendData, setGenderTrendData] = useState([]);
-  const [genderTrendLoading, setGenderTrendLoading] = useState(true);
+  const [_genderTrendLoading, setGenderTrendLoading] = useState(true);
   const [genderTrendFilters, setGenderTrendFilters] = useState({
     program: null, batch: null, department: null, state: null, category: null, pwd: null
   });
-  const [trendTotal, setTrendTotal] = useState(0);
+
 
   // Program trend data
   const [programTrendData, setProgramTrendData] = useState([]);
   const [programTrendPrograms, setProgramTrendPrograms] = useState([]);
   const [genderByGroup, setGenderByGroup] = useState([]); // NEW
-  const [programTrendLoading, setProgramTrendLoading] = useState(true);
+  const [_programTrendLoading, setProgramTrendLoading] = useState(true);
   const [programTrendFilters, setProgramTrendFilters] = useState({
     program: null, batch: null, department: null, state: null, category: null, pwd: null
   });
 
   // State distribution data
   const [stateDistribution, setStateDistribution] = useState([]);
-  const [stateDistributionLoading, setStateDistributionLoading] = useState(true);
+  const [_stateDistributionLoading, setStateDistributionLoading] = useState(true);
   const [stateDistributionFilters, setStateDistributionFilters] = useState({
     gender: null, program: null, batch: null, department: null, state: null
   });
@@ -381,7 +383,6 @@ function AcademicSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const showUploadBtn = !isReadOnlyView && isAdmin;
@@ -417,7 +418,7 @@ function AcademicSection({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [token, uploadVersion]);
+  }, [token, uploadVersion, filters.yearofadmission]);
 
   // ── Cumulative summary ───────────────────────────────────────────────────
   useEffect(() => {
@@ -503,14 +504,7 @@ function AcademicSection({ user, isPublicView = false }) {
     return sliced;
   }, [genderTrendData, trendYears, selectedGender]);
 
-  useEffect(() => {
-    const sum = displayGenderTrendData.reduce((acc, d) => {
-      if (selectedGender === 'Total') return acc + (d.Total || 0);
-      if (selectedGender === 'All') return acc + (d.Male || 0) + (d.Female || 0) + (d.Transgender || 0);
-      return acc + (d[selectedGender] || 0);
-    }, 0);
-    setTrendTotal(sum);
-  }, [displayGenderTrendData, selectedGender]);
+
 
   // UG/PG/Research aggregated from gender_by_group (preferred) or fallback
   const ugPgResearchTrend = useMemo(() => {
@@ -948,7 +942,7 @@ function AcademicSection({ user, isPublicView = false }) {
                           );
                         }}
                       />
-                      {programStackedBars.map(({ key, name, fill, stackId }, i) => (
+                      {programStackedBars.map(({ key, name, fill, stackId }) => (
                         <Bar
                           key={key}
                           dataKey={key}
@@ -1097,7 +1091,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     
                     {stateTop10.length > 0 && (
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
+<PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
 )}</>
                     )}
 

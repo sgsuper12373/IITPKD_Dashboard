@@ -40,11 +40,11 @@ const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0
  * @param {boolean} props.isPublicView - Forces the public view.
  */
 function InnovationSection({ user, isPublicView }) {
+  const [showPublicView, setShowPublicView] = useState(false);
+
   if (isPublicView) {
     return <InnovationSectionContent user={user} isPublicView={true} />;
   }
-
-  const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
   if (roleId === 1) {
@@ -107,15 +107,11 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const [viewType, setViewType] = useState('yearlyGrowth');
 
-  const roleId = user?.role_id;
-  const allowedRoles = [3, 8]; // Super Admin and Innovation
-  const isSuperAdmin = roleId === 3;
-  const isAllowed = isSuperAdmin || (allowedRoles && allowedRoles.includes(roleId));
+
 
   const [summary, setSummary] = useState({
     total_incubatees: 0,
@@ -148,7 +144,7 @@ function InnovationSectionContent({ user, isPublicView }) {
     total_pages: 0
   });
 
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Cross-filtering: reload options whenever filters change
@@ -181,7 +177,7 @@ function InnovationSectionContent({ user, isPublicView }) {
     };
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion]);
+  }, [serializedFilters, token, uploadVersion, filters.sector, filters.status, filters.year]);
 
   useEffect(() => {
     const loadSummary = async () => {
@@ -232,13 +228,13 @@ function InnovationSectionContent({ user, isPublicView }) {
           token
         );
         setStartupsList(result.data || []);
-        setPagination(result.pagination || pagination);
+        setPagination(prev => result.pagination || prev);
       } catch (err) {
         console.error('Error loading startups:', err);
       }
     };
     loadStartups();
-  }, [filters, pagination.page, token, uploadVersion]);
+  }, [filters, pagination.page, pagination.per_page, token, uploadVersion]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -1099,7 +1095,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value, name, props) => {
+                      formatter={(value, name) => {
                         if (name === 'value') return `${value} total`;
                         return value;
                       }}

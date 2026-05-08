@@ -23,7 +23,7 @@ import './GrievanceSection.css';
 import './EwdSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const ENERGY_BAR_COLOR = '#667eea';
 const ELECTRICITY_LINE_COLOR = '#f59e0b';
@@ -62,7 +62,6 @@ function EwdSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   useEffect(() => {
@@ -156,15 +155,7 @@ function EwdSection({ user, isPublicView = false }) {
     };
   }, [selectedYear, yearlyData, summary.latest]);
 
-  const yearLabel = useMemo(() => {
-    if (!selectedYearData) {
-      return 'Latest';
-    }
-    if (selectedYear === null) {
-      return `Latest (FY ${selectedYearData.year})`;
-    }
-    return `FY ${selectedYearData.year}`;
-  }, [selectedYearData, selectedYear]);
+
 
   // Scale data for Annual Electricity Consumption chart (divide by 1000 to show in thousands)
   const scaledYearlyData = useMemo(() => {

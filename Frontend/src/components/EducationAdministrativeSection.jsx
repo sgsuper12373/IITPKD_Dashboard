@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -28,7 +28,7 @@ import './Page.css';
 import './AcademicSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
-import { CustomTooltip } from '../utils/chartUtils';
+import CustomTooltip from './CustomTooltip';
 
 const ENGAGEMENT_COLORS = {
   Adjunct: '#667eea',
@@ -125,13 +125,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   // Drill-down states
   const [selectedCardType, setSelectedCardType] = useState(null);
   const [cardDetailsData, setCardDetailsData] = useState([]);
-  const [isCardDetailsLoading, setIsCardDetailsLoading] = useState(false);
 
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   // Get current filters based on view type
@@ -148,7 +146,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   };
 
   // Handle filter change for current view
-  const handleFilterChange = (field, value) => {
+  const handleFilterChange = useCallback((field, value) => {
     switch (viewType) {
       case 'summary':
         setSummaryFilters(prev => ({ ...prev, [field]: value }));
@@ -169,7 +167,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
         setHonoraryFilters(prev => ({ ...prev, [field]: value }));
         break;
     }
-  };
+  }, [viewType]);
 
   // Clear filters for current view
   const handleClearFilters = () => {
@@ -254,7 +252,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion, viewType]);
+  }, [serializedFilters, token, uploadVersion, viewType, currentFilters, handleFilterChange]);
 
   // Fetch summary data
   useEffect(() => {
@@ -293,7 +291,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
     const loadCardDetails = async () => {
       if (!selectedCardType) return;
       try {
-        setIsCardDetailsLoading(true);
+        // setIsCardDetailsLoading(true);
         const filterParams = {
           engagement_type: selectedCardType
         };
@@ -306,7 +304,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
       } catch (err) {
         console.error('Failed to load card details:', err);
       } finally {
-        setIsCardDetailsLoading(false);
+        // setIsCardDetailsLoading(false);
       }
     };
 
@@ -477,18 +475,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
   // Using shared CustomTooltip from chartUtils
 
-  // Get loading state for current view
-  const isLoading = () => {
-    switch (viewType) {
-      case 'summary': return loading.summary;
-      case 'department': return loading.department;
-      case 'trend': return loading.trend;
-      case 'distribution': return loading.distribution;
-      case 'details': return loading.details;
-      case 'honorary': return loading.details;
-      default: return false;
-    }
-  };
+
 
   return (
     <div className={isPublicView ? "" : "page-container"}>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
@@ -323,7 +323,6 @@ function RecordExpandedView({ record, programConfig, onBack }) {
 }
 
 function ProgramDetailView({ programConfig, records, user, token, loading }) {
-  const navigate = useNavigate();
   const matching = records.filter((r) => programConfig.match(r.program_name));
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -443,8 +442,6 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const canViewRestrictedSection = isPublicView && !isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const [searchParams] = useSearchParams();
   const [records, setRecords] = useState([]);
