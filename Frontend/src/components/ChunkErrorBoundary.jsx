@@ -22,7 +22,16 @@ const RELOAD_FLAG = 'chunk-reload-attempted';
 class ChunkErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, isChunkError: false };
+    this.state = {
+      hasError: false,
+      isChunkError: false,
+      // Set at construction time: if the boundary is mounted on a fresh page
+      // load and the flag is present, a previous mount already triggered the
+      // reload and it didn't fix things — show the fallback UI instead of
+      // looping.
+      reloadAlreadyAttempted: typeof window !== 'undefined' &&
+        !!window.sessionStorage?.getItem(RELOAD_FLAG),
+    };
   }
 
   static getDerivedStateFromError(error) {
@@ -30,54 +39,65 @@ class ChunkErrorBoundary extends Component {
   }
 
   componentDidCatch(error) {
-    if (isChunkLoadError(error)) {
-      // Stale index.html → new build has different chunk hashes. Force a
-      // single hard reload so the browser picks up the fresh index.html
-      // and the matching chunk names. The session-storage flag prevents
-      // an infinite reload loop if the failure is not actually stale-cache.
-      const alreadyReloaded = sessionStorage.getItem(RELOAD_FLAG);
-      if (!alreadyReloaded) {
-        sessionStorage.setItem(RELOAD_FLAG, '1');
-        window.location.reload();
-      }
+    if (isChunkLoadError(error) && !this.state.reloadAlreadyAttempted) {
+      // Stale index.html → new build has different chunk hashes. Force one
+      // hard reload so the browser picks up the fresh index.html and the
+      // matching chunk names.
+      window.sessionStorage.setItem(RELOAD_FLAG, '1');
+      window.location.reload();
     }
   }
 
   handleRetry = () => {
-    sessionStorage.removeItem(RELOAD_FLAG);
+    window.sessionStorage.removeItem(RELOAD_FLAG);
     window.location.reload();
   };
 
   render() {
-    if (this.state.hasError) {
-      // While the auto-reload is in flight, render nothing to avoid a flash
-      if (this.state.isChunkError && !sessionStorage.getItem(RELOAD_FLAG + '-shown')) {
-        return null;
-      }
+    if (!this.state.hasError) return this.props.children;
+
+    // First-time chunk error: a reload is about to fire from componentDidCatch.
+    // Render a brief loader instead of nothing so users see continuity.
+    if (this.state.isChunkError && !this.state.reloadAlreadyAttempted) {
       return (
         <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', height: '100vh', background: '#f8f9fa',
-          fontFamily: 'system-ui, sans-serif', padding: 24, textAlign: 'center'
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          height: '100vh', background: '#f8f9fa'
         }}>
-          <h2 style={{ marginBottom: 12, color: '#333' }}>Something went wrong loading this page.</h2>
-          <p style={{ marginBottom: 24, color: '#666', maxWidth: 480 }}>
-            The application has been updated. Please reload to fetch the latest version.
-          </p>
-          <button
-            onClick={this.handleRetry}
-            style={{
-              padding: '10px 24px', fontSize: 16, borderRadius: 6,
-              border: 'none', background: '#667eea', color: '#fff',
-              cursor: 'pointer'
-            }}
-          >
-            Reload
-          </button>
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%',
+            border: '4px solid #e9ecef', borderTopColor: '#667eea',
+            animation: 'cberr-spin 0.75s linear infinite'
+          }} />
+          <style>{`@keyframes cberr-spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       );
     }
-    return this.props.children;
+
+    // Either a non-chunk render error, or a chunk error that survived a
+    // reload — give the user a manual escape hatch.
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', height: '100vh', background: '#f8f9fa',
+        fontFamily: 'system-ui, sans-serif', padding: 24, textAlign: 'center'
+      }}>
+        <h2 style={{ marginBottom: 12, color: '#333' }}>Something went wrong loading this page.</h2>
+        <p style={{ marginBottom: 24, color: '#666', maxWidth: 480 }}>
+          The application may have been updated. Please reload to fetch the latest version.
+        </p>
+        <button
+          onClick={this.handleRetry}
+          style={{
+            padding: '10px 24px', fontSize: 16, borderRadius: 6,
+            border: 'none', background: '#667eea', color: '#fff',
+            cursor: 'pointer'
+          }}
+        >
+          Reload
+        </button>
+      </div>
+    );
   }
 }
 
