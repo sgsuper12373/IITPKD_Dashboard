@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, Component } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -83,71 +83,6 @@ const PageLoader = () => (
   </div>
 );
 
-// ── Chunk error boundary ───────────────────────────────────────────────────
-// Catches CSS/JS preload failures caused by stale Vite asset hashes in a
-// cached index.html after a new deploy. On first occurrence it reloads once
-// (sessionStorage guards against an infinite reload loop). If the error
-// persists after the reload it renders a manual refresh prompt instead.
-class ChunkErrorBoundary extends Component {
-  static RELOAD_KEY = 'chunk_error_reloaded';
-
-  static isChunkError(error) {
-    return (
-      error?.name === 'ChunkLoadError' ||
-      error?.message?.includes('Unable to preload') ||
-      error?.message?.includes('dynamically imported module') ||
-      error?.message?.includes('Failed to fetch')
-    );
-  }
-
-  state = { error: null };
-
-  // Must always return a state update — returning null leaves children in the
-  // error state and React will re-render them, throwing again indefinitely.
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
-
-  componentDidCatch(error) {
-    if (!ChunkErrorBoundary.isChunkError(error)) return;
-    if (!sessionStorage.getItem(ChunkErrorBoundary.RELOAD_KEY)) {
-      sessionStorage.setItem(ChunkErrorBoundary.RELOAD_KEY, '1');
-      // Use a unique query-param so the browser treats this as a new URL,
-      // bypassing any cached entry for the current path (including ETag 304s).
-      window.location.replace(
-        window.location.pathname + '?_v=' + Date.now()
-      );
-    }
-  }
-
-  render() {
-    if (!this.state.error) return this.props.children;
-    return (
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', height: '100vh', gap: '1rem',
-        fontFamily: 'sans-serif', color: '#555'
-      }}>
-        <p>This page failed to load. The site may have been updated.</p>
-        <button
-          onClick={() => {
-            sessionStorage.removeItem(ChunkErrorBoundary.RELOAD_KEY);
-            window.location.replace(
-              window.location.pathname + '?_v=' + Date.now()
-            );
-          }}
-          style={{
-            padding: '0.5rem 1.5rem', borderRadius: '6px',
-            border: '1.5px solid #667eea', background: '#667eea',
-            color: '#fff', cursor: 'pointer', fontSize: '0.95rem'
-          }}
-        >
-          Refresh page
-        </button>
-      </div>
-    );
-  }
-}
 
 // ── App ────────────────────────────────────────────────────────────────────
 
