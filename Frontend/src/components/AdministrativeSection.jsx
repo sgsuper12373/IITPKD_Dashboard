@@ -638,7 +638,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <label style={labelStyle}>Year</label>
               <select value={eduFilters.year}
                 onChange={(e) => handleEduFilterChange('year', e.target.value)} style={selectStyle}>
-                <option value="All">All Years</option>
+                {!isReadOnlyView && <option value="All">All Years</option>}
                 {eduFilterOptions.years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>

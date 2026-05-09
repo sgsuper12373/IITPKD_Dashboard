@@ -270,11 +270,14 @@ def get_state_distribution(current_user_id):
 
         where_clause, params = build_filter_query(filters)
 
+        nationality_condition = "LOWER(TRIM(COALESCE(nationality, ''))) = 'india'"
+
         if where_clause:
             query = f"""
                 SELECT state, COUNT(*) as count
                 FROM {STUDENT_TABLE}
                 {where_clause} AND state IS NOT NULL AND TRIM(state) != ''
+                AND {nationality_condition}
                 GROUP BY state
                 ORDER BY count DESC;
             """
@@ -283,6 +286,7 @@ def get_state_distribution(current_user_id):
                 SELECT state, COUNT(*) as count
                 FROM {STUDENT_TABLE}
                 WHERE state IS NOT NULL AND TRIM(state) != ''
+                AND {nationality_condition}
                 GROUP BY state
                 ORDER BY count DESC;
             """

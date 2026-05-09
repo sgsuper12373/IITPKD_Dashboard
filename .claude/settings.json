@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -rn \"<DataUploadModal\" \"c:\\\\Users\\\\aruns\\\\Music\\\\IITPKD_Dashboard\\\\Frontend\\\\src\\\\components\\\\\" --include=\"*.jsx\" -l)"
-    ]
-  }
-}

@@ -173,7 +173,7 @@ function SharedFilters({
         let hasChanges = false;
 
         ['program', 'batch', 'department', 'state'].forEach(key => {
-          if (activeFilters[key] && activeFilters[key] !== 'All' && options[key] && !options[key].includes(activeFilters[key])) {
+          if (activeFilters[key] && activeFilters[key] !== 'All' && options[key] && !options[key].map(String).includes(String(activeFilters[key]))) {
             activeFilters[key] = null; // 'All' translates to null in the parent state
             hasChanges = true;
           }
@@ -624,8 +624,8 @@ function AcademicSection({ user, isPublicView = false }) {
           {[
             { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
             { label: 'UG', icon: '📘', value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
-            { label: 'PG', icon: '🎓', value: onrollSummary.pg_onroll, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'MTech + MS — On Roll' },
-            { label: 'Research', icon: '🔬', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'PhD / MSc (By Research) — On Roll' },
+            { label: 'PG', icon: '🎓', value: onrollSummary.pg_onroll, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'MTech and MSc — On Roll' },
+            { label: 'Research', icon: '🔬', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'PhD and MS (By Research) — On Roll' },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = onrollLoading ? 0 : idx * 55;
             const t = onrollLoading ? 'opacity 0.15s ease-in, transform 0.15s ease-in' : `opacity 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms, transform 0.45s cubic-bezier(0.2,0,0,1) ${delay}ms`;
@@ -680,8 +680,8 @@ function AcademicSection({ user, isPublicView = false }) {
 
           {[
             { label: 'Total Students', icon: '👥', value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
-            { label: 'UG', icon: '📘', value: cumulativeSummary.ug_total, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'Undergraduate' },
-            { label: 'PG', icon: '🎓', value: cumulativeSummary.pg_total, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'Postgraduate' },
+            { label: 'UG', icon: '📘', value: cumulativeSummary.ug_total, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech' },
+            { label: 'PG', icon: '🎓', value: cumulativeSummary.pg_total, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', subtitle: 'MTech and MSc' },
             { label: 'Research', icon: '📖', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)', shadow: 'rgba(6,182,212,0.2)', subtitle: 'MS and PHD' },
           ].map(({ label, icon, value, grad, shadow, subtitle }, idx) => {
             const delay = summaryLoading ? 0 : idx * 55;
@@ -1079,7 +1079,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     {/* Chart Statistics */}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
-                        Total Students in India : <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '22px' }}>{stateTotal}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state && s.state !== 'Not Found' && s.state.toLowerCase() !== 'unknown').length}</span> Indian States
+                        Total Students in India : <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '22px' }}>{stateTotal}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state && s.state !== 'Not Found' && s.state.toLowerCase() !== 'unknown').length}</span> Indian States and Union Territories.
                       </h2>
                     </div>
                   </div>
