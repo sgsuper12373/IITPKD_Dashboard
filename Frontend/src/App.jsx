@@ -81,33 +81,60 @@ const PageLoader = () => (
 );
 
 // ── Chunk error boundary ───────────────────────────────────────────────────
-// Catches CSS/JS preload failures from stale Vite asset references in cached
-// HTML and forces a hard reload to fetch the new build's assets.
+// Catches CSS/JS preload failures caused by stale Vite asset hashes in a
+// cached index.html after a new deploy. On first occurrence it reloads once
+// (sessionStorage guards against an infinite reload loop). If the error
+// persists after the reload it renders a manual refresh prompt instead.
 class ChunkErrorBoundary extends Component {
+  static RELOAD_KEY = 'chunk_error_reloaded';
+
+  static isChunkError(error) {
+    return (
+      error?.name === 'ChunkLoadError' ||
+      error?.message?.includes('Unable to preload') ||
+      error?.message?.includes('dynamically imported module') ||
+      error?.message?.includes('Failed to fetch')
+    );
+  }
+
   state = { hasError: false };
 
   static getDerivedStateFromError(error) {
-    const isChunkError =
-      error?.name === 'ChunkLoadError' ||
-      error?.message?.includes('Unable to preload') ||
-      error?.message?.includes('dynamically imported module') ||
-      error?.message?.includes('Failed to fetch');
-    return isChunkError ? { hasError: true } : null;
+    return ChunkErrorBoundary.isChunkError(error) ? { hasError: true } : null;
   }
 
   componentDidCatch(error) {
-    const isChunkError =
-      error?.name === 'ChunkLoadError' ||
-      error?.message?.includes('Unable to preload') ||
-      error?.message?.includes('dynamically imported module') ||
-      error?.message?.includes('Failed to fetch');
-    if (isChunkError) {
+    if (!ChunkErrorBoundary.isChunkError(error)) return;
+    if (!sessionStorage.getItem(ChunkErrorBoundary.RELOAD_KEY)) {
+      sessionStorage.setItem(ChunkErrorBoundary.RELOAD_KEY, '1');
       window.location.reload();
     }
   }
 
   render() {
-    return this.state.hasError ? null : this.props.children;
+    if (!this.state.hasError) return this.props.children;
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', height: '100vh', gap: '1rem',
+        fontFamily: 'sans-serif', color: '#555'
+      }}>
+        <p>This page failed to load. The site may have been updated.</p>
+        <button
+          onClick={() => {
+            sessionStorage.removeItem(ChunkErrorBoundary.RELOAD_KEY);
+            window.location.reload();
+          }}
+          style={{
+            padding: '0.5rem 1.5rem', borderRadius: '6px',
+            border: '1.5px solid #667eea', background: '#667eea',
+            color: '#fff', cursor: 'pointer', fontSize: '0.95rem'
+          }}
+        >
+          Refresh page
+        </button>
+      </div>
+    );
   }
 }
 
@@ -116,6 +143,9 @@ class ChunkErrorBoundary extends Component {
 function App() {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  // Blocks route rendering until localStorage has been read, preventing the
+  // race where ProtectedRoute redirects to /login before rehydration finishes.
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   // Guard against undefined env var: if VITE_GUEST_EMAIL is unset, both sides
   // would be undefined and the equality would incorrectly return true.
@@ -137,6 +167,7 @@ function App() {
           if (parsedUser?.email === import.meta.env.VITE_GUEST_EMAIL) {
             localStorage.removeItem('authToken');
             localStorage.removeItem('authUser');
+            setIsAuthChecked(true);
             return;
           }
           setToken(storedToken);
@@ -148,6 +179,7 @@ function App() {
         setToken(storedToken);
       }
     }
+    setIsAuthChecked(true);
   }, []);
 
   const handleLoginSuccess = (receivedToken, receivedUser) => {
@@ -204,6 +236,9 @@ function App() {
     return children;
   };
 
+  // Wait for localStorage rehydration before rendering any routes so that
+  // ProtectedRoute never redirects away from a valid deep-link on hard reload.
+  if (!isAuthChecked) return <PageLoader />;
 
   return (
     <Router>
