@@ -14,6 +14,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        chunkFileNames: "assets/[name]-[hash].js",   // stable names
         manualChunks: (id) => {
           // React core — always cached together, never changes between deploys
           if (id.includes('node_modules/react/') ||
