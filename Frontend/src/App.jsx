@@ -94,13 +94,22 @@ function App() {
     const storedUser = localStorage.getItem('authUser');
 
     if (storedToken) {
-      setToken(storedToken);
       if (storedUser && storedUser !== 'undefined') {
         try {
-          setUser(JSON.parse(storedUser));
+          const parsedUser = JSON.parse(storedUser);
+          // Guest sessions must not persist across page loads
+          if (parsedUser?.email === import.meta.env.VITE_GUEST_EMAIL) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+            return;
+          }
+          setToken(storedToken);
+          setUser(parsedUser);
         } catch {
           localStorage.removeItem('authUser');
         }
+      } else {
+        setToken(storedToken);
       }
     }
   }, []);

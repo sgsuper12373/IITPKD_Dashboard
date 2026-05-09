@@ -129,9 +129,9 @@ function Login({ onLoginSuccess }) {
 
         {/* <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
           <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
-        </div>
+        </div> */}
 
-        <button
+        {/* <button
           type="button"
           onClick={handleGuestLogin}
           disabled={isLoading}
