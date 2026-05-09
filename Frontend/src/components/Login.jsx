@@ -127,7 +127,7 @@ function Login({ onLoginSuccess }) {
           {error && <p className="login-error">{error}</p>}
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+        {/* <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
           <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
         </div>
 
@@ -148,7 +148,7 @@ function Login({ onLoginSuccess }) {
           }}
         >
           Continue as Guest
-        </button>
+        </button> */}
       </div>
     </div>
   );
