@@ -312,7 +312,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
       const defaultYear = options?.current_year
         ? String(options.current_year)
         : fetchedYears.length > 0 ? String(fetchedYears[0]) : 'All';
-      setEduFilters(prev => prev.year === 'All' ? { ...prev, year: defaultYear } : prev);
+      setEduFilters(prev => (prev.year === 'All' && !(isReadOnlyView && eduView === 'distribution')) ? { ...prev, year: defaultYear } : prev);
     }).catch(err => setEduError(err.message || 'Failed to load education filter options.'));
     return () => { isMounted = false; };
   }, [serializedEduFilters, token, uploadVersion, eduFilters]);
@@ -638,7 +638,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <label style={labelStyle}>Year</label>
               <select value={eduFilters.year}
                 onChange={(e) => handleEduFilterChange('year', e.target.value)} style={selectStyle}>
-                {!isReadOnlyView && <option value="All">All Years</option>}
+                {(!isReadOnlyView || eduView === 'distribution') && <option value="All">All Years</option>}
                 {eduFilterOptions.years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
