@@ -6,14 +6,14 @@ const sections = [
   {
     id: 'social-engagement',
     title: 'Social Engagements',
-    subtitle: 'Community outreach: Open House, workshops, and public lectures',
+    subtitle: '',
     icon: 'S',
     to: '/outreach-extension/social-engagement',
   },
   {
     id: 'students-engagement',
     title: 'Students Engagement',
-    subtitle: 'Student-led outreach: Workshops and community projects',
+    subtitle: '',
     icon: 'S',
     to: '/outreach-extension/students-engagement',
   },

@@ -77,9 +77,9 @@ function StudentsEngagementSection({ user }) {
           <div className='page-content-studentsEngagement'>
             <div style={{ marginBottom: '2rem' }}>
               <h1 style={{ margin: '0 0 0.5rem 0', color: '#111', textShadow: '0 1px 4px rgba(255,255,255,0.8)' }}>Students Engagement</h1>
-              <p style={{ color: '#666', fontSize: '1rem', margin: 0 }}>
+              {/* <p style={{ color: '#666', fontSize: '1rem', margin: 0 }}>
                 Student participation in NPTEL courses, certifications, and learning programmes
-              </p>
+              </p> */}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' }}>

@@ -13,7 +13,7 @@ function InnovationPublicView({ user }) {
     {
       id: 'home-ground-startup',
       title: 'Home Ground Startup',
-      subtitle: 'Internal Startups',
+      subtitle: '',
       expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
       icon: '🏠',
       component: HomeGroundStartup
@@ -21,7 +21,7 @@ function InnovationPublicView({ user }) {
     {
       id: 'startups',
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
-      subtitle: 'Innovation & Entrepreneurship',
+      subtitle: '',
       expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
       icon: '💡',
       component: IptifSection
@@ -29,7 +29,7 @@ function InnovationPublicView({ user }) {
     {
       id: 'innovation-hub',
       title: 'Technology Innovation Foundation of IIT Palakkad (TECHIN)',
-      subtitle: 'Research & Development',
+      subtitle: '',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: '🚀',
       component: TechinSection

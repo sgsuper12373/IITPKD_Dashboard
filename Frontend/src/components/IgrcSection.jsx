@@ -324,7 +324,7 @@ function IgrcSection({ user, isPublicView = false }) {
                             key={key}
                             type="button"
                             className="metric-toggle active"
-                            style={{ minWidth: '90px', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                            style={{ minWidth: '90px', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', backgroundColor: BAR_COLORS[key] }}
                             onClick={() => setVisibleMetrics(prev => {
                               const next = { ...prev, [key]: false };
                               if (Object.values(next).every(v => !v)) return prev;

@@ -14,7 +14,7 @@ function IndustryConnectPublicView({ user }) {
       id: 'administrative',
       title: 'Faculty Industry Stint',
       subtitle: '',
-      expandedTitle: 'Bridging academia and industry through practical learning experiences',
+      expandedTitle: 'Bridging academia and industry through Externships',
       icon: '🏢',
       component: IndustryAdministrativeSection
     },
