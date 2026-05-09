@@ -436,7 +436,7 @@ function PlacementSection({ user, isPublicView = false }) {
   // ── Radio buttons config — restricted views filtered out for restricted users ──
   const ALL_RADIO_BUTTONS = [
     { id: 'placementTrend', label: 'Placement Trend', color: '#6366f1' },
-    { id: 'genderWise', label: 'Gender-wise', color: '#ec4899' },
+    { id: 'genderWise', label: 'Gender Breakdown', color: '#ec4899' },
     { id: 'programWise', label: 'Program-wise', color: '#f97316' },
     { id: 'recruiters', label: 'Recruiters', color: '#f59e0b' },
     { id: 'sectorWise', label: 'Sector-wise', color: '#4f46e5' },

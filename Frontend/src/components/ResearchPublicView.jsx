@@ -46,7 +46,7 @@ function ResearchPublicView({ user }) {
   };
 
   const sections =
-    user?.role_id === 0 || user?.role_id === 1
+    user?.role_id === 0 || user?.role_id === 1 || user?.role_id === 2
       ? [...baseSections, patentsSection]
       : baseSections;
 

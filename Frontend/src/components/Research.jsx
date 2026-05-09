@@ -30,8 +30,8 @@ function Research({ user }) {
     }
   ];
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  // Show public view for unauthenticated users or role_id === 0, 1, 2
+  if (!user || roleId === 0 || roleId === 1 || roleId === 2) {
     return <ResearchPublicView user={user} />;
   }
 
@@ -58,7 +58,7 @@ function Research({ user }) {
     <div className="page-container">
       <div className="page-content">
         {/* 🔹 ADDITION: Public view button for non-public users */}
-        {roleId !== 0 && roleId !== 1 && (
+        {roleId !== 0 && roleId !== 1 && roleId !== 2 && (
           <div style={{ marginBottom: '1rem' }}>
           <button
             className="page-upload-btn"
