@@ -622,7 +622,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={400}>
-                      <BarChart data={departmentComparisonData} margin={{ top: 10, right: 30, left: 40, bottom: 80 }}>
+                      <BarChart data={departmentComparisonData} margin={{ top: 30, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                         <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
                         <YAxis stroke="#888" tick={{ fontSize: 12 }} />

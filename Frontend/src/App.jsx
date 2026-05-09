@@ -86,7 +86,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
 
-  const isGuestMode = user?.email === 'guest@iitpkd.ac.in';
+  const isGuestMode = user?.email === import.meta.env.VITE_GUEST_EMAIL;
 
   // Rehydrate auth state on initial load
   useEffect(() => {

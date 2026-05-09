@@ -531,7 +531,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
                   <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🤝</span>
-                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total MoUs</h3>
+                  <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '16px', fontWeight: '500' }}>Total Research MoUs</h3>
                 </div>
                 <div className="metric-value" style={{ color: 'white' }}>{formatNumber(totalMous)}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>

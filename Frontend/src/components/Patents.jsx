@@ -159,7 +159,7 @@ function Patents({ user, isPublicView = false }) {
               <div className="metric-value" style={{ color: 'white' }}>{patentStats.overall.Filed}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Applications submitted</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}></span>
               </div>
             </div>
           </div>
@@ -178,7 +178,7 @@ function Patents({ user, isPublicView = false }) {
               <div className="metric-value" style={{ color: 'white' }}>{patentStats.overall.Granted}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Approved & protected</span>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}></span>
               </div>
             </div>
           </div>
