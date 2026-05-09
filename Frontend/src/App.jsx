@@ -97,10 +97,12 @@ class ChunkErrorBoundary extends Component {
     );
   }
 
-  state = { hasError: false };
+  state = { error: null };
 
+  // Must always return a state update — returning null leaves children in the
+  // error state and React will re-render them, throwing again indefinitely.
   static getDerivedStateFromError(error) {
-    return ChunkErrorBoundary.isChunkError(error) ? { hasError: true } : null;
+    return { error };
   }
 
   componentDidCatch(error) {
@@ -112,7 +114,7 @@ class ChunkErrorBoundary extends Component {
   }
 
   render() {
-    if (!this.state.hasError) return this.props.children;
+    if (!this.state.error) return this.props.children;
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center',
