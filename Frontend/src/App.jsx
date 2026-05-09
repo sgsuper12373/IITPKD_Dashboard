@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -6,62 +6,65 @@ import './App.css';
 // Always-eager: on the critical first-paint path
 import ScrollToTop from './components/ScrollToTop';
 import Login from './components/Login';
+import ChunkErrorBoundary from './components/ChunkErrorBoundary';
+import lazyWithRetry from './utils/lazyWithRetry';
 
 // ── Lazy route chunks ──────────────────────────────────────────────────────
 // Each import() becomes its own JS chunk; the browser only fetches a chunk
-// when the user first navigates to that route.
+// when the user first navigates to that route. lazyWithRetry handles transient
+// dynamic-import failures (e.g. stale index.html after a redeploy).
 
-const Home = lazy(() => import('./components/Home'));
-const HomePage = lazy(() => import('./components/HomePage'));
+const Home = lazyWithRetry(() => import('./components/Home'));
+const HomePage = lazyWithRetry(() => import('./components/HomePage'));
 
 // People & Campus
-const PeopleCampus = lazy(() => import('./components/PeopleCampus'));
-const AcademicSection = lazy(() => import('./components/AcademicSection'));
-const AdministrativeSection = lazy(() => import('./components/AdministrativeSection'));
-const IgrcSection = lazy(() => import('./components/IgrcSection'));
-const IccSection = lazy(() => import('./components/IccSection'));
-const EwdSection = lazy(() => import('./components/EwdSection'));
-const IarSection = lazy(() => import('./components/IarSection'));
+const PeopleCampus = lazyWithRetry(() => import('./components/PeopleCampus'));
+const AcademicSection = lazyWithRetry(() => import('./components/AcademicSection'));
+const AdministrativeSection = lazyWithRetry(() => import('./components/AdministrativeSection'));
+const IgrcSection = lazyWithRetry(() => import('./components/IgrcSection'));
+const IccSection = lazyWithRetry(() => import('./components/IccSection'));
+const EwdSection = lazyWithRetry(() => import('./components/EwdSection'));
+const IarSection = lazyWithRetry(() => import('./components/IarSection'));
 
 // Research
-const Research = lazy(() => import('./components/Research'));
-const ResearchIcsrSection = lazy(() => import('./components/ResearchIcsrSection'));
-const Patents = lazy(() => import('./components/Patents'));
-const MoUCollaborations = lazy(() => import('./components/MoUCollaborations'));
-const IndustryAdministrativeSection = lazy(() => import('./components/IndustryAdministrativeSection'));
-const ResearchLibrarySection = lazy(() => import('./components/ResearchLibrarySection'));
+const Research = lazyWithRetry(() => import('./components/Research'));
+const ResearchIcsrSection = lazyWithRetry(() => import('./components/ResearchIcsrSection'));
+const Patents = lazyWithRetry(() => import('./components/Patents'));
+const MoUCollaborations = lazyWithRetry(() => import('./components/MoUCollaborations'));
+const IndustryAdministrativeSection = lazyWithRetry(() => import('./components/IndustryAdministrativeSection'));
+const ResearchLibrarySection = lazyWithRetry(() => import('./components/ResearchLibrarySection'));
 
 // Education
-const Education = lazy(() => import('./components/Education'));
-const PlacementSection = lazy(() => import('./components/PlacementSection'));
-const EducationAcademicSection = lazy(() => import('./components/EducationAcademicSection'));
-const EducationIarSection = lazy(() => import('./components/EducationIarSection'));
+const Education = lazyWithRetry(() => import('./components/Education'));
+const PlacementSection = lazyWithRetry(() => import('./components/PlacementSection'));
+const EducationAcademicSection = lazyWithRetry(() => import('./components/EducationAcademicSection'));
+const EducationIarSection = lazyWithRetry(() => import('./components/EducationIarSection'));
 
 // Industry Connect
-const IndustryConnect = lazy(() => import('./components/IndustryConnect'));
-const IcsrSection = lazy(() => import('./components/IcsrSection'));
-const ConclaveSection = lazy(() => import('./components/ConclaveSection'));
+const IndustryConnect = lazyWithRetry(() => import('./components/IndustryConnect'));
+const IcsrSection = lazyWithRetry(() => import('./components/IcsrSection'));
+const ConclaveSection = lazyWithRetry(() => import('./components/ConclaveSection'));
 
 // Innovation & Entrepreneurship
-const InnovationEntrepreneurship = lazy(() => import('./components/InnovationEntrepreneurship'));
-const InnovationSection = lazy(() => import('./components/InnovationSection'));
-const IptifSection = lazy(() => import('./components/IptifSection'));
-const TechinSection = lazy(() => import('./components/TechinSection'));
-const HomeGroundStartup = lazy(() => import('./components/HomeGroundStartup'));
+const InnovationEntrepreneurship = lazyWithRetry(() => import('./components/InnovationEntrepreneurship'));
+const InnovationSection = lazyWithRetry(() => import('./components/InnovationSection'));
+const IptifSection = lazyWithRetry(() => import('./components/IptifSection'));
+const TechinSection = lazyWithRetry(() => import('./components/TechinSection'));
+const HomeGroundStartup = lazyWithRetry(() => import('./components/HomeGroundStartup'));
 
 // Outreach & Extension
-const OutreachExtension = lazy(() => import('./components/OutreachExtension'));
-const OpenHouseSection = lazy(() => import('./components/OpenHouseSection'));
-const NptelSection = lazy(() => import('./components/NptelSection'));
-const UbaSection = lazy(() => import('./components/UbaSection'));
-const SocialEngagement = lazy(() => import('./components/SocialEngagement'));
-const StudentsEngagementSection = lazy(() => import('./components/StudentsEngagement'));
-const OutreachSection = lazy(() => import('./components/OutreachSection'));
+const OutreachExtension = lazyWithRetry(() => import('./components/OutreachExtension'));
+const OpenHouseSection = lazyWithRetry(() => import('./components/OpenHouseSection'));
+const NptelSection = lazyWithRetry(() => import('./components/NptelSection'));
+const UbaSection = lazyWithRetry(() => import('./components/UbaSection'));
+const SocialEngagement = lazyWithRetry(() => import('./components/SocialEngagement'));
+const StudentsEngagementSection = lazyWithRetry(() => import('./components/StudentsEngagement'));
+const OutreachSection = lazyWithRetry(() => import('./components/OutreachSection'));
 
 // Admin-only
-const Profile = lazy(() => import('./components/Profile'));
-const UploadForm = lazy(() => import('./components/UploadForm'));
-const CreateUser = lazy(() => import('./components/CreateUser'));
+const Profile = lazyWithRetry(() => import('./components/Profile'));
+const UploadForm = lazyWithRetry(() => import('./components/UploadForm'));
+const CreateUser = lazyWithRetry(() => import('./components/CreateUser'));
 
 // ── Loading fallback ───────────────────────────────────────────────────────
 // Shown while a lazy chunk is being fetched. Kept intentionally minimal so
@@ -163,7 +166,8 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <Suspense fallback={<PageLoader />}>
+      <ChunkErrorBoundary>
+       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route
             path="/login"
@@ -232,7 +236,8 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Suspense>
+       </Suspense>
+      </ChunkErrorBoundary>
     </Router>
   );
 }
