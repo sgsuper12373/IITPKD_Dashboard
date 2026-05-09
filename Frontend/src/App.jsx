@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, Component } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -80,13 +80,49 @@ const PageLoader = () => (
   </div>
 );
 
+// ── Chunk error boundary ───────────────────────────────────────────────────
+// Catches CSS/JS preload failures from stale Vite asset references in cached
+// HTML and forces a hard reload to fetch the new build's assets.
+class ChunkErrorBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError(error) {
+    const isChunkError =
+      error?.name === 'ChunkLoadError' ||
+      error?.message?.includes('Unable to preload') ||
+      error?.message?.includes('dynamically imported module') ||
+      error?.message?.includes('Failed to fetch');
+    return isChunkError ? { hasError: true } : null;
+  }
+
+  componentDidCatch(error) {
+    const isChunkError =
+      error?.name === 'ChunkLoadError' ||
+      error?.message?.includes('Unable to preload') ||
+      error?.message?.includes('dynamically imported module') ||
+      error?.message?.includes('Failed to fetch');
+    if (isChunkError) {
+      window.location.reload();
+    }
+  }
+
+  render() {
+    return this.state.hasError ? null : this.props.children;
+  }
+}
+
 // ── App ────────────────────────────────────────────────────────────────────
 
 function App() {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
 
-  const isGuestMode = user?.email === import.meta.env.VITE_GUEST_EMAIL;
+  // Guard against undefined env var: if VITE_GUEST_EMAIL is unset, both sides
+  // would be undefined and the equality would incorrectly return true.
+  const isGuestMode =
+    !!user &&
+    !!import.meta.env.VITE_GUEST_EMAIL &&
+    user.email === import.meta.env.VITE_GUEST_EMAIL;
 
   // Rehydrate auth state on initial load
   useEffect(() => {
@@ -172,6 +208,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <ChunkErrorBoundary>
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route
@@ -242,6 +279,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
+      </ChunkErrorBoundary>
     </Router>
   );
 }
