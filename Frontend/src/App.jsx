@@ -109,7 +109,11 @@ class ChunkErrorBoundary extends Component {
     if (!ChunkErrorBoundary.isChunkError(error)) return;
     if (!sessionStorage.getItem(ChunkErrorBoundary.RELOAD_KEY)) {
       sessionStorage.setItem(ChunkErrorBoundary.RELOAD_KEY, '1');
-      window.location.reload();
+      // Use a unique query-param so the browser treats this as a new URL,
+      // bypassing any cached entry for the current path (including ETag 304s).
+      window.location.replace(
+        window.location.pathname + '?_v=' + Date.now()
+      );
     }
   }
 
@@ -125,7 +129,9 @@ class ChunkErrorBoundary extends Component {
         <button
           onClick={() => {
             sessionStorage.removeItem(ChunkErrorBoundary.RELOAD_KEY);
-            window.location.reload();
+            window.location.replace(
+              window.location.pathname + '?_v=' + Date.now()
+            );
           }}
           style={{
             padding: '0.5rem 1.5rem', borderRadius: '6px',
@@ -148,6 +154,18 @@ function App() {
   // Blocks route rendering until localStorage has been read, preventing the
   // race where ProtectedRoute redirects to /login before rehydration finishes.
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  // Remove the ?_v=<timestamp> cache-busting param added by ChunkErrorBoundary
+  // so it doesn't stay visible in the address bar after a successful reload.
+  useEffect(() => {
+    if (window.location.search.includes('_v=')) {
+      window.history.replaceState(
+        {},
+        '',
+        window.location.pathname + window.location.hash
+      );
+    }
+  }, []);
 
   // Guard against undefined env var: if VITE_GUEST_EMAIL is unset, both sides
   // would be undefined and the equality would incorrectly return true.
