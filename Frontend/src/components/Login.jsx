@@ -25,7 +25,7 @@ function Login({ onLoginSuccess }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        { email: 'guest@iitpkd.ac.in', password: 'Restricted4%^Public4Dashboard@' }
+        { email: import.meta.env.VITE_GUEST_EMAIL, password: import.meta.env.VITE_GUEST_PASSWORD }
       );
       onLoginSuccess(response.data.token, response.data.user);
       navigate('/');
