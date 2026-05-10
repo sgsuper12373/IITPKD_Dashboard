@@ -400,7 +400,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               total_patents: summary.total_patents,
               total_mous: totalMous
             }]}
-            headers={['Total Projects', 'Funded', 'Consultancy', 'Revenue', 'Patents Filed', 'Patents Granted', 'Total MoUs']}
+            headers={['Total Projects', 'Sponsored', 'Consultancy', 'Revenue', 'Patents Filed', 'Patents Granted', 'Total MoUs']}
             keys={['total_projects', 'funded_projects', 'consultancy_projects', 'total_revenue', 'patents_filed', 'patents_granted', 'total_mous']}
             filename="icsr_summary"
             title="ICSR Impact Summary"

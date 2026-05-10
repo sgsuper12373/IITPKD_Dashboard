@@ -555,7 +555,7 @@ function IarSection({ user, isPublicView = false }) {
                     )}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
-                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state !== 'Not Found').length}</span> Indian States
+                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state !== 'Not Found').length}</span> Indian States / Union Territories
                       </h2>
                     </div>
                   </div>

@@ -491,6 +491,8 @@ function TechinSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Revenue Metrics ── */}
+        {(typeof user === 'undefined' || user?.role_id !== 0) && (
+          <>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
           <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
           <ExportMenu
@@ -502,7 +504,6 @@ function TechinSection({ user, isPublicView = false }) {
             title="Startup Revenue Metrics"
           />
         </div>
-        {(typeof user === 'undefined' || user?.role_id !== 0) && (
           <div id="techin-revenue-metrics-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
             {[
               { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
@@ -518,6 +519,7 @@ function TechinSection({ user, isPublicView = false }) {
               </div>
             ))}
           </div>
+          </>
         )}
 
         {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}

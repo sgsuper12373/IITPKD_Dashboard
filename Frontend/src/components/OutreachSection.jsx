@@ -10,7 +10,6 @@ import './OutreachMinimal.css';
 // ─── Field definitions ───────────────────────────────────────────────────────
 
 const COMMON_FIELDS = [
-  { key: 'id', label: 'ID' },
   { key: 'academic_year', label: 'Academic Year' },
   { key: 'program_name', label: 'Program Name' },
   { key: 'program_type', label: 'Program Type' },
@@ -24,8 +23,6 @@ const COMMON_FIELDS = [
   { key: 'num_colleges', label: 'No. of Colleges' },
   { key: 'geographic_reach', label: 'Geographic Reach' },
   { key: 'remarks', label: 'Remarks' },
-  { key: 'created_by', label: 'Created By' },
-  { key: 'created_at', label: 'Created At' },
 ];
 
 const NSS_FIELDS = [
@@ -110,11 +107,16 @@ function isNonNull(value) {
 function formatValue(value) {
   if (!isNonNull(value)) return null;
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  // Detect ISO date strings
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-    const d = new Date(value);
-    if (!isNaN(d))
-      return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+  if (typeof value === 'string') {
+    // ISO: "2025-09-17..." or RFC: "Wed, 17 Sep 2025 00:00:00 GMT"
+    const isDateString =
+      /^\d{4}-\d{2}-\d{2}/.test(value) ||
+      /^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/.test(value);
+    if (isDateString) {
+      const d = new Date(value);
+      if (!isNaN(d))
+        return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
   }
   return String(value);
 }

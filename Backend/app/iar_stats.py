@@ -207,13 +207,23 @@ def get_state_distribution(current_user_id):
     }
 
     where_clause, params = build_filter_query(filters)
+
+    # Exclude rows where place_of_settlement_state is NULL or blank
+    extra_condition = "place_of_settlement_state IS NOT NULL AND TRIM(place_of_settlement_state) <> ''"
+    if where_clause:
+        where_clause += f" AND {extra_condition}"
+    else:
+        where_clause = f"WHERE {extra_condition}"
+
     rows, error = apply_filters_and_fetch(where_clause, params)
     if error:
         return jsonify({'message': error}), 500
 
     distribution = {}
     for row in rows:
-        state = row.get('place_of_settlement_state') or 'Unknown'
+        state = row.get('place_of_settlement_state')
+        if not state or not state.strip():
+            continue
         distribution[state] = distribution.get(state, 0) + 1
 
     formatted = [

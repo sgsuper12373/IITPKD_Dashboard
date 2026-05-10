@@ -28,7 +28,7 @@ function EducationPublicView({ user }) {
     },
     {
       id: 'iar',
-      title: 'Education Collaborations',
+      title: 'Academic Collaborations',
       subtitle: '',
       expandedTitle: 'Track and manage collaborations with Education Institutes',
       icon: '🤝',

@@ -209,12 +209,7 @@ function EducationIarSection({ user, isPublicView = false }) {
               backgroundColor: '#fff', borderRadius: '10px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <div className="chart-header">
-                  <h2 style={{ margin: 0, color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>{viewType === 'trend' ? '📈' : '📋'}</span> {viewType === 'trend' ? 'IAR MoUs Trend' : 'IAR MoUs Directory'}
-                  </h2>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px' }}>
                 <ExportMenu
                   elementId={viewType === 'trend' ? "iar-mou-trend-container" : "iar-mou-directory-table"}
                   data={viewType === 'trend' ? mouTrendChartData : mouList}
@@ -222,7 +217,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                   keys={viewType === 'trend' ? ['year', 'total'] : ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']}
                   filename={viewType === 'trend' ? "iar_mou_trend" : "iar_mou_directory"}
                   title={viewType === 'trend' ? "IAR MoUs Trend" : "IAR MoUs Directory"}
-                  exportType={viewType === 'trend' ? "chart" : "table"}
+                  //exportType={viewType === 'trend' ? "chart" : "table"}
                 />
               </div>
               {/* Filters Block */}

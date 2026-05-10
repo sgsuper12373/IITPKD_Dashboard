@@ -69,7 +69,7 @@ const VIEW_FILTER_FIELDS = {
 const DEFAULT_FILTERS = { year: 'All', program: 'All', gender: 'All', branch: 'All', sector: 'All' };
 
 // Views that are restricted from role_id === 0 or undefined users
-const RESTRICTED_VIEWS = new Set(['placementTrend', 'topRecruiters', 'packageTrend']);
+const RESTRICTED_VIEWS = new Set(['placementTrend', 'topRecruiters', 'packageTrend', 'genderWise']);
 
 function PlacementSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
@@ -92,8 +92,8 @@ function PlacementSection({ user, isPublicView = false }) {
     sectors: []
   });
 
-  // Restricted users default to 'genderWise' so they never land on a blank/forbidden view
-  const [viewType, setViewType] = useState(isRestrictedUser ? 'genderWise' : 'placementTrend');
+  // Restricted users default to 'programWise' so they never land on a blank/forbidden view
+  const [viewType, setViewType] = useState(isRestrictedUser ? 'programWise' : 'placementTrend');
   const [trendChartMode, setTrendChartMode] = useState('bar');
 
   // One filter state per view
@@ -404,12 +404,21 @@ function PlacementSection({ user, isPublicView = false }) {
     })), [genderData]);
 
   const programStatusChartData = useMemo(() =>
-    programStatus.map(row => ({
-      program: row.program_category,
-      registered: row.registered || 0,
-      placed: row.placed || 0,
-      percentage: row.placement_percentage || 0
-    })), [programStatus]);
+    programStatus
+      .filter(row => {
+        if (!isRestrictedUser) return true;
+        const cat = row.program_category?.toLowerCase() || '';
+        return !(cat.includes('ms') && cat.includes('phd')) &&
+          cat !== 'ms' &&
+          cat !== 'phd' &&
+          !cat.includes('ms/phd');
+      })
+      .map(row => ({
+        program: row.program_category,
+        registered: row.registered || 0,
+        placed: row.placed || 0,
+        percentage: row.placement_percentage || 0
+      })), [programStatus, isRestrictedUser]);
 
   const recruiterChartData = useMemo(() =>
     recruiterStats.map(row => ({
@@ -536,7 +545,7 @@ function PlacementSection({ user, isPublicView = false }) {
       {activeFields.length > 0 && (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${activeFields.length}, 1fr)`,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '12px'
         }}>
           {activeFields.includes('year') && (
@@ -587,7 +596,7 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {activeFields.includes('branch') && (
+          {activeFields.includes('branch') && !(isRestrictedUser && viewType === 'programWise') && (
             <div>
               <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Branch</label>
               <select
@@ -747,23 +756,25 @@ function PlacementSection({ user, isPublicView = false }) {
               </div>
             </div>
           </div>
-
-          {/* Highest Package */}
-          <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(168,85,247,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
+          {!isRestrictedUser && (
+            <>
+              {/* Highest Package */}
+              <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(168,85,247,0.2)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
+                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
+                  </div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.highest_package)}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Top package</span>
+                  </div>
+                </div>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.highest_package)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Top package</span>
-              </div>
-            </div>
-          </div>
-
+            </>
+          )}
           {/* Average Package */}
           <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(14,165,233,0.2)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
@@ -861,7 +872,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </LineChart>
                   )}
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div className="metric-value-sm" style={{ color: '#6366f1' }}>{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
                     <div style={{ color: '#666', fontSize: '12px' }}>Total Registered</div>
@@ -1011,7 +1022,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Years Active</div></div>
@@ -1060,7 +1071,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </ResponsiveContainer>
                   );
                 })()}
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Sectors</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
@@ -1107,7 +1118,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Line>
                   </LineChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.average_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.highest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div></div>
                   <div style={{ textAlign: 'center' }}><div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.lowest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Lowest</div></div>
@@ -1173,7 +1184,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   </table>
                 </div>
                 {topRecruiters.length > 0 && (
-                  <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+                  <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Entries</div></div>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{new Set(topRecruiters.map(r => r.company_name)).size}</div><div style={{ color: '#666', fontSize: '12px' }}>Unique Companies</div></div>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.reduce((s, r) => s + (r.offers || 0), 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>

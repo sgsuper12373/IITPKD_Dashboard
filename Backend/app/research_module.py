@@ -241,7 +241,7 @@ def get_filter_options(current_user_id):
         filters['project_departments'] = sorted(depts)
         filters['project_years'] = sorted(years, reverse=True)
         filters['project_statuses'] = sorted(statuses)
-        filters['project_types'] = ['Funded', 'Consultancy']
+        filters['project_types'] = ['Sponsored', 'Consultancy']
 
         if _table_exists(conn, 'research_mous'):
             cur.execute("SELECT DISTINCT EXTRACT(YEAR FROM date_signed)::INT AS year FROM research_mous ORDER BY year DESC")
@@ -312,7 +312,7 @@ def get_summary(current_user_id):
         total_projects = 0
 
         # Count funded (sponsored) projects
-        if _table_exists(conn, 'icsr_sponsered_projects') and project_type in (None, '', 'All', 'Funded'):
+        if _table_exists(conn, 'icsr_sponsered_projects') and project_type in (None, '', 'All', 'Sponsored'):
             where_clause, params = _build_project_filters(
                 department, project_year, status, dept_column='principal_investigator_department'
             )
@@ -405,6 +405,7 @@ def funded_project_trend(current_user_id):
         department = request.args.get('department')
         project_year = request.args.get('project_year')
         status = request.args.get('status')
+        project_type = request.args.get('project_type')
 
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
@@ -412,7 +413,7 @@ def funded_project_trend(current_user_id):
         yearly: Dict[int, Dict[str, int]] = defaultdict(lambda: {'funded': 0, 'consultancy': 0})
 
         # Sponsored (funded) projects
-        if _table_exists(conn, 'icsr_sponsered_projects'):
+        if _table_exists(conn, 'icsr_sponsered_projects') and project_type in (None, '', 'All', 'Sponsored'):
             wc, p = _build_project_filters(department, project_year, status, dept_column='principal_investigator_department')
             if wc:
                 wc += " AND COALESCE(start_date, end_date) IS NOT NULL"
@@ -427,7 +428,7 @@ def funded_project_trend(current_user_id):
                     yearly[int(row['year'])]['funded'] = int(row['total'])
 
         # Consultancy projects
-        if _table_exists(conn, 'icsr_consultancy_projects'):
+        if _table_exists(conn, 'icsr_consultancy_projects') and project_type in (None, '', 'All', 'Consultancy'):
             wc, p = _build_project_filters(department, project_year, status, dept_column='department')
             if wc:
                 wc += " AND COALESCE(start_date, end_date) IS NOT NULL"
@@ -471,7 +472,7 @@ def project_list(current_user_id):
         rows = []
 
         # Fetch funded (sponsored) projects
-        if _table_exists(conn, 'icsr_sponsered_projects') and project_type in (None, '', 'All', 'Funded'):
+        if _table_exists(conn, 'icsr_sponsered_projects') and project_type in (None, '', 'All', 'Sponsored'):
             where_clause, params = _build_project_filters(
                 department, project_year, status, dept_column='principal_investigator_department'
             )
@@ -479,7 +480,7 @@ def project_list(current_user_id):
                 f"""
                 SELECT project_id, project_title, principal_investigator,
                        principal_investigator_department AS department,
-                       'Funded' AS project_type,
+                       'Sponsored' AS project_type,
                        funding_agency, client_organization,
                        amount_sanctioned, start_date, end_date, status
                 FROM icsr_sponsered_projects
