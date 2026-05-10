@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 import './Login.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 // The Login component receives a prop `onLoginSuccess` from App.jsx
@@ -18,6 +19,29 @@ function Login({ onLoginSuccess }) {
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // GoogleLogin component calls this with { credential } — the Google ID token.
+  // The raw ID token is sent to the backend for cryptographic verification.
+  const handleGoogleSuccess = async ({ credential }) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/google`,
+        { credential }
+      );
+      onLoginSuccess(response.data.token, response.data.user);
+      navigate('/');
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Google sign-in failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleGuestLogin = async () => {
     setError('');
@@ -126,6 +150,21 @@ function Login({ onLoginSuccess }) {
 
           {error && <p className="login-error">{error}</p>}
         </form>
+
+        <div style={{ textAlign: 'center', margin: '0.75rem 0 0.25rem', color: '#888', fontSize: '0.85rem' }}>
+          or
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google sign-in was cancelled or failed.')}
+            width="320"
+            text="signin_with"
+            shape="rectangular"
+            theme="outline"
+          />
+        </div>
 
         {/* <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
           <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>

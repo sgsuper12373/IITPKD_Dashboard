@@ -22,6 +22,7 @@ def create_app():
 
     app.config['SECRET_KEY'] = secret_key
     app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL')
+    app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', '')
 
     cors.init_app(app, resources={
         r"/*": {
