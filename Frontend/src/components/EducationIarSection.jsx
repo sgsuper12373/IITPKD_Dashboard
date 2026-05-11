@@ -147,7 +147,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 🤝
               </span>
               {isPublicView
-                ? 'Acadamic Collaborations'
+                ? 'Academic Collaborations'
                 : 'International & Alumni Relations MoUs'
               }
 
@@ -217,7 +217,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                   keys={viewType === 'trend' ? ['year', 'total'] : ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']}
                   filename={viewType === 'trend' ? "iar_mou_trend" : "iar_mou_directory"}
                   title={viewType === 'trend' ? "IAR MoUs Trend" : "IAR MoUs Directory"}
-                  //exportType={viewType === 'trend' ? "chart" : "table"}
+                //exportType={viewType === 'trend' ? "chart" : "table"}
                 />
               </div>
               {/* Filters Block */}

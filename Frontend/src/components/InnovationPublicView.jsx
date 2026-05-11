@@ -12,7 +12,7 @@ function InnovationPublicView({ user }) {
   const sections = [
     {
       id: 'home-ground-startup',
-      title: 'Home Ground Startup',
+      title: 'Home Grown Startup',
       subtitle: '',
       expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
       icon: '🏠',

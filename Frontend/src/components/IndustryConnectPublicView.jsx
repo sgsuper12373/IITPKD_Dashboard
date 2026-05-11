@@ -12,8 +12,8 @@ function IndustryConnectPublicView({ user }) {
   const sections = [
     {
       id: 'administrative',
-      title: 'Faculty Industry Stint',
-      subtitle: '',
+      title: 'Externship',
+      subtitle: 'Faculty Engagement with Industries',
       expandedTitle: 'Bridging academia and industry through Externships',
       icon: '🏢',
       component: IndustryAdministrativeSection

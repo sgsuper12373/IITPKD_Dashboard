@@ -245,7 +245,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
           </button>
         )}
 
-        <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>Home Ground Startups</h1>
+        <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>Home Grown Startups</h1>
         <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px' }}>
           Internal startups incubated through IPTIF and TechIn programs
         </p>
@@ -380,23 +380,23 @@ function HomeGroundStartup({ user, isPublicView = false }) {
               {['bar', 'trend', 'table']
                 .filter(mode => !isRestricted || mode !== 'table')
                 .map(mode => {
-                const active = chartMode === mode;
-                const label = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
-                return (
-                  <button
-                    key={mode}
-                    className="hg-mode-btn"
-                    onClick={() => switchMode(mode)}
-                    style={{
-                      backgroundColor: active ? CHART_COLOR : '#e9ecef',
-                      color: active ? '#fff' : '#333',
-                      boxShadow: active ? `0 4px 10px ${CHART_COLOR}40` : 'none',
-                    }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+                  const active = chartMode === mode;
+                  const label = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
+                  return (
+                    <button
+                      key={mode}
+                      className="hg-mode-btn"
+                      onClick={() => switchMode(mode)}
+                      style={{
+                        backgroundColor: active ? CHART_COLOR : '#e9ecef',
+                        color: active ? '#fff' : '#333',
+                        boxShadow: active ? `0 4px 10px ${CHART_COLOR}40` : 'none',
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               <ExportMenu
                 elementId={exportId}
                 data={exportData}

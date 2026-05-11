@@ -235,6 +235,10 @@ def google_login():
         conn = get_db_connection()
         cur = conn.cursor()
 
+        cur.execute("SELECT 1 FROM allowed_users WHERE email = %s;", (email,))
+        if cur.fetchone() is None:
+            return jsonify({'message': 'Your account is not authorized to access this system.'}), 403
+
         cur.execute("SELECT * FROM users WHERE email = %s;", (email,))
         user = cur.fetchone()
 

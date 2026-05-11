@@ -9,7 +9,7 @@ function InnovationEntrepreneurship({ user }) {
 
   const sections = [
     {
-      title: 'Home Ground Startup',
+      title: 'Home Grown Startup',
       route: '/innovation-entrepreneurship/home-ground-startup',
       description: 'Internal Startups'
     },
