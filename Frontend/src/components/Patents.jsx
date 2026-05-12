@@ -126,7 +126,6 @@ function Patents({ user, isPublicView = false }) {
         )}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-          <h1 style={{ margin: 0 }}>Patents and Intellectual Property</h1>
           {!isReadOnlyView && isAdmin && (
             <button
               className="page-upload-btn"
@@ -256,10 +255,10 @@ function Patents({ user, isPublicView = false }) {
           <div style={{ padding: '24px' }}>
             {viewType === 'trend' && (
               <>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h3 style={{ margin: 0 }}>Yearly Statistics</h3>
-                    <ExportMenu elementId="patents-trend-chart" data={chartData} headers={['Year', 'Filed', 'Granted', 'Total']} keys={['year', 'Filed', 'Granted', 'total']} filename="patents_trend" title="Patents Trend" />
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                  <h3 style={{ margin: 0 }}>Yearly Statistics</h3>
+                  <ExportMenu elementId="patents-trend-chart" data={chartData} headers={['Year', 'Filed', 'Granted', 'Total']} keys={['year', 'Filed', 'Granted', 'total']} filename="patents_trend" title="Patents Trend" />
+                </div>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                   {['bar', 'trend'].map((mode) => (
                     <button key={mode} onClick={() => setChartMode(mode)} style={{ padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none', backgroundColor: chartMode === mode ? '#6366f1' : '#f1f5f9', color: chartMode === mode ? '#fff' : '#555' }}>
@@ -267,9 +266,9 @@ function Patents({ user, isPublicView = false }) {
                     </button>
                   ))}
                 </div>
-                <div 
-                  id="patents-trend-chart" 
-                  className="chart-container clickable-chart" 
+                <div
+                  id="patents-trend-chart"
+                  className="chart-container clickable-chart"
                   style={{ padding: '10px' }}
                   onClick={() => setExpandedChart({
                     title: "Patent Trends",

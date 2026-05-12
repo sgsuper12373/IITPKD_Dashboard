@@ -80,6 +80,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
   const location = useLocation();
+  const token = localStorage.getItem('authToken');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
@@ -186,8 +187,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     window.addEventListener('resize', handle);
     return () => window.removeEventListener('resize', handle);
   }, []);
-
-  const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;

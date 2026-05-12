@@ -144,7 +144,6 @@ function IcsrSection({ user, isPublicView = false }) {
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-        <h1 style={{ margin: 0 }}>ICSR Statistics</h1>
         {error && (
           <div className="error-message" style={{
             padding: '10px',
@@ -210,7 +209,7 @@ function IcsrSection({ user, isPublicView = false }) {
         </div>
 
         {viewType === 'yearly' && (
-          <div 
+          <div
             id="icsr-yearly-chart"
             className="clickable-chart"
             onClick={() => setExpandedChart({
@@ -242,7 +241,7 @@ function IcsrSection({ user, isPublicView = false }) {
         )}
 
         {viewType === 'eventTypes' && (
-          <div 
+          <div
             id="icsr-types-chart"
             className="clickable-chart"
             onClick={() => setExpandedChart({

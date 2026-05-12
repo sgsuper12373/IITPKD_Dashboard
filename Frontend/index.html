@@ -9,11 +9,8 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
 
     <!--
-      Preload the favicon so it appears before the browser's normal
-      discovery pass (avoids a late repaint in the tab bar).
+      Favicon is automatically discovered by the browser via the icon link.
     -->
-    <link rel="preload" as="image" href="/favicon.png" />
-
     <!--
       Open an early TCP+TLS connection to the API server so the first
       authenticated request (fired right after the JS bundle boots) finds

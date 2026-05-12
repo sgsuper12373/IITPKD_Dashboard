@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -217,7 +217,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
     let isMounted = true;
     const loadFilterOptions = async () => {
       try {
-        const options = await fetchFilterOptions(currentFilters, token);
+        const parsedFilters = JSON.parse(serializedFilters);
+        const options = await fetchFilterOptions(parsedFilters, token);
         if (!isMounted) return;
         const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
         setFilterOptions({
@@ -240,10 +241,10 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
         // Auto-correct invalid filter selections
         const corrections = {};
         let hasChanges = false;
-        if (currentFilters.year !== 'All' && currentFilters.year && fetchedYears.length && !fetchedYears.map(String).includes(String(currentFilters.year))) {
+        if (parsedFilters.year !== 'All' && parsedFilters.year && fetchedYears.length && !fetchedYears.map(String).includes(String(parsedFilters.year))) {
           corrections.year = 'All'; hasChanges = true;
         }
-        if (currentFilters.department !== 'All' && currentFilters.department && options.departments && !options.departments.includes(currentFilters.department)) {
+        if (parsedFilters.department !== 'All' && parsedFilters.department && options.departments && !options.departments.includes(parsedFilters.department)) {
           corrections.department = 'All'; hasChanges = true;
         }
         if (hasChanges) {
