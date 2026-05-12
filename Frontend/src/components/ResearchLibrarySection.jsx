@@ -150,10 +150,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
     [departmentBreakdown]
   );
 
-  const typePieData = useMemo(() =>
-    typeDistribution.map((row) => ({ name: row.publication_type, value: Number(row.total) || 0 }))
-      .sort((a, b) => b.value - a.value).slice(0, 5),
-    [typeDistribution]);
 
   const participatingDepartments = useMemo(() =>
     departmentBreakdown.filter((row) => (row.total || 0) > 0).length,

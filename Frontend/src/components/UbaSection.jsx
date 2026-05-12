@@ -10,6 +10,8 @@ import './AcademicSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
+import ChartExpandModal from './ChartExpandModal';
+
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -36,6 +38,15 @@ function UbaSection({ user, isPublicView = false }) {
 
   const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
 
   // Load summary data
   useEffect(() => {
@@ -306,6 +317,16 @@ function UbaSection({ user, isPublicView = false }) {
         </div >
       </div >
 
+      {/* Fullscreen Modal */}
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
+
+
       {/* Projects Section */}
       {projects.length > 0 && (
         < div className="chart-section" style={{
@@ -395,12 +416,62 @@ function UbaSection({ user, isPublicView = false }) {
             />
           </div>
         </div>
-        <div id="uba-events-table-container">
+        <div 
+          id="uba-events-table-container"
+          className="clickable-chart"
+          onClick={() => !chartIsMobile && setExpandedChart({
+            title: "UBA Events Directory",
+            content: (
+              <div style={{ padding: '20px', overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', minWidth: '1000px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+                      {['Year', 'Program Name', 'Type', 'Association', 'Dates', 'Audience', 'Attendees', 'Reach'].map(h => (
+                        <th key={h} style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', color: '#555' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {events.map((ev, idx) => (
+                      <tr key={ev.id} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td style={{ padding: '10px', color: '#667eea', fontWeight: '500' }}>{ev.year || '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.program_name || '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.program_type || '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.association || '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.start_date ? new Date(ev.start_date).toLocaleDateString() : '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.targeted_audience || '—'}</td>
+                        <td style={{ padding: '10px', textAlign: 'center' }}>{ev.num_attendees ?? '—'}</td>
+                        <td style={{ padding: '10px' }}>{ev.geographic_reach || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          })}
+        >
 
           {events.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
               <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📅</span>
               <p style={{ fontSize: '16px' }}>No events found</p>
+            </div>
+          ) : chartIsMobile ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {events.map((ev) => (
+                <div key={ev.id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontWeight: '700', color: '#667eea', fontSize: '14px' }}>{ev.year}</span>
+                    <span style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>{ev.program_type}</span>
+                  </div>
+                  <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{ev.program_name}</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', color: '#666' }}>
+                    <div><strong>Association:</strong> {ev.association || '—'}</div>
+                    <div><strong>Attendees:</strong> {ev.num_attendees || '0'}</div>
+                    <div style={{ gridColumn: 'span 2' }}><strong>Reach:</strong> {ev.geographic_reach || '—'}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div style={{
@@ -410,6 +481,7 @@ function UbaSection({ user, isPublicView = false }) {
               border: '1px solid #e0e0e0',
               borderRadius: '8px'
             }}>
+
               <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <table style={{
                 width: '100%',

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 
 const NirfRankingSection = ({ user }) => {
     const uploadVersion = useUploadRefresh();
@@ -14,6 +15,14 @@ const NirfRankingSection = ({ user }) => {
     const [error, setError] = useState(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [chartType, setChartType] = useState('bar');
+    const [expandedChart, setExpandedChart] = useState(null);
+
+    const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+    useEffect(() => {
+        const handle = () => setChartIsMobile(window.innerWidth <= 640);
+        window.addEventListener('resize', handle);
+        return () => window.removeEventListener('resize', handle);
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -204,16 +213,46 @@ const NirfRankingSection = ({ user }) => {
                             </div>
 
                             {/* Right: area chart */}
-                            <div className="compact-chart" style={{ flex: 1, minWidth: '220px', height: 160 }}>
+                            <div 
+                                className={`compact-chart clickable-chart ${chartIsMobile ? 'mobile-compact' : ''}`} 
+                                style={{ flex: 1, minWidth: '220px', height: 160 }}
+                                onClick={() => setExpandedChart({
+                                    title: "NIRF Overall Rank Trend",
+                                    content: (
+                                        <ResponsiveContainer width="100%" height={400}>
+                                            {chartType === 'bar' ? (
+                                                <BarChart data={rankData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                                    <XAxis dataKey="year" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                                    <YAxis domain={[0, 'auto']} tick={{ fontSize: 13, fontWeight: 600 }} tickFormatter={(v) => `#${v}`} />
+                                                    <Tooltip formatter={(v) => [`#${v}`, 'Rank']} />
+                                                    <Bar dataKey="rank" fill="#1a237e" radius={[6, 6, 0, 0]}>
+                                                        <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '12px', fontWeight: 700, fill: '#1a237e' }} />
+                                                    </Bar>
+                                                </BarChart>
+                                            ) : (
+                                                <LineChart data={rankData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                                    <XAxis dataKey="year" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                                    <YAxis domain={['auto', 'auto']} reversed={true} tick={{ fontSize: 13, fontWeight: 600 }} tickFormatter={(v) => `#${v}`} />
+                                                    <Tooltip formatter={(v) => [`#${v}`, 'Rank']} />
+                                                    <Line type="linear" dataKey="rank" stroke="#1a237e" strokeWidth={4} dot={{ r: 6, fill: '#1a237e' }} />
+                                                </LineChart>
+                                            )}
+                                        </ResponsiveContainer>
+                                    )
+                                })}
+                            >
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     {chartType === 'bar' ? (
-                                        <BarChart data={rankData} margin={{ top: 26, right: 20, left: 0, bottom: 0 }} barCategoryGap="15%">
+                                        <BarChart data={rankData} margin={{ top: 26, right: 10, left: 0, bottom: 0 }} barCategoryGap="15%">
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 40 : 25} />
                                             <YAxis
                                                 domain={[0, 'auto']}
                                                 tick={{ fontSize: 10 }}
                                                 tickFormatter={(v) => `#${v}`}
+                                                hide={chartIsMobile}
                                             />
                                             <Tooltip
                                                 contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
@@ -224,14 +263,15 @@ const NirfRankingSection = ({ user }) => {
                                             </Bar>
                                         </BarChart>
                                     ) : (
-                                        <LineChart data={rankData} margin={{ top: 26, right: 20, left: 0, bottom: 0 }}>
+                                        <LineChart data={rankData} margin={{ top: 26, right: 10, left: 0, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} padding={{ left: 10, right: 10 }} />
+                                            <XAxis dataKey="year" tick={{ fontSize: 10 }} padding={{ left: 10, right: 10 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 40 : 25} />
                                             <YAxis
                                                 domain={['auto', 'auto']}
                                                 reversed={true}
                                                 tick={{ fontSize: 10 }}
                                                 tickFormatter={(v) => `#${v}`}
+                                                hide={chartIsMobile}
                                             />
                                             <Tooltip
                                                 contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
@@ -334,6 +374,15 @@ const NirfRankingSection = ({ user }) => {
                 token={token}
                 onUploadSuccess={fetchData}
             />
+
+            {/* Fullscreen Chart Modal */}
+            <ChartExpandModal
+                isOpen={!!expandedChart}
+                onClose={() => setExpandedChart(null)}
+                title={expandedChart?.title}
+            >
+                {expandedChart?.content}
+            </ChartExpandModal>
         </div>
     );
 };

@@ -16,6 +16,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
@@ -34,6 +35,15 @@ function Patents({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const uploadVersion = useUploadRefresh();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
   const token = localStorage.getItem('authToken');
 
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -47,13 +57,11 @@ function Patents({ user, isPublicView = false }) {
   const [viewType, setViewType] = useState('trend');
   const [chartMode, setChartMode] = useState('bar');
 
-  // Prevent restricted users from accessing directory view
   const safeSetViewType = (type) => {
     if (isRestrictedUser && type === 'directory') return;
     setViewType(type);
   };
 
-  const serializedFilters = JSON.stringify(filters);
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
@@ -64,7 +72,6 @@ function Patents({ user, isPublicView = false }) {
         const patent_statuses = opts?.patent_statuses || [];
         setFilterOptions({ patent_years, patent_statuses });
 
-        // Auto-correct invalid selections
         const corrections = {};
         if (filters.patent_year !== 'All' && filters.patent_year && !patent_years.map(String).includes(String(filters.patent_year))) corrections.patent_year = 'All';
         if (filters.patent_status !== 'All' && filters.patent_status && !patent_statuses.includes(filters.patent_status)) corrections.patent_status = 'All';
@@ -75,7 +82,7 @@ function Patents({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [serializedFilters, filters.patent_status, filters.patent_year, token, uploadVersion]);
+  }, [filters.patent_status, filters.patent_year, token, uploadVersion]);
 
   useEffect(() => {
     const load = async () => {
@@ -109,8 +116,6 @@ function Patents({ user, isPublicView = false }) {
     [patentStats.yearly]
   );
 
-  const totalPatents = patentStats.overall.Filed + patentStats.overall.Granted;
-
   return (
     <div className={isPublicView ? '' : 'page-container'}>
       <div className={isPublicView ? '' : 'page-content'}>
@@ -120,23 +125,25 @@ function Patents({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Patents</h1>
-            </div>
-            {isAdmin && (
-              <div className="section-header-actions">
-                <button
-                  className="page-upload-btn"
-                  onClick={() => setIsUploadModalOpen(true)}
-                >
-                  <span>📤</span> Patents
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
+          <h1 style={{ margin: 0 }}>Patents and Intellectual Property</h1>
+          {!isReadOnlyView && isAdmin && (
+            <button
+              className="page-upload-btn"
+              onClick={() => setIsUploadModalOpen(true)}
+            >
+              <span>📤</span> Upload Patent Data
+            </button>
+          )}
+        </div>
+
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
 
         {/* Summary Cards */}
         <div style={{
@@ -146,9 +153,9 @@ function Patents({ user, isPublicView = false }) {
           marginBottom: '24px'
         }}>
           <div style={{
-            background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+            background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
             borderRadius: '20px', padding: '24px',
-            boxShadow: '0 10px 25px rgba(236,72,153,0.2)',
+            boxShadow: '0 10px 25px rgba(99,102,241,0.2)',
             position: 'relative', overflow: 'hidden'
           }}>
             <div style={{ position: 'relative', zIndex: 1 }}>
@@ -156,11 +163,7 @@ function Patents({ user, isPublicView = false }) {
                 <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📝</span>
                 <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Patents Filed</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{patentStats.overall.Filed}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}></span>
-              </div>
+              <div className="metric-value" style={{ color: 'white', fontSize: '36px' }}>{patentStats.overall.Filed}</div>
             </div>
           </div>
 
@@ -175,103 +178,73 @@ function Patents({ user, isPublicView = false }) {
                 <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>✅</span>
                 <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Patents Granted</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{patentStats.overall.Granted}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}></span>
-              </div>
+              <div className="metric-value" style={{ color: 'white', fontSize: '36px' }}>{patentStats.overall.Granted}</div>
             </div>
           </div>
         </div>
 
-        {/* Filter + Chart/Directory Section */}
-        <section style={{
-          backgroundColor: '#fff',
-          borderRadius: '10px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          overflow: 'hidden'
-        }}>
-          {/* Filter Bar */}
-          <div style={{
-            padding: '16px 20px',
-            backgroundColor: '#f8f9fa',
-            borderBottom: '1px solid #e9ecef'
-          }}>
-            <div style={{
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px'
-            }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {/* Trend button — always visible */}
+        <section style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', overflow: 'hidden', marginBottom: '30px' }}>
+          <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => safeSetViewType('trend')}
+                  style={{
+                    padding: '8px 16px', fontSize: '13px', borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: viewType === 'trend' ? '#6366f1' : '#fff',
+                    color: viewType === 'trend' ? '#fff' : '#333',
+                    cursor: 'pointer', fontWeight: 600,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  📈 Trend Analysis
+                </button>
+                {!isRestrictedUser && (
                   <button
-                    onClick={() => safeSetViewType('trend')}
+                    onClick={() => safeSetViewType('directory')}
                     style={{
-                      padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
-                      border: viewType === 'trend' ? '2px solid #6366f1' : '1px solid #e2e8f0',
-                      backgroundColor: viewType === 'trend' ? '#eef2ff' : '#fff',
-                      color: viewType === 'trend' ? '#4338ca' : '#333',
-                      cursor: 'pointer', fontWeight: 600
+                      padding: '8px 16px', fontSize: '13px', borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: viewType === 'directory' ? '#ec4899' : '#fff',
+                      color: viewType === 'directory' ? '#fff' : '#333',
+                      cursor: 'pointer', fontWeight: 600,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                     }}
                   >
-                    📈 Trend
+                    📋 Patent Directory
                   </button>
-
-                  {/* Directory button — hidden for restricted users */}
-                  {!isRestrictedUser && (
-                    <button
-                      onClick={() => safeSetViewType('directory')}
-                      style={{
-                        padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
-                        border: viewType === 'directory' ? '2px solid #ec4899' : '1px solid #e2e8f0',
-                        backgroundColor: viewType === 'directory' ? '#fdf2f8' : '#fff',
-                        color: viewType === 'directory' ? '#9d174d' : '#333',
-                        cursor: 'pointer', fontWeight: 600
-                      }}
-                    >
-                      📋 Directory
-                    </button>
-                  )}
-                </div>
+                )}
               </div>
               <button
                 onClick={() => setFilters({ patent_year: 'All', patent_status: 'All' })}
                 style={{
-                  padding: '6px 12px', backgroundColor: '#dc3545', color: '#fff',
-                  border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px'
+                  padding: '8px 16px', backgroundColor: '#f1f5f9', color: '#64748b',
+                  border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 600
                 }}
               >
-                Clear Filters
+                Reset Filters
               </button>
             </div>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '12px', marginTop: '12px'
-            }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px' }}>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 500, color: '#555', display: 'block', marginBottom: '4px' }}>
-                  Patent Year
-                </label>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '6px' }}>Filing Year</label>
                 <select
                   value={filters.patent_year}
                   onChange={(e) => setFilters((p) => ({ ...p, patent_year: e.target.value }))}
-                  style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #ddd', outline: 'none' }}
+                  style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none' }}
                 >
                   <option value="All">All Years</option>
                   {filterOptions.patent_years.map((y) => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 500, color: '#555', display: 'block', marginBottom: '4px' }}>
-                  Status
-                </label>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: '6px' }}>Patent Status</label>
                 <select
                   value={filters.patent_status}
                   onChange={(e) => setFilters((p) => ({ ...p, patent_status: e.target.value }))}
-                  style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #ddd', outline: 'none' }}
+                  style={{ width: '100%', padding: '10px', fontSize: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none' }}
                 >
                   <option value="All">All Statuses</option>
                   {filterOptions.patent_statuses.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -280,85 +253,67 @@ function Patents({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Content Body */}
-          <div style={{ padding: '20px' }}>
-
-            {/* Trend View */}
+          <div style={{ padding: '24px' }}>
             {viewType === 'trend' && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}>
-                      <span>📝</span> Knowledge Transfer Trend
-                    </h2>
-                    <p style={{ fontSize: '13px', color: '#666', margin: '4px 0 0 0' }}>
-                      Year-wise patent filings and grants
-                    </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <h3 style={{ margin: 0 }}>Yearly Statistics</h3>
+                    <ExportMenu elementId="patents-trend-chart" data={chartData} headers={['Year', 'Filed', 'Granted', 'Total']} keys={['year', 'Filed', 'Granted', 'total']} filename="patents_trend" title="Patents Trend" />
                   </div>
-                  <ExportMenu
-                    elementId="patents-trend-chart"
-                    data={chartData}
-                    headers={['Year', 'Filed', 'Granted', 'Total']}
-                    keys={['year', 'Filed', 'Granted', 'total']}
-                    filename="patents_trend"
-                    title="Patents Trend"
-                  />
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                   {['bar', 'trend'].map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setChartMode(mode)}
-                      style={{
-                        padding: '6px 16px', fontSize: '13px', fontWeight: 600,
-                        borderRadius: '6px', cursor: 'pointer', border: 'none',
-                        backgroundColor: chartMode === mode ? '#6366f1' : '#f1f5f9',
-                        color: chartMode === mode ? '#fff' : '#555'
-                      }}
-                    >
-                      {mode === 'bar' ? 'Bar' : 'Trend'}
+                    <button key={mode} onClick={() => setChartMode(mode)} style={{ padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none', backgroundColor: chartMode === mode ? '#6366f1' : '#f1f5f9', color: chartMode === mode ? '#fff' : '#555' }}>
+                      {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
                     </button>
                   ))}
                 </div>
-
-                <div
-                  id="patents-trend-chart"
-                  className={`chart-container ${!chartData.length ? 'chart-has-empty' : ''}`}
-                  style={{ position: 'relative', padding: '10px' }}
+                <div 
+                  id="patents-trend-chart" 
+                  className="chart-container clickable-chart" 
+                  style={{ padding: '10px' }}
+                  onClick={() => setExpandedChart({
+                    title: "Patent Trends",
+                    content: (
+                      <ResponsiveContainer width="100%" height={450}>
+                        <BarChart data={chartIsMobile ? chartData.slice(-3) : chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                          {PATENT_STATUS_ORDER.map((s) => (
+                            <Bar key={s} dataKey={s} name={s} fill={PATENT_COLORS[s]} radius={[6, 6, 0, 0]}>
+                              <LabelList dataKey={s} position="top" style={{ fontSize: '11px', fontWeight: 700, fill: PATENT_COLORS[s] }} />
+                            </Bar>
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )
+                  })}
                 >
-                  <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
-                    <p>No information available for the selected filter</p>
-                  </div>
                   <ResponsiveContainer width="100%" height={350}>
                     {chartMode === 'bar' ? (
-                      <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                      <BarChart data={chartIsMobile ? chartData.slice(-3) : chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
                         {PATENT_STATUS_ORDER.map((s) => (
-                          <Bar key={s} dataKey={s} name={s} fill={PATENT_COLORS[s]} radius={[4, 4, 0, 0]} barSize={18}>
+                          <Bar key={s} dataKey={s} name={s} fill={PATENT_COLORS[s]} radius={[4, 4, 0, 0]} barSize={20}>
                             <LabelList dataKey={s} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[s] }} />
                           </Bar>
                         ))}
                       </BarChart>
                     ) : (
-                      <LineChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                      <LineChart data={chartIsMobile ? chartData.slice(-3) : chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                         <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
                         {PATENT_STATUS_ORDER.map((s) => (
-                          <Line
-                            key={s} type="linear" dataKey={s} name={s}
-                            stroke={PATENT_COLORS[s]} strokeWidth={2.5}
-                            dot={{ r: 5, fill: PATENT_COLORS[s] }} activeDot={{ r: 7 }}
-                          >
-                            <LabelList dataKey={s} offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[s] }} />
-                          </Line>
+                          <Line key={s} type="linear" dataKey={s} name={s} stroke={PATENT_COLORS[s]} strokeWidth={2.5} dot={{ r: 5, fill: PATENT_COLORS[s], strokeWidth: 0 }} activeDot={{ r: 7 }} />
                         ))}
                       </LineChart>
                     )}
@@ -367,74 +322,59 @@ function Patents({ user, isPublicView = false }) {
               </>
             )}
 
-            {/* Directory View — only for non-restricted users */}
             {viewType === 'directory' && !isRestrictedUser && (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div>
-                    <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}>
-                      <span>📋</span> Patents Directory
-                    </h2>
-                    <p style={{ fontSize: '13px', color: '#666', margin: '4px 0 0 0' }}>
-                      {patentList.length} records found
-                    </p>
-                  </div>
-                  <ExportMenu
-                    elementId="patents-directory-table"
-                    data={patentList}
-                    headers={['Title', 'Inventors', 'Filed Date', 'Grant Date', 'Status']}
-                    keys={['patent_title', 'inventors', 'filing_date', 'grant_date', 'patent_status']}
-                    filename="patents_directory"
-                    title="Patents Directory"
-                    exportType="table"
-                  />
+              chartIsMobile ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {patentList.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No patents found</div>
+                  ) : (
+                    patentList.map((patent) => (
+                      <div key={patent.patent_id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{ backgroundColor: patent.patent_status === 'Granted' ? '#dcfce7' : '#ede9fe', color: patent.patent_status === 'Granted' ? '#15803d' : '#6d28d9', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>{patent.patent_status}</span>
+                        </div>
+                        <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{patent.patent_title}</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#666' }}>
+                          <div><strong>Inventors:</strong> {patent.inventors || '—'}</div>
+                          <div style={{ display: 'flex', gap: '15px' }}>
+                            <div><strong>Filed:</strong> {formatDate(patent.filing_date)}</div>
+                            {patent.patent_status === 'Granted' && <div><strong>Granted:</strong> {formatDate(patent.grant_date)}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
-
-                <div
-                  id="patents-directory-table"
-                  className="table-responsive"
-                  style={{ maxHeight: '450px', overflowY: 'auto' }}
-                >
-                  <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                    <thead style={{ position: 'sticky', top: 0, backgroundColor: PATENT_COLORS.Filed, color: 'white' }}>
-                      <tr>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>Inventors</th>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>Filed</th>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>Granted</th>
-                        <th style={{ padding: '10px', textAlign: 'left' }}>Status</th>
+              ) : (
+                <div id="patents-directory-table" className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '12px', overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
+                        <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Patent Title</th>
+                        <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Inventors</th>
+                        <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Status</th>
+                        <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Filed</th>
+                        <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Granted</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {patentList.map((p, i) => (
-                        <tr key={p.patent_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                          <td style={{ padding: '8px' }}>{p.patent_title}</td>
-                          <td style={{ padding: '8px' }}>{p.inventors}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(p.filing_date)}</td>
-                          <td style={{ padding: '8px' }}>{formatDate(p.grant_date)}</td>
-                          <td style={{ padding: '8px' }}>
-                            <span style={{
-                              padding: '2px 8px', borderRadius: '12px',
-                              fontSize: '11px', fontWeight: 600,
-                              backgroundColor: p.patent_status === 'Granted' ? '#dcfce7' : '#ede9fe',
-                              color: p.patent_status === 'Granted' ? '#15803d' : '#6d28d9'
-                            }}>
-                              {p.patent_status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                      {!patentList.length && (
-                        <tr>
-                          <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                            No information available for the selected filter
-                          </td>
-                        </tr>
+                      {patentList.length === 0 ? (
+                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#666' }}>No records found</td></tr>
+                      ) : (
+                        patentList.map((p, i) => (
+                          <tr key={p.patent_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
+                            <td style={{ padding: '16px', fontSize: '14px', color: '#333', fontWeight: '500' }}>{p.patent_title}</td>
+                            <td style={{ padding: '16px', fontSize: '14px', color: '#555' }}>{p.inventors}</td>
+                            <td style={{ padding: '16px' }}><span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, backgroundColor: p.patent_status === 'Granted' ? '#dcfce7' : '#ede9fe', color: p.patent_status === 'Granted' ? '#15803d' : '#6d28d9' }}>{p.patent_status}</span></td>
+                            <td style={{ padding: '16px', fontSize: '14px', color: '#555' }}>{formatDate(p.filing_date)}</td>
+                            <td style={{ padding: '16px', fontSize: '14px', color: '#555' }}>{formatDate(p.grant_date)}</td>
+                          </tr>
+                        ))
                       )}
                     </tbody>
                   </table>
                 </div>
-              </>
+              )
             )}
           </div>
         </section>

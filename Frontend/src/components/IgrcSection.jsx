@@ -9,6 +9,7 @@ import {
 
 import { fetchIgrcSummary, fetchIgrcYearly } from '../services/grievanceStats';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
@@ -43,6 +44,14 @@ function IgrcSection({ user, isPublicView = false }) {
   const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const token = localStorage.getItem('authToken');
 
@@ -416,12 +425,37 @@ function IgrcSection({ user, isPublicView = false }) {
                     return (
                       <div id="igrc-yearly-chart-container" className="chart-container" style={{ padding: '10px' }}>
                         {/* Bar chart */}
-                        <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                        <div 
+                          className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
+                          onClick={() => setExpandedChart({
+                            title: "IGRC Grievance Distribution",
+                            content: (
+                              <ResponsiveContainer width="100%" height={500}>
+                                <BarChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                                  <XAxis dataKey="year" stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#000', fontSize: 16, fontWeight: 'bold' } }} />
+                                  <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
+                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                                  <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed}>
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+                                  </Bar>
+                                  <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending}>
+                                    <LabelList dataKey="pending" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.pending }} />
+                                  </Bar>
+                                  <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved}>
+                                    <LabelList dataKey="resolved" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.resolved }} />
+                                  </Bar>
+                                </BarChart>
+                              </ResponsiveContainer>
+                            )
+                          })}
+                        >
                           <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
-                              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
+                              <BarChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                {sharedAxisProps.xAxis}
+                                <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
@@ -440,12 +474,31 @@ function IgrcSection({ user, isPublicView = false }) {
                         </div>
 
                         {/* Trend (Line) chart — complaints filed only */}
-                        <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                        <div 
+                          className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
+                          onClick={() => setExpandedChart({
+                            title: "IGRC Grievance Trends",
+                            content: (
+                              <ResponsiveContainer width="100%" height={500}>
+                                <LineChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                                  <XAxis dataKey="year" stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#000', fontSize: 16, fontWeight: 'bold' } }} />
+                                  <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
+                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                                  <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 6, fill: BAR_COLORS.filed }} activeDot={{ r: 8 }}>
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+                                  </Line>
+                                </LineChart>
+                              </ResponsiveContainer>
+                            )
+                          })}
+                        >
                           <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
-                              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
+                              <LineChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                {sharedAxisProps.xAxis}
+                                <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
@@ -471,6 +524,15 @@ function IgrcSection({ user, isPublicView = false }) {
             tableName="igrs_yearwise"
             token={token}
           />
+
+          {/* Fullscreen Chart Modal */}
+          <ChartExpandModal
+            isOpen={!!expandedChart}
+            onClose={() => setExpandedChart(null)}
+            title={expandedChart?.title}
+          >
+            {expandedChart?.content}
+          </ChartExpandModal>
         </div >
       )}
     </>

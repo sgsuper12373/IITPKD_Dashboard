@@ -1,7 +1,43 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
+import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
+
+// Five primary tabs for the mobile bottom bar
+// The last tab (More) opens the existing sidebar drawer instead of navigating
+const BOTTOM_TABS = [
+  {
+    icon: '🏠',
+    label: 'Home',
+    path: '/',
+    match: (p) => p === '/'
+  },
+  {
+    icon: '👥',
+    label: 'People',
+    path: '/people-campus',
+    match: (p) => p.startsWith('/people-campus')
+  },
+  {
+    icon: '🔬',
+    label: 'Research',
+    path: '/research',
+    match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations')
+  },
+  {
+    icon: '🎓',
+    label: 'Education',
+    path: '/education',
+    match: (p) => p.startsWith('/education')
+  },
+  {
+    icon: '☰',
+    label: 'More',
+    path: null,   // null = open sidebar, not navigate
+    match: () => false
+  },
+];
 
 const SIDEBAR_LINKS = [
   {
@@ -262,6 +298,41 @@ function Header({ user, onLogout, isGuest }) {
                     </div>
                 </aside>
             )}
+            {/* Bottom Tab Bar — mobile only (≤768px) */}
+            <nav className="mobile-tab-bar" aria-label="Primary navigation" role="navigation">
+              <div className="mobile-tab-bar__inner">
+                {BOTTOM_TABS.map((tab) => {
+                  const isActive = tab.path ? tab.match(location.pathname) : false;
+                  if (tab.path === null) {
+                    // "More" tab opens the sidebar drawer
+                    return (
+                      <button
+                        key="more"
+                        className={`mobile-tab-bar__tab${sidebarOpen ? ' active' : ''}`}
+                        onClick={() => setSidebarOpen(true)}
+                        aria-label="Open navigation menu"
+                      >
+                        <span className="mobile-tab-bar__icon">☰</span>
+                        <span className="mobile-tab-bar__label">More</span>
+                      </button>
+                    );
+                  }
+                  return (
+                    <button
+                      key={tab.path}
+                      className={`mobile-tab-bar__tab${isActive ? ' active' : ''}`}
+                      onClick={() => navigate(tab.path)}
+                      aria-label={tab.label}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      <span className="mobile-tab-bar__icon">{tab.icon}</span>
+                      <span className="mobile-tab-bar__label">{tab.label}</span>
+                      {isActive && <span className="mobile-tab-bar__indicator" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
         </>
     );
 }

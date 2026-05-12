@@ -21,6 +21,8 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
+
 import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
@@ -65,6 +67,15 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const [iarViewType, setIarViewType] = useState('trend');
   const [iarChartMode, setIarChartMode] = useState('bar');
   const [iarUploadOpen, setIarUploadOpen] = useState(false);
+
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   // Load ICSR filter options (cross-filtered by active mou_year)
   useEffect(() => {
@@ -132,13 +143,19 @@ function MoUCollaborations({ user, isPublicView = false }) {
     load();
   }, [iarFilters, token, uploadVersion]);
 
-  const icsrChartData = useMemo(() =>
-    icsrTrend.map((r) => ({ year: r.year, total: Number(r.total) || 0 })),
-    [icsrTrend]
-  );
-  const iarChartData = useMemo(() =>
-    iarTrend.map((r) => ({ year: r.year, total: Number(r.total) || 0 })),
-    [iarTrend]
+  const icsrChartData = useMemo(() => {
+    const data = icsrTrend.map((r) => ({ year: r.year, total: Number(r.total) || 0 }));
+    return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
+  }, [icsrTrend, chartIsMobile]);
+
+  const iarChartData = useMemo(() => {
+    const data = iarTrend.map((r) => ({ year: r.year, total: Number(r.total) || 0 }));
+    return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
+  }, [iarTrend, chartIsMobile]);
+
+  const sortedIcsrList = useMemo(() =>
+    [...icsrList].sort((a, b) => (a.partner_name || '').localeCompare(b.partner_name || '')),
+    [icsrList]
   );
 
   const sortedIarList = useMemo(() =>
@@ -150,8 +167,9 @@ function MoUCollaborations({ user, isPublicView = false }) {
     color, viewType, setViewType, chartMode, setChartMode,
     chartData, list, trendId, directoryId, filenamePrefix,
     filterOpts, filters, onFilterChange, onClearFilters,
-    showIarColumns = false
+    showIarColumns = false, chartIsMobile, setExpandedChart
   }) => (
+
     <section style={{
       backgroundColor: '#fff', borderRadius: '10px',
       boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden'
@@ -261,17 +279,47 @@ function MoUCollaborations({ user, isPublicView = false }) {
             </div>
             <div
               id={trendId}
-              className={`chart-container ${!chartData.length ? 'chart-has-empty' : ''}`}
+              className={`chart-container clickable-chart ${!chartData.length ? 'chart-has-empty' : ''}`}
               style={{ position: 'relative', padding: '10px' }}
+              onClick={() => setExpandedChart({
+                title: filenamePrefix.includes('industry') ? 'Industry MoUs Trend' : 'Education MoUs Trend',
+                content: (
+                  <ResponsiveContainer width="100%" height={500}>
+                    {chartMode === 'bar' ? (
+                      <BarChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        <Bar dataKey="total" name="MoUs Signed" fill={color} radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                        </Bar>
+                      </BarChart>
+                    ) : (
+                      <LineChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                        <Line type="linear" dataKey="total" name="MoUs Signed" stroke={color} strokeWidth={3} dot={{ r: 6, fill: color }} activeDot={{ r: 8 }}>
+                          <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                        </Line>
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                )
+              })}
             >
               <div className={`section-empty-state ${chartData.length ? 'hidden' : ''}`}>
                 <p>No information available for the selected filter</p>
               </div>
               <ResponsiveContainer width="100%" height={400}>
                 {chartMode === 'bar' ? (
-                  <BarChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: chartIsMobile ? 20 : 40, bottom: chartIsMobile ? 50 : 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
@@ -280,15 +328,15 @@ function MoUCollaborations({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 ) : (
-                  <LineChart data={chartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                  <LineChart data={chartData} margin={{ top: 20, right: 30, left: chartIsMobile ? 20 : 40, bottom: chartIsMobile ? 50 : 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
                     <Line type="linear" dataKey="total" name="MoUs Signed"
                       stroke={color} strokeWidth={3}
-                      dot={{ r: 6, fill: color }} activeDot={{ r: 8 }}>
+                      dot={{ r: 5, fill: color, strokeWidth: 0 }} activeDot={{ r: 7 }}>
                       <LabelList dataKey="total" offset={10} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
                     </Line>
                   </LineChart>
@@ -301,69 +349,93 @@ function MoUCollaborations({ user, isPublicView = false }) {
         {viewType === 'directory' && (
           <>
             <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{list.length} records found</p>
-            <div
-              id={directoryId}
-              className="table-responsive"
-              style={{ maxHeight: '450px', overflowY: 'auto' }}
-            >
-            {viewType === 'directory' && !isRestricted && (
-              <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
-                    <tr>
-                      {showIarColumns ? (
-                        <>
-                          <th style={{ padding: '10px' }}>Sl. No.</th>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Framework</th>
-                          <th style={{ padding: '10px' }}>Country</th>
-                          <th style={{ padding: '10px' }}>Collaboration Nature</th>
-                          <th style={{ padding: '10px' }}>Signed</th>
-                          <th style={{ padding: '10px' }}>Valid Till</th>
-                        </>
-                      ) : (
-                        <>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Focus</th>
-                          <th style={{ padding: '10px' }}>Signed</th>
-                          <th style={{ padding: '10px' }}>Valid Till</th>
-                        </>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.map((m, i) => (
-                      <tr key={m.mou_id ?? m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+            {chartIsMobile ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {list.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No records found</div>
+                ) : (
+                  list.map((m, i) => (
+                    <div key={m.mou_id ?? m.id ?? i} style={{
+                      backgroundColor: '#fff',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                    }}>
+                      <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{m.partner_name}</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#666' }}>
+                        <div><strong>Signed:</strong> {formatDate(m.date_signed)}</div>
+                        <div><strong>Valid till:</strong> {formatDate(m.validity_end)}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              <div
+                id={directoryId}
+                className="table-responsive"
+                style={{ maxHeight: '450px', overflowY: 'auto' }}
+              >
+              {!isRestricted && (
+                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
+                      <tr>
                         {showIarColumns ? (
                           <>
-                            <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td>
-                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                            <td style={{ padding: '8px' }}>{m.framework}</td>
-                            <td style={{ padding: '8px' }}>{m.country}</td>
-                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            <th style={{ padding: '10px' }}>Sl. No.</th>
+                            <th style={{ padding: '10px' }}>Partner</th>
+                            <th style={{ padding: '10px' }}>Framework</th>
+                            <th style={{ padding: '10px' }}>Country</th>
+                            <th style={{ padding: '10px' }}>Collaboration Nature</th>
+                            <th style={{ padding: '10px' }}>Signed</th>
+                            <th style={{ padding: '10px' }}>Valid Till</th>
                           </>
                         ) : (
                           <>
-                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            <th style={{ padding: '10px' }}>Partner</th>
+                            <th style={{ padding: '10px' }}>Focus</th>
+                            <th style={{ padding: '10px' }}>Signed</th>
+                            <th style={{ padding: '10px' }}>Valid Till</th>
                           </>
                         )}
                       </tr>
-                    ))}
-                    {!list.length && (
-                      <tr>
-                        <td colSpan={showIarColumns ? 7 : 4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                          No information available for the selected filter
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {list.map((m, i) => (
+                        <tr key={m.mou_id ?? m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                          {showIarColumns ? (
+                            <>
+                              <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td>
+                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                              <td style={{ padding: '8px' }}>{m.framework}</td>
+                              <td style={{ padding: '8px' }}>{m.country}</td>
+                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            </>
+                          ) : (
+                            <>
+                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
+                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
+                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                      {!list.length && (
+                        <tr>
+                          <td colSpan={showIarColumns ? 7 : 4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                            No information available for the selected filter
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                </table>
+              )}
+              </div>
             )}
-            </div>
           </>
         )}
       </div>
@@ -382,7 +454,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
         {!isReadOnlyView && (
           <div className="section-header">
             <div className="section-header-left">
-              <h1>MoU Collaborations</h1>
+              <h1>MoU and Collaborations</h1>
             </div>
             {isAdmin && (
               <div className="section-header-actions">
@@ -491,18 +563,19 @@ function MoUCollaborations({ user, isPublicView = false }) {
           </button>
         </div>
 
-        {/* Industry Collaborations */}
         {activeTab === 'industry' && renderMouChartSection({
           color: ICSR_COLOR,
           viewType: icsrViewType, setViewType: setIcsrViewType,
           chartMode: icsrChartMode, setChartMode: setIcsrChartMode,
-          chartData: icsrChartData, list: icsrList,
+          chartData: icsrChartData, list: sortedIcsrList,
           trendId: 'icsr-mou-trend-chart', directoryId: 'icsr-mou-directory-table',
           filenamePrefix: 'industry_mous',
           filterOpts: icsrFilterOpts, filters: icsrFilters,
           onFilterChange: (field, val) => setIcsrFilters((p) => ({ ...p, [field]: val })),
           onClearFilters: () => setIcsrFilters({ mou_year: 'All' }),
-          showIarColumns: false
+          showIarColumns: false,
+          chartIsMobile,
+          setExpandedChart
         })}
 
         {/* Education Collaborations */}
@@ -516,8 +589,11 @@ function MoUCollaborations({ user, isPublicView = false }) {
           filterOpts: iarFilterOpts, filters: iarFilters,
           onFilterChange: (field, val) => setIarFilters((p) => ({ ...p, [field]: val })),
           onClearFilters: () => setIarFilters({ mou_year: 'All' }),
-          showIarColumns: true
+          showIarColumns: true,
+          chartIsMobile,
+          setExpandedChart
         })}
+
 
         <DataUploadModal
           isOpen={icsrUploadOpen}
@@ -531,9 +607,19 @@ function MoUCollaborations({ user, isPublicView = false }) {
           tableName="iar_mous"
           token={token}
         />
+
+        {/* Fullscreen Chart Modal */}
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
       </div>
     </div>
   );
 }
+
 
 export default MoUCollaborations;

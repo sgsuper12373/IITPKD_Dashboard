@@ -15,7 +15,7 @@ import ExportMenu from './ExportMenu';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
-function CourseTable({ courses, headerColor, user }) {
+function CourseTable({ courses, headerColor }) {
   if (!courses.length) {
     return (
       <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
@@ -253,7 +253,6 @@ function EducationAcademicSection({ user, isPublicView = false }) {
               <CourseTable
                 courses={viewMode === 'all' ? allCourses : industryCourses}
                 headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
-                user={user}
               />
             </div>
           </div>

@@ -473,6 +473,23 @@
 /* RESPONSIVE */
 /* ===================================================== */
 
+
+/* ===================================================== */
+/* TABLET 1024px */
+/* ===================================================== */
+
+@media (max-width: 1024px) {
+  .minimal-sections-grid,
+  .research-sections-grid,
+  .outreach-sections-grid,
+  .education-sections-grid,
+  .industry-sections-grid,
+  .innovation-sections-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .innovation-sections-grid {
     grid-template-columns: 1fr;

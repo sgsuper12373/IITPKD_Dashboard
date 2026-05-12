@@ -1,9 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ===================================================== */
-/* PAGE CONTAINER – FROSTED GLASS */
-/* ===================================================== */
+/* Page entrance animation — gives a native app page-open feel */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+/* ================================================================ */
+/* FLUID TYPE SCALE — use these tokens throughout the project        */
+/* ================================================================ */
+:root {
+  --text-xs:   clamp(0.7rem,  1.8vw, 0.8rem);
+  --text-sm:   clamp(0.78rem, 2vw,   0.9rem);
+  --text-base: clamp(0.875rem,2.2vw, 1rem);
+  --text-lg:   clamp(1rem,    3vw,   1.15rem);
+  --text-xl:   clamp(1.1rem,  3.5vw, 1.4rem);
+  --text-2xl:  clamp(1.25rem, 4.5vw, 1.75rem);
+  --text-3xl:  clamp(1.5rem,  5.5vw, 2.25rem);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Touch targets */
+  --min-touch: 44px;
+}
+
+/* ================================================================ */
+/* PAGE CONTAINER — FROSTED GLASS                                   */
+/* ================================================================ */
 .page-content {
   position: relative;
 
@@ -30,11 +68,17 @@
   color: #1f1f1f;
   line-height: 1.6;
 
-  overflow: clip;
+  /* Native feel: page slides in on mount */
+  animation: pageSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  -webkit-overflow-scrolling: touch;
+
+  /* IMPORTANT: do NOT use overflow: hidden/clip here —
+     it clips recharts SVG overflow and hides Y-axis labels */
+  overflow: visible;
   transition: box-shadow 0.3s ease;
 }
 
-/* 🔥 KEY FIX: header contrast layer */
+/* Header contrast layer */
 .page-content::before {
   content: "";
   position: absolute;
@@ -52,12 +96,11 @@
   z-index: 0;
 }
 
-/* ===================================================== */
-/* HEADER */
-/* ===================================================== */
-
+/* ================================================================ */
+/* HEADINGS                                                         */
+/* ================================================================ */
 .page-content h1 {
-  font-size: 32px;
+  font-size: clamp(1.25rem, 5vw, 2rem);
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.3px;
@@ -74,47 +117,20 @@
 }
 
 /* Subtitle */
-.page-content>p {
+.page-content > p {
   color: rgba(255, 255, 255, 0.85);
   margin-bottom: 1rem;
   position: relative;
   z-index: 1;
+  font-size: var(--text-base);
 }
 
-/* ===================================================== */
-/* BUTTONS */
-/* ===================================================== */
-
-.page-back-btn,
-.page-upload-btn {
-  background: rgba(255, 248, 236, 0.65);
-  color: #000000;
-
-  border: 1.5px solid #F4F7FB;
-  /* 🔥 clean solid outline */
-
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 600;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-
-  min-height: auto;
-  min-width: auto;
-
-  backdrop-filter: blur(10px) saturate(1.6);
-  -webkit-backdrop-filter: blur(10px) saturate(1.6);
-
-  transition: all 0.25s ease;
-}
-
+/* ================================================================ */
+/* SECTION HEADER                                                   */
+/* ================================================================ */
 .section-title {
   color: var(--text-main);
-  font-size: 2rem;
+  font-size: var(--text-2xl);
   font-weight: 800;
   margin: 0;
   letter-spacing: -0.02em;
@@ -128,15 +144,48 @@
   padding-bottom: 1.5rem;
   border-bottom: 2px solid var(--border-light);
   margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .section-header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  /* or 0.5rem / 1rem depending on your design */
+  gap: 8px;
   flex-wrap: wrap;
-  /* keeps it responsive */
+}
+
+/* ================================================================ */
+/* BUTTONS                                                          */
+/* ================================================================ */
+.page-back-btn,
+.page-upload-btn {
+  background: rgba(255, 248, 236, 0.65);
+  color: #000000;
+
+  border: 1.5px solid #F4F7FB;
+  border-radius: 8px;
+  padding: 7px 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  min-height: 36px;
+  min-width: auto;
+
+  /* Touch-friendly: no 300ms delay */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  backdrop-filter: blur(10px) saturate(1.6);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+
+  transition: all 0.25s ease;
 }
 
 .page-back-btn:hover,
@@ -146,15 +195,14 @@
   color: #1a0800;
 }
 
-/* ===================================================== */
-/* FILTER PANEL */
-/* ===================================================== */
-
+/* ================================================================ */
+/* FILTER PANEL                                                     */
+/* ================================================================ */
 .filter-panel {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 1.75rem;
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   border: 1px solid #e0e0e0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
@@ -162,215 +210,6 @@
   box-sizing: border-box;
 }
 
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
-}
-
-.filter-select {
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  padding: 0.75rem;
-  appearance: none;
-}
-
-/* ===================================================== */
-/* SUMMARY CARDS */
-/* ===================================================== */
-
-.summary-card {
-  background-color: #fffaf0;
-  border-radius: 14px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.summary-card:hover {
-  transform: translateY(-4px);
-}
-
-.summary-card-label {
-  color: #92400e;
-  font-size: 0.95rem;
-}
-
-.summary-card-value {
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: #111;
-}
-
-/* ===================================================== */
-/* TABLE */
-/* ===================================================== */
-
-.grievance-table-wrapper {
-  background-color: #fffaf0;
-  border-radius: 16px;
-  padding: 2rem;
-}
-
-.grievance-table-wrapper table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.grievance-table-wrapper th {
-  background-color: #fff7ed;
-  padding: 0.85rem;
-}
-
-.grievance-table-wrapper td {
-  padding: 0.75rem;
-}
-
-/* ===================================================== */
-/* RESPONSIVE */
-/* ===================================================== */
-
-@media (max-width: 768px) {
-  .page-content {
-    padding: 1.5rem 1rem;
-    border-radius: 10px;
-  }
-
-  .page-content h1 {
-    font-size: 24px;
-  }
-
-  .filter-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 1.35rem;
-  }
-
-  .section-header {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding-bottom: 1rem;
-  }
-
-  .section-header-actions {
-    justify-content: flex-start;
-  }
-
-  .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.78rem;
-    padding: 5px 11px;
-  }
-}
-
-@media (max-width: 640px) {
-  .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    gap: 3px;
-    border-radius: 4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .page-content {
-    padding: 1.25rem 0.875rem;
-    border-radius: 8px;
-  }
-
-  .page-content h1 {
-    font-size: 1.25rem;
-  }
-
-  .section-title {
-    font-size: 1.15rem;
-  }
-
-  .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    gap: 2px;
-  }
-
-  .filter-panel {
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .summary-card {
-    padding: 1.25rem;
-  }
-
-  .summary-card-value {
-    font-size: 1.6rem;
-  }
-}
-
-/* Ensure nothing bleeds outside the viewport at any width */
-@media (max-width: 360px) {
-  .page-content {
-    padding: 1rem 0.625rem;
-  }
-
-  /* Prevent long text from overflowing card/container boundaries.
-     Only target block-level HTML content — never recharts SVG text. */
-  p, h1, h2, h3, h4, h5, h6, td, th, li {
-    overflow-wrap: break-word;
-  }
-}
-
-/* ── Mobile chart improvements ───────────────────────────────────────────── */
-
-/* Hide Y/X-axis unit labels (e.g. "Students", "Year") on narrow screens
-   to reclaim horizontal/vertical space for the actual chart area.
-   Recharts renders these as <text> inside .recharts-label — set visibility
-   rather than display:none so SVG layout is preserved (avoids axis jump). */
-@media (max-width: 640px) {
-  .recharts-xAxis .recharts-label {
-    visibility: hidden;
-  }
-
-  /* Shrink recharts legend text so three items ("Male Female Transgender")
-     fit on one line without wrapping */
-  .recharts-legend-wrapper ul,
-  .recharts-legend-wrapper li {
-    font-size: 10px !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-    white-space: nowrap !important;
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-  }
-
-  /* Keep recharts SVG text from being affected by any parent word-break */
-  .recharts-surface text,
-  .recharts-layer text {
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-    white-space: nowrap !important;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Tighten Y-axis tick width so bars have more room */
-  .recharts-yAxis {
-    width: 32px !important;
-  }
-}
-
-/* =============================================================== */
-/* NARROW-SCREEN LAYOUT UTILITIES (300px–480px range)              */
-/* =============================================================== */
-
-/* Filter panel header: "Dashboard Filters" + "Clear All Filters" button.
-   flex-wrap lets the button drop below the title on very narrow screens. */
 .filter-panel-header {
   display: flex;
   justify-content: space-between;
@@ -380,7 +219,77 @@
   margin-bottom: 15px;
 }
 
-/* View-type pill bar (Trend | Department | Directory, etc.) */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.filter-select {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font-size: var(--text-sm);
+  appearance: none;
+  touch-action: manipulation;
+}
+
+/* ================================================================ */
+/* SUMMARY CARDS                                                    */
+/* ================================================================ */
+.summary-card {
+  background-color: #fffaf0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+}
+
+.summary-card-label {
+  color: #92400e;
+  font-size: var(--text-sm);
+}
+
+.summary-card-value {
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-weight: 700;
+  color: #111;
+}
+
+/* ================================================================ */
+/* TABLE                                                            */
+/* ================================================================ */
+.grievance-table-wrapper {
+  background-color: #fffaf0;
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.grievance-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grievance-table-wrapper th {
+  background-color: #fff7ed;
+  padding: 0.75rem 0.85rem;
+  font-size: var(--text-sm);
+}
+
+.grievance-table-wrapper td {
+  padding: 0.65rem 0.85rem;
+  font-size: var(--text-sm);
+}
+
+/* ================================================================ */
+/* VIEW TYPE BAR (Trend | Department | Directory pills)             */
+/* ================================================================ */
 .view-type-bar {
   display: flex;
   gap: 4px;
@@ -388,87 +297,56 @@
   padding: 4px;
   border-radius: 8px;
   flex-wrap: wrap;
+  touch-action: manipulation;
 }
 
 .view-type-btn {
   flex: 1;
-  min-width: 60px;
-  padding: 6px 4px;
+  min-width: 56px;
+  padding: 6px 6px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   transition: all 0.2s;
   text-align: center;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (max-width: 640px) {
-  .view-type-btn {
-    font-size: 11px;
-    padding: 4px 3px;
-    min-width: 48px;
-  }
-}
-
-/* Gradient stat-card grid: single column on mobile so text never clips */
+/* ================================================================ */
+/* STAT CARD GRID                                                   */
+/* ================================================================ */
 .stat-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
-@media (max-width: 480px) {
-  .stat-card-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-}
-
-/* Label inside a gradient stat card (icon + title row) */
 .stat-card-label {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: 500;
   line-height: 1.2;
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
-/* Large number inside a gradient stat card */
 .stat-card-value {
   font-weight: bold;
   color: white;
   line-height: 1.1;
-  font-size: 38px;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
 }
 
-@media (max-width: 768px) {
-  .stat-card-label {
-    font-size: 14px;
-  }
-  .stat-card-value {
-    font-size: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .stat-card-label {
-    font-size: 13px;
-  }
-  .stat-card-value {
-    font-size: 26px;
-  }
-}
-
-/* =============================================================== */
-/* CHART TOGGLE BUTTONS — used in AdministrativeSection & others   */
-/* Replaces the chartToggleStyle() inline function                 */
-/* =============================================================== */
-
+/* ================================================================ */
+/* CHART TOGGLE BUTTONS                                             */
+/* ================================================================ */
 .chart-toggle-btn {
-  padding: 6px 16px;
+  padding: 6px 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
@@ -478,6 +356,8 @@
   background-color: transparent;
   color: #555;
   box-shadow: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .chart-toggle-btn.active {
@@ -486,94 +366,205 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 480px) {
-  .chart-toggle-btn {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-}
-
-/* =============================================================== */
-/* RESPONSIVE GRID UTILITIES — replaces inline repeat(N,1fr)       */
-/* Usage: className="grid-2" style={{ gap, marginBottom, etc. }}   */
-/* =============================================================== */
-
+/* ================================================================ */
+/* RESPONSIVE GRID UTILITIES                                        */
+/* ================================================================ */
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); }
-
-/* Filter rows (compact dropdowns) */
 .filter-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
 .filter-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
 
-@media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+/* ================================================================ */
+/* GLOBAL RECHARTS FIXES — prevent overflow issues                  */
+/* ================================================================ */
+
+/* Never clip recharts containers */
+.recharts-responsive-container {
+  max-width: 100% !important;
+  overflow: visible !important;
 }
 
+/* Chart wrappers must not clip SVG overflow */
+[class*="chart-card"],
+[class*="chart-container"],
+[class*="chart-wrapper"] {
+  max-width: 100%;
+  /* NO overflow: hidden here */
+}
+
+/* Compact-chart override — used in NIRF etc */
+.compact-chart .recharts-responsive-container {
+  overflow: hidden !important; /* only compact charts clip */
+}
+
+/* Recharts SVG text — prevent parent word-break from corrupting labels */
+.recharts-surface text,
+.recharts-layer text {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+}
+
+/* Tables — use wrapper scroll, not display:block which breaks sticky headers */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* ================================================================ */
+/* BREAKPOINT: 1024px TABLET                                        */
+/* ================================================================ */
+@media (max-width: 1024px) {
+  .page-content {
+    padding: 2rem 2rem;
+  }
+
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+
+  .stat-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+/* ================================================================ */
+/* BREAKPOINT: 768px PHABLET / LARGE MOBILE                        */
+/* ================================================================ */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 1.5rem 1rem;
+    border-radius: 10px;
+    /* keep overflow: visible — do not add hidden here */
+  }
+
+  .page-content h1 {
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .section-title {
+    font-size: var(--text-xl);
+  }
+
+  .section-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.875rem;
+  }
+
+  .section-header-actions {
+    justify-content: flex-start;
+  }
+
+  .page-back-btn,
+  .page-upload-btn {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    min-height: 34px;
+  }
+
+  .stat-card-label { font-size: 13px; }
+  .stat-card-value { font-size: clamp(1.4rem, 4vw, 2rem); }
+
+  /* Shrink recharts legend text */
+  .recharts-legend-wrapper ul,
+  .recharts-legend-wrapper li {
+    font-size: 10px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .recharts-label-list text {
+    font-size: 8px !important;
+  }
+}
+
+/* ================================================================ */
+/* BREAKPOINT: 640px MOBILE                                         */
+/* ================================================================ */
 @media (max-width: 640px) {
   .grid-2  { grid-template-columns: 1fr; }
   .grid-3  { grid-template-columns: 1fr; }
   .grid-4  { grid-template-columns: 1fr; }
   .filter-grid-2 { grid-template-columns: 1fr; }
   .filter-grid-3 { grid-template-columns: 1fr; }
-}
 
-/* =============================================================== */
-/* GLOBAL RECHARTS MOBILE FIXES — applied project-wide             */
-/* =============================================================== */
+  .view-type-btn {
+    font-size: 10.5px;
+    padding: 4px 4px;
+    min-width: 44px;
+  }
 
-/* Always constrain charts to their parent width — prevents horizontal overflow */
-.recharts-responsive-container {
-  max-width: 100% !important;
-}
-
-/* Prevent chart card wrappers from extending past the viewport */
-[class*="chart-card"],
-[class*="chart-container"],
-[class*="chart-wrapper"] {
-  max-width: 100%;
-}
-
-/* Small fixed-height chart cards (e.g. NIRF metric cards) must not be
-   overridden by the global tablet/mobile height rules below. The higher
-   specificity (2 classes) beats the single-class !important rules. */
-@media (max-width: 768px) {
-  .compact-chart .recharts-responsive-container {
-    height: 100% !important;
-    min-height: 0 !important;
+  /* Tighten recharts legend on narrower screens */
+  .recharts-legend-wrapper ul,
+  .recharts-legend-wrapper li {
+    font-size: 9px !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
   }
 }
+
+/* ================================================================ */
+/* BREAKPOINT: 480px SMALL PHONE                                    */
+/* ================================================================ */
 @media (max-width: 480px) {
-  .compact-chart .recharts-responsive-container {
-    height: 100% !important;
-    min-height: 0 !important;
-  }
-}
-
-/* Tablet: shrink chart height and reduce Y-axis gutter */
-@media (max-width: 768px) {
-  .recharts-responsive-container {
-    height: 280px !important;
-    min-height: auto !important;
+  .page-content {
+    padding: 1.1rem 0.75rem;
+    border-radius: 8px;
   }
 
-  /* Tighten bar label font size so they don't collide */
-  .recharts-label-list text {
-    font-size: 8px !important;
-  }
-}
-
-/* Mobile: further reduce height; hide bar-top labels entirely (too cramped) */
-@media (max-width: 480px) {
-  .recharts-responsive-container {
-    height: 220px !important;
-    min-height: auto !important;
+  .page-back-btn,
+  .page-upload-btn {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    gap: 4px;
+    min-height: 32px;
   }
 
-  /* Hide value labels printed on bars/lines — they overlap on small screens */
-  .recharts-label-list {
-    display: none !important;
+  .section-title {
+    font-size: var(--text-lg);
+  }
+
+  .filter-panel {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+  }
+
+  .summary-card {
+    padding: 1rem;
+  }
+
+  .stat-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card-label { font-size: 12px; }
+  .stat-card-value { font-size: clamp(1.3rem, 5vw, 1.75rem); }
+
+  .chart-toggle-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Tighten Y-axis tick width so bars have more room */
+  .recharts-yAxis {
+    width: 36px !important;
   }
 
   /* Shrink axis tick text */
@@ -585,21 +576,35 @@
   .recharts-legend-wrapper {
     font-size: 10px !important;
   }
-}
 
-/* Tables inside cards — horizontal scroll instead of overflow on mobile */
-@media (max-width: 640px) {
-  table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
+  /* Hide value labels on bars — too cramped at this width */
+  .recharts-label-list {
+    display: none !important;
   }
 }
 
-/* Clip any chart or card container that overflows on mobile */
-@media (max-width: 768px) {
+/* ================================================================ */
+/* BREAKPOINT: 360px ULTRA SMALL                                    */
+/* ================================================================ */
+@media (max-width: 360px) {
   .page-content {
-    overflow: hidden;
+    padding: 0.875rem 0.625rem;
+  }
+
+  .page-back-btn,
+  .page-upload-btn {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+    gap: 3px;
+  }
+
+  .stat-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Prevent long text from overflowing card/container boundaries.
+     Only target block-level HTML content — never recharts SVG text. */
+  p, h1, h2, h3, h4, h5, h6, td, th, li {
+    overflow-wrap: break-word;
   }
 }

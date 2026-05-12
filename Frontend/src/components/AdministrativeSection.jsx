@@ -15,6 +15,7 @@ import {
   fetchTypeDistribution, fetchFacultyEngagementList
 } from '../services/educationStats';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import { getOrderedLegend } from '../utils/chartUtils';
@@ -131,6 +132,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
   // ── Top-level section toggle ──────────────────────────────────────────────
   const [section, setSection] = useState('regular'); // 'regular' | 'education'
+  const [expandedChart, setExpandedChart] = useState(null);
 
   // ══════════════════════════════════════════════════════════════════════════
   // REGULAR EMPLOYEES STATE
@@ -314,7 +316,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
       setEduFilters(prev => (prev.year === 'All' && !(isReadOnlyView && eduView === 'distribution')) ? { ...prev, year: defaultYear } : prev);
     }).catch(err => setEduError(err.message || 'Failed to load education filter options.'));
     return () => { isMounted = false; };
-  }, [serializedEduFilters, token, uploadVersion, eduFilters]);
+  }, [serializedEduFilters, token, uploadVersion, eduFilters, eduView, isReadOnlyView]);
 
   useEffect(() => {
     const loadEduData = async () => {
@@ -796,30 +798,49 @@ function AdministrativeSection({ user, isPublicView = false }) {
             }}>✕ Close</button>
           </div>
         </div>
-        <div id={exportId} style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#f8fafc' }}>
-              <tr>
-                <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
-                <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
-                <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>ENGAGEMENT TYPE</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div id={exportId}>
+          {chartIsMobile ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {data.length > 0 ? data.map((f, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{f.faculty_name}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{f.department}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}</td>
-                </tr>
+                <div key={i} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{f.faculty_name}</div>
+                  <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{f.department}</div>
+                  <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                    {ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}
+                  </span>
+                </div>
               )) : (
-                <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No faculty found.</td></tr>
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No faculty found.</div>
               )}
-            </tbody>
-          </table>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#f8fafc' }}>
+                  <tr>
+                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
+                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
+                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>ENGAGEMENT TYPE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.length > 0 ? data.map((f, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{f.faculty_name}</td>
+                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{f.department}</td>
+                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}</td>
+                    </tr>
+                  )) : (
+                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No faculty found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     );
+
 
     return (
       <>
@@ -1066,7 +1087,40 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 )}
 
                 {/* Bar chart */}
-                <div className={`chart-wrapper ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}>
+                <div 
+                  className={`chart-wrapper clickable-chart ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}
+                  onClick={() => setExpandedChart({
+                    title: "Year-wise Employee Strength",
+                    content: (
+                      <ResponsiveContainer width="100%" height={500}>
+                        <BarChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} content={(props) => {
+                            const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
+                            return (
+                              <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
+                                {ordered.map(entry => (
+                                  <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
+                                    <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            );
+                          }} />
+                          {SERIES_META.map(({ key, color, label }) => (
+                            <Bar key={key} dataKey={key} name={label} fill={color} radius={[6, 6, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
+                              <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
+                            </Bar>
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )
+                  })}
+                >
                   <ResponsiveContainer width="100%" height={350}>
                     <BarChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1100,7 +1154,40 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 </div>
 
                 {/* Trend (Line) chart */}
-                <div className={`chart-wrapper ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}>
+                <div 
+                  className={`chart-wrapper clickable-chart ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}
+                  onClick={() => setExpandedChart({
+                    title: "Year-wise Employee Trends",
+                    content: (
+                      <ResponsiveContainer width="100%" height={500}>
+                        <LineChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} content={(props) => {
+                            const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
+                            return (
+                              <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
+                                {ordered.map(entry => (
+                                  <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
+                                    <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            );
+                          }} />
+                          {SERIES_META.map(({ key, color, label }) => (
+                            <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }} hide={!visibleSeries[key]}>
+                              <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
+                            </Line>
+                          ))}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    )
+                  })}
+                >
                   <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }}>
                       <defs>
@@ -1170,7 +1257,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No active faculty match the current filters.</p>
                   </div>
                 )}
-                <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
+                <div 
+                  id="admin-expertise-chart-container" 
+                  className="clickable-chart"
+                  style={{ padding: '10px' }}
+                  onClick={() => setExpandedChart({
+                    title: "Faculty Department Wise Count",
+                    content: (
+                      <ResponsiveContainer width="100%" height={500}>
+                        <BarChart data={expertiseData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} interval={0} />
+                          <YAxis tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
+                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                          <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey="count" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#667eea' }} />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )
+                  })}
+                >
                   <ResponsiveContainer width="100%" height={420}>
                     <BarChart data={expertiseData} margin={{ top: 26, right: 20, left: 0, bottom: 130 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1204,7 +1311,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   title="Gender Distribution"
                 />
               </div>
-              <div id="admin-gender-chart-container" style={{ position: 'relative', padding: '10px' }}>
+                <div 
+                  id="admin-gender-chart-container" 
+                  className="clickable-chart"
+                  style={{ position: 'relative', padding: '10px' }}
+                  onClick={() => setExpandedChart({
+                    title: "Gender Distribution",
+                    content: (
+                      <ResponsiveContainer width="100%" height={500}>
+                        <PieChart>
+                          <Pie data={genderData} cx="50%" cy="50%" outerRadius={180} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}>
+                            {genderData.map(entry => (
+                              <Cell key={entry.name} fill={entry.fill} />
+                            ))}
+                          </Pie>
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )
+                  })}
+                >
                 {genderData.length === 0 && (
                   <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
                     <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
@@ -1279,7 +1406,38 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="edu-dept-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
+              <div 
+                id="edu-dept-chart-container" 
+                className="clickable-chart"
+                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Department-wise Breakdown",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={eduDeptChartData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
+                        <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
+                                  <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }} />
+                        {renderEduBarSeries()}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {eduDeptChartData.length === 0 && (
                   <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
                     <p>No department data available for the selected filters.</p>
@@ -1396,7 +1554,38 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="edu-trend-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
+              <div 
+                id="edu-trend-chart-container" 
+                className="clickable-chart"
+                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Year-wise Trends",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <LineChart data={eduTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 13, fontWeight: 600 }} />
+                        <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} content={(props) => {
+                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
+                          return (
+                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
+                              {ordered.map(entry => (
+                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
+                                  <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        }} />
+                        {renderEduLineSeries()}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {eduTrendChartData.length === 0 && (
                   <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
                     <p>No trend data available for the selected filters.</p>
@@ -1485,7 +1674,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   title="Type Distribution"
                 />
               </div>
-              <div id="edu-distribution-chart-container" style={{ position: 'relative', minHeight: '480px', padding: '10px' }}>
+              <div 
+                id="edu-distribution-chart-container" 
+                className="clickable-chart"
+                style={{ position: 'relative', minHeight: '480px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Type Distribution",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <PieChart>
+                        <Pie data={eduPieData} cx="50%" cy="50%" outerRadius={180} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                          {eduPieData.map((entry, i) => (
+                            <Cell key={`cell-${i}`} fill={ENGAGEMENT_COLORS[entry.name] || EDU_COLORS[i % EDU_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={v => formatNumber(v)} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {eduPieData.length === 0 && (
                   <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
                     <p>No distribution data available for the selected filters.</p>
@@ -1608,6 +1817,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
           tableName="employees"
           token={token}
         />
+
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
       </div>
     </div>
   );

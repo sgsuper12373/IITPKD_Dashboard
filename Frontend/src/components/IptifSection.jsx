@@ -26,6 +26,9 @@ import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
 import ExportMenu from './ExportMenu';
+import ChartExpandModal from './ChartExpandModal';
+import CustomTooltip from './CustomTooltip';
+
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -155,6 +158,15 @@ function IptifSection({ user, isPublicView = false }) {
   const [loadingFacilities, setLoadingFacilities] = useState(false);
 
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
 
   /* animation key */
   const [animKey, setAnimKey] = useState(0);
@@ -247,7 +259,40 @@ function IptifSection({ user, isPublicView = false }) {
 
   /* ── chart renderer — fixed pixel height so Recharts renders correctly ── */
   const renderChart = (data, color, name) => (
-    <div style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}>
+    <div 
+      className="clickable-chart"
+      style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}
+      onClick={() => setExpandedChart({
+        title: `${currentView?.label} Trend`,
+        content: (
+          <ResponsiveContainer width="100%" height={500}>
+            {chartMode === 'bar' ? (
+              <BarChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                <Bar dataKey="count" name={name} fill={color} radius={[6, 6, 0, 0]}>
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                </Bar>
+              </BarChart>
+            ) : (
+              <LineChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                </Line>
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        )
+      })}
+    >
       {data.length === 0 && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
           <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
@@ -256,10 +301,10 @@ function IptifSection({ user, isPublicView = false }) {
       )}
       <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
         {chartMode === 'bar' ? (
-          <BarChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }} barCategoryGap="20%">
+          <BarChart data={data} margin={{ top: 20, right: 30, left: chartIsMobile ? 20 : 40, bottom: chartIsMobile ? 50 : 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="year" stroke="#666" />
-            <YAxis stroke="#666" />
+            <XAxis dataKey="year" stroke="#666" interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
@@ -267,13 +312,13 @@ function IptifSection({ user, isPublicView = false }) {
             </Bar>
           </BarChart>
         ) : (
-          <LineChart data={data} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+          <LineChart data={data} margin={{ top: 20, right: 30, left: chartIsMobile ? 20 : 40, bottom: chartIsMobile ? 50 : 20 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="year" stroke="#666" padding={{ left: 30, right: 30 }} />
-            <YAxis stroke="#666" />
+            <XAxis dataKey="year" stroke="#666" interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} tick={{ fontSize: 11 }} />
+            <YAxis stroke="#666" tick={{ fontSize: 11 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
+            <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 5, fill: color, strokeWidth: 0 }} activeDot={{ r: 7 }}>
               <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
             </Line>
           </LineChart>
@@ -281,6 +326,7 @@ function IptifSection({ user, isPublicView = false }) {
       </ResponsiveContainer>
     </div>
   );
+
 
   /* ── current view config ── */
   const currentView = VIEWS.find(v => v.id === viewType);
@@ -383,6 +429,22 @@ function IptifSection({ user, isPublicView = false }) {
   const renderTable = () => {
     if (viewType === 'projects') {
       if (!projectsTable.length && !loadingProjects) return <EmptyState />;
+      if (chartIsMobile) {
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+            {projectsTable.map((row, idx) => (
+              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.project_name}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Scheme:</span><br/>{row.scheme}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Status:</span><br/><span style={{ backgroundColor: row.status === 'Ongoing' ? '#e0f2fe' : '#f1f5f9', color: row.status === 'Ongoing' ? '#0284c7' : '#475569', padding: '2px 8px', borderRadius: '10px', fontSize: '11px' }}>{row.status}</span></div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Start Date:</span><br/>{row.start_date ? new Date(row.start_date).toLocaleDateString() : 'N/A'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
       return (
         <TableShell headerBg="#667eea" columns="2fr 1.5fr 1fr 1.2fr">
           {[
@@ -403,6 +465,23 @@ function IptifSection({ user, isPublicView = false }) {
     }
     if (viewType === 'programs') {
       if (!programsTable.length && !loadingPrograms) return <EmptyState />;
+      if (chartIsMobile) {
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+            {programsTable.map((row, idx) => (
+              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.program_name}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Type:</span><br/>{row.type}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Association:</span><br/>{row.association}</div>
+                  <div style={{ gridColumn: 'span 2' }}><span style={{ color: '#64748b', fontWeight: '600' }}>Target Audience:</span><br/>{row.targetted_audi}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Attendees:</span><br/>{row.no_of_attendees}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
       return (
         <TableShell headerBg="#f093fb" columns="2fr 1.2fr 1.2fr 1.5fr 1fr">
           {[
@@ -420,6 +499,23 @@ function IptifSection({ user, isPublicView = false }) {
     }
     if (viewType === 'startups') {
       if (!startupsTable.length && !loadingStartups) return <EmptyState />;
+      if (chartIsMobile) {
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+            {startupsTable.map((row, idx) => (
+              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.startup_name}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Domain:</span><br/>{row.domain}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Status:</span><br/>{row.status}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Jobs Created:</span><br/>{row.number_of_jobs}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Revenue:</span><br/>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
       return (
         <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
           {[
@@ -438,6 +534,23 @@ function IptifSection({ user, isPublicView = false }) {
     }
     if (viewType === 'facilities') {
       if (!facilitiesTable.length && !loadingFacilities) return <EmptyState />;
+      if (chartIsMobile) {
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+            {facilitiesTable.map((row, idx) => (
+              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.facility_name}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Type:</span><br/>{row.facility_type}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Availability:</span><br/>{row.availability_status}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Financial Year:</span><br/>{row.financial_year}</div>
+                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Revenue:</span><br/>{row.revenue_made ? `₹${formatNumber(row.revenue_made)}` : '0'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
       return (
         <TableShell headerBg="#f97316" columns="2fr 1.5fr 1.2fr 1.2fr 1.2fr">
           {[
@@ -668,9 +781,19 @@ function IptifSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
+
+      {/* Fullscreen Chart Modal */}
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
     </div>
   );
 }
+
 
 /* ── small helper ── */
 function EmptyState({ msg }) {

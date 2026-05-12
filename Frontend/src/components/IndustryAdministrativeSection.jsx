@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -27,6 +27,7 @@ import './GrievanceSection.css';
 import './ResearchSection.css';
 import '../DesignSystem.css';
 import ExportMenu from './ExportMenu';
+import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
 
 const TYPE_COLORS = ['#6366f1', '#22c55e', '#f97316', '#a855f7', '#14b8a6', '#0ea5e9', '#facc15'];
@@ -88,6 +89,14 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem('authToken');
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
@@ -531,9 +540,32 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   title="Year-wise Faculty Industry Stints"
                 />
               </div>
-              <div id="externships-yearly-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+              <div 
+                id="externships-yearly-container" 
+                className="bar-chart-container clickable-chart" 
+                style={{ position: 'relative', height: '400px' }}
+                onClick={() => setExpandedChart({
+                  title: "Year-wise Faculty Industry Stints",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={yearlyChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        {externshipTypeKeys.map((type, index) => (
+                          <Bar key={type} dataKey={type} stackId="a" fill={TYPE_COLORS[index % TYPE_COLORS.length]}>
+                            <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                          </Bar>
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                  <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                     <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#888" tick={{ fontSize: 12 }} />
@@ -594,11 +626,50 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   />
                 </div>
               </div>
-              <div id="externships-dept-container" className="bar-chart-container" style={{ position: 'relative', height: '400px' }}>
+              <div 
+                id="externships-dept-container" 
+                className="bar-chart-container clickable-chart" 
+                style={{ position: 'relative', height: '400px' }}
+                onClick={() => setExpandedChart({
+                  title: deptChartType === 'bar' ? "Department-wise Externships" : "Department Yearly Trend",
+                  content: (
+                    <div style={{ height: '500px', padding: '20px' }}>
+                      {deptChartType === 'bar' ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={departmentComparisonData} margin={{ top: 40, right: 30, left: 40, bottom: 100 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                            <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={100} interval={0} />
+                            <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Bar dataKey="count" name="Externships" fill="#22c55e" radius={[4, 4, 0, 0]}>
+                              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                            <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
+                            <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                            {departmentYearlyTrendData.departments.map((dept, index) => (
+                              <Line key={dept} type="linear" dataKey={dept} stroke={TYPE_COLORS[index % TYPE_COLORS.length]} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}>
+                                <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                              </Line>
+                            ))}
+                          </LineChart>
+                        </ResponsiveContainer>
+                      )}
+                    </div>
+                  )
+                })}
+              >
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={400}>
-                      <BarChart data={departmentComparisonData} margin={{ top: 30, right: 30, left: 40, bottom: 80 }}>
+                      <BarChart data={departmentComparisonData} margin={{ top: 30, right: 30, left: chartIsMobile ? 10 : 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                         <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
                         <YAxis stroke="#888" tick={{ fontSize: 12 }} />
@@ -617,7 +688,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <div className={`chart-wrapper ${deptChartType === 'trend' ? 'active' : 'inactive'}`}>
                   {departmentYearlyTrendData.trendData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={400}>
-                      <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: 40, bottom: 30 }}>
+                      <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
                         <YAxis stroke="#888" tick={{ fontSize: 12 }} />
@@ -667,48 +738,82 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     exportType="table"
                   />
                 </div>
-                <div id="externship-directory-table" className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-                  <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                      <tr style={{ backgroundColor: '#f97316' }}>
-                        {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
-                          <th key={header} style={{ padding: '16px 12px', textAlign: 'left', color: 'white', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>
-                            {header}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div id="externship-directory-table">
+                  {chartIsMobile ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {externshipList.length > 0 ? (
-                        externshipList.map((e, i) => (
-                          <tr
-                            key={e.externship_id}
-                            style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa', transition: 'background-color 0.2s' }}
-                            className="table-row-hover"
-                          >
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                        externshipList.map((e) => (
+                          <div key={e.externship_id} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{e.faculty_name}</div>
+                            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>{e.department}</div>
+                            <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
+                              <span style={{ fontWeight: '600', color: '#64748b' }}>Partner:</span> {e.industry_name}
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
                               <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
                                 {e.type}
                               </span>
-                            </td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
-                            <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
-                          </tr>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                              <div style={{ fontSize: '13px', color: '#475569' }}>
+                                <strong>{formatDuration(e.duration_days)}</strong>
+                              </div>
+                              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                                {formatDate(e.startdate)} - {formatDate(e.enddate)}
+                              </div>
+                            </div>
+                          </div>
                         ))
                       ) : (
-                        <tr>
-                          <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-                            No externship records found
-                          </td>
-                        </tr>
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>No externship records found</div>
                       )}
-                    </tbody>
-                  </table>
+                    </div>
+                  ) : (
+                    <div className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
+                      <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
+                        <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                          <tr style={{ backgroundColor: '#f97316' }}>
+                            {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
+                              <th key={header} style={{ padding: '16px 12px', textAlign: 'left', color: 'white', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>
+                                {header}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {externshipList.length > 0 ? (
+                            externshipList.map((e, i) => (
+                              <tr
+                                key={e.externship_id}
+                                style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa', transition: 'background-color 0.2s' }}
+                                className="table-row-hover"
+                              >
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
+                                  <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
+                                    {e.type}
+                                  </span>
+                                </td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
+                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+                                No externship records found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
+
               </div>
             )}
 
@@ -721,6 +826,15 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           tableName="externship_info"
           token={token}
         />
+
+        {/* Fullscreen Chart Modal */}
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 
 const GENDER_COLORS = ['#6366f1', '#ec4899', '#f97316'];
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
@@ -113,7 +114,7 @@ function PlacementSection({ user, isPublicView = false }) {
   const [topRecruitersFilters, setTopRecruitersFilters] = useState({ ...DEFAULT_FILTERS });
 
   // Dedicated filter state for the always-visible summary cards
-  const [summaryFilters, setSummaryFilters] = useState({ ...DEFAULT_FILTERS });
+  const [summaryFilters] = useState({ ...DEFAULT_FILTERS });
 
   const [summary, setSummary] = useState({
     registered: 0, placed: 0, placement_percentage: 0,
@@ -133,6 +134,7 @@ function PlacementSection({ user, isPublicView = false }) {
   });
 
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
 
   const latestYear = useMemo(() => {
     if (!filterOptions.years?.length) return null;
@@ -395,13 +397,15 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [topRecruitersFilters, token, viewType, uploadVersion, isRestrictedUser]);
 
   // ── Chart data ────────────────────────────────────────────────────────────
-  const placementTrendChartData = useMemo(() =>
-    trendData.map(row => ({
+  const placementTrendChartData = useMemo(() => {
+    const data = trendData.map(row => ({
       year: row.year,
       percentage: row.placement_percentage || 0,
       registered: row.registered || 0,
       placed: row.placed || 0
-    })), [trendData]);
+    }));
+    return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
+  }, [trendData, chartIsMobile]);
 
   const genderBarData = useMemo(() =>
     genderData.map(row => ({
@@ -427,12 +431,14 @@ function PlacementSection({ user, isPublicView = false }) {
         percentage: row.placement_percentage || 0
       })), [programStatus, isRestrictedUser]);
 
-  const recruiterChartData = useMemo(() =>
-    recruiterStats.map(row => ({
+  const recruiterChartData = useMemo(() => {
+    const data = recruiterStats.map(row => ({
       year: row.year,
       companies: row.companies || 0,
       offers: row.offers || 0
-    })), [recruiterStats]);
+    }));
+    return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
+  }, [recruiterStats, chartIsMobile]);
 
   const sectorPieData = useMemo(() =>
     sectorDistribution.map(row => ({
@@ -441,13 +447,15 @@ function PlacementSection({ user, isPublicView = false }) {
       offers: row.offers || 0
     })), [sectorDistribution]);
 
-  const packageTrendChartData = useMemo(() =>
-    packageTrend.map(row => ({
+  const packageTrendChartData = useMemo(() => {
+    const data = packageTrend.map(row => ({
       year: row.year,
       highest: row.highest && row.highest !== 0 ? row.highest : null,
       lowest: row.lowest && row.lowest !== 0 ? row.lowest : null,
       average: row.average && row.average !== 0 ? row.average : null,
-    })), [packageTrend]);
+    }));
+    return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
+  }, [packageTrend, chartIsMobile]);
 
   // ── Radio buttons config — restricted views filtered out for restricted users ──
   const ALL_RADIO_BUTTONS = [
@@ -847,19 +855,39 @@ function PlacementSection({ user, isPublicView = false }) {
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
                   {trendChartMode === 'bar' ? (
-                    <BarChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                      <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                      <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
-                      <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
-                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
-                      </Bar>
-                      <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
-                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
-                      </Bar>
-                    </BarChart>
+                    <div 
+                      className="chart-wrapper clickable-chart"
+                      onClick={() => setExpandedChart({
+                        title: "Placement Trends",
+                        content: (
+                          <ResponsiveContainer width="100%" height={450}>
+                            <BarChart data={placementTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                              <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                              <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                              <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                              <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )
+                      })}
+                    >
+                      <BarChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                        <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                        <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
+                        <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        </Bar>
+                        <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        </Bar>
+                      </BarChart>
+                    </div >
                   ) : (
                     <LineChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -914,12 +942,35 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Gender-wise Placement Status"
                 />
               </div>
-              <div id="placement-gender-container" className={`chart-container ${!genderBarData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
+              <div id="placement-gender-container" 
+                className={`chart-container clickable-chart ${!genderBarData.length ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Gender Breakdown",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={genderBarData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="30%">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
+                        <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: GENDER_COLORS[0] }} />
+                        </Bar>
+                        <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: GENDER_COLORS[1] }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${genderBarData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={genderBarData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
+                  <BarChart data={genderBarData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: 30 }} barCategoryGap="30%">
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -964,14 +1015,37 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Program-wise Placement Performance"
                 />
               </div>
-              <div id="placement-program-container" className={`chart-container ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
+              <div id="placement-program-container" 
+                className={`chart-container clickable-chart ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Program-wise Status",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={programStatusChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#6366f1" }} />
+                        </Bar>
+                        <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${programStatusChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={programStatusChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={programStatusChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                     <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
@@ -1011,14 +1085,37 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Recruiter Statistics"
                 />
               </div>
-              <div id="placement-recruiters-container" className={`chart-container ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
+              <div id="placement-recruiters-container" 
+                className={`chart-container clickable-chart ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Recruiter Statistics",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={recruiterChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="companies" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#f59e0b" }} />
+                        </Bar>
+                        <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="offers" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#38bdf8" }} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${recruiterChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={recruiterChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={recruiterChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                     <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
@@ -1104,14 +1201,34 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Salary Package Trends (LPA)"
                 />
               </div>
-              <div id="placement-packages-container" className={`chart-container ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
+              <div id="placement-packages-container" 
+                className={`chart-container clickable-chart ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Salary Package Trends",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <LineChart data={packageTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} label={{ value: 'LPA', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 600 } }} />
+                        <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                        <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={3} dot={{ r: 6 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${packageTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={packageTrendChartData} margin={{ top: 26, right: 20, left: 50, bottom: 30 }}>
+                  <LineChart data={packageTrendChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 50, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                     <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
@@ -1153,51 +1270,87 @@ function PlacementSection({ user, isPublicView = false }) {
                 />
               </div>
               <div id="placement-top-recruiters-table">
-                <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-                  <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                      <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Company</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
-                        <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {topRecruiters.map((row, index) => (
-                        <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
-                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>
-                            {row.sector && (
-                              <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
-                                {row.sector}
-                              </span>
-                            )}
-                          </td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
+                {chartIsMobile ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {topRecruiters.map((row) => (
+                      <div key={`${row.year}-${row.company_name}`} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e0e0e0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                          <div>
+                            <div style={{ fontSize: '12px', color: '#666', fontWeight: '600', marginBottom: '4px' }}>{row.year}</div>
+                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a' }}>{row.company_name}</div>
+                          </div>
+                          {row.sector && (
+                            <span style={{ backgroundColor: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                              {row.sector}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Offers</div>
+                            <div style={{ fontSize: '16px', fontWeight: '700', color: '#8b5cf6' }}>{formatNumber(row.offers)}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Hires</div>
+                            <div style={{ fontSize: '16px', fontWeight: '700', color: '#10b981' }}>{formatNumber(row.hires)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {!topRecruiters.length && (
+                      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #d1d5db', color: '#6b7280' }}>
+                        No information available for the selected filter
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
+                    <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
+                      <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                        <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Company</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
+                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
                         </tr>
-                      ))}
-                      {!topRecruiters.length && (
-                        <tr>
-                          <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                            No information available for the selected filter
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {topRecruiters.map((row, index) => (
+                          <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
+                            <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>
+                              {row.sector && (
+                                <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
+                                  {row.sector}
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
+                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
+                          </tr>
+                        ))}
+                        {!topRecruiters.length && (
+                          <tr>
+                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                              No information available for the selected filter
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 {topRecruiters.length > 0 && (
-                  <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                  <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Entries</div></div>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{new Set(topRecruiters.map(r => r.company_name)).size}</div><div style={{ color: '#666', fontSize: '12px' }}>Unique Companies</div></div>
                     <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.reduce((s, r) => s + (r.offers || 0), 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
                   </div>
                 )}
               </div>
+
             </div>
           )}
 
@@ -1233,7 +1386,16 @@ function PlacementSection({ user, isPublicView = false }) {
         tableName={activeUploadTable}
         token={token}
       />
+
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
     </div>
+
   );
 }
 

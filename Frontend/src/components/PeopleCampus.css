@@ -4,7 +4,8 @@
 
 .people-campus-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* 2-col on mobile: min(140px, 100%) lets two columns fit comfortably at 360px */
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
@@ -100,11 +101,14 @@
 /* ===================================================== */
 
 .card-title {
-  font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+  /* Desktop: scales fluidly between 1rem and 1.45rem */
+  font-size: clamp(1rem, 2.5vw, 1.45rem);
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: var(--text-main);
-
+  line-height: 1.3;
+  word-break: break-word;   /* prevent text escaping card boundary */
+  overflow-wrap: break-word;
   transition: color 0.3s ease;
 }
 
@@ -114,7 +118,8 @@
   color: var(--text-muted);
   margin: 0;
   flex-grow: 1;
-
+  word-break: break-word;
+  overflow-wrap: break-word;
   transition: color 0.3s ease;
 }
 
@@ -153,19 +158,25 @@
 }
 
 /* ===================================================== */
-/* TOUCH DEVICES */
+/* TOUCH DEVICES — hide arrow, keep active press effect  */
 /* ===================================================== */
 
 @media (hover: none) {
+  /* Arrow is useless and overlapping on touch — hide it completely */
+  .people-campus-card::after {
+    display: none;
+  }
+
   .people-campus-card:hover {
     transform: none;
     box-shadow: none;
     background-color: #ffffff;
+    border-color: var(--border-light);
   }
 
   .people-campus-card:active {
     transform: scale(0.97);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -175,17 +186,48 @@
 
 @media (max-width: 768px) {
   .people-campus-grid {
-    gap: 1rem;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .people-campus-card {
-    padding: 1.4rem;
-    min-height: 150px;
+    padding: 0.9rem;
+    min-height: unset;       /* let content dictate height, no forced min */
+    /* Extra padding-bottom so arrow (if ever visible) never overlaps text */
+    padding-bottom: 0.9rem;
   }
 
   .card-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    line-height: 1.25;
+  }
+
+  .card-description {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    display: none; /* hide description on mobile — too cramped in 2-col */
+  }
+}
+
+@media (max-width: 480px) {
+  .people-campus-grid {
+    gap: 0.6rem;
+  }
+
+  .people-campus-card {
+    padding: 0.75rem;
+  }
+
+  .card-title {
+    font-size: 0.78rem;
   }
 }

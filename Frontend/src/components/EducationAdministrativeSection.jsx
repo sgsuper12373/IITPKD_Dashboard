@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+﻿import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -27,6 +27,7 @@ import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
 import { useNavigate } from 'react-router-dom';
+import ChartExpandModal from './ChartExpandModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 
@@ -121,6 +122,14 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
     honorary: false
   });
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle, { passive: true });
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   // Drill-down states
   const [selectedCardType, setSelectedCardType] = useState(null);
@@ -203,7 +212,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   const currentFilters = getCurrentFilters();
   const serializedFilters = JSON.stringify(currentFilters);
 
-  // Fetch filter options — cross-filtering: refetch when current filters change
+  // Fetch filter options â€” cross-filtering: refetch when current filters change
   useEffect(() => {
     let isMounted = true;
     const loadFilterOptions = async () => {
@@ -252,7 +261,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
     loadFilterOptions();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion, viewType, currentFilters, handleFilterChange]);
+  }, [serializedFilters, token, uploadVersion, viewType, handleFilterChange]);
 
   // Fetch summary data
   useEffect(() => {
@@ -482,7 +491,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
       <div className={isPublicView ? "" : "page-content"}>
         {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/education')}>
-            ← Back to Education
+            â† Back to Education
           </button>
         )}
         {!isReadOnlyView && (
@@ -535,7 +544,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               style={{ accentColor: '#667eea', width: '16px', height: '16px', cursor: 'pointer' }}
             />
             <span style={{ fontWeight: viewType === 'summary' ? 'bold' : 'normal', fontSize: '14px' }}>
-              📊 Summary Indicators
+              ðŸ“Š Summary Indicators
             </span>
           </label>
 
@@ -560,7 +569,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               style={{ accentColor: '#22c55e', width: '16px', height: '16px', cursor: 'pointer' }}
             />
             <span style={{ fontWeight: viewType === 'department' ? 'bold' : 'normal', fontSize: '14px' }}>
-              🏢 Department-wise
+              ðŸ¢ Department-wise
             </span>
           </label>
 
@@ -585,7 +594,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               style={{ accentColor: '#f97316', width: '16px', height: '16px', cursor: 'pointer' }}
             />
             <span style={{ fontWeight: viewType === 'trend' ? 'bold' : 'normal', fontSize: '14px' }}>
-              📈 Year-wise Trends
+              ðŸ“ˆ Year-wise Trends
             </span>
           </label>
 
@@ -610,7 +619,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               style={{ accentColor: '#a855f7', width: '16px', height: '16px', cursor: 'pointer' }}
             />
             <span style={{ fontWeight: viewType === 'distribution' ? 'bold' : 'normal', fontSize: '14px' }}>
-              🥧 Type Distribution
+              ðŸ¥§ Type Distribution
             </span>
           </label>
 
@@ -635,7 +644,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               style={{ accentColor: '#0ea5e9', width: '16px', height: '16px', cursor: 'pointer' }}
             />
             <span style={{ fontWeight: viewType === 'details' ? 'bold' : 'normal', fontSize: '14px' }}>
-              📋 Engagement Details
+              ðŸ“‹ Engagement Details
             </span>
           </label>
 
@@ -716,92 +725,92 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               </div>
 
               <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="education-summary-cards-container" style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1.5rem',
-                marginTop: '1.5rem'
-              }}>
-                {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
-                  <div
-                    key={card.type}
-                    onClick={() => setSelectedCardType(card.type)}
-                    style={{
-                      backgroundColor: '#fff',
-                      padding: '1.5rem',
-                      borderRadius: '12px',
-                      border: selectedCardType === card.type
-                        ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}`
-                        : '1px solid var(--border-light)',
-                      boxShadow: selectedCardType === card.type
-                        ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20`
-                        : '0 4px 12px rgba(0, 0, 0, 0.08)',
+                <div id="education-summary-cards-container" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1.5rem',
+                  marginTop: '1.5rem'
+                }}>
+                  {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
+                    <div
+                      key={card.type}
+                      onClick={() => setSelectedCardType(card.type)}
+                      style={{
+                        backgroundColor: '#fff',
+                        padding: '1.5rem',
+                        borderRadius: '12px',
+                        border: selectedCardType === card.type
+                          ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}`
+                          : '1px solid var(--border-light)',
+                        boxShadow: selectedCardType === card.type
+                          ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20`
+                          : '0 4px 12px rgba(0, 0, 0, 0.08)',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        transform: selectedCardType === card.type ? 'translateY(-4px)' : 'none',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedCardType !== card.type) {
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                          e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedCardType !== card.type) {
+                          e.currentTarget.style.transform = 'none';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                        }
+                      }}
+                    >
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: 'var(--text-muted)',
+                        marginBottom: '0.5rem',
+                        fontWeight: '600'
+                      }}>
+                        {ENGAGEMENT_LABELS[card.type] || card.type}
+                      </div>
+                      <div style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: ENGAGEMENT_COLORS[card.type] || '#667eea',
+                        marginBottom: '0.25rem'
+                      }}>
+                        {formatNumber(card.total)}
+                      </div>
+                      <div style={{
+                        fontSize: '0.85rem',
+                        color: 'var(--text-muted)'
+                      }}>
+                        Active: {formatNumber(card.active)}
+                      </div>
+                      {selectedCardType === card.type && (
+                        <div style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: '4px',
+                          backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea'
+                        }} />
+                      )}
+                    </div>
+                  ))}
+                  {summaryCards.length === 0 && (
+                    <div style={{
+                      gridColumn: '1 / -1',
                       textAlign: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      transform: selectedCardType === card.type ? 'translateY(-4px)' : 'none',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (selectedCardType !== card.type) {
-                        e.currentTarget.style.transform = 'translateY(-4px)';
-                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (selectedCardType !== card.type) {
-                        e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-                      }
-                    }}
-                  >
-                    <div style={{
-                      fontSize: '0.9rem',
-                      color: 'var(--text-muted)',
-                      marginBottom: '0.5rem',
-                      fontWeight: '600'
-                    }}>
-                      {ENGAGEMENT_LABELS[card.type] || card.type}
-                    </div>
-                    <div style={{
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      color: ENGAGEMENT_COLORS[card.type] || '#667eea',
-                      marginBottom: '0.25rem'
-                    }}>
-                      {formatNumber(card.total)}
-                    </div>
-                    <div style={{
-                      fontSize: '0.85rem',
+                      padding: '2rem',
                       color: 'var(--text-muted)'
                     }}>
-                      Active: {formatNumber(card.active)}
+                      No data available
                     </div>
-                    {selectedCardType === card.type && (
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '4px',
-                        backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea'
-                      }} />
-                    )}
-                  </div>
-                ))}
-                {summaryCards.length === 0 && (
-                  <div style={{
-                    gridColumn: '1 / -1',
-                    textAlign: 'center',
-                    padding: '2rem',
-                    color: 'var(--text-muted)'
-                  }}>
-                    No data available
-                  </div>
-                )}
-              </div>
-)}</>
+                  )}
+                </div>
+              )}</>
 
               {summary.overall_total > 0 && (
                 <div style={{
@@ -878,39 +887,59 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         onMouseEnter={(e) => { e.target.style.backgroundColor = '#e2e8f0'; }}
                         onMouseLeave={(e) => { e.target.style.backgroundColor = '#f1f5f9'; }}
                       >
-                        ✕ Close
+                        âœ• Close
                       </button>
                     </div>
                   </div>
 
-                    <div id="education-summary-drilldown-table" style={{ overflowX: 'auto' }}>
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                          <tr style={{ backgroundColor: '#f8fafc' }}>
-                            <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
-                            <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                    <div id="education-summary-drilldown-table">
+                      {chartIsMobile ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                           {cardDetailsData.length > 0 ? (
                             cardDetailsData.map((faculty, idx) => (
-                              <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }}>
-                                <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{faculty.faculty_name}</td>
-                                <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{faculty.department}</td>
-                              </tr>
+                              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{faculty.faculty_name}</div>
+                                <div style={{ fontSize: '13px', color: '#64748b' }}>{faculty.department}</div>
+                              </div>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                                No faculty found for this category and year.
-                              </td>
-                            </tr>
+                            <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                              No faculty found for this category and year.
+                            </div>
                           )}
-                        </tbody>
-                      </table>
-)}</>
+                        </div>
+                      ) : (
+                        <div style={{ overflowX: 'auto' }}>
+                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                              <thead>
+                                <tr style={{ backgroundColor: '#f8fafc' }}>
+                                  <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
+                                  <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {cardDetailsData.length > 0 ? (
+                                  cardDetailsData.map((faculty, idx) => (
+                                    <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }}>
+                                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{faculty.faculty_name}</td>
+                                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{faculty.department}</td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                      No faculty found for this category and year.
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          )}</>
+                        </div>
+                      )}
                     </div>
+
                 </div>
               )}
             </div>
@@ -1014,7 +1043,33 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-dept-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
+              <div id="education-dept-chart-container" 
+                className={`bar-chart-container clickable-chart ${departmentChartData.length === 0 ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Department-wise Breakdown",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <BarChart data={departmentChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="department" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
+                        {summary.summary.map((item, index) => {
+                          const type = item.engagement_type;
+                          if (type === 'FacultyFellow') return null;
+                          return (
+                            <Bar key={type} dataKey={type} name={ENGAGEMENT_LABELS[type] || type} fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} radius={[6, 6, 0, 0]}>
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                            </Bar>
+                          );
+                        })}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {departmentChartData.length === 0 && !loading.department && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1024,8 +1079,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No department data available for the selected filters.</p>
                   </div>
                 )}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={400}>
                   <BarChart data={departmentChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                     <XAxis
@@ -1065,7 +1119,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     })}
                   </BarChart>
                 </ResponsiveContainer>
-)}</>
               </div>
             </div>
           </div>
@@ -1168,7 +1221,33 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-trend-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
+              <div id="education-trend-chart-container" 
+                className={`bar-chart-container clickable-chart ${yearTrendChartData.length === 0 ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Year-wise Trends",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <LineChart data={yearTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
+                        {summary.summary.map((item, index) => {
+                          const type = item.engagement_type;
+                          if (type === 'FacultyFellow') return null;
+                          return (
+                            <Line key={type} type="linear" dataKey={type} name={ENGAGEMENT_LABELS[type] || type} stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                            </Line>
+                          );
+                        })}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {yearTrendChartData.length === 0 && !loading.trend && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1178,8 +1257,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No trend data available for the selected filters.</p>
                   </div>
                 )}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={400}>
                   <LineChart data={yearTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                     <XAxis
@@ -1217,7 +1295,6 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     })}
                   </LineChart>
                 </ResponsiveContainer>
-)}</>
               </div>
             </div>
           </div>
@@ -1320,7 +1397,26 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-distribution-chart-container" className="bar-chart-container" style={{ position: 'relative', minHeight: '400px', padding: '10px' }}>
+              <div id="education-distribution-chart-container" 
+                className={`bar-chart-container clickable-chart ${pieChartData.length === 0 ? 'chart-has-empty' : ''}`} 
+                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Type Distribution",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <PieChart>
+                        <Pie data={pieChartData} cx="50%" cy="50%" labelLine={true} outerRadius={150} fill="#8884d8" dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                          {pieChartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={ENGAGEMENT_COLORS[entry.name] || COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => formatNumber(value)} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {pieChartData.length === 0 && !loading.distribution && (
                   <div className="no-data-overlay" style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -1454,48 +1550,69 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              {/* Directory Table - Conditionally Mounted for Performance */}
-              {viewType === 'details' && (
-                <div id="education-engagement-details-table" className="table-responsive accelerated-scroll" style={{
-                  height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
-                  border: '1px solid var(--border-light)', borderRadius: '8px',
-                  backgroundColor: '#fff', position: 'relative'
-                }}>
-                  {engagementList.length === 0 && !loading.details && (
-                    <div className="no-data-overlay" style={{
-                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      display: 'flex', justifyContent: 'center', alignItems: 'center',
-                      backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
-                    }}>
-                      <p>No engagement data available for the selected filters.</p>
-                    </div>
-                  )}
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
-                      <tr>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {engagementList.map((item, index) => (
-                        <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-)}</>
-                </div>
-              )}
+              <div id="education-engagement-details-table">
+                {chartIsMobile ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {engagementList.map((item, index) => (
+                      <div key={item.engagement_code || index} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                          <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{item.faculty_name || 'â€”'}</div>
+                          <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>#{index + 1}</span>
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
+                          <span style={{ fontWeight: '600', color: '#64748b' }}>Discipline:</span> {item.department || 'â€”'}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#475569', marginBottom: '12px' }}>
+                          <span style={{ fontWeight: '600', color: '#64748b' }}>Background:</span> {item.fc_bg_type || 'â€”'}
+                        </div>
+                        {item.remarks && (
+                          <div style={{ backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', fontSize: '13px', fontStyle: 'italic', color: '#64748b', borderLeft: '3px solid #cbd5e1' }}>
+                            {item.remarks}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {engagementList.length === 0 && (
+                      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                        No engagement data available for the selected filters.
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="table-responsive accelerated-scroll" style={{ height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '8px', backgroundColor: '#fff', position: 'relative' }}>
+                    {engagementList.length === 0 && !loading.details && (
+                      <div className="no-data-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5 }}>
+                        <p>No engagement data available for the selected filters.</p>
+                      </div>
+                    )}
+                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                        <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                          <tr>
+                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {engagementList.map((item, index) => (
+                            <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                              <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                              <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || 'â€”'}</td>
+                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || 'â€”'}</td>
+                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || 'â€”'}</td>
+                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || 'â€”'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}</>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
 
@@ -1580,74 +1697,97 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   <h2>Honorary Professors</h2>
                   <p className="chart-description">List of honorary professors for the selected filters</p>
                 </div>
-                <ExportMenu 
-                  elementId="education-honorary-professors-table"
-                  data={engagementList}
-                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
-                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
-                  filename="honorary_professors"
-                  title="Honorary Professors"
-                  exportType="table"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <ExportMenu 
+                    elementId="education-honorary-professors-table"
+                    data={engagementList}
+                    headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                    keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                    filename="honorary_professors"
+                    title="Honorary Professors"
+                    exportType="table"
+                  />
+                </div>
               </div>
 
-              {/* Honorary Table - Conditionally Mounted for Performance */}
               {viewType === 'honorary' && (
-                <div id="education-honorary-professors-table" className="table-responsive accelerated-scroll" style={{
-                  height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto',
-                  border: '1px solid var(--border-light)', borderRadius: '8px',
-                  backgroundColor: '#fff', position: 'relative'
-                }}>
-                  {engagementList.length === 0 && !loading.details && (
-                    <div className="no-data-overlay" style={{
-                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      display: 'flex', justifyContent: 'center', alignItems: 'center',
-                      backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5
-                    }}>
-                      <p>No honorary professors found for the selected filters.</p>
+                <div id="education-honorary-professors-table">
+                  {chartIsMobile ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {engagementList.map((item, index) => (
+                        <div key={item.engagement_code || index} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{item.faculty_name || 'â€”'}</div>
+                            <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>#{index + 1}</span>
+                          </div>
+                          <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: '600', color: '#64748b' }}>Discipline:</span> {item.department || 'â€”'}
+                          </div>
+                          {item.remarks && (
+                            <div style={{ backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', fontSize: '13px', fontStyle: 'italic', color: '#64748b', borderLeft: '3px solid #cbd5e1' }}>
+                              {item.remarks}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {engagementList.length === 0 && (
+                        <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                          No honorary professor data available.
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="table-responsive accelerated-scroll" style={{ height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '8px', backgroundColor: '#fff', position: 'relative' }}>
+                      {engagementList.length === 0 && !loading.details && (
+                        <div className="no-data-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5 }}>
+                          <p>No honorary professor data available for the selected filters.</p>
+                        </div>
+                      )}
+                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                        <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
+                          <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                            <tr>
+                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
+                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
+                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
+                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
+                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {engagementList.map((item, index) => (
+                              <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
+                                <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
+                                <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || 'â€”'}</td>
+                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || 'â€”'}</td>
+                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || 'â€”'}</td>
+                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || 'â€”'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}</>
                     </div>
                   )}
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
-                      <tr>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                        <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {engagementList.map((item, index) => (
-                        <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-)}</>
                 </div>
               )}
             </div>
           </div>
-
-
         </div>
 
-        {/* Upload Modal */}
-        {!isReadOnlyView && isAdmin && (
-          <DataUploadModal
-            isOpen={isUploadModalOpen}
-            onClose={() => setIsUploadModalOpen(false)}
-            tableName="faculty_engagement"
-            token={token}
-          />
-        )}
+        <DataUploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          onUploadSuccess={uploadVersion.refresh}
+        />
+
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
       </div>
     </div>
   );

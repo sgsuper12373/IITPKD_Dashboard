@@ -1,0 +1,132 @@
+/* ================================================================
+   NATIVE APP FEEL — Mobile Global Enhancements
+   Imported in Home.css / Page.css via @import
+   ================================================================ */
+
+/* ── Smooth momentum scrolling (iOS native feel) ── */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none; /* prevent pull-to-refresh bouncing on Android */
+}
+
+/* Main content scroll area */
+.main-content,
+#root {
+  overscroll-behavior-y: contain;
+}
+
+/* ── Active / press feedback on all interactive elements ── */
+/* Gives the tactile "press down" feel of a native app */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+    transition: transform 0.08s ease, opacity 0.08s ease;
+  }
+
+  /* Don't scale things that already manage their own transform */
+  .slider-button:active,
+  .hamburger-btn:active,
+  .user-avatar:active {
+    transform: scale(0.92);
+    opacity: 0.75;
+  }
+
+  /* Card press effect */
+  .people-campus-card:active,
+  .vision-pillar-card:active {
+    transform: scale(0.97) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+}
+
+/* ── Native-style page content area ── */
+@media (max-width: 768px) {
+  /* Add padding-bottom so content clears the bottom tab bar */
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Ensure the tab bar always sits above content */
+  .mobile-tab-bar {
+    z-index: 2000;
+  }
+
+  /* Smooth scroll for section content */
+  .main-content {
+    scroll-behavior: smooth;
+  }
+
+  /* Tighten page cards on mobile — feels more native */
+  .page-content {
+    border-radius: 12px;
+    margin: 0 8px;
+    width: calc(100% - 16px);
+  }
+}
+
+/* ── Bottom safe area clearance for iPhone home indicator ── */
+@media (max-width: 768px) {
+  .mobile-tab-bar__inner {
+    padding-bottom: env(safe-area-inset-bottom, 4px);
+  }
+}
+
+/* ── Prevent text selection on UI elements (native feel) ── */
+button,
+.sidebar-nav-item,
+.nav-link,
+.mobile-tab-bar__tab {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* —— Scrollbar hiding on TOUCH devices (native apps don’t show scrollbars) —— */
+/* Only targets actual touch screens, not desktop browsers at small window sizes */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    scrollbar-width: none;
+  }
+}
+
+/* ── Page transition animation ── */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-content {
+  animation: pageSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Skeleton shimmer for loading states ── */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -23,8 +23,8 @@ import {
   fetchOutcomeBreakdown
 } from '../services/iarStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
-
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -56,8 +56,30 @@ function makePieTooltip(total) {
   };
 }
 
-function PieDistributionTable({ data, nameKey, total, colors, user }) {
+function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
   if (!data?.length) return null;
+  if (chartIsMobile) {
+    return (
+      <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {data.map((entry, index) => {
+          const fill = entry.fill || colors[index % colors.length];
+          const pct = total > 0 ? ((entry.count / total) * 100).toFixed(1) : '0.0';
+          return (
+            <div key={index} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '12px 16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ width: 12, height: 12, borderRadius: '50%', background: fill }} />
+                <span style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b' }}>{entry[nameKey]}</span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#667eea' }}>{entry.count}</div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>{pct}% of total</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <div style={{ marginTop: '16px', overflowX: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
@@ -184,6 +206,14 @@ function IarSection({ user, isPublicView = false }) {
 
   const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const [activeView, setActiveView] = useState('trend');
   const [chartType, setChartType] = useState('Bar');
@@ -457,11 +487,36 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-outcome-trend-container" className="chart-container">
-                    <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
+                    <div 
+                      className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
+                      onClick={() => setExpandedChart({
+                        title: "Outcome Trend over Years",
+                        content: (
+                          <ResponsiveContainer width="100%" height={500}>
+                            <BarChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
+                              <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                              <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[6, 6, 0, 0]} barSize={20}>
+                                <LabelList dataKey="total" content={<ClippedLabel fill={TREND_TOTAL_COLOR} />} />
+                              </Bar>
+                              <Bar dataKey="higher" name="Higher Studies" fill={TREND_HIGHER_COLOR} radius={[6, 6, 0, 0]} barSize={20}>
+                                <LabelList dataKey="higher" content={<ClippedLabel fill={TREND_HIGHER_COLOR} />} />
+                              </Bar>
+                              <Bar dataKey="corporate" name="Corporate" fill={TREND_CORPORATE_COLOR} radius={[6, 6, 0, 0]} barSize={20}>
+                                <LabelList dataKey="corporate" content={<ClippedLabel fill={TREND_CORPORATE_COLOR} />} />
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )
+                      })}
+                    >
                       <ResponsiveContainer width="100%" height={350}>
-                        <BarChart data={trendData} margin={{ top: 24, right: 20, left: 40, bottom: 30 }}>
+                        <BarChart data={trendData} margin={{ top: 24, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
@@ -477,11 +532,30 @@ function IarSection({ user, isPublicView = false }) {
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
+                    <div 
+                      className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
+                      onClick={() => setExpandedChart({
+                        title: "Outcome Trend over Years",
+                        content: (
+                          <ResponsiveContainer width="100%" height={500}>
+                            <LineChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
+                              <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                              <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={3} dot={{ r: 6 }} />
+                              <Line type="linear" dataKey="higher" name="Higher Studies" stroke={TREND_HIGHER_COLOR} strokeWidth={3} dot={{ r: 6 }} />
+                              <Line type="linear" dataKey="corporate" name="Corporate" stroke={TREND_CORPORATE_COLOR} strokeWidth={3} dot={{ r: 6 }} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        )
+                      })}
+                    >
                       <ResponsiveContainer width="100%" height={350}>
-                        <LineChart data={trendData} margin={{ top: 24, right: 20, left: 40, bottom: 30 }}>
+                        <LineChart data={trendData} margin={{ top: 24, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
@@ -536,18 +610,38 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-state-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
-                      <PieChart>
-                        <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
-                          {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
-                            <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        {stateTop10.length > 0 && <Tooltip content={<StatePieTooltip />} />}
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <div 
+                      className="clickable-chart"
+                      onClick={() => setExpandedChart({
+                        title: "State-wise Alumni Distribution",
+                        content: (
+                          <ResponsiveContainer width="100%" height={500}>
+                            <PieChart>
+                              <Pie data={stateTop10} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={180} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}>
+                                {stateTop10.map((entry, index) => (
+                                  <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip content={<StatePieTooltip />} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        )
+                      })}
+                    >
+                      <ResponsiveContainer width="100%" height={380}>
+                        <PieChart>
+                          <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                            {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
+                              <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          {stateTop10.length > 0 && <Tooltip content={<StatePieTooltip />} />}
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
                     {stateTop10.length > 0 && (
-                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} user={user} />
+                      <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} chartIsMobile={chartIsMobile} />
                     )}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
@@ -586,18 +680,38 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="iar-country-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
-                      <PieChart>
-                        <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
-                          {(countryTop10.length > 0 ? countryTop10 : [{ country: '', fill: '#f0f0f0' }]).map((entry, index) => (
-                            <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        {countryTop10.length > 0 && <Tooltip content={<CountryPieTooltip />} />}
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <div 
+                      className="clickable-chart"
+                      onClick={() => setExpandedChart({
+                        title: "Global Alumni Reach",
+                        content: (
+                          <ResponsiveContainer width="100%" height={500}>
+                            <PieChart>
+                              <Pie data={countryTop10} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={180} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}>
+                                {countryTop10.map((entry, index) => (
+                                  <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip content={<CountryPieTooltip />} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        )
+                      })}
+                    >
+                      <ResponsiveContainer width="100%" height={380}>
+                        <PieChart>
+                          <Pie data={countryTop10.length > 0 ? countryTop10 : [{ country: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                            {(countryTop10.length > 0 ? countryTop10 : [{ country: '', fill: '#f0f0f0' }]).map((entry, index) => (
+                              <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          {countryTop10.length > 0 && <Tooltip content={<CountryPieTooltip />} />}
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
                     {countryTop10.length > 0 && (
-                      <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} user={user} />
+                      <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} chartIsMobile={chartIsMobile} />
                     )}
                     <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
                       <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
@@ -686,7 +800,31 @@ function IarSection({ user, isPublicView = false }) {
                       </div>
 
                       {/* Bar chart — takes remaining space */}
-                      <div id="iar-dept-outcome-container" style={{ flex: 1, minHeight: 0, maxHeight: '450px' }}>
+                      <div 
+                        id="iar-dept-outcome-container" 
+                        className="clickable-chart"
+                        style={{ flex: 1, minHeight: 0, maxHeight: '450px' }}
+                        onClick={() => setExpandedChart({
+                          title: "Outcome by Department",
+                          content: (
+                            <ResponsiveContainer width="100%" height={500}>
+                              <BarChart data={sortedOutcomeBreakdown} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
+                                <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                                <Tooltip content={<CustomTooltip denominatorKey="total" />} />
+                                <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px', fontWeight: 600 }} />
+                                <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="higher" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: HIGHER_BAR_COLOR }} />
+                                </Bar>
+                                <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="corporate" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: CORPORATE_BAR_COLOR }} />
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          )
+                        })}
+                      >
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
                             data={sortedOutcomeBreakdown}
@@ -725,26 +863,50 @@ function IarSection({ user, isPublicView = false }) {
                         id="iar-dept-outcome-table"
                         style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'auto', width: '100%', maxHeight: '450px' }}
                       >
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                          <thead style={{ position: 'sticky', top: 0, backgroundColor: '#43e97b', color: 'white', zIndex: 1 }}>
-                            <tr>
-                              <th style={{ padding: '10px', textAlign: 'left' }}>Department</th>
-                              <th style={{ padding: '10px', textAlign: 'left' }}>Total Alumni</th>
-                              <th style={{ padding: '10px', textAlign: 'left' }}>Higher Studies</th>
-                              <th style={{ padding: '10px', textAlign: 'left' }}>Corporate</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {sortedOutcomeBreakdown.map((row, index) => (
-                              <tr key={row.department} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                                <td style={{ padding: '8px' }}>{row.department}</td>
-                                <td style={{ padding: '8px' }}>{row.total}</td>
-                                <td style={{ padding: '8px', color: '#43e97b', fontWeight: '500' }}>{row.higher}</td>
-                                <td style={{ padding: '8px', color: '#fa709a', fontWeight: '500' }}>{row.corporate}</td>
-                              </tr>
+                        {chartIsMobile ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {sortedOutcomeBreakdown.map((row) => (
+                              <div key={row.department} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.department}</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                                  <div style={{ textAlign: 'center' }}>
+                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Total</div>
+                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{row.total}</div>
+                                  </div>
+                                  <div style={{ textAlign: 'center' }}>
+                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Higher</div>
+                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#43e97b' }}>{row.higher}</div>
+                                  </div>
+                                  <div style={{ textAlign: 'center' }}>
+                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Corp</div>
+                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#fa709a' }}>{row.corporate}</div>
+                                  </div>
+                                </div>
+                              </div>
                             ))}
-                          </tbody>
-                        </table>
+                          </div>
+                        ) : (
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                            <thead style={{ position: 'sticky', top: 0, backgroundColor: '#43e97b', color: 'white', zIndex: 1 }}>
+                              <tr>
+                                <th style={{ padding: '10px', textAlign: 'left' }}>Department</th>
+                                <th style={{ padding: '10px', textAlign: 'left' }}>Total Alumni</th>
+                                <th style={{ padding: '10px', textAlign: 'left' }}>Higher Studies</th>
+                                <th style={{ padding: '10px', textAlign: 'left' }}>Corporate</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sortedOutcomeBreakdown.map((row, index) => (
+                                <tr key={row.department} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                                  <td style={{ padding: '8px' }}>{row.department}</td>
+                                  <td style={{ padding: '8px' }}>{row.total}</td>
+                                  <td style={{ padding: '8px', color: '#43e97b', fontWeight: '500' }}>{row.higher}</td>
+                                  <td style={{ padding: '8px', color: '#fa709a', fontWeight: '500' }}>{row.corporate}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -798,12 +960,22 @@ function IarSection({ user, isPublicView = false }) {
           </div>
         </div>
 
-        <DataUploadModal
-          isOpen={isUploadModalOpen}
-          onClose={() => setIsUploadModalOpen(false)}
-          tableName="alumni"
-          token={token}
-        />
+      {/* Upload Modal */}
+      <DataUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        tableName="iar_stats"
+        token={token}
+      />
+
+      {/* Fullscreen Chart Modal */}
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
       </div>
     </div>
   );

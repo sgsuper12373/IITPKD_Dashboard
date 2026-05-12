@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -9,6 +9,7 @@ import {
 
 import { fetchIccSummary, fetchIccYearly } from '../services/grievanceStats';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
@@ -28,7 +29,7 @@ function IccSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [yearlyData, setYearlyData] = useState([]);
-  const [visibleMetrics, setVisibleMetrics] = useState({
+  const [visibleMetrics] = useState({
     total: true,
     resolved: true,
     pending: true
@@ -37,11 +38,20 @@ function IccSection({ user, isPublicView = false }) {
   const [summary, setSummary] = useState({
     total: 0,
     resolved: 0,
-    pending: 0
+    pending: 0,
+    yearly_stats: []
   });
-  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
+  const [chartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const token = localStorage.getItem('authToken');
 
@@ -74,7 +84,8 @@ function IccSection({ user, isPublicView = false }) {
         setSummary({
           total: summaryData.total || 0,
           resolved: summaryData.resolved || 0,
-          pending: summaryData.pending || 0
+          pending: summaryData.pending || 0,
+          yearly_stats: summaryData.yearly_stats || []
         });
       } catch (err) {
         console.error('Failed to load ICC data:', err);
@@ -87,10 +98,13 @@ function IccSection({ user, isPublicView = false }) {
     loadData();
   }, [token, uploadVersion]);
 
-  // Calculate resolution rate
-  // const resolutionRate = summary.total > 0 
-  //   ? Math.round((summary.resolved / summary.total) * 100) 
-  //   : 0;
+  const displayYearlyData = useMemo(() => {
+    return chartIsMobile && yearlyData.length > 3 ? yearlyData.slice(-3) : yearlyData;
+  }, [yearlyData, chartIsMobile]);
+
+  const displayStats = useMemo(() => {
+    return chartIsMobile && summary.yearly_stats.length > 3 ? summary.yearly_stats.slice(-3) : summary.yearly_stats;
+  }, [summary.yearly_stats, chartIsMobile]);
 
   return (
     <>
@@ -109,7 +123,7 @@ function IccSection({ user, isPublicView = false }) {
             {!isReadOnlyView && (
               <div className="section-header">
                 <div className="section-header-left">
-                  <h1>Internal Complaints Committee (ICC)</h1>
+                  <h1>ICC (Internal Complaints Committee)</h1>
                 </div>
 
                 <div className="section-header-actions">
@@ -150,117 +164,69 @@ function IccSection({ user, isPublicView = false }) {
                     title="ICC Summary"
                   />
                 </div>
-                {/* Modern Summary Cards */}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <div id="icc-summary-cards-container" className="grid-3" style={{
-                    gap: '20px',
-                    marginBottom: '30px'
+
+                <div id="icc-summary-cards-container" className="grid-3" style={{
+                  gap: '20px',
+                  marginBottom: '30px'
+                }}>
+                  <div style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden'
                   }}>
-                    {/* Total Complaints Card */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Total Complaints</span>
-                        </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.total}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Received over the years</span>
-                        </div>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Total Complaints</span>
+                      </div>
+                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                        {summary.total}
                       </div>
                     </div>
-
-                    {/* Resolved Complaints Card */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Resolved</span>
-                        </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.resolved}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successfully resolved</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Pending Complaints Card */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Pending</span>
-                        </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.pending}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Under review</span>
-                        </div>
-                      </div>
-                    </div>
-
                   </div>
-                )}</>
 
+                  <div style={{
+                    background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Resolved</span>
+                      </div>
+                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                        {summary.resolved}
+                      </div>
+                    </div>
+                  </div>
 
+                  <div style={{
+                    background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Pending</span>
+                      </div>
+                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+                        {summary.pending}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                {/* View selector for chart vs table */}
                 <div style={{
                   display: 'flex',
                   gap: '10px',
@@ -317,157 +283,89 @@ function IccSection({ user, isPublicView = false }) {
                     padding: '24px',
                     boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
                   }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '20px',
-                      flexWrap: 'wrap',
-                      gap: '15px'
-                    }}>
-                      <div>
-                        <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>
-                          Internal Complaints Committee (ICC)
-                        </h2>
-                        <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                          Year-wise Complaint Trend
-                        </p>
-                      </div>
-                      <div className="metric-toggle-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
-                          {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
-                            <button
-                              key={key}
-                              type="button"
-                              className="metric-toggle active"
-                              style={{
-                                minWidth: '100px',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                backgroundColor: AREA_COLORS[key]
-                              }}
-                              onClick={() => setVisibleMetrics(prev => {
-                                const next = { ...prev, [key]: false };
-                                if (Object.values(next).every(v => !v)) return prev;
-                                return next;
-                              })}
-                            >
-                              {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)} ✕
-                            </button>
-                          ))}
-                        </div>
-                        {Object.values(visibleMetrics).some(v => !v) && (
-                          <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
-                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
-                            {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
-                              <button
-                                key={key}
-                                type="button"
-                                className="metric-toggle"
-                                style={{ minWidth: '100px', opacity: 0.6, borderStyle: 'dashed' }}
-                                onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
-                              >
-                                + {key === 'total' ? 'Complaints' : key.charAt(0).toUpperCase() + key.slice(1)}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>            </div>
-
-                    {/* Bar / Trend toggle */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      margin: '12px 0'
-                    }}>
-                      {/* Left → Bar / Trend buttons */}
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {['Bar', 'Trend'].map(mode => (
-                          <button
-                            key={mode}
-                            type="button"
-                            onClick={() => setChartType(mode)}
-                            style={{
-                              padding: '7px 20px',
-                              borderRadius: '8px',
-                              border: 'none',
-                              cursor: 'pointer',
-                              backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                              color: chartType === mode ? '#fff' : '#333',
-                              fontWeight: chartType === mode ? '600' : '400',
-                              fontSize: '13px',
-                              transition: 'all 0.2s'
-                            }}
+                    <div className="chart-container" style={{ padding: '10px' }}>
+                      <div id="icc-grievance-chart-container">
+                        {summary.grievance_status && summary.grievance_status.length > 0 && (
+                          <div
+                            className="clickable-chart"
+                            onClick={() => setExpandedChart({
+                              title: "Grievance Status Distribution",
+                              content: (
+                                <ResponsiveContainer width="100%" height={400}>
+                                  <BarChart data={summary.grievance_status} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                    <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                                    <Bar dataKey="count" name="Count" fill="#667eea" radius={[6, 6, 0, 0]}>
+                                      <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#667eea' }} />
+                                    </Bar>
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              )
+                            })}
                           >
-                            {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Right → Export Menu */}
-                      <div style={{ position: 'relative', zIndex: 9999 }}>
-                        <ExportMenu
-                          elementId="icc-trend-chart-container"
-                          data={yearlyData}
-                          headers={['Year', 'Total', 'Resolved', 'Pending']}
-                          keys={['year', 'total', 'resolved', 'pending']}
-                          filename="icc_trend_data"
-                          title="ICC Complaint Trends"
-                        />
-                      </div>
-                    </div>
-
-                    {yearlyData.length === 0 ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No complaint records available.</p>
-                      </div>
-                    ) : (
-                      <div id="icc-trend-chart-container" className="chart-container" style={{ padding: '10px' }}>
-                        {/* Bar chart — Complaints, Resolved, Pending */}
-                        <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
-                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                            <ResponsiveContainer width="100%" height={350}>
-                              <BarChart data={yearlyData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                            <ResponsiveContainer width="100%" height={300}>
+                              <BarChart data={summary.grievance_status} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                                <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                                <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                                <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
-                                  {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
-                                </Bar>
-                                <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
-                                  {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
-                                </Bar>
-                                <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
-                                  {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
+                                <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Bar dataKey="count" fill="#667eea" name="Count" radius={[4, 4, 0, 0]}>
+                                  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
-                          )}</>
-                        </div>
-
-                        {/* Trend (Line) chart — complaints only */}
-                        <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
-                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                            <ResponsiveContainer width="100%" height={350}>
-                              <LineChart data={yearlyData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                                <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
-                                <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                                <Line type="linear" dataKey="total" name="Complaints" stroke={AREA_COLORS.total} strokeWidth={3} dot={{ r: 5, fill: AREA_COLORS.total, strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                                  <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />
-                                </Line>
-                              </LineChart>
-                            </ResponsiveContainer>
-                          )}</>
-                        </div>
+                          </div>
+                        )}
                       </div>
-                    )}
+                      <div
+                        className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
+                        onClick={() => setExpandedChart({
+                          title: "ICC Complaint Distribution",
+                          content: (
+                            <ResponsiveContainer width="100%" height={500}>
+                              <BarChart data={yearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }} barCategoryGap="20%">
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                <YAxis stroke="#666" tick={{ fontSize: 12 }} allowDecimals={false} label={{ value: 'Complaints', angle: -90, position: 'insideLeft' }} />
+                                <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
+                                <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} />
+                                <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.total }} />
+                                </Bar>
+                                <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="pending" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.pending }} />
+                                </Bar>
+                                <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="resolved" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          )
+                        })}
+                      >
+                        <ResponsiveContainer width="100%" height={350}>
+                          <BarChart data={displayYearlyData} margin={{ top: 26, right: 20, left: 30, bottom: chartIsMobile ? 50 : 30 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                            <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
+                            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                            <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
+                              {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
+                            </Bar>
+                            <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
+                              {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
+                            </Bar>
+                            <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
+                              {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -478,113 +376,95 @@ function IccSection({ user, isPublicView = false }) {
                     padding: '24px',
                     boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
                   }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '20px'
-                    }}>
-                      <div>
-                        <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>
-                          Yearly Complaint Statistics
-                        </h2>
-                        <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>
-                          Detailed breakdown of total complaints and their resolution status.
-                        </p>
-                      </div>
-                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <ExportMenu
-                          elementId="icc-yearly-table-container"
-                          data={yearlyData}
-                          headers={['Year', 'Total', 'Pending', 'Resolved']}
-                          keys={['year', 'total', 'pending', 'resolved']}
-                          filename="icc_yearly_stats"
-                          title="Yearly Complaint Statistics"
-                          exportType="table"
-                        />
-                        <span style={{
-                          backgroundColor: '#667eea',
-                          color: 'white',
-                          padding: '6px 12px',
-                          borderRadius: '20px',
-                          fontSize: '13px',
-                          fontWeight: '500'
-                        }}>
-                          {yearlyData.length} Years
-                        </span>
-                      </div>
+                    <div style={{ marginBottom: '20px' }}>
+                      <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>Yearly Statistics</h2>
                     </div>
 
-                    {yearlyData.length === 0 ? (
-                      <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
-                        <p style={{ color: '#666', fontSize: '16px' }}>No records available to display.</p>
+                    {chartIsMobile ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {displayStats.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No records found</div>
+                        ) : (
+                          displayStats.map((stat) => (
+                            <div key={stat.stat_year} style={{
+                              backgroundColor: '#fff',
+                              borderRadius: '12px',
+                              padding: '16px',
+                              border: '1px solid #e0e0e0',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
+                                <span style={{ fontWeight: '700', color: '#667eea', fontSize: '16px' }}>FY {stat.stat_year}</span>
+                              </div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Complaints</div>
+                                  <div style={{ fontWeight: '600', fontSize: '14px' }}>{stat.complaints_received}</div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Disposed</div>
+                                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#22c55e' }}>{stat.complaints_disposed}</div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Pending</div>
+                                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#ef4444' }}>{stat.complaints_pending}</div>
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Training/Workshops</div>
+                                  <div style={{ fontWeight: '600', fontSize: '14px' }}>{stat.training_workshops}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
                     ) : (
-                      <div id="icc-yearly-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-                        <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                          <table style={{
-                            width: '100%',
-                            borderCollapse: 'collapse',
-                            fontSize: '14px'
-                          }}>
-                            <thead>
-                              <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                                <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Year</th>
-                                <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Total Complaints</th>
-                                <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Pending</th>
-                                <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Resolved</th>
-                                <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Status</th>
+                      <div id="icc-yearly-stats-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
+                        <table style={{
+                          width: '100%',
+                          borderCollapse: 'collapse',
+                          backgroundColor: '#fff',
+                          borderRadius: '12px',
+                          overflow: 'hidden'
+                        }}>
+                          <thead>
+                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
+                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Year</th>
+                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Received</th>
+                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Disposed</th>
+                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Pending</th>
+                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Training/Workshops</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {displayStats.length === 0 ? (
+                              <tr>
+                                <td colSpan="5" style={{
+                                  textAlign: 'center',
+                                  padding: '40px',
+                                  color: '#666',
+                                  fontSize: '14px'
+                                }}>
+                                  <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>📋</span>
+                                  No statistics found
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody>
-                              {yearlyData.map((row, index) => {
-                                const statusLabel =
-                                  row.pending === 0 ? (
-                                    <span style={{
-                                      backgroundColor: '#dcfce7',
-                                      color: '#166534',
-                                      padding: '4px 8px',
-                                      borderRadius: '4px',
-                                      fontSize: '12px',
-                                      fontWeight: '500'
-                                    }}>All Resolved</span>
-                                  ) : row.resolved === 0 ? (
-                                    <span style={{
-                                      backgroundColor: '#fee2e2',
-                                      color: '#991b1b',
-                                      padding: '4px 8px',
-                                      borderRadius: '4px',
-                                      fontSize: '12px',
-                                      fontWeight: '500'
-                                    }}>All Pending</span>
-                                  ) : (
-                                    <span style={{
-                                      backgroundColor: '#fef3c7',
-                                      color: '#92400e',
-                                      padding: '4px 8px',
-                                      borderRadius: '4px',
-                                      fontSize: '12px',
-                                      fontWeight: '500'
-                                    }}>Mixed</span>
-                                  );
-
+                            ) : displayStats.map((row, index) => {
                                 return (
-                                  <tr key={row.year} style={{
+                                  <tr key={row.stat_year || index} style={{
                                     backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
                                     borderBottom: '1px solid #e0e0e0'
                                   }}>
-                                    <td style={{ padding: '12px', fontWeight: '500' }}>{row.year}</td>
-                                    <td style={{ padding: '12px' }}>{row.total}</td>
-                                    <td style={{ padding: '12px', color: '#f97316', fontWeight: '500' }}>{row.pending}</td>
-                                    <td style={{ padding: '12px', color: '#22c55e', fontWeight: '500' }}>{row.resolved}</td>
-                                    <td style={{ padding: '12px' }}>{statusLabel}</td>
+                                    <td style={{ padding: '16px', fontWeight: '500' }}>{row.stat_year}</td>
+                                    <td style={{ padding: '16px' }}>{row.complaints_received}</td>
+                                    <td style={{ padding: '16px' }}>{row.complaints_disposed}</td>
+                                    <td style={{ padding: '16px', color: '#ef4444', fontWeight: '500' }}>{row.complaints_pending}</td>
+                                    <td style={{ padding: '16px' }}>{row.training_workshops}</td>
                                   </tr>
                                 );
                               })}
-                            </tbody>
-                          </table>
-                        )}</>
+                          </tbody>
+                        </table>
                       </div>
                     )}
                   </div>
@@ -592,16 +472,25 @@ function IccSection({ user, isPublicView = false }) {
               </>
             )}
           </div>
-
-          {/* Upload Modal */}
-          <DataUploadModal
-            isOpen={isUploadModalOpen}
-            onClose={() => setIsUploadModalOpen(false)}
-            tableName="icc_yearwise"
-            token={token}
-          />
-        </div >
+        </div>
       )}
+
+      {/* Upload Modal */}
+      <DataUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        tableName="icc_yearwise"
+        token={token}
+      />
+
+      {/* Fullscreen Chart Modal */}
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
     </>
   );
 }

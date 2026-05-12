@@ -26,6 +26,9 @@ import './Page.css';
 import './PeopleCampus.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
+import ChartExpandModal from './ChartExpandModal';
+import CustomTooltip from './CustomTooltip';
+
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
@@ -110,6 +113,15 @@ function InnovationSectionContent({ user, isPublicView }) {
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const [viewType, setViewType] = useState('yearlyGrowth');
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
 
 
 
@@ -284,28 +296,7 @@ function InnovationSectionContent({ user, isPublicView }) {
       .slice(0, 8);
   }, [sectorDistribution]);
 
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>{label || payload[0].name}</p>
-          {payload.map((entry, index) => (
-            <p key={index} style={{ margin: '0', color: entry.color }}>
-              {entry.name}: {formatNumber(entry.value)}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   // Wrapper style when rendered in public view
   const contentStyle = isPublicView ? { padding: '2rem' } : {};
@@ -942,99 +933,46 @@ function InnovationSectionContent({ user, isPublicView }) {
             </div>
 
             {yearlyChartData.length > 0 ? (
-              <div id="innovation-yearly-growth-container" className="chart-container">
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 40, bottom: 40 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis
-                      dataKey="year"
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      label={{
-                        value: 'Year',
-                        position: 'insideBottom',
-                        offset: -10,
-                        style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                      }}
-                    />
-                    <YAxis
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      label={{
-                        value: 'Count',
-                        angle: -90,
-                        position: 'insideLeft',
-                        style: { fill: '#666', fontSize: 14, fontWeight: 'bold' }
-                      }}
-                      allowDecimals={false}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="plainline" />
-                    <Line type="linear"
-                      dataKey="incubatees"
-                      name="Incubatees"
-                      stroke="#667eea"
-                      strokeWidth={3}
-                      dot={{ r: 6, fill: '#667eea' }}
-                      activeDot={{ r: 8 }}>
-  <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
-</Line>
-                    <Line type="linear"
-                      dataKey="startups"
-                      name="Startups"
-                      stroke="#764ba2"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}>
-  <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#764ba2" }} />
-</Line>
-                    <Line type="linear"
-                      dataKey="innovationProjects"
-                      name="Innovation Projects"
-                      stroke="#43e97b"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}>
-  <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
-</Line>
-                  </LineChart>
-                </ResponsiveContainer>
-)}</>
-
-                {/* Chart Statistics */}
-                <div className="grid-4" style={{
-                  marginTop: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e0e0e0',
-                  gap: '15px'
-                }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '24px' }}>
-                      {yearlyChartData.reduce((sum, item) => sum + item.incubatees, 0)}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Incubatees</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#764ba2', fontWeight: 'bold', fontSize: '24px' }}>
-                      {yearlyChartData.reduce((sum, item) => sum + item.startups, 0)}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Startups</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#43e97b', fontWeight: 'bold', fontSize: '24px' }}>
-                      {yearlyChartData.reduce((sum, item) => sum + item.innovationProjects, 0)}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Projects</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>
-                      {yearlyChartData.length}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>
-                  </div>
-                </div>
-              </div>
+              <div 
+              id="innovation-yearly-chart" 
+              className="chart-container clickable-chart"
+              onClick={() => setExpandedChart({
+                title: "Yearly Innovation Growth",
+                content: (
+                  <ResponsiveContainer width="100%" height={500}>
+                    <LineChart data={yearlyChartData} margin={{ top: 40, right: 40, left: 60, bottom: 60 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                      <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} stroke="#666" />
+                      <YAxis stroke="#666" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px' }} />
+                      <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#667eea" strokeWidth={3} dot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="startups" name="Startups" stroke="#764ba2" strokeWidth={3} dot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#f093fb" strokeWidth={3} dot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )
+              })}
+            >
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={yearlyChartData} margin={{ top: 20, right: 30, left: 20, bottom: chartIsMobile ? 40 : 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
+                  <XAxis dataKey="year" stroke="#666" interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
+                  <YAxis stroke="#666" />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#667eea" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                    <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
+                  </Line>
+                  <Line type="monotone" dataKey="startups" name="Startups" stroke="#764ba2" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                    <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#764ba2' }} />
+                  </Line>
+                  <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#f093fb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                    <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#f093fb' }} />
+                  </Line>
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
             ) : (
               <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                 <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📈</span>
@@ -1067,111 +1005,40 @@ function InnovationSectionContent({ user, isPublicView }) {
             </div>
 
             {sectorPieData.length > 0 ? (
-              <div id="innovation-sector-dist-container" className="chart-container">
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={450}>
-                  <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
-                    <Pie
-                      data={sectorPieData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={150}
-                      label={({ name, value }) => `${name} (${value})`}
-                      labelLine={{ stroke: '#666', strokeWidth: 1 }}
-                    >
-                      {sectorPieData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={SECTOR_COLORS[index % SECTOR_COLORS.length]}
-                          stroke="#fff"
-                          strokeWidth={2}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value, name) => {
-                        if (name === 'value') return `${value} total`;
-                        return value;
-                      }}
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                      }}
-                    />
-                    <Legend
-                      layout="vertical"
-                      align="right"
-                      verticalAlign="middle"
-                      wrapperStyle={{
-                        paddingLeft: '20px',
-                        fontWeight: 'bold',
-                        fontSize: '12px'
-                      }}
-                      iconType="circle"
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-)}</>
-
-                {/* Sector Statistics */}
-                <div className="grid-3" style={{
-                  marginTop: '20px',
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  border: '1px solid #e0e0e0',
-                  gap: '15px'
-                }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: '24px' }}>
-                      {sectorPieData.length}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Sectors</div>
+              <div 
+              id="innovation-sector-chart" 
+              className="chart-container clickable-chart"
+              onClick={() => setExpandedChart({
+                title: "Sector Distribution",
+                content: (
+                  <div style={{ padding: '20px' }}>
+                    <ResponsiveContainer width="100%" height={500}>
+                      <PieChart>
+                        <Pie data={sectorPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={180} label={({ name, value }) => `${name}: ${value}`}>
+                          {sectorPieData.map((entry, index) => (
+                            <Cell key={index} fill={SECTOR_COLORS[index % SECTOR_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: '20px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>
-                      {sectorPieData.reduce((sum, item) => sum + item.value, 0)}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Entities</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>
-                      {sectorPieData.reduce((sum, item) => sum + (item.startups || 0), 0)}
-                    </div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Startups</div>
-                  </div>
-                </div>
-
-                {/* Sector Details Cards */}
-                <div style={{
-                  marginTop: '20px',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                  gap: '10px'
-                }}>
-                  {sectorPieData.map((sector, index) => (
-                    <div key={sector.name} style={{
-                      padding: '12px',
-                      backgroundColor: '#f8f9fa',
-                      borderRadius: '10px',
-                      border: `1px solid ${SECTOR_COLORS[index % SECTOR_COLORS.length]}`,
-                      textAlign: 'center'
-                    }}>
-                      <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>{sector.name}</div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: SECTOR_COLORS[index % SECTOR_COLORS.length] }}>
-                        {sector.value}
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#999' }}>
-                        {sector.startups} startups · {sector.projects} projects
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                )
+              })}
+            >
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie data={sectorPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={chartIsMobile ? 80 : 120} label={false}>
+                    {sectorPieData.map((entry, index) => (
+                      <Cell key={index} fill={SECTOR_COLORS[index % SECTOR_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '12px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             ) : (
               <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                 <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
@@ -1195,84 +1062,121 @@ function InnovationSectionContent({ user, isPublicView }) {
 
             {startupsList.length > 0 ? (
               <div>
-                <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table className="grievance-table" style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    backgroundColor: '#fff',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    border: '1px solid #e0e0e0'
-                  }}>
-                    <thead>
-                      <tr style={{ backgroundColor: '#f97316', color: 'white' }}>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Startup Name</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Founder</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Innovation / Focus Area</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Year</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>Sector</th>
-                        <th style={{ padding: '12px', textAlign: 'left' }}>IIT Palakkad</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {startupsList.map((startup, index) => (
-                        <tr
-                          key={startup.startup_id}
-                          style={{
-                            backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                            borderBottom: '1px solid #e0e0e0'
-                          }}
-                        >
-                          <td style={{ padding: '12px', fontWeight: '500' }}>{startup.startup_name}</td>
-                          <td style={{ padding: '12px' }}>{startup.founder_name}</td>
-                          <td style={{ padding: '12px' }}>{startup.innovation_focus_area || '—'}</td>
-                          <td style={{ padding: '12px' }}>{startup.year_of_incubation}</td>
-                          <td style={{ padding: '12px' }}>
-                            <span style={{
+                <div id="innovation-startups-directory">
+                  {chartIsMobile ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {startupsList.map((startup) => (
+                        <div key={startup.startup_id} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{startup.startup_name}</div>
+                            <span style={{ 
                               backgroundColor: startup.status === 'Active' ? '#dcfce7' : '#fee2e2',
                               color: startup.status === 'Active' ? '#166534' : '#991b1b',
-                              padding: '4px 8px',
-                              borderRadius: '4px',
-                              fontSize: '12px',
-                              fontWeight: 'bold'
-                            }}>
-                              {startup.status}
-                            </span>
-                          </td>
-                          <td style={{ padding: '12px' }}>
-                            {startup.sector && (
-                              <span style={{
-                                backgroundColor: '#e0e7ff',
-                                color: '#3730a3',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: 'bold'
-                              }}>
-                                {startup.sector}
+                              padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '700' 
+                            }}>{startup.status}</span>
+                          </div>
+                          <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: '600', color: '#64748b' }}>Founder:</span> {startup.founder_name}
+                          </div>
+                          <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: '600', color: '#64748b' }}>Sector:</span> {startup.sector || '—'}
+                          </div>
+                          <div style={{ fontSize: '14px', color: '#475569', marginBottom: '12px' }}>
+                            <span style={{ fontWeight: '600', color: '#64748b' }}>Area:</span> {startup.innovation_focus_area || '—'}
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                            <div style={{ fontSize: '13px', color: '#64748b' }}>
+                              Year: <strong>{startup.year_of_incubation}</strong>
+                            </div>
+                            {startup.is_from_iitpkd && (
+                              <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700' }}>
+                                IITPKD Alumnus
                               </span>
                             )}
-                          </td>
-                          <td style={{ padding: '12px', textAlign: 'center' }}>
-                            <span style={{
-                              backgroundColor: startup.is_from_iitpkd ? '#dcfce7' : '#f3f4f6',
-                              color: startup.is_from_iitpkd ? '#166534' : '#6b7280',
-                              padding: '4px 8px',
-                              borderRadius: '4px',
-                              fontSize: '12px',
-                              fontWeight: 'bold'
-                            }}>
-                              {startup.is_from_iitpkd ? '✓ Yes' : 'No'}
-                            </span>
-                          </td>
-                        </tr>
+                          </div>
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
-)}</>
+                    </div>
+                  ) : (
+                    <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                      <table className="grievance-table" style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        backgroundColor: '#fff',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        border: '1px solid #e0e0e0'
+                      }}>
+                        <thead>
+                          <tr style={{ backgroundColor: '#f97316', color: 'white' }}>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Startup Name</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Founder</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Innovation / Focus Area</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Year</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Status</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>Sector</th>
+                            <th style={{ padding: '12px', textAlign: 'left' }}>IIT Palakkad</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {startupsList.map((startup, index) => (
+                            <tr
+                              key={startup.startup_id}
+                              style={{
+                                backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
+                                borderBottom: '1px solid #e0e0e0'
+                              }}
+                            >
+                              <td style={{ padding: '12px', fontWeight: '500' }}>{startup.startup_name}</td>
+                              <td style={{ padding: '12px' }}>{startup.founder_name}</td>
+                              <td style={{ padding: '12px' }}>{startup.innovation_focus_area || '—'}</td>
+                              <td style={{ padding: '12px' }}>{startup.year_of_incubation}</td>
+                              <td style={{ padding: '12px' }}>
+                                <span style={{
+                                  backgroundColor: startup.status === 'Active' ? '#dcfce7' : '#fee2e2',
+                                  color: startup.status === 'Active' ? '#166534' : '#991b1b',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold'
+                                }}>
+                                  {startup.status}
+                                </span>
+                              </td>
+                              <td style={{ padding: '12px' }}>
+                                {startup.sector && (
+                                  <span style={{
+                                    backgroundColor: '#e0e7ff',
+                                    color: '#3730a3',
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold'
+                                  }}>
+                                    {startup.sector}
+                                  </span>
+                                )}
+                              </td>
+                              <td style={{ padding: '12px', textAlign: 'center' }}>
+                                <span style={{
+                                  backgroundColor: startup.is_from_iitpkd ? '#dcfce7' : '#f3f4f6',
+                                  color: startup.is_from_iitpkd ? '#166534' : '#6b7280',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold'
+                                }}>
+                                  {startup.is_from_iitpkd ? '✓ Yes' : 'No'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
+
 
                 {/* Table Statistics */}
                 <div className="grid-4" style={{
@@ -1375,10 +1279,19 @@ function InnovationSectionContent({ user, isPublicView }) {
         <DataUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
-          tableName="startups"
+          tableName="innovation_startups"
           token={token}
         />
       )}
+
+      {/* Fullscreen Chart Modal */}
+      <ChartExpandModal
+        isOpen={!!expandedChart}
+        onClose={() => setExpandedChart(null)}
+        title={expandedChart?.title}
+      >
+        {expandedChart?.content}
+      </ChartExpandModal>
     </div>
   );
 }

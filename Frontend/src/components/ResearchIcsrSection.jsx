@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ResponsiveContainer,
@@ -26,6 +26,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
+import ChartExpandModal from './ChartExpandModal';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -129,8 +130,62 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const [mouViewType, setMouViewType] = useState('trend');
   const [mouChartMode, setMouChartMode] = useState('bar');
 
-  const [_loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [expandedChart, setExpandedChart] = useState(null);
+
+  const loadData = useCallback(async () => {
+    if (mouOnly) return;
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [
+        summaryResp,
+        projectTrendResp,
+        projectListResp,
+        patentStatsResp
+      ] = await Promise.all([
+        fetchIcsrSummary(filters, token),
+        fetchIcsrProjectTrend(filters, token),
+        fetchIcsrProjectList(filters, token),
+        fetchPatentStats(
+          { patent_year: filters.patent_year, patent_status: filters.patent_status },
+          token
+        )
+      ]);
+
+      setSummary({
+        funded_projects: summaryResp?.funded_projects || 0,
+        consultancy_projects: summaryResp?.consultancy_projects || 0,
+        sanctioned_projects: summaryResp?.sanctioned_projects ?? summaryResp?.total_projects ?? 0,
+        total_projects: summaryResp?.total_projects ?? summaryResp?.sanctioned_projects ?? 0,
+        total_patents: summaryResp?.total_patents || 0,
+        consultancy_revenue: summaryResp?.total_sanctioned_revenue || summaryResp?.consultancy_revenue || 0,
+        patent_breakdown: buildPatentBreakdown(summaryResp?.patent_breakdown)
+      });
+
+      setProjectTrend(projectTrendResp?.data || []);
+      setProjectList(projectListResp?.data || []);
+      setPatentStats({
+        overall: buildPatentBreakdown(patentStatsResp?.overall),
+        yearly: Array.isArray(patentStatsResp?.yearly) ? patentStatsResp.yearly : []
+      });
+
+    } catch (err) {
+      console.error('Failed to load ICSR analytics:', err);
+      setError(err.message || 'Failed to load ICSR analytics.');
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, token, mouOnly]);
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const token = localStorage.getItem('authToken');
 
@@ -208,54 +263,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   }, [serializedFilters, filters, token, uploadVersion]);
 
   useEffect(() => {
-    const loadData = async () => {
-      if (mouOnly) return;
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [
-          summaryResp,
-          projectTrendResp,
-          projectListResp,
-          patentStatsResp
-        ] = await Promise.all([
-          fetchIcsrSummary(filters, token),
-          fetchIcsrProjectTrend(filters, token),
-          fetchIcsrProjectList(filters, token),
-          fetchPatentStats(
-            { patent_year: filters.patent_year, patent_status: filters.patent_status },
-            token
-          )
-        ]);
-
-        setSummary({
-          funded_projects: summaryResp?.funded_projects || 0,
-          consultancy_projects: summaryResp?.consultancy_projects || 0,
-          sanctioned_projects: summaryResp?.sanctioned_projects ?? summaryResp?.total_projects ?? 0,
-          total_projects: summaryResp?.total_projects ?? summaryResp?.sanctioned_projects ?? 0,
-          total_patents: summaryResp?.total_patents || 0,
-          consultancy_revenue: summaryResp?.total_sanctioned_revenue || summaryResp?.consultancy_revenue || 0,
-          patent_breakdown: buildPatentBreakdown(summaryResp?.patent_breakdown)
-        });
-
-        setProjectTrend(projectTrendResp?.data || []);
-        setProjectList(projectListResp?.data || []);
-        setPatentStats({
-          overall: buildPatentBreakdown(patentStatsResp?.overall),
-          yearly: Array.isArray(patentStatsResp?.yearly) ? patentStatsResp.yearly : []
-        });
-
-      } catch (err) {
-        console.error('Failed to load ICSR analytics:', err);
-        setError(err.message || 'Failed to load ICSR analytics.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
-  }, [filters, filters.patent_year, filters.patent_status, token, uploadVersion, mouOnly]);
+  }, [loadData, uploadVersion]);
 
   // MoU data — runs for guest users only in mouOnly mode (trend-only), full for non-restricted
   useEffect(() => {
@@ -326,11 +335,17 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {!isReadOnlyView && (
-          <button className="page-back-btn" onClick={() => navigate('/research')}>
-            ← Back to Research
-          </button>
-        )}
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+          </div>
+        ) : (
+          <>
+            {!isReadOnlyView && (
+              <button className="page-back-btn" onClick={() => navigate('/research')}>
+                ← Back to Research
+              </button>
+            )}
 
         {!isReadOnlyView && (
           <div className="section-header">
@@ -669,17 +684,50 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               </div>
 
               <div id="research-projects-trend-container"
-                className={`chart-container ${!projectTrendChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}>
+                className={`chart-container clickable-chart ${!projectTrendChartData.length ? 'chart-has-empty' : ''}`}
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Projects Trend",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      {projectsChartMode === 'bar' ? (
+                        <BarChart data={projectTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                          <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey="funded" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#6366f1" }} />
+                          </Bar>
+                          <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey="consultancy" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
+                          </Bar>
+                        </BarChart>
+                      ) : (
+                        <LineChart data={projectTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                          <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={3} dot={{ r: 6 }} />
+                          <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={3} dot={{ r: 6 }} />
+                        </LineChart>
+                      )}
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${projectTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
                   {projectsChartMode === 'bar' ? (
-                    <BarChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                    <BarChart data={projectTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 50 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} width={32} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
                       <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18}>
@@ -690,9 +738,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       </Bar>
                     </BarChart>
                   ) : (
-                    <LineChart data={projectTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                    <LineChart data={projectTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 50 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ fontSize: '11px' }} />
@@ -742,21 +790,58 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                     cursor: 'pointer', border: 'none',
                     backgroundColor: patentsChartMode === mode ? '#f97316' : '#f1f5f9',
                     color: patentsChartMode === mode ? '#fff' : '#555'
-                  }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                  }}>{mode === 'bar' ? 'Bar Chart' : 'Trend Line'}</button>
                 ))}
               </div>
 
               <div id="research-patents-trend-container"
-                className={`chart-container ${!patentTrendChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}>
+                className={`chart-container clickable-chart ${!patentTrendChartData.length ? 'chart-has-empty' : ''}`}
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Knowledge Transfer (Patents)",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      {patentsChartMode === 'bar' ? (
+                        <BarChart data={patentTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                          {PATENT_STATUS_ORDER.map((status) => (
+                            <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[6, 6, 0, 0]}>
+                              <LabelList dataKey={status} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: PATENT_COLORS[status] }} />
+                            </Bar>
+                          ))}
+                        </BarChart>
+                      ) : (
+                        <LineChart data={patentTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                          {PATENT_STATUS_ORDER.map((status) => (
+                            <Line key={status} type="linear" dataKey={status} name={status}
+                              stroke={PATENT_COLORS[status]} strokeWidth={3}
+                              dot={{ r: 6, fill: PATENT_COLORS[status] }} activeDot={{ r: 8 }}>
+                              <LabelList dataKey={status} offset={10} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: PATENT_COLORS[status] }} />
+                            </Line>
+                          ))}
+                        </LineChart>
+                      )}
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 <div className={`section-empty-state ${patentTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
                   {patentsChartMode === 'bar' ? (
-                    <BarChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                    <BarChart data={patentTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                       <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
@@ -767,9 +852,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       ))}
                     </BarChart>
                   ) : (
-                    <LineChart data={patentTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                    <LineChart data={patentTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                       <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
@@ -814,39 +899,76 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 />
               </div>
 
-              <div id="research-projects-directory-table" className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white' }}>
-                    <tr>
-                      <th style={{ padding: '10px' }}>Title</th>
-                      <th style={{ padding: '10px' }}>PI</th>
-                      <th style={{ padding: '10px' }}>Type</th>
-                      <th style={{ padding: '10px' }}>Dept</th>
-                      <th style={{ padding: '10px' }}>Amount</th>
-                      <th style={{ padding: '10px' }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <div id="research-projects-directory-table">
+                {chartIsMobile ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {projectList.map((p, i) => (
-                      <tr key={p.project_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                        <td style={{ padding: '8px' }}>{p.project_title}</td>
-                        <td style={{ padding: '8px' }}>{p.principal_investigator}</td>
-                        <td style={{ padding: '8px' }}>{p.project_type}</td>
-                        <td style={{ padding: '8px' }}>{p.department}</td>
-                        <td style={{ padding: '8px' }}>{formatCurrency(p.amount_sanctioned)}</td>
-                        <td style={{ padding: '8px' }}>{p.status}</td>
-                      </tr>
+                      <div key={p.project_id || i} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e0e0e0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <div style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a', marginBottom: '8px', lineHeight: '1.4' }}>{p.project_title}</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                          <span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>{p.project_type}</span>
+                          <span style={{ backgroundColor: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>{p.department}</span>
+                          <span style={{ backgroundColor: p.status === 'Ongoing' ? '#dcfce7' : '#fef9c3', color: p.status === 'Ongoing' ? '#166534' : '#854d0e', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>{p.status}</span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Investigator</div>
+                            <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>{p.principal_investigator}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Sanctioned Amount</div>
+                            <div style={{ fontSize: '14px', fontWeight: '700', color: '#0ea5e9' }}>{formatCurrency(p.amount_sanctioned)}</div>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                     {!projectList.length && (
-                      <tr>
-                        <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                          No information available for the selected filter
-                        </td>
-                      </tr>
+                      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #d1d5db', color: '#6b7280' }}>
+                        No projects found for the selected filter
+                      </div>
                     )}
-                  </tbody>
-                </table>
+                  </div>
+                ) : (
+                  <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                      <thead style={{ position: 'sticky', top: 0, backgroundColor: '#0ea5e9', color: 'white', zIndex: 10 }}>
+                        <tr>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>PI</th>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>Type</th>
+                          <th style={{ padding: '10px', textAlign: 'left' }}>Dept</th>
+                          <th style={{ padding: '10px', textAlign: 'right' }}>Amount</th>
+                          <th style={{ padding: '10px', textAlign: 'center' }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {projectList.map((p, i) => (
+                          <tr key={p.project_id || i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #eee' }}>
+                            <td style={{ padding: '10px', maxWidth: '300px' }}>{p.project_title}</td>
+                            <td style={{ padding: '10px' }}>{p.principal_investigator}</td>
+                            <td style={{ padding: '10px' }}>{p.project_type}</td>
+                            <td style={{ padding: '10px' }}>{p.department}</td>
+                            <td style={{ padding: '10px', textAlign: 'right', fontWeight: '600' }}>{formatCurrency(p.amount_sanctioned)}</td>
+                            <td style={{ padding: '10px', textAlign: 'center' }}>
+                              <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '11px', backgroundColor: p.status === 'Ongoing' ? '#e0fdf4' : '#fef9c3', color: p.status === 'Ongoing' ? '#047857' : '#a16207' }}>
+                                {p.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {!projectList.length && (
+                          <tr>
+                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                              No information available for the selected filter
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
+
             </section>
           )}
 
@@ -986,17 +1108,45 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
                     <div
                       id="research-mou-trend-container"
-                      className={`chart-container ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`}
+                      className={`chart-container clickable-chart ${!mouTrendChartData.length ? 'chart-has-empty' : ''}`}
                       style={{ position: 'relative', height: '450px' }}
+                      onClick={() => setExpandedChart({
+                        title: "MoUs Trend",
+                        content: (
+                          <ResponsiveContainer width="100%" height={500}>
+                            {mouChartMode === 'bar' ? (
+                              <BarChart data={mouTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                                <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[6, 6, 0, 0]}>
+                                  <LabelList dataKey="total" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: MOU_COLOR }} />
+                                </Bar>
+                              </BarChart>
+                            ) : (
+                              <LineChart data={mouTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                                <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                <Line type="linear" dataKey="total" name="MoUs Signed" stroke={MOU_COLOR} strokeWidth={3} dot={{ r: 6 }} />
+                              </LineChart>
+                            )}
+                          </ResponsiveContainer>
+                        )
+                      })}
                     >
                       <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                         <p>No information available for the selected filter</p>
                       </div>
                       <ResponsiveContainer width="100%" height={450}>
                         {mouChartMode === 'bar' ? (
-                          <BarChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                          <BarChart data={mouTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
@@ -1005,9 +1155,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                             </Bar>
                           </BarChart>
                         ) : (
-                          <LineChart data={mouTrendChartData} margin={{ top: 30, right: 20, left: 40, bottom: 30 }}>
+                          <LineChart data={mouTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
@@ -1025,54 +1175,90 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
                 {/* ✅ Directory view — only rendered for non-restricted users */}
                 {mouViewType === 'directory' && !isRestrictedUser && (
-                  <div
-                    id="research-mou-directory-table"
-                    className="table-responsive"
-                    style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}
-                  >
-                    <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                      <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white' }}>
-                        <tr>
-                          <th style={{ padding: '10px' }}>Partner</th>
-                          <th style={{ padding: '10px' }}>Focus</th>
-                          <th style={{ padding: '10px' }}>Signed</th>
-                          <th style={{ padding: '10px' }}>Valid Till</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                  <div id="research-mou-directory-table">
+                    {chartIsMobile ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         {mouList.map((m, i) => (
-                          <tr key={m.mou_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                            <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                            <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                            <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
-                          </tr>
+                          <div key={m.mou_id ?? i} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e0e0e0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a', marginBottom: '8px' }}>{m.partner_name}</div>
+                            <div style={{ fontSize: '13px', color: '#666', marginBottom: '12px', lineHeight: '1.4' }}>{m.collaboration_nature}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
+                              <div>
+                                <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Date Signed</div>
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>{formatDate(m.date_signed)}</div>
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Valid Till</div>
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>{formatDate(m.validity_end)}</div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
                         {!mouList.length && (
-                          <tr>
-                            <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
-                              No information available for the selected filter
-                            </td>
-                          </tr>
+                          <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #d1d5db', color: '#6b7280' }}>
+                            No MoUs found for the selected filter
+                          </div>
                         )}
-                      </tbody>
-                    </table>
+                      </div>
+                    ) : (
+                      <div className="table-responsive" style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}>
+                        <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+                          <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white', zIndex: 10 }}>
+                            <tr>
+                              <th style={{ padding: '10px', textAlign: 'left' }}>Partner</th>
+                              <th style={{ padding: '10px', textAlign: 'left' }}>Focus</th>
+                              <th style={{ padding: '10px', textAlign: 'center' }}>Signed</th>
+                              <th style={{ padding: '10px', textAlign: 'center' }}>Valid Till</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {mouList.map((m, i) => (
+                              <tr key={m.mou_id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #eee' }}>
+                                <td style={{ padding: '10px', fontWeight: '500' }}>{m.partner_name}</td>
+                                <td style={{ padding: '10px' }}>{m.collaboration_nature}</td>
+                                <td style={{ padding: '10px', textAlign: 'center' }}>{formatDate(m.date_signed)}</td>
+                                <td style={{ padding: '10px', textAlign: 'center' }}>{formatDate(m.validity_end)}</td>
+                              </tr>
+                            ))}
+                            {!mouList.length && (
+                              <tr>
+                                <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                                  No information available for the selected filter
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </section>
           )}
         </>
-      </div>
 
-      <DataUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-        tableName={activeUploadTable}
-        token={token}
-      />
+        <DataUploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          tableName={activeUploadTable}
+          token={token}
+          onUploadSuccess={loadData}
+        />
+
+        {/* Fullscreen Chart Modal */}
+        <ChartExpandModal
+          isOpen={!!expandedChart}
+          onClose={() => setExpandedChart(null)}
+          title={expandedChart?.title}
+        >
+          {expandedChart?.content}
+        </ChartExpandModal>
+          </>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default ResearchIcsrSection;

@@ -43,23 +43,6 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  const handleGuestLogin = async () => {
-    setError('');
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        { email: import.meta.env.VITE_GUEST_EMAIL, password: import.meta.env.VITE_GUEST_PASSWORD }
-      );
-      onLoginSuccess(response.data.token, response.data.user);
-      navigate('/');
-    } catch {
-      setError('Guest access is currently unavailable. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
