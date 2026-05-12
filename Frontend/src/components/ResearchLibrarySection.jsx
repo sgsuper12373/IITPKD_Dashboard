@@ -184,12 +184,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
     }}>
 
       {/* Header row */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '15px'
-      }}>
+      <div className="filter-panel-header">
         <h4 style={{
           margin: 0,
           color: '#333',
@@ -232,29 +227,15 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           View Type
         </label>
 
-        <div style={{
-          display: 'flex',
-          gap: '4px',
-          background: '#e9ecef',
-          padding: '4px',
-          borderRadius: '8px'
-        }}>
+        <div className="view-type-bar">
           {viewButtons.map(({ key, label, color }) => (
             <button
               key={key}
               onClick={() => setViewType(key)}
+              className="view-type-btn"
               style={{
-                flex: 1,
-                padding: '6px 4px',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                transition: 'all 0.2s',
                 backgroundColor: viewType === key ? color : 'transparent',
                 color: viewType === key ? 'white' : '#475569',
-                whiteSpace: 'nowrap'
               }}
             >
               {label}
@@ -432,10 +413,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         </div>
 
         {/* Summary Cards */}
-        <div id="library-summary-cards-container" style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: '16px', marginBottom: '30px'
-        }}>
+        <div id="library-summary-cards-container" className="stat-card-grid">
           {[
             { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
             { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
@@ -446,9 +424,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                   <span style={{ fontSize: '28px', background: 'rgba(255,255,255,0.2)', padding: '5px', borderRadius: '6px' }}>{icon}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '21px', fontWeight: '500' }}>{label}</span>
+                  <span className="stat-card-label">{label}</span>
                 </div>
-                <div style={{ fontSize: '38px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{value}</div>
+                <div className="stat-card-value" style={{ marginBottom: '4px' }}>{value}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <span style={{ width: '5px', height: '5px', background: '#4ade80', borderRadius: '50%' }} />
                   <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.7)' }}>{sub}</span>
@@ -504,7 +482,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               )}
               <ResponsiveContainer width="100%" height={300}>
                 {trendChartMode === 'bar' ? (
-                  <BarChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -515,7 +493,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 ) : (
-                  <LineChart data={trendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                  <LineChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -561,7 +539,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                 <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>No information available for the selected filter</div>
               )}
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={departmentChartData} margin={{ top: 10, right: 20, left: 40, bottom: 50 }}>
+                <BarChart data={departmentChartData} margin={{ top: 26, right: 20, left: 40, bottom: 50 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
                   <YAxis stroke="#666" tick={{ fontSize: 11 }} />

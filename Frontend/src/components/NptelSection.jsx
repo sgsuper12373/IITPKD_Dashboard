@@ -118,9 +118,7 @@ function NptelSection({ user, isPublicView = false }) {
         />
       </div>
       {/* Summary Cards - Modern Design */}
-      < div id="nptel-summary-cards-container" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
+      < div id="nptel-summary-cards-container" className="grid-2" style={{
         gap: '24px',
         marginBottom: '40px'
       }

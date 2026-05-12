@@ -142,9 +142,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 </div>
                 {/* Modern Gradient Summary Cards */}
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <div id="igrc-summary-cards-container" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(4, 1fr)',
+                  <div id="igrc-summary-cards-container" className="grid-4" style={{
                     gap: '20px',
                     marginBottom: '30px'
                   }}>

@@ -152,9 +152,7 @@ function IccSection({ user, isPublicView = false }) {
                 </div>
                 {/* Modern Summary Cards */}
                 <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <div id="icc-summary-cards-container" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
+                  <div id="icc-summary-cards-container" className="grid-3" style={{
                     gap: '20px',
                     marginBottom: '30px'
                   }}>
@@ -431,7 +429,7 @@ function IccSection({ user, isPublicView = false }) {
                         <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                           <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={350}>
-                              <BarChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                              <BarChart data={yearlyData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                                 <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
@@ -455,7 +453,7 @@ function IccSection({ user, isPublicView = false }) {
                         <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                           <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={350}>
-                              <LineChart data={yearlyData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                              <LineChart data={yearlyData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                                 <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />

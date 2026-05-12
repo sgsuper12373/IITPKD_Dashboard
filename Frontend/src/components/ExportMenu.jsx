@@ -140,6 +140,8 @@ const ExportMenu = ({
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
+          minHeight: 'auto',
+          minWidth: 'auto',
           boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
           transition: 'all 0.2s ease'
         }}
@@ -223,6 +225,7 @@ const menuItemStyle = {
   display: 'flex',
   alignItems: 'center',
   gap: '10px',
+  minHeight: 'auto',
   transition: 'background-color 0.1s ease'
 };
 

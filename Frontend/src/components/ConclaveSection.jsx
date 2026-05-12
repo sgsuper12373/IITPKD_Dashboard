@@ -104,9 +104,7 @@ function ConclaveSection({ user, isPublicView = false }) {
         </div>
 
         {/* Summary Cards - Modern Design */}
-        <div id="conclave-summary-cards-container" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+        <div id="conclave-summary-cards-container" className="grid-2" style={{
           gap: '24px',
           marginBottom: '40px'
         }}>

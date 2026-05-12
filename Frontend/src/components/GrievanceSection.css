@@ -332,6 +332,25 @@
   .chart-header h2 {
     font-size: 1.2rem;
   }
+
+  /* Reduce fixed table scroll heights so they don't dwarf the viewport */
+  .icc-yearly-table-scrollable,
+  .iar-outcome-table-scrollable {
+    height: 220px !important;
+    max-height: 220px !important;
+  }
+
+  .icsr-table-scrollable {
+    height: 350px !important;
+    max-height: 350px !important;
+  }
+
+  /* Scale down status pills on small screens */
+  .status-pill {
+    font-size: 0.72rem;
+    padding: 0.22rem 0.6rem;
+    letter-spacing: 0.4px;
+  }
 }
 
 @media (max-width: 360px) {

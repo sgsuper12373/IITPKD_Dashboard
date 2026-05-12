@@ -82,7 +82,7 @@ function StudentsEngagementSection({ user }) {
               </p> */}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' }}>
+            <div className="students-section-grid">
               {SECTIONS.map((s) => (
                 <div
                   key={s.id}

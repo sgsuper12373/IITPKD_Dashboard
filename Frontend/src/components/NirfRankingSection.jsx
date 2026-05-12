@@ -204,10 +204,10 @@ const NirfRankingSection = ({ user }) => {
                             </div>
 
                             {/* Right: area chart */}
-                            <div style={{ flex: 1, minWidth: '220px', height: 160 }}>
+                            <div className="compact-chart" style={{ flex: 1, minWidth: '220px', height: 160 }}>
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     {chartType === 'bar' ? (
-                                        <BarChart data={rankData} margin={{ top: 20, right: 8, left: -20, bottom: 0 }} barCategoryGap="15%">
+                                        <BarChart data={rankData} margin={{ top: 26, right: 20, left: 0, bottom: 0 }} barCategoryGap="15%">
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                                             <XAxis dataKey="year" tick={{ fontSize: 10 }} />
                                             <YAxis
@@ -224,7 +224,7 @@ const NirfRankingSection = ({ user }) => {
                                             </Bar>
                                         </BarChart>
                                     ) : (
-                                        <LineChart data={rankData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                                        <LineChart data={rankData} margin={{ top: 26, right: 20, left: 0, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                                             <XAxis dataKey="year" tick={{ fontSize: 10 }} padding={{ left: 10, right: 10 }} />
                                             <YAxis
@@ -270,7 +270,8 @@ const NirfRankingSection = ({ user }) => {
                             border: `1px solid ${fill}`,
                             borderRadius: '14px',
                             padding: '16px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            overflow: 'hidden'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                                 <div>
@@ -288,10 +289,10 @@ const NirfRankingSection = ({ user }) => {
                                     </div>
                                 </div>
                             </div>
-                            <div style={{ height: 80 }}>
+                            <div className="compact-chart" style={{ height: 130 }}>
                                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     {chartType === 'bar' ? (
-                                        <BarChart data={recentData} margin={{ top: 15, right: 4, left: -30, bottom: 0 }} barCategoryGap="15%">
+                                        <BarChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }} barCategoryGap="15%">
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                                             <XAxis dataKey="year" tick={{ fontSize: 9 }} />
                                             <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
@@ -299,12 +300,10 @@ const NirfRankingSection = ({ user }) => {
                                                 contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
                                                 formatter={(v) => [v, label]}
                                             />
-                                            <Bar dataKey={key} fill={color} radius={[4, 4, 0, 0]} barSize={16}>
-                                                <LabelList dataKey={key} position="top" style={{ fontSize: '9px', fontWeight: 600, fill: color }} />
-                                            </Bar>
+                                            <Bar dataKey={key} fill={color} radius={[4, 4, 0, 0]} barSize={16} />
                                         </BarChart>
                                     ) : (
-                                        <LineChart data={recentData} margin={{ top: 4, right: 4, left: -30, bottom: 0 }}>
+                                        <LineChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                                             <XAxis dataKey="year" tick={{ fontSize: 9 }} padding={{ left: 10, right: 10 }} />
                                             <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
@@ -317,9 +316,8 @@ const NirfRankingSection = ({ user }) => {
                                                 stroke={color}
                                                 strokeWidth={2}
                                                 dot={{ r: 3, fill: color }}
-                                                activeDot={{ r: 5 }}>
-                                                <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
-                                            </Line>
+                                                activeDot={{ r: 5 }}
+                                            />
                                         </LineChart>
                                     )}
                                 </ResponsiveContainer>

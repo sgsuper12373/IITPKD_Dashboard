@@ -20,9 +20,12 @@ const iitPalakkadImages = Object.keys(_imageModules)
   .map((key) => _imageModules[key].default);
 
 function HomePage({ user }) {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(
+    () => !sessionStorage.getItem('splashShown')
+  );
 
   const handleSplashComplete = () => {
+    sessionStorage.setItem('splashShown', '1');
     setShowSplash(false);
   };
 

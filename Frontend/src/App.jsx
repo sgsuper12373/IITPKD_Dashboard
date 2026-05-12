@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Login from './components/Login';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import lazyWithRetry from './utils/lazyWithRetry';
+import NavigationLoader from './components/NavigationLoader';
 
 // ── Lazy route chunks ──────────────────────────────────────────────────────
 // Each import() becomes its own JS chunk; the browser only fetches a chunk
@@ -201,6 +202,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <NavigationLoader />
       <ChunkErrorBoundary>
        <Suspense fallback={<PageLoader />}>
         <Routes>

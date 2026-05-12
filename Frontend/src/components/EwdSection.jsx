@@ -386,11 +386,7 @@ function EwdSection({ user, isPublicView = false }) {
                   </div>
                 </div>
 
-                <div id="ewd-current-year-indicators-container" style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '15px'
-                }}>
+                <div id="ewd-current-year-indicators-container" className="grid-4" style={{ gap: '15px' }}>
                   {/* Per Capita Electricity Card */}
                   <div style={{
                     background: 'linear-gradient(135deg, #f59e0b15 0%, #f59e0b05 100%)',
@@ -579,7 +575,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={380}>
-                        <BarChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                        <BarChart data={scaledYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -596,7 +592,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={380}>
-                        <LineChart data={scaledYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                        <LineChart data={scaledYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -657,7 +653,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={400}>
-                        <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
+                        <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -680,7 +676,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={400}>
-                        <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                        <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -747,7 +743,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={370}>
-                        <BarChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                        <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -764,7 +760,7 @@ function EwdSection({ user, isPublicView = false }) {
                     <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={370}>
-                        <LineChart data={filteredYearlyData} margin={{ top: 10, right: 20, left: 60, bottom: 55 }}>
+                        <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <defs>
                             <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />

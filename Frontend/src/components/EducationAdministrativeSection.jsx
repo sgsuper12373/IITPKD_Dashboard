@@ -951,7 +951,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </button>
                 </div>
 
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
                   <div className="filter-group">
                     <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                     <select
@@ -1105,7 +1105,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </button>
                 </div>
 
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
                   <div className="filter-group">
                     <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                     <select
@@ -1257,7 +1257,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </button>
                 </div>
 
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
                   <div className="filter-group">
                     <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                     <select
@@ -1395,7 +1395,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     Clear Filters
                   </button>
                 </div>
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
                   <div className="filter-group">
                     <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                     <select
@@ -1532,7 +1532,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     Clear Filters
                   </button>
                 </div>
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
                   <div className="filter-group">
                     <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
                     <select

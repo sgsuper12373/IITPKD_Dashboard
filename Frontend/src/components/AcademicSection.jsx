@@ -209,7 +209,7 @@ function SharedFilters({
         <button className="clear-filters-btn" onClick={onClear} style={{ padding: '0.28rem 0.8rem', fontSize: '0.76rem', borderRadius: '6px' }}>Clear All Filters</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: '0.5rem' }}>
+      <div className="shared-filter-grid">
 
         {/* Gender selector */}
         {(isGender || isState) && (
@@ -384,6 +384,26 @@ function AcademicSection({ user, isPublicView = false }) {
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
 
   const showUploadBtn = !isReadOnlyView && isAdmin;
+
+  // Responsive chart sizing — recalculated on window resize
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle, { passive: true });
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
+  // Charts with Y-axis label "Students" use left:55 on desktop; drop to 0 on mobile
+  // (the CSS rule hides the label at ≤640px, so the extra margin becomes dead space)
+  const CM_LABEL = chartIsMobile
+    ? { top: 26, right: 20, left: 15, bottom: 45 }
+    : { top: 26, right: 30, left: 55, bottom: 60 };
+  // Charts without a Y-axis label use left:20 on desktop; drop to 0 on mobile
+  const CM_NOLABEL = chartIsMobile
+    ? { top: 26, right: 20, left: 0, bottom: 45 }
+    : { top: 26, right: 30, left: 20, bottom: 60 };
+  const Y_AXIS_W = chartIsMobile ? 32 : 45;
+  const X_INTERVAL = chartIsMobile ? 1 : 0; // show every 2nd X tick on mobile
 
   // Available years for the summary-card year selector
   const availableYears = useMemo(() => {
@@ -620,7 +640,7 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Students On Roll"
           />
         </div>
-        <div id="academic-onroll-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div id="academic-onroll-cards-container" className="summary-cards-grid-4" style={{ marginBottom: '30px' }}>
           {[
             { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)', subtitle: 'Total on roll students' },
             { label: 'UG', icon: '📘', value: onrollSummary.ug_onroll, grad: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', shadow: 'rgba(79,70,229,0.2)', subtitle: 'BTech — On Roll' },
@@ -659,7 +679,7 @@ function AcademicSection({ user, isPublicView = false }) {
             title="Student Summary"
           />
         </div>
-        <div id="academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div id="academic-summary-cards-container" className="summary-cards-grid-5" style={{ marginBottom: '30px' }}>
           {/* Year filter card */}
           <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(168,85,247,0.3)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
@@ -709,9 +729,9 @@ function AcademicSection({ user, isPublicView = false }) {
         <div className="chart-section">
           <div>
             {/* Mode toggle */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
               {[{ key: 'gender', label: 'Gender Breakdown' }, { key: 'program', label: 'UG / PG / Research' }, { key: 'state', label: 'State Distribution' }].map(({ key, label }) => (
-                <button key={key} onClick={() => setProgramChartMode(key)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: programChartMode === key ? '#667eea' : '#e9ecef', color: programChartMode === key ? '#fff' : '#333', fontWeight: programChartMode === key ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>{label}</button>
+                <button key={key} onClick={() => setProgramChartMode(key)} className={`mode-btn${programChartMode === key ? ' active' : ''}`}>{label}</button>
               ))}
             </div>
 
@@ -735,9 +755,9 @@ function AcademicSection({ user, isPublicView = false }) {
 
             {/* Bar / Trend toggle */}
             {(programChartMode === 'gender' || programChartMode === 'program') && (
-              <div style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
+              <div style={{ display: 'flex', gap: '8px', margin: '12px 0', flexWrap: 'wrap' }}>
                 {['Bar', 'Trend'].map(mode => (
-                  <button key={mode} onClick={() => setChartType(mode)} style={{ padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: chartType === mode ? '#667eea' : '#e9ecef', color: chartType === mode ? '#fff' : '#333', fontWeight: chartType === mode ? '600' : '400', fontSize: '13px', transition: 'all 0.2s' }}>
+                  <button key={mode} onClick={() => setChartType(mode)} className={`mode-btn${chartType === mode ? ' active' : ''}`}>
                     {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                   </button>
                 ))}
@@ -762,11 +782,11 @@ function AcademicSection({ user, isPublicView = false }) {
                 {/* Trend (line) */}
                 <div id="academic-gender-trend-chart" className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={340}>
-                    <LineChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
+                    <LineChart data={displayGenderTrendData} margin={CM_LABEL}>
                       <AreaGradients />
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                      <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                      <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <XAxis dataKey="year" interval={X_INTERVAL} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
+                      <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top"
@@ -779,11 +799,14 @@ function AcademicSection({ user, isPublicView = false }) {
                             <ul style={{
                               display: 'flex',
                               justifyContent: 'center',
-                              gap: '16px',
+                              flexWrap: 'wrap',
+                              gap: chartIsMobile ? '8px' : '16px',
                               listStyle: 'none',
                               padding: 0,
                               margin: 0,
-                              fontSize: '0.82rem'
+                              fontSize: chartIsMobile ? '0.7rem' : '0.82rem',
+                              wordBreak: 'normal',
+                              overflowWrap: 'normal',
                             }}>
                               {ordered.map(entry => (
                                 <li key={entry.dataKey} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -813,10 +836,10 @@ function AcademicSection({ user, isPublicView = false }) {
                 {/* Bar */}
                 <div id="academic-gender-bar-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={340}>
-                    <BarChart data={displayGenderTrendData} margin={{ top: 12, right: 30, left: 55, bottom: 60 }}>
+                    <BarChart data={displayGenderTrendData} margin={CM_LABEL}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
-                      <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                      <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <XAxis dataKey="year" interval={X_INTERVAL} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
+                      <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top"
@@ -829,11 +852,14 @@ function AcademicSection({ user, isPublicView = false }) {
                             <ul style={{
                               display: 'flex',
                               justifyContent: 'center',
-                              gap: '16px',
+                              flexWrap: 'wrap',
+                              gap: chartIsMobile ? '8px' : '16px',
                               listStyle: 'none',
                               padding: 0,
                               margin: 0,
-                              fontSize: '0.82rem'
+                              fontSize: chartIsMobile ? '0.7rem' : '0.82rem',
+                              wordBreak: 'normal',
+                              overflowWrap: 'normal',
                             }}>
                               {ordered.map(entry => (
                                 <li key={entry.dataKey} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -869,7 +895,7 @@ function AcademicSection({ user, isPublicView = false }) {
             {/* ── UG / PG / Research chart ── */}
             {programChartMode === 'program' && (
               <div className={`bar-chart-container trend-chart ${hasProgramTrendData ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <h3 className="chart-heading" style={{ margin: 0 }}>
                     Student Strength — UG / PG / Research / Total
                     {stackGender && <span style={{ fontSize: '0.75rem', color: '#666', marginLeft: '8px', fontWeight: 400 }}>(stacked by gender)</span>}
@@ -892,10 +918,10 @@ function AcademicSection({ user, isPublicView = false }) {
                 {/* Bar chart */}
                 <div id="academic-program-strength-chart" className={`chart-wrapper ${chartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={stackGender ? 480 : 420}>
-                    <BarChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }} barCategoryGap="20%">
+                    <BarChart data={ugPgResearchTrend} margin={CM_NOLABEL} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top"
@@ -963,10 +989,10 @@ function AcademicSection({ user, isPublicView = false }) {
                 {/* Trend (line) chart */}
                 <div className={`chart-wrapper ${chartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={420}>
-                    <LineChart data={ugPgResearchTrend} margin={{ top: 12, right: 30, left: 20, bottom: 60 }}>
+                    <LineChart data={ugPgResearchTrend} margin={CM_NOLABEL}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e8e8e8" />
                       <XAxis dataKey="year" angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
-                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={45} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
+                      <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend
                         verticalAlign="top"
@@ -1027,7 +1053,7 @@ function AcademicSection({ user, isPublicView = false }) {
             {/* ── State Distribution View ── */}
             {programChartMode === 'state' && (
               <div className={`bar-chart-container trend-chart ${stateTop10.length > 0 ? '' : 'has-empty'}`} style={{ padding: '0.75rem 1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <h3 className="chart-heading" style={{ margin: 0 }}>
                     State Wise Distribution
                     <span style={{ fontSize: '0.75rem', color: '#666', marginLeft: '8px', fontWeight: 400 }}>(Students in India)</span>
@@ -1050,9 +1076,9 @@ function AcademicSection({ user, isPublicView = false }) {
                     </div>
                   )}
                   <div id="academic-state-dist-container" className="chart-container">
-                    <ResponsiveContainer width="100%" height={380}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 380}>
                       <PieChart>
-                        <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={130} label={false} labelLine={false}>
+                        <Pie data={stateTop10.length > 0 ? stateTop10 : [{ state: '', count: 1, fill: '#f0f0f0' }]} dataKey="count" nameKey="state" cx="50%" cy="50%" outerRadius={chartIsMobile ? 80 : 130} label={false} labelLine={false}>
                           {(stateTop10.length > 0 ? stateTop10 : [{ state: '', fill: '#f0f0f0' }]).map((entry, index) => (
                             <Cell key={index} fill={entry.fill || PIE_COLORS[index % PIE_COLORS.length]} />
                           ))}

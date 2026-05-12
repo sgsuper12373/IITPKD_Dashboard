@@ -525,7 +525,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
             marginBottom: '20px', padding: '15px',
             backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <div className="filter-panel-header">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>

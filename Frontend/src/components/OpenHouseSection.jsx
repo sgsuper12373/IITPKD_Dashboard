@@ -176,9 +176,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
         />
       </div>
       {/* Summary Cards - Modern Design */}
-      < div id="openhouse-summary-cards-container" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+      < div id="openhouse-summary-cards-container" className="grid-3" style={{
         gap: '24px',
         marginBottom: '40px'
       }
@@ -553,7 +551,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               </div>
               <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={timeline}>
+                <LineChart data={timeline} margin={{ top: 26, right: 20, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
@@ -605,7 +603,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
               </div>
               <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={timeline}>
+                <BarChart data={timeline} margin={{ top: 26, right: 20, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />

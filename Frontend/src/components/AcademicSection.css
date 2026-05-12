@@ -415,7 +415,8 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 400px;
+  height: auto;
+  min-height: 400px;
   opacity: 0;
   visibility: hidden;
   transform: scale(0.97) translateY(8px);
@@ -752,12 +753,38 @@
 
   /* Reduce fixed chart heights on mobile */
   .chart-wrapper {
-    height: 240px;
+    height: auto;
   }
 
   .pie-chart,
   .bar-chart-container {
     min-height: 240px;
+  }
+
+  /* Scale interactive controls on small screens */
+  .clear-filters-btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
+  }
+
+  .filter-select {
+    padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .chart-type-select {
+    padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .upload-data-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.87rem;
+  }
+
+  .mode-btn {
+    padding: 4px 8px;
+    font-size: 10.5px;
   }
 }
 
@@ -844,10 +871,103 @@
   box-shadow: 0 4px 12px rgba(247, 166, 0, 0.35);
 }
 
+/* ================= MODE TOGGLE BUTTONS (Chart mode / Bar-Trend) ================= */
+.mode-btn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #e9ecef;
+  color: #333;
+  font-weight: 400;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mode-btn.active {
+  background-color: #667eea;
+  color: #fff;
+  font-weight: 600;
+}
+
 /* ================= NO DATA FALLBACK ================= */
 .no-data {
   padding: 3rem;
   text-align: center;
   color: var(--text-muted);
   font-size: 1rem;
+}
+
+/* ================= RESPONSIVE SUMMARY CARD GRIDS ================= */
+.summary-cards-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.summary-cards-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+/* Filter grid — minmax(110px) prevents columns collapsing to near-zero on mobile */
+.shared-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+/* metric-value used inside summary cards */
+.metric-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+@media (max-width: 1024px) {
+  .summary-cards-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .summary-cards-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-cards-grid-4,
+  .summary-cards-grid-5 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .shared-filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-value {
+    font-size: 1.75rem;
+  }
+
+  /* Chart container: allow overflow-x scroll instead of clipping on small screens */
+  .chart-section {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 400px) {
+  .summary-cards-grid-4,
+  .summary-cards-grid-5 {
+    grid-template-columns: 1fr;
+  }
+
+  .shared-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-value {
+    font-size: 1.5rem;
+  }
 }

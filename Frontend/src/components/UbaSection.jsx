@@ -135,9 +135,7 @@ function UbaSection({ user, isPublicView = false }) {
         />
       </div>
       {/* Impact Summary Cards */}
-      < div id="uba-summary-cards-container" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
+      < div id="uba-summary-cards-container" className="grid-2" style={{
         gap: '24px',
         marginBottom: '40px'
       }

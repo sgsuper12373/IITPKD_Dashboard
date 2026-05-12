@@ -90,15 +90,7 @@ const formatNumber = (v) => new Intl.NumberFormat('en-IN').format(Number(v) || 0
 
 const CURRENT_YEAR = String(new Date().getFullYear());
 
-// ── Chart toggle button style helper ──────────────────────────────────────
-
-const chartToggleStyle = (active) => ({
-  padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer',
-  fontSize: '13px', fontWeight: 600, transition: 'all 0.2s',
-  backgroundColor: active ? '#fff' : 'transparent',
-  color: active ? '#667eea' : '#555',
-  boxShadow: active ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-});
+// chartToggleStyle replaced by .chart-toggle-btn CSS class (see Page.css)
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
@@ -125,6 +117,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
+
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle, { passive: true });
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
@@ -451,7 +450,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
       }}>
 
         {/* ── Header row ── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        <div className="filter-panel-header" style={{ marginBottom: '12px' }}>
           <span style={{ fontWeight: 700, fontSize: '14px', color: '#333' }}>Dashboard Filters</span>
           <button
             onClick={isEdu ? handleEduClearFilters : handleClearFilters}
@@ -705,7 +704,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               title="Employee Summary"
             />
           </div>
-          <div id="admin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+          <div id="admin-summary-cards-container" className="grid-4" style={{ gap: '20px', marginBottom: '30px' }}>
             {/* Year picker card */}
             <div style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -748,7 +747,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>{icon}</span>
                       <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>{label}</span>
                     </div>
-                    <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>{data.length === 0 ? '—' : val}</div>
+                    <div className="stat-card-value" style={{ marginBottom: '8px' }}>{data.length === 0 ? '—' : val}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
                       <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
@@ -773,7 +772,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
     const DrilldownTable = ({ typeLabel, typeColor, data, exportId, exportFilename, exportTitle }) => (
       <div style={{ ...CHART_BOX, marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #eee', flexWrap: 'wrap', gap: '0.75rem' }}>
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
             {typeLabel} Faculty List
@@ -1029,7 +1028,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
                 {['Bar', 'Trend'].map(mode => (
                   <button key={mode} type="button" onClick={() => setYearwiseChartType(mode)}
-                    style={chartToggleStyle(yearwiseChartType === mode)}>
+                    className={`chart-toggle-btn${yearwiseChartType === mode ? ' active' : ''}`}>
                     {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                   </button>
                 ))}
@@ -1148,7 +1147,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Faculty Department Wise ── */}
           {section === 'regular' && activeView === 'department' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <h2 style={{ margin: '0 0 5px 0', color: '#1a1a1a', fontSize: '24px' }}>Faculty Department Wise Count</h2>
                   <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>
@@ -1173,7 +1172,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 )}
                 <div id="admin-expertise-chart-container" style={{ padding: '10px' }}>
                   <ResponsiveContainer width="100%" height={420}>
-                    <BarChart data={expertiseData} margin={{ top: 5, right: 20, left: 0, bottom: 130 }}>
+                    <BarChart data={expertiseData} margin={{ top: 26, right: 20, left: 0, bottom: 130 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
                       <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
@@ -1191,7 +1190,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Gender Distribution ── */}
           {section === 'regular' && activeView === 'gender' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <h2 style={{ margin: '0 0 5px 0', color: '#1a1a1a', fontSize: '24px' }}>Gender Distribution</h2>
                   <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Gender distribution of currently active employees.</p>
@@ -1212,13 +1211,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No gender data matches the current filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={420}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 300 : 420}>
                   <PieChart>
                     <Pie
                       data={genderData.length > 0 ? genderData : [{ name: '', value: 1, fill: '#f0f0f0' }]}
-                      cx="50%" cy="48%" outerRadius={150} dataKey="value"
-                      label={genderData.length > 0 ? ({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(1)}%)` : false}
-                      labelLine={genderData.length > 0}
+                      cx="50%" cy={chartIsMobile ? '43%' : '48%'} outerRadius={chartIsMobile ? 90 : 150} dataKey="value"
+                      label={genderData.length > 0 && !chartIsMobile ? ({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(1)}%)` : false}
+                      labelLine={genderData.length > 0 && !chartIsMobile}
                       isAnimationActive animationDuration={700}
                     >
                       {(genderData.length > 0 ? genderData : [{ name: '', fill: '#f0f0f0' }]).map(entry => (
@@ -1258,14 +1257,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     key={mode}
                     type="button"
                     onClick={() => setEduDeptChartType(mode)}
-                    style={chartToggleStyle(eduDeptChartType === mode)}
+                    className={`chart-toggle-btn${eduDeptChartType === mode ? ' active' : ''}`}
                   >
                     {icon} {mode}
                   </button>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px' }}>🏢 Department-wise Breakdown</h2>
                   <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Active external academic engagements by department</p>
@@ -1370,7 +1369,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     key={mode}
                     type="button"
                     onClick={() => setEduTrendChartType(mode)}
-                    style={chartToggleStyle(eduTrendChartType === mode)}
+                    className={`chart-toggle-btn${eduTrendChartType === mode ? ' active' : ''}`}
                   >
                     {icon} {mode}
                   </button>
@@ -1492,16 +1491,16 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
-                <ResponsiveContainer width="100%" height={420}>
-                  <PieChart margin={{ top: 40, right: 10, bottom: 10, left: 10 }}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 300 : 420}>
+                  <PieChart margin={{ top: chartIsMobile ? 10 : 40, right: 10, bottom: 10, left: 10 }}>
                     <Pie
                       data={eduPieData}
                       cx="50%"
                       cy="50%"
-                      outerRadius={140}
+                      outerRadius={chartIsMobile ? 90 : 140}
                       dataKey="value"
                       animationDuration={800}
-                      label={({ cx, cy, midAngle, outerRadius, percent, name }) => {
+                      label={!chartIsMobile ? ({ cx, cy, midAngle, outerRadius, percent, name }) => {
                         const RADIAN = Math.PI / 180;
                         const radius = outerRadius + 28;
                         const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -1513,7 +1512,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                             {`${ENGAGEMENT_LABELS[name] || name} (${(percent * 100).toFixed(0)}%)`}
                           </text>
                         ) : null;
-                      }}
+                      } : false}
                       labelLine={false}
                     >
                       {eduPieData.map((entry, i) => (

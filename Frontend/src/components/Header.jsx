@@ -5,10 +5,21 @@ import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 
 const SIDEBAR_LINKS = [
   {
+    label: 'Main Sections',
+    items: [
+      { icon: '🏛️', label: 'People and Campus', path: '/people-campus' },
+      { icon: '🔬', label: 'Research', path: '/research' },
+      { icon: '🎓', label: 'Education', path: '/education' },
+      { icon: '🏭', label: 'Industry Connect', path: '/industry-connect' },
+      { icon: '💡', label: 'Innovation and Entrepreneurship', path: '/innovation-entrepreneurship' },
+      { icon: '🌱', label: 'Outreach and Extension', path: '/outreach-extension' },
+    ],
+  },
+  {
     label: 'Quick Navigation',
     items: [
       { icon: '🏠', label: 'Home', path: '/' },
-      { icon: '🎓', label: 'Student Overview', path: '/people-campus/academic-section' },
+      { icon: '📊', label: 'Student Overview', path: '/people-campus/academic-section' },
       { icon: '👥', label: 'Employee Overview', path: '/people-campus/administrative-section' },
       { icon: '📝', label: 'Patents', path: '/patents' },
       { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
@@ -20,10 +31,22 @@ function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
     const lastScrollY = useRef(0);
     const navigate = useNavigate();
     const location = useLocation();
     const dropdownRef = useRef(null);
+
+    // Track whether we're on a breakpoint where the navbar is CSS-hidden
+    useEffect(() => {
+        const mq = window.matchMedia('(max-width: 768px)');
+        const handler = (e) => setIsMobile(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, []);
+
+    // True only when the navbar strip is both visible (not scrolled away) and rendered (not mobile)
+    const navbarActuallyVisible = showNavbar && !isMobile;
 
     // Handle scroll to hide/show navbar
     useEffect(() => {
@@ -84,38 +107,31 @@ function Header({ user, onLogout, isGuest }) {
             <div className="app-header-container">
                 {/* Header with Logo and User Profile */}
                 <header className="main-header">
-                    <div className="header-left">
-                        {/* Hamburger + Logo — explicitly inline flex so they share the same row */}
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
-                            <button
-                                className="hamburger-btn"
-                                onClick={() => setSidebarOpen(true)}
-                                aria-label="Open navigation menu"
-                            >
-                                <span />
-                                <span />
-                                <span />
-                            </button>
+                    <button
+                        className="hamburger-btn"
+                        onClick={() => setSidebarOpen(true)}
+                        aria-label="Open navigation menu"
+                    >
+                        <span />
+                        <span />
+                        <span />
+                    </button>
 
-                            <Link to="/" className="logo-link">
-                                <div className="logo-container">
-                                    <img
-                                        src={IIPKD_Logo}
-                                        alt="IIT Palakkad Logo"
-                                        className="logo-image"
-                                    />
-                                    <div className="logo-text-group">
-                                        <span className="logo-text">
-                                            Indian Institute of Technology Palakkad
-                                        </span>
-                                        <span className="logo-tagline">
-                                            Nurturing Minds For a Better World
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
+                    <Link to="/" className="logo-link">
+                        <img
+                            src={IIPKD_Logo}
+                            alt="IIT Palakkad Logo"
+                            className="logo-image"
+                        />
+                        <div className="logo-text-group">
+                            <span className="logo-text">
+                                Indian Institute of Technology Palakkad
+                            </span>
+                            <span className="logo-tagline">
+                                Nurturing Minds For a Better World
+                            </span>
                         </div>
-                    </div>
+                    </Link>
 
                     <div className="header-right">
                         <div ref={dropdownRef} className="user-profile-container">
@@ -213,21 +229,25 @@ function Header({ user, onLogout, isGuest }) {
                         </button>
                     </div>
 
-                    {SIDEBAR_LINKS.map((section) => (
-                        <div key={section.label}>
-                            <p className="sidebar-section-label">{section.label}</p>
-                            {section.items.map((item) => (
-                                <button
-                                    key={item.path}
-                                    className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                                    onClick={() => { navigate(item.path); setSidebarOpen(false); }}
-                                >
-                                    <span className="sidebar-nav-icon">{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    ))}
+                    {SIDEBAR_LINKS
+                        .filter(section =>
+                            !(navbarActuallyVisible && section.label === 'Main Sections')
+                        )
+                        .map((section) => (
+                            <div key={section.label}>
+                                <p className="sidebar-section-label">{section.label}</p>
+                                {section.items.map((item) => (
+                                    <button
+                                        key={item.path}
+                                        className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                                        onClick={() => { navigate(item.path); setSidebarOpen(false); }}
+                                    >
+                                        <span className="sidebar-nav-icon">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        ))}
 
                     <div className="sidebar-divider" />
 

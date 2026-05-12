@@ -30,7 +30,7 @@
   color: #1f1f1f;
   line-height: 1.6;
 
-  overflow: hidden;
+  overflow: clip;
   transition: box-shadow 0.3s ease;
 }
 
@@ -102,6 +102,9 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
+
+  min-height: auto;
+  min-width: auto;
 
   backdrop-filter: blur(10px) saturate(1.6);
   -webkit-backdrop-filter: blur(10px) saturate(1.6);
@@ -232,7 +235,7 @@
 
 @media (max-width: 768px) {
   .page-content {
-    padding: 1.75rem 1.5rem;
+    padding: 1.5rem 1rem;
     border-radius: 10px;
   }
 
@@ -245,24 +248,33 @@
   }
 
   .section-title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 
   .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
   }
 
   .section-header-actions {
-    width: 100%;
     justify-content: flex-start;
   }
 
   .page-back-btn,
   .page-upload-btn {
-    font-size: 0.8rem;
-    padding: 6px 12px;
+    font-size: 0.78rem;
+    padding: 5px 11px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-back-btn,
+  .page-upload-btn {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    gap: 3px;
+    border-radius: 4px;
   }
 }
 
@@ -277,14 +289,14 @@
   }
 
   .section-title {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .page-back-btn,
   .page-upload-btn {
-    font-size: 0.75rem;
-    padding: 5px 10px;
-    gap: 4px;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    gap: 2px;
   }
 
   .filter-panel {
@@ -298,5 +310,296 @@
 
   .summary-card-value {
     font-size: 1.6rem;
+  }
+}
+
+/* Ensure nothing bleeds outside the viewport at any width */
+@media (max-width: 360px) {
+  .page-content {
+    padding: 1rem 0.625rem;
+  }
+
+  /* Prevent long text from overflowing card/container boundaries.
+     Only target block-level HTML content — never recharts SVG text. */
+  p, h1, h2, h3, h4, h5, h6, td, th, li {
+    overflow-wrap: break-word;
+  }
+}
+
+/* ── Mobile chart improvements ───────────────────────────────────────────── */
+
+/* Hide Y/X-axis unit labels (e.g. "Students", "Year") on narrow screens
+   to reclaim horizontal/vertical space for the actual chart area.
+   Recharts renders these as <text> inside .recharts-label — set visibility
+   rather than display:none so SVG layout is preserved (avoids axis jump). */
+@media (max-width: 640px) {
+  .recharts-xAxis .recharts-label {
+    visibility: hidden;
+  }
+
+  /* Shrink recharts legend text so three items ("Male Female Transgender")
+     fit on one line without wrapping */
+  .recharts-legend-wrapper ul,
+  .recharts-legend-wrapper li {
+    font-size: 10px !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  /* Keep recharts SVG text from being affected by any parent word-break */
+  .recharts-surface text,
+  .recharts-layer text {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Tighten Y-axis tick width so bars have more room */
+  .recharts-yAxis {
+    width: 32px !important;
+  }
+}
+
+/* =============================================================== */
+/* NARROW-SCREEN LAYOUT UTILITIES (300px–480px range)              */
+/* =============================================================== */
+
+/* Filter panel header: "Dashboard Filters" + "Clear All Filters" button.
+   flex-wrap lets the button drop below the title on very narrow screens. */
+.filter-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+/* View-type pill bar (Trend | Department | Directory, etc.) */
+.view-type-bar {
+  display: flex;
+  gap: 4px;
+  background: #e9ecef;
+  padding: 4px;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.view-type-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .view-type-btn {
+    font-size: 11px;
+    padding: 4px 3px;
+    min-width: 48px;
+  }
+}
+
+/* Gradient stat-card grid: single column on mobile so text never clips */
+.stat-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 480px) {
+  .stat-card-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Label inside a gradient stat card (icon + title row) */
+.stat-card-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Large number inside a gradient stat card */
+.stat-card-value {
+  font-weight: bold;
+  color: white;
+  line-height: 1.1;
+  font-size: 38px;
+}
+
+@media (max-width: 768px) {
+  .stat-card-label {
+    font-size: 14px;
+  }
+  .stat-card-value {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-card-label {
+    font-size: 13px;
+  }
+  .stat-card-value {
+    font-size: 26px;
+  }
+}
+
+/* =============================================================== */
+/* CHART TOGGLE BUTTONS — used in AdministrativeSection & others   */
+/* Replaces the chartToggleStyle() inline function                 */
+/* =============================================================== */
+
+.chart-toggle-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  background-color: transparent;
+  color: #555;
+  box-shadow: none;
+}
+
+.chart-toggle-btn.active {
+  background-color: #fff;
+  color: #667eea;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 480px) {
+  .chart-toggle-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+/* =============================================================== */
+/* RESPONSIVE GRID UTILITIES — replaces inline repeat(N,1fr)       */
+/* Usage: className="grid-2" style={{ gap, marginBottom, etc. }}   */
+/* =============================================================== */
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); }
+
+/* Filter rows (compact dropdowns) */
+.filter-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
+.filter-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .grid-2  { grid-template-columns: 1fr; }
+  .grid-3  { grid-template-columns: 1fr; }
+  .grid-4  { grid-template-columns: 1fr; }
+  .filter-grid-2 { grid-template-columns: 1fr; }
+  .filter-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* =============================================================== */
+/* GLOBAL RECHARTS MOBILE FIXES — applied project-wide             */
+/* =============================================================== */
+
+/* Always constrain charts to their parent width — prevents horizontal overflow */
+.recharts-responsive-container {
+  max-width: 100% !important;
+}
+
+/* Prevent chart card wrappers from extending past the viewport */
+[class*="chart-card"],
+[class*="chart-container"],
+[class*="chart-wrapper"] {
+  max-width: 100%;
+}
+
+/* Small fixed-height chart cards (e.g. NIRF metric cards) must not be
+   overridden by the global tablet/mobile height rules below. The higher
+   specificity (2 classes) beats the single-class !important rules. */
+@media (max-width: 768px) {
+  .compact-chart .recharts-responsive-container {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+}
+@media (max-width: 480px) {
+  .compact-chart .recharts-responsive-container {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+}
+
+/* Tablet: shrink chart height and reduce Y-axis gutter */
+@media (max-width: 768px) {
+  .recharts-responsive-container {
+    height: 280px !important;
+    min-height: auto !important;
+  }
+
+  /* Tighten bar label font size so they don't collide */
+  .recharts-label-list text {
+    font-size: 8px !important;
+  }
+}
+
+/* Mobile: further reduce height; hide bar-top labels entirely (too cramped) */
+@media (max-width: 480px) {
+  .recharts-responsive-container {
+    height: 220px !important;
+    min-height: auto !important;
+  }
+
+  /* Hide value labels printed on bars/lines — they overlap on small screens */
+  .recharts-label-list {
+    display: none !important;
+  }
+
+  /* Shrink axis tick text */
+  .recharts-cartesian-axis-tick text {
+    font-size: 9px !important;
+  }
+
+  /* Shrink legend text */
+  .recharts-legend-wrapper {
+    font-size: 10px !important;
+  }
+}
+
+/* Tables inside cards — horizontal scroll instead of overflow on mobile */
+@media (max-width: 640px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+
+/* Clip any chart or card container that overflows on mobile */
+@media (max-width: 768px) {
+  .page-content {
+    overflow: hidden;
   }
 }

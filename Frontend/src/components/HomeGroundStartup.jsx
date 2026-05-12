@@ -338,7 +338,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+          <div className="filter-grid-2" style={{ gap: '12px', marginBottom: '16px' }}>
             <div>
               <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Domain</label>
               <select

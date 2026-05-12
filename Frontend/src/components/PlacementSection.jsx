@@ -84,6 +84,13 @@ function PlacementSection({ user, isPublicView = false }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle, { passive: true });
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
   const [filterOptions, setFilterOptions] = useState({
     years: [],
     programs: [],
@@ -840,7 +847,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
                   {trendChartMode === 'bar' ? (
-                    <BarChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
+                    <BarChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -854,7 +861,7 @@ function PlacementSection({ user, isPublicView = false }) {
                       </Bar>
                     </BarChart>
                   ) : (
-                    <LineChart data={placementTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                    <LineChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -912,7 +919,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={genderBarData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
+                  <BarChart data={genderBarData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="30%">
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -962,7 +969,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={programStatusChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={programStatusChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -1009,7 +1016,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={recruiterChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
+                  <BarChart data={recruiterChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
@@ -1058,9 +1065,9 @@ function PlacementSection({ user, isPublicView = false }) {
                   const pieData = [...top5];
                   if (otherTotal > 0) pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal });
                   return (
-                    <ResponsiveContainer width="100%" height={350}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 260 : 350}>
                       <PieChart>
-                        <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={120} label={({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                        <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={chartIsMobile ? 80 : 120} label={!chartIsMobile ? ({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%` : false} labelLine={false}>
                           {pieData.map((entry, index) => (
                             <Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />
                           ))}
@@ -1102,7 +1109,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   <p>No information available for the selected filter</p>
                 </div>
                 <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={packageTrendChartData} margin={{ top: 10, right: 20, left: 50, bottom: 30 }}>
+                  <LineChart data={packageTrendChartData} margin={{ top: 26, right: 20, left: 50, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />

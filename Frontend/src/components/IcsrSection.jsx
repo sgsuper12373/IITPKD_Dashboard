@@ -270,7 +270,7 @@ function IcsrSection({ user, isPublicView = false }) {
             <div style={{ padding: '14px 20px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #e9ecef' }}>
 
               {/* Row 1: heading + clear */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div className="filter-panel-header" style={{ marginBottom: '12px' }}>
                 <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '700', color: '#333' }}>Filters</h4>
                 <button
                   className="icsr-clear-btn"
@@ -314,7 +314,7 @@ function IcsrSection({ user, isPublicView = false }) {
               {/* Row 3: conditional filter fields */}
               {viewType === 'yearly' && (
                 <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px', marginBottom: '10px' }}>
+                  <div className="filter-grid-3" style={{ gap: '12px', marginBottom: '10px' }}>
                     <div>
                       <label style={labelStyle}>Event Type</label>
                       <select value={filters.event_type} onChange={e => handleFilterChange('event_type', e.target.value)} style={inputStyle}>
@@ -347,7 +347,7 @@ function IcsrSection({ user, isPublicView = false }) {
               )}
 
               {viewType === 'eventTypes' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '12px' }}>
+                <div className="filter-grid-2" style={{ gap: '12px' }}>
                   <div>
                     <label style={labelStyle}>Year</label>
                     <select value={filters.year} onChange={e => handleFilterChange('year', e.target.value)} style={inputStyle}>
@@ -363,7 +363,7 @@ function IcsrSection({ user, isPublicView = false }) {
               )}
 
               {viewType === 'eventsDirectory' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px' }}>
+                <div className="filter-grid-3" style={{ gap: '12px' }}>
                   <div>
                     <label style={labelStyle}>Event Type</label>
                     <select value={filters.event_type} onChange={e => handleFilterChange('event_type', e.target.value)} style={inputStyle}>
@@ -527,7 +527,7 @@ function IcsrSection({ user, isPublicView = false }) {
                         </ResponsiveContainer>
                       </div>
 
-                      <div style={{ marginTop: 'auto', padding: '12px 14px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px' }}>
+                      <div className="grid-3" style={{ marginTop: 'auto', padding: '12px 14px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', gap: '12px' }}>
                         {[
                           { label: 'Event Categories', val: eventTypesPieData.length, color: '#4f46e5' },
                           { label: 'Total Events', val: eventTypesPieData.reduce((s, i) => s + i.value, 0), color: '#22c55e' },

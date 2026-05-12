@@ -84,7 +84,7 @@ function SocialEngagementsSection({ user }) {
               </p> */}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' }}>
+            <div className="grid-2" style={{ gap: '30px' }}>
               {SECTIONS.map((s) => (
                 <div
                   key={s.id}

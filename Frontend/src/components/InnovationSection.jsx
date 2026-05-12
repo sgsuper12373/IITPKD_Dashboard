@@ -321,9 +321,7 @@ function InnovationSectionContent({ user, isPublicView }) {
       }}>{error}</div>}
 
       {/* Modern Summary Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+      <div className="grid-4" style={{
         gap: '24px',
         marginBottom: '40px'
       }}>
@@ -1003,14 +1001,12 @@ function InnovationSectionContent({ user, isPublicView }) {
 )}</>
 
                 {/* Chart Statistics */}
-                <div style={{
+                <div className="grid-4" style={{
                   marginTop: '20px',
                   padding: '15px',
                   backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
                   gap: '15px'
                 }}>
                   <div style={{ textAlign: 'center' }}>
@@ -1122,14 +1118,12 @@ function InnovationSectionContent({ user, isPublicView }) {
 )}</>
 
                 {/* Sector Statistics */}
-                <div style={{
+                <div className="grid-3" style={{
                   marginTop: '20px',
                   padding: '15px',
                   backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
                   gap: '15px'
                 }}>
                   <div style={{ textAlign: 'center' }}>
@@ -1281,14 +1275,12 @@ function InnovationSectionContent({ user, isPublicView }) {
                 </div>
 
                 {/* Table Statistics */}
-                <div style={{
+                <div className="grid-4" style={{
                   marginTop: '20px',
                   padding: '15px',
                   backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   border: '1px solid #e0e0e0',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
                   gap: '15px'
                 }}>
                   <div style={{ textAlign: 'center' }}>

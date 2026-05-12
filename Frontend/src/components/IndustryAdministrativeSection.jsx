@@ -309,12 +309,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           />
         </div>
         {/* Modern Summary Cards */}
-        <div id="externship-summary-cards-container" style={{
-          display: 'grid',
-          gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-          gap: '20px',
-          marginBottom: '30px'
-        }}>
+        <div id="externship-summary-cards-container" className="stat-card-grid" style={{ gap: '20px' }}>
           {/* Total Externships Card */}
           <div style={{
             background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
@@ -338,7 +333,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Faculty Industry Stints</span>
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
                 {formatNumber(summary.total)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -371,7 +366,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🏢</span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Departments</span>
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
                 {formatNumber(participatingDepartments)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -404,7 +399,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Timeline Coverage</span>
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
                 {formatNumber(activeYears)}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -433,7 +428,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               backgroundColor: '#f8f9fa', borderRadius: '12px',
               border: '1px solid #e9ecef', boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <div className="filter-panel-header">
                 <h4 style={{ margin: 0, color: '#333', fontSize: '14px', fontWeight: '600' }}>Dashboard Filters</h4>
                 <button
                   onClick={handleClearFilters}
@@ -454,47 +449,28 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 {/* View Type Buttons — leftmost */}
                 <div className="filter-group">
                   <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>View Type</label>
-                  <div style={{ display: 'flex', gap: '6px', background: '#e9ecef', padding: '4px', borderRadius: '8px' }}>
+                  <div className="view-type-bar">
                     <button
                       onClick={() => setViewType('yearly')}
-                      style={{
-                        flex: 1, padding: '7px 8px',
-                        backgroundColor: viewType === 'yearly' ? '#6366f1' : 'transparent',
-                        color: viewType === 'yearly' ? 'white' : '#475569',
-                        border: 'none', borderRadius: '6px', cursor: 'pointer',
-                        fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
-                      }}
+                      className="view-type-btn"
+                      style={{ backgroundColor: viewType === 'yearly' ? '#6366f1' : 'transparent', color: viewType === 'yearly' ? 'white' : '#475569' }}
                     >
-                      <span>📊</span> Year
+                      📊 Year
                     </button>
                     <button
                       onClick={() => setViewType('department')}
-                      style={{
-                        flex: 1, padding: '7px 8px',
-                        backgroundColor: viewType === 'department' ? '#22c55e' : 'transparent',
-                        color: viewType === 'department' ? 'white' : '#475569',
-                        border: 'none', borderRadius: '6px', cursor: 'pointer',
-                        fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
-                      }}
+                      className="view-type-btn"
+                      style={{ backgroundColor: viewType === 'department' ? '#22c55e' : 'transparent', color: viewType === 'department' ? 'white' : '#475569' }}
                     >
-                      <span>🏢</span> Dept
+                      🏢 Dept
                     </button>
-                    {/* Dir button — hidden for role_id 0 or undefined */}
                     {canViewDirectory && (
                       <button
                         onClick={() => setViewType('externshipTable')}
-                        style={{
-                          flex: 1, padding: '7px 8px',
-                          backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent',
-                          color: viewType === 'externshipTable' ? 'white' : '#475569',
-                          border: 'none', borderRadius: '6px', cursor: 'pointer',
-                          fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'
-                        }}
+                        className="view-type-btn"
+                        style={{ backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent', color: viewType === 'externshipTable' ? 'white' : '#475569' }}
                       >
-                        <span>📋</span> Dir
+                        📋 Dir
                       </button>
                     )}
                   </div>

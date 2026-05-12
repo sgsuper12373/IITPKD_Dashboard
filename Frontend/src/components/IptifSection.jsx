@@ -289,7 +289,7 @@ function IptifSection({ user, isPublicView = false }) {
   /* ─────────────────────── FILTER PANEL CONTENT per view ─────────────────── */
   const renderFilters = () => {
     if (viewType === 'projects') return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+      <div className="filter-grid-3" style={{ gap: '12px' }}>
         <div>
           <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Scheme</label>
           <select value={projectFilters.scheme} onChange={e => handleFilterChange(setProjectFilters)('scheme', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
@@ -314,7 +314,7 @@ function IptifSection({ user, isPublicView = false }) {
       </div>
     );
     if (viewType === 'programs') return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+      <div className="filter-grid-2" style={{ gap: '12px' }}>
         <div>
           <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Type</label>
           <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
@@ -332,7 +332,7 @@ function IptifSection({ user, isPublicView = false }) {
       </div>
     );
     if (viewType === 'startups') return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+      <div className="filter-grid-2" style={{ gap: '12px' }}>
         <div>
           <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Domain</label>
           <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>

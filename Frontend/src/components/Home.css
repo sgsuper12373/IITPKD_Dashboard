@@ -43,8 +43,8 @@ body::before {
 
 /* Offset page for FIXED HEADER CONTAINER (Header + Navbar) */
 body {
-  padding-top: 130px;
-  /* Total height: ~72px (header) + ~54px (navbar) + buffer */
+  padding-top: 118px;
+  /* ~64px header + ~48px navbar + 6px buffer */
 }
 
 #root {
@@ -70,25 +70,21 @@ body {
 /* ================= HEADER ================= */
 .main-header {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
+  /* 3-column grid: [hamburger] [logo — fills space] [avatar] */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  column-gap: 10px;
 
-  padding: 1rem 2.5rem;
+  padding: 0.75rem 1.25rem;
   background: var(--off-white);
   border-bottom: 1px solid var(--border-light);
 
-  /* Positioning for layering */
   position: relative;
   z-index: 20;
-  /* Higher than navbar */
   pointer-events: auto;
-  /* Re-enable clicks */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  /* Add shadow to header */
 }
-
-/* ... existing Left/Right Header styles ... */
 
 /* ================= NAVBAR ================= */
 .main-navbar {
@@ -112,31 +108,23 @@ body {
   transform: translateY(-100%);
 }
 
-/* LEFT HEADER */
-.header-left {
+.logo-link {
   display: flex;
   align-items: center;
-}
-
-.logo-link {
+  gap: 10px;
   text-decoration: none;
   color: inherit;
-}
-
-/* LOGO + TEXT CONTAINER */
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* LOGO IMAGE */
 .logo-image {
   height: 32px;
-  /* Desktop size */
   width: auto;
   object-fit: contain;
   display: block;
+  flex-shrink: 0;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
 }
 
@@ -168,7 +156,8 @@ body {
 /* ================= PROFILE ================= */
 .header-right {
   position: relative;
-  margin-right: 0.5rem;
+  flex-shrink: 0;
+  overflow: visible; /* keep dropdown from being clipped */
 }
 
 .user-profile-container {
@@ -202,7 +191,8 @@ body {
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: 10px;
-  min-width: 260px;
+  min-width: 240px;
+  max-width: calc(100vw - 1.5rem);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   z-index: 1001;
@@ -300,19 +290,53 @@ body {
 }
 
 /* ================= RESPONSIVE ================= */
+
+/* ── Tablet (769 – 1024 px) ───────────────────── */
+@media (max-width: 1024px) {
+  .main-header {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .logo-text {
+    font-size: 1rem;
+  }
+
+  .logo-tagline {
+    font-size: 0.7rem;
+  }
+}
+
+/* ── Large mobile / small tablet (≤ 768 px) ───── */
 @media (max-width: 768px) {
-  /* Hide the wide nav-bar on tablet/mobile — sidebar handles navigation */
+  /* Navbar hidden — sidebar drawer handles all navigation */
   .main-navbar {
     display: none;
   }
 
-  /* Without the nav-bar row, the header is ~76px tall */
   body {
-    padding-top: 80px;
+    padding-top: 68px;
   }
 
   .main-header {
-    padding: 0.75rem 1.25rem;
+    padding: 0.625rem 1rem;
+  }
+
+  .logo-image {
+    height: 28px;
+  }
+
+  .logo-text {
+    font-size: 0.9rem;
+  }
+
+  .logo-tagline {
+    font-size: 0.68rem;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
   }
 
   .main-content {
@@ -320,27 +344,28 @@ body {
   }
 }
 
+/* ── Mobile (≤ 640 px) ────────────────────────── */
 @media (max-width: 640px) {
   body {
-    padding-top: 72px;
+    padding-top: 62px;
   }
 
   .main-header {
-    padding: 0.65rem 1rem;
+    padding: 0.5rem 0.875rem;
   }
 
   .logo-image {
     height: 26px;
   }
 
-  /* Truncate the full institute name so it doesn't overflow the header */
+  /* Truncate long institute name */
   .logo-text-group {
-    max-width: 180px;
+    max-width: 160px;
     overflow: hidden;
   }
 
   .logo-text {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -350,21 +375,29 @@ body {
     display: none;
   }
 
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.82rem;
+    box-shadow: 0 0 0 2px rgba(247, 166, 0, 0.25);
+  }
+
   .main-content {
     padding: 0.5rem;
   }
 }
 
+/* ── Small phone (≤ 480 px) ──────────────────── */
 @media (max-width: 480px) {
   body {
-    padding-top: 68px;
+    padding-top: 58px;
   }
 
   .main-header {
     padding: 0.5rem 0.75rem;
   }
 
-  /* On very small phones hide the text and show only the logo image */
+  /* Hide text, show only the spinning logo image */
   .logo-text-group {
     display: none;
   }
@@ -374,13 +407,48 @@ body {
   }
 
   .user-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+    box-shadow: 0 0 0 2px rgba(247, 166, 0, 0.25);
+  }
+
+  .hamburger-btn {
     width: 36px;
+    min-width: 36px;
     height: 36px;
-    font-size: 0.85rem;
   }
 
   .main-content {
     padding: 0.375rem;
+  }
+}
+
+/* ── Very small phone (≤ 360 px) ────────────── */
+@media (max-width: 360px) {
+  .main-header {
+    padding: 0.5rem 0.625rem;
+  }
+
+  .logo-image {
+    height: 24px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  .hamburger-btn {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    gap: 4px;
+  }
+
+  .hamburger-btn span {
+    width: 18px;
   }
 }
 
@@ -398,6 +466,7 @@ body {
   gap: 5px;
   width: 40px;
   height: 40px;
+  min-width: 40px; /* never collapse below tap target */
   background: none;
   border: none;
   cursor: pointer;

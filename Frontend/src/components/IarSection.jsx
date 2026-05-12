@@ -311,8 +311,7 @@ function IarSection({ user, isPublicView = false }) {
             />
           </div>
 
-          <div id="iar-summary-cards-container" style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+          <div id="iar-summary-cards-container" className="grid-3" style={{
             gap: '20px', marginBottom: '30px'
           }}>
             {/* Total Alumni */}
@@ -398,17 +397,14 @@ function IarSection({ user, isPublicView = false }) {
               background: '#f8f9fa', border: '1px solid #e0e0e0',
               borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '20px'
             }}>
-              <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginBottom: '0.6rem', paddingBottom: '0.5rem', borderBottom: '1px solid #e0e0e0'
-              }}>
+              <div className="filter-panel-header" style={{ marginBottom: '0.6rem', paddingBottom: '0.5rem', borderBottom: '1px solid #e0e0e0' }}>
                 <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a' }}>Filters</span>
                 <button className="clear-filters-btn" onClick={handleClearFilters}
                   style={{ padding: '0.3rem 0.85rem', fontSize: '0.78rem', borderRadius: '6px', border: 'none', backgroundColor: '#dc3545', color: '#fff', cursor: 'pointer' }}>
                   Clear All Filters
                 </button>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem' }}>
+              <div className="filter-grid-2" style={{ gap: '0.6rem' }}>
                 {[
                   { id: 'iar-dept', label: 'Department', key: 'department', options: filterOptions.departments },
                   { id: 'iar-program', label: 'Course Type', key: 'course_type', options: filterOptions.course_types },
@@ -502,7 +498,7 @@ function IarSection({ user, isPublicView = false }) {
                       </ResponsiveContainer>
                     </div>
 
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                    <div className="grid-4" style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', gap: '10px' }}>
                       <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#667eea' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
                       <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#22d3ee' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
                       <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#f97316' }}>{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Corporate</div></div>
@@ -754,10 +750,10 @@ function IarSection({ user, isPublicView = false }) {
                   </div>
 
                   {/* Stats row — always visible below the panel */}
-                  <div style={{
+                  <div className="grid-4" style={{
                     marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa',
                     borderRadius: '8px', border: '1px solid #e0e0e0',
-                    display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px'
+                    gap: '10px'
                   }}>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>

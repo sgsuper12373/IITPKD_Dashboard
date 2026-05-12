@@ -171,7 +171,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
           />
         </div>
         {/* Summary Cards — 2 primary cards */}
-        <div id="education-academic-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '36px' }}>
+        <div id="education-academic-summary-cards-container" className="grid-2" style={{ gap: '24px', marginBottom: '36px' }}>
           {/* Active Courses */}
           <div
             onClick={() => setViewMode('all')}
