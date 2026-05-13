@@ -36,7 +36,7 @@ const SERIES_META = [
   { key: 'Total', color: '#667eea', gradientId: 'colorEmpTotal', label: 'Total' },
   { key: 'Male', color: '#43e97b', gradientId: 'colorEmpMale', label: 'Male' },
   { key: 'Female', color: '#fa709a', gradientId: 'colorEmpFemale', label: 'Female' },
-  { key: 'Other', color: '#f093fb', gradientId: 'colorEmpOther', label: 'Other' },
+  { key: 'Other', color: '#f093fb', gradientId: 'colorEmpOther', label: 'Transgender' },
 ];
 
 const REGULAR_VIEWS = [
@@ -1087,7 +1087,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 )}
 
                 {/* Bar chart */}
-                <div 
+                <div
                   className={`chart-wrapper clickable-chart ${yearwiseChartType === 'Bar' ? 'active' : 'inactive'}`}
                   onClick={() => setExpandedChart({
                     title: "Year-wise Employee Strength",
@@ -1154,7 +1154,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 </div>
 
                 {/* Trend (Line) chart */}
-                <div 
+                <div
                   className={`chart-wrapper clickable-chart ${yearwiseChartType === 'Trend' ? 'active' : 'inactive'}`}
                   onClick={() => setExpandedChart({
                     title: "Year-wise Employee Trends",
@@ -1257,8 +1257,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No active faculty match the current filters.</p>
                   </div>
                 )}
-                <div 
-                  id="admin-expertise-chart-container" 
+                <div
+                  id="admin-expertise-chart-container"
                   className="clickable-chart"
                   style={{ padding: '10px' }}
                   onClick={() => setExpandedChart({
@@ -1311,27 +1311,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   title="Gender Distribution"
                 />
               </div>
-                <div 
-                  id="admin-gender-chart-container" 
-                  className="clickable-chart"
-                  style={{ position: 'relative', padding: '10px' }}
-                  onClick={() => setExpandedChart({
-                    title: "Gender Distribution",
-                    content: (
-                      <ResponsiveContainer width="100%" height={500}>
-                        <PieChart>
-                          <Pie data={genderData} cx="50%" cy="50%" outerRadius={180} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}>
-                            {genderData.map(entry => (
-                              <Cell key={entry.name} fill={entry.fill} />
-                            ))}
-                          </Pie>
-                          <Tooltip content={<CustomTooltip />} />
-                          <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )
-                  })}
-                >
+              <div
+                id="admin-gender-chart-container"
+                className="clickable-chart"
+                style={{ position: 'relative', padding: '10px' }}
+                onClick={() => setExpandedChart({
+                  title: "Gender Distribution",
+                  content: (
+                    <ResponsiveContainer width="100%" height={500}>
+                      <PieChart>
+                        <Pie data={genderData} cx="50%" cy="50%" outerRadius={180} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}>
+                          {genderData.map(entry => (
+                            <Cell key={entry.name} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )
+                })}
+              >
                 {genderData.length === 0 && (
                   <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
                     <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
@@ -1406,8 +1406,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div 
-                id="edu-dept-chart-container" 
+              <div
+                id="edu-dept-chart-container"
                 className="clickable-chart"
                 style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
                 onClick={() => setExpandedChart({
@@ -1554,8 +1554,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div 
-                id="edu-trend-chart-container" 
+              <div
+                id="edu-trend-chart-container"
                 className="clickable-chart"
                 style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
                 onClick={() => setExpandedChart({
@@ -1674,8 +1674,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   title="Type Distribution"
                 />
               </div>
-              <div 
-                id="edu-distribution-chart-container" 
+              <div
+                id="edu-distribution-chart-container"
                 className="clickable-chart"
                 style={{ position: 'relative', minHeight: '480px', padding: '10px' }}
                 onClick={() => setExpandedChart({

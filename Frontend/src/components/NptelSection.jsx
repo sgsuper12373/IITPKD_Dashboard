@@ -92,7 +92,7 @@ function NptelSection({ user, isPublicView = false }) {
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-        <h1 style={{ margin: 0 }}>NPTEL – CCE Statistics</h1>
+        <h1 style={{ margin: 0 }}>CCE Statistics</h1>
         {!isReadOnlyView && isAdmin && (
           <button
             className="page-upload-btn"
@@ -140,10 +140,10 @@ function NptelSection({ user, isPublicView = false }) {
             title="NPTEL Enrollment Trends"
           />
         </div>
-        
+
         <div id="nptel-chart-container">
           {summary.yearly_stats && summary.yearly_stats.length > 0 ? (
-            <div 
+            <div
               className="clickable-chart"
               onClick={() => setExpandedChart({
                 title: "NPTEL Trends",

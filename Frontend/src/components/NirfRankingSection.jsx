@@ -160,9 +160,6 @@ const NirfRankingSection = ({ user }) => {
             {/* ── NIRF Overall Rank Trend ── */}
             {rankData.length > 0 && (
                 <>
-                    <h3 style={{ fontSize: '1rem', color: '#555', marginBottom: '16px', fontWeight: 600 }}>
-                        NIRF Overall Rank Trend
-                    </h3>
                     <div style={{ marginBottom: '32px' }}>
                         <div style={{
                             background: '#fff',
@@ -178,10 +175,10 @@ const NirfRankingSection = ({ user }) => {
                             {/* Left: stat summary */}
                             <div style={{ minWidth: '160px' }}>
                                 <div style={{ fontSize: '13px', fontWeight: 700, color: '#555', marginBottom: '4px' }}>
-                                    Overall NIRF Rank (Lower is Better)
+                                    NIRF Engineering Rank (Lower is better)
                                 </div>
                                 <div style={{ fontSize: '11px', color: '#888', marginBottom: '12px' }}>
-                                    Engineering Category · {recentFirst?.year}–{recentLatest?.year}
+                                    {recentFirst?.year}–{recentLatest?.year}
                                 </div>
                                 <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#1a237e', lineHeight: 1 }}>
                                     #{latestRank}
@@ -213,8 +210,8 @@ const NirfRankingSection = ({ user }) => {
                             </div>
 
                             {/* Right: area chart */}
-                            <div 
-                                className={`compact-chart clickable-chart ${chartIsMobile ? 'mobile-compact' : ''}`} 
+                            <div
+                                className={`compact-chart clickable-chart ${chartIsMobile ? 'mobile-compact' : ''}`}
                                 style={{ flex: 1, minWidth: '220px', height: 160 }}
                                 onClick={() => setExpandedChart({
                                     title: "NIRF Overall Rank Trend",

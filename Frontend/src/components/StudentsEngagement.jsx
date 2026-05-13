@@ -11,7 +11,7 @@ const SECTIONS = [
   {
     id: 'nptel',
     icon: '📚',
-    title: 'NPTEL – CCE',
+    title: 'CCE',
     subtitle: 'National Programme on Technology Enhanced Learning',
     expandedTitle: 'Track student participation in NPTEL online learning and certification programmes.',
     description:

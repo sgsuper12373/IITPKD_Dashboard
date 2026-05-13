@@ -15,7 +15,7 @@ const OUTREACH_EXTENSION_SECTIONS = [
   },
   {
     code: '📚',
-    title: 'NPTEL - CCE',
+    title: 'CCE',
     description: 'Centre for Continuing Education',
     route: '/outreach-extension/nptel',
     allowedRoles: [3]
@@ -97,13 +97,13 @@ function OutreachExtension({ user }) {
         {/* Public view button for non-public users */}
         {roleId !== 0 && roleId !== 1 && (
           <div style={{ marginBottom: '1rem' }}>
-          <button
-            className="page-upload-btn"
-            onClick={() => setShowPublicView(true)}
-          >
-            View Public Page
-          </button>
-        </div>
+            <button
+              className="page-upload-btn"
+              onClick={() => setShowPublicView(true)}
+            >
+              View Public Page
+            </button>
+          </div>
         )}
 
         <div className="people-campus-grid">
