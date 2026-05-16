@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
+import Breadcrumb from './Breadcrumb';
 import './Home.css';
 
 function Home({ user, onLogout, isGuest }) {
@@ -7,8 +8,8 @@ function Home({ user, onLogout, isGuest }) {
     <div className="home-container">
       <Header user={user} onLogout={onLogout} isGuest={isGuest} />
 
-      {/* Main Content Area - Rendered by child routes */}
       <main className="main-content">
+        <Breadcrumb />
         <Outlet />
       </main>
     </div>

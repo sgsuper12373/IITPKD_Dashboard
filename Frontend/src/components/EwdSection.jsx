@@ -604,7 +604,7 @@ function EwdSection({ user, isPublicView = false }) {
                       })}
                     >
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                        <ResponsiveContainer width="100%" height={380}>
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <BarChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
@@ -640,7 +640,7 @@ function EwdSection({ user, isPublicView = false }) {
                       })}
                     >
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                        <ResponsiveContainer width="100%" height={380}>
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <LineChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
@@ -727,7 +727,7 @@ function EwdSection({ user, isPublicView = false }) {
                     >
 
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+<ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                         <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -776,7 +776,7 @@ function EwdSection({ user, isPublicView = false }) {
                     >
 
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={400}>
+<ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                         <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -863,7 +863,7 @@ function EwdSection({ user, isPublicView = false }) {
                     >
 
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={370}>
+<ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
                         <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
@@ -900,7 +900,7 @@ function EwdSection({ user, isPublicView = false }) {
                     >
 
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={370}>
+<ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
                         <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                           <defs>
                             <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">

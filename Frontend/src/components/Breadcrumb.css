@@ -1,0 +1,70 @@
+/* ============================================================ */
+/* BREADCRUMB — floats above the page-content frosted glass card */
+/* ============================================================ */
+
+.breadcrumb-nav {
+  padding: 0 0 0.6rem 0;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* Clickable ancestor links */
+.breadcrumb-link {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+  /* Ensure tap target is large enough */
+  padding: 2px 0;
+}
+
+.breadcrumb-link:hover {
+  color: #ffffff;
+}
+
+/* › separator */
+.breadcrumb-sep {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.38);
+  user-select: none;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+/* Current page — accent orange, bold, not a link */
+.breadcrumb-current {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #f7a600;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+/* ============================================================ */
+/* RESPONSIVE                                                   */
+/* ============================================================ */
+
+/* On mobile the content area padding is tighter — keep breadcrumb readable */
+@media (max-width: 480px) {
+  .breadcrumb-link,
+  .breadcrumb-current {
+    font-size: 0.72rem;
+  }
+}

@@ -228,7 +228,7 @@ function IcsrSection({ user, isPublicView = false }) {
               )
             })}
           >
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
               <BarChart data={chartIsMobile ? yearlyChartData.slice(-3) : yearlyChartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
@@ -259,7 +259,7 @@ function IcsrSection({ user, isPublicView = false }) {
               )
             })}
           >
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
               <PieChart>
                 <Pie data={eventTypesPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120}>
                   {eventTypesPieData.map((_, i) => <Cell key={i} fill={EVENT_TYPE_COLORS[i % EVENT_TYPE_COLORS.length]} />)}

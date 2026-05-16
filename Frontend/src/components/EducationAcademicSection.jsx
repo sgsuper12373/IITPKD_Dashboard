@@ -34,7 +34,7 @@ function CourseTable({ courses, headerColor }) {
       backgroundColor: '#fff',
       position: 'relative'
     }}>
-      <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', minWidth: '800px' }}>
+      <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', minWidth: '600px' }}>
         <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
           <tr style={{ backgroundColor: headerColor, color: 'white' }}>
             {['Course Name', 'Category', 'Programme', 'Industry Partner', 'Coordinator', 'Status'].map(col => (

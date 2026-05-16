@@ -721,7 +721,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div className={`section-empty-state ${projectTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   {projectsChartMode === 'bar' ? (
                     <BarChart data={projectTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 50 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -836,7 +836,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                 <div className={`section-empty-state ${patentTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   {patentsChartMode === 'bar' ? (
                     <BarChart data={patentTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 20, bottom: chartIsMobile ? 60 : 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1141,7 +1141,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                         <p>No information available for the selected filter</p>
                       </div>
-                      <ResponsiveContainer width="100%" height={450}>
+                      <ResponsiveContainer width="100%" height={chartIsMobile ? 260 : 450}>
                         {mouChartMode === 'bar' ? (
                           <BarChart data={mouTrendChartData} margin={{ top: 30, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -1200,7 +1200,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         )}
                       </div>
                     ) : (
-                      <div className="table-responsive" style={{ height: '450px', maxHeight: '450px', overflowY: 'auto' }}>
+                      <div className="table-responsive" style={{ height: chartIsMobile ? '300px' : '450px', maxHeight: chartIsMobile ? '300px' : '450px', overflowY: 'auto' }}>
                         <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                           <thead style={{ position: 'sticky', top: 0, backgroundColor: MOU_COLOR, color: 'white', zIndex: 10 }}>
                             <tr>

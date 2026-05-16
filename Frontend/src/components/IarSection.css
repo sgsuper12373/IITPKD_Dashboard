@@ -17,3 +17,33 @@
   /* Placeholder to reuse EWD indicator styles when both dashboards are present */
 }
 
+/* ============================================================ */
+/* RESPONSIVE                                                   */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+  .chart-section .grievance-table th,
+  .chart-section .grievance-table td {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-section .grievance-table th:nth-child(1),
+  .chart-section .grievance-table td:nth-child(1) {
+    min-width: 100px;
+  }
+  .chart-section .grievance-table th,
+  .chart-section .grievance-table td {
+    font-size: 0.76rem;
+    padding: 0.4rem 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .chart-section .grievance-table {
+    font-size: 0.72rem;
+  }
+}
+

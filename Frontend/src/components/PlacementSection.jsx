@@ -853,7 +853,7 @@ function PlacementSection({ user, isPublicView = false }) {
                     }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                   ))}
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   {trendChartMode === 'bar' ? (
                     <div 
                       className="chart-wrapper clickable-chart"
@@ -969,7 +969,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${genderBarData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   <BarChart data={genderBarData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: 30 }} barCategoryGap="30%">
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 12 }} />
@@ -1042,7 +1042,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${programStatusChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   <BarChart data={programStatusChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
@@ -1112,7 +1112,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${recruiterChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   <BarChart data={recruiterChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
@@ -1225,7 +1225,7 @@ function PlacementSection({ user, isPublicView = false }) {
                 <div className={`section-empty-state ${packageTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                   <LineChart data={packageTrendChartData} margin={{ top: 26, right: 10, left: chartIsMobile ? 0 : 50, bottom: chartIsMobile ? 60 : 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />

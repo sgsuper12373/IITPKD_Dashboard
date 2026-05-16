@@ -166,7 +166,7 @@ function IptifSection({ user, isPublicView = false }) {
     window.addEventListener('resize', handle);
     return () => window.removeEventListener('resize', handle);
   }, []);
-
+  const contentHeight = chartIsMobile ? 280 : 480;
 
   /* animation key */
   const [animKey, setAnimKey] = useState(0);
@@ -261,7 +261,7 @@ function IptifSection({ user, isPublicView = false }) {
   const renderChart = (data, color, name) => (
     <div 
       className="clickable-chart"
-      style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}
+      style={{ position: 'relative', height: `${contentHeight}px` }}
       onClick={() => setExpandedChart({
         title: `${currentView?.label} Trend`,
         content: (
@@ -299,7 +299,7 @@ function IptifSection({ user, isPublicView = false }) {
           <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
         </div>
       )}
-      <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
+      <ResponsiveContainer width="100%" height={contentHeight} minWidth={0}>
         {chartMode === 'bar' ? (
           <BarChart data={data} margin={{ top: 20, right: 30, left: chartIsMobile ? 20 : 40, bottom: chartIsMobile ? 50 : 20 }} barCategoryGap="20%">
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -416,7 +416,7 @@ function IptifSection({ user, isPublicView = false }) {
   /* ─────────────────────── TABLE RENDERERS ─────────────────────────────── */
   /* Shared table shell — fixed total height, header pinned, body scrolls */
   const TableShell = ({ headerBg, columns, children }) => (
-    <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', height: `${contentHeight}px`, display: 'flex', flexDirection: 'column' }}>
       <div style={{ backgroundColor: headerBg, color: 'white', display: 'grid', gridTemplateColumns: columns, gap: '8px', padding: '12px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>
         {children[0]}
       </div>
@@ -431,7 +431,7 @@ function IptifSection({ user, isPublicView = false }) {
       if (!projectsTable.length && !loadingProjects) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${contentHeight}px`, overflowY: 'auto', padding: '4px' }}>
             {projectsTable.map((row, idx) => (
               <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.project_name}</div>
@@ -467,7 +467,7 @@ function IptifSection({ user, isPublicView = false }) {
       if (!programsTable.length && !loadingPrograms) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${contentHeight}px`, overflowY: 'auto', padding: '4px' }}>
             {programsTable.map((row, idx) => (
               <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.program_name}</div>
@@ -501,7 +501,7 @@ function IptifSection({ user, isPublicView = false }) {
       if (!startupsTable.length && !loadingStartups) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${contentHeight}px`, overflowY: 'auto', padding: '4px' }}>
             {startupsTable.map((row, idx) => (
               <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.startup_name}</div>
@@ -536,7 +536,7 @@ function IptifSection({ user, isPublicView = false }) {
       if (!facilitiesTable.length && !loadingFacilities) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${contentHeight}px`, overflowY: 'auto', padding: '4px' }}>
             {facilitiesTable.map((row, idx) => (
               <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.facility_name}</div>
@@ -798,7 +798,7 @@ function IptifSection({ user, isPublicView = false }) {
 /* ── small helper ── */
 function EmptyState({ msg }) {
   return (
-    <div style={{ height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+    <div style={{ height: `${contentHeight}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
       <span style={{ fontSize: '36px', marginBottom: '10px' }}>🗂️</span>
       <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>{msg || 'No data available for the selected filters.'}</p>
     </div>

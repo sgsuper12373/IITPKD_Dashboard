@@ -541,9 +541,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
               <div 
-                id="externships-yearly-container" 
-                className="bar-chart-container clickable-chart" 
-                style={{ position: 'relative', height: '400px' }}
+                id="externships-yearly-container"
+                className="bar-chart-container clickable-chart"
+                style={{ position: 'relative', height: chartIsMobile ? '240px' : '400px' }}
                 onClick={() => setExpandedChart({
                   title: "Year-wise Faculty Industry Stints",
                   content: (
@@ -627,9 +627,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 </div>
               </div>
               <div 
-                id="externships-dept-container" 
-                className="bar-chart-container clickable-chart" 
-                style={{ position: 'relative', height: '400px' }}
+                id="externships-dept-container"
+                className="bar-chart-container clickable-chart"
+                style={{ position: 'relative', height: chartIsMobile ? '240px' : '400px' }}
                 onClick={() => setExpandedChart({
                   title: deptChartType === 'bar' ? "Department-wise Externships" : "Department Yearly Trend",
                   content: (
@@ -668,7 +668,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               >
                 <div className={`chart-wrapper ${deptChartType === 'bar' ? 'active' : 'inactive'}`}>
                   {departmentComparisonData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={400}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 400}>
                       <BarChart data={departmentComparisonData} margin={{ top: 30, right: 30, left: chartIsMobile ? 10 : 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                         <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
@@ -680,14 +680,14 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                    <div style={{ height: chartIsMobile ? '240px' : '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No department data available
                     </div>
                   )}
                 </div>
                 <div className={`chart-wrapper ${deptChartType === 'trend' ? 'active' : 'inactive'}`}>
                   {departmentYearlyTrendData.trendData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={400}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 400}>
                       <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
@@ -708,7 +708,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       </LineChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div style={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                    <div style={{ height: chartIsMobile ? '240px' : '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
                       No trend data available
                     </div>
                   )}

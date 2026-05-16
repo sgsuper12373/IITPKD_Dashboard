@@ -57,6 +57,12 @@ function EducationIarSection({ user, isPublicView = false }) {
 
   const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
+  useEffect(() => {
+    const handle = () => setChartIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const token = localStorage.getItem('authToken');
 
@@ -295,7 +301,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                     <div className={`section-empty-state ${mouTrendChartData.length ? 'hidden' : ''}`}>
                       <p>No information available for the selected filter</p>
                     </div>
-                    <ResponsiveContainer width="100%" height={350} minWidth={0}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350} minWidth={0}>
                       {chartMode === 'bar' ? (
                         <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
