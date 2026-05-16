@@ -96,10 +96,8 @@ function Education({ user }) {
                 className="people-campus-card"
               >
                 <div className="card-icon">{section.code}</div>
-                <div className="card-content">
-                  <h2>{section.title}</h2>
-                  <p>{section.description}</p>
-                </div>
+                <h3 className="card-title">{section.title}</h3>
+                <p className="card-description">{section.description}</p>
               </Link>
             );
           })}
