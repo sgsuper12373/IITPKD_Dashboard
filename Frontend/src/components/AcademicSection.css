@@ -743,6 +743,7 @@
   /* Reduce fixed chart heights on tablet */
   .chart-wrapper {
     height: 300px;
+    min-height: unset;
   }
 
   .pie-chart,
@@ -801,6 +802,7 @@
   /* Reduce fixed chart heights on mobile */
   .chart-wrapper {
     height: auto;
+    min-height: 200px;
   }
 
   .pie-chart,

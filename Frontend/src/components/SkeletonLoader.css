@@ -1,0 +1,134 @@
+/* ============================================================ */
+/* SKELETON LOADER — shimmer placeholders for loading states    */
+/* ============================================================ */
+
+@keyframes sk-shimmer {
+  from { background-position: -600px 0; }
+  to   { background-position:  600px 0; }
+}
+
+/* Base shimmer block — apply to any skeleton element */
+.sk-block {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e4e4e4 40%,
+    #f0f0f0 80%
+  );
+  background-size: 1200px 100%;
+  animation: sk-shimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ============================================================ */
+/* WRAPPER                                                       */
+/* ============================================================ */
+.sk-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.25rem 0;
+  animation: sk-fade-in 0.3s ease;
+}
+
+@keyframes sk-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================ */
+/* STAT CARD GRID                                               */
+/* ============================================================ */
+.sk-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.sk-card {
+  border-radius: 16px;
+  padding: 20px;
+  background: #f8f8f8;
+  border: 1px solid #ececec;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 110px;
+}
+
+.sk-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.sk-line {
+  border-radius: 4px;
+  height: 13px;
+}
+
+.sk-line-sm  { width: 55%; }
+.sk-line-md  { width: 75%; height: 13px; }
+.sk-line-lg  { width: 45%; height: 26px; }
+.sk-line-title { width: 38%; height: 18px; }
+
+/* ============================================================ */
+/* CHART SECTION PLACEHOLDER                                    */
+/* ============================================================ */
+.sk-chart-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #ececec;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+/* Title + subtitle lines */
+.sk-chart-header {
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Bar-chart area */
+.sk-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 200px;
+  padding: 0 4px;
+}
+
+.sk-bar {
+  flex: 1;
+  border-radius: 5px 5px 0 0;
+  min-width: 18px;
+}
+
+/* ============================================================ */
+/* RESPONSIVE                                                   */
+/* ============================================================ */
+@media (max-width: 768px) {
+  .sk-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+  }
+
+  .sk-card {
+    min-height: 90px;
+    padding: 14px;
+  }
+
+  .sk-bars { height: 160px; gap: 7px; }
+}
+
+@media (max-width: 480px) {
+  .sk-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  .sk-card { padding: 12px; min-height: 80px; }
+  .sk-bars { height: 130px; gap: 5px; }
+  .sk-chart-box { padding: 1rem; }
+}

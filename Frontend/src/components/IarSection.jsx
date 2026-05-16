@@ -417,11 +417,7 @@ function IarSection({ user, isPublicView = false }) {
             ))}
           </div>
 
-          <div className="chart-section" style={{
-            marginBottom: '30px', padding: '20px',
-            backgroundColor: '#fff', borderRadius: '10px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
+          <div className="chart-section" style={{ marginBottom: '30px' }}>
             {/* Compact filter bar */}
             <div style={{
               background: '#f8f9fa', border: '1px solid #e0e0e0',

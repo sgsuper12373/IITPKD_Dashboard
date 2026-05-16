@@ -466,7 +466,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Section Toggle ── */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
           {[
             { key: 'regular', label: '👥 Regular Employees', color: '#667eea' },
             { key: 'education', label: '🎓 Non-Regular Faculty', color: '#22c55e' },
@@ -773,7 +773,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
     const isAllSelected = selectedCardType === '__all__';
 
     const DrilldownTable = ({ typeLabel, typeColor, data, exportId, exportFilename, exportTitle }) => (
-      <div style={{ ...CHART_BOX, marginBottom: '24px' }}>
+      <div className="chart-section" style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #eee', flexWrap: 'wrap', gap: '0.75rem' }}>
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
@@ -1039,7 +1039,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
         {renderSummaryCards()}
 
-        <div style={{ ...CHART_BOX, padding: '24px' }}>
+        <div className="chart-section">
 
           {renderFilterBar()}
 

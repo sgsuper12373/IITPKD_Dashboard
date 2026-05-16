@@ -25,6 +25,7 @@ import './EwdSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import SectionSkeleton from './SectionSkeleton';
 
 const ENERGY_BAR_COLOR = '#667eea';
 const ELECTRICITY_LINE_COLOR = '#f59e0b';
@@ -213,10 +214,7 @@ function EwdSection({ user, isPublicView = false }) {
         }}>{error}</div>}
 
         {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner" />
-            <p>Loading EWD data...</p>
-          </div>
+          <SectionSkeleton cards={3} charts={3} />
         ) : (
           <>
             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
@@ -543,7 +541,7 @@ function EwdSection({ user, isPublicView = false }) {
             </div>
 
             {activeView === 'electricity' && (
-              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <div className="chart-section">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div className="chart-header">
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Annual Electricity Consumption</h2>
@@ -662,7 +660,7 @@ function EwdSection({ user, isPublicView = false }) {
             )}
 
             {activeView === 'perCapita' && (
-              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <div className="chart-section">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div className="chart-header">
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Per Capita Consumption Trends</h2>
@@ -804,7 +802,7 @@ function EwdSection({ user, isPublicView = false }) {
             )}
 
             {activeView === 'environment' && (
-              <div className="chart-section" style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '24px', boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <div className="chart-section">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div className="chart-header">
                     <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Environmental Summary</h2>

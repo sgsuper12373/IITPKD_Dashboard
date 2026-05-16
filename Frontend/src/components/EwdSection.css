@@ -56,5 +56,13 @@
   .indicator-grid {
     grid-template-columns: 1fr;
   }
+
+  .indicator-card {
+    padding: 1rem;
+  }
+
+  .indicator-value {
+    font-size: 1.5rem;
+  }
 }
 

@@ -17,6 +17,7 @@ import '../DesignSystem.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import SectionSkeleton from './SectionSkeleton';
 
 const BAR_COLORS = {
   filed: '#667eea',
@@ -133,10 +134,7 @@ function IgrcSection({ user, isPublicView = false }) {
             {error && <div className="error-message">{error}</div>}
 
             {loading ? (
-              <div className="loading-container">
-                <div className="loading-spinner" />
-                <p>Loading IGRC data...</p>
-              </div>
+              <SectionSkeleton cards={4} charts={1} />
             ) : (
               <div className="performance-render-auto">
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
@@ -364,8 +362,10 @@ function IgrcSection({ user, isPublicView = false }) {
                   {/* Bar / Trend toggle */}
                   <div style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    gap: '8px',
                     margin: '12px 0'
                   }}>
                     {/* Left side → Bar / Trend toggle */}

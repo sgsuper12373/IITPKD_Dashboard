@@ -16,6 +16,7 @@ import './GrievanceSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import SectionSkeleton from './SectionSkeleton';
 
 const AREA_COLORS = {
   total: '#667eea',
@@ -148,10 +149,7 @@ function IccSection({ user, isPublicView = false }) {
             }}>{error}</div>}
 
             {loading ? (
-              <div className="loading-container">
-                <div className="loading-spinner" />
-                <p>Loading ICC data...</p>
-              </div>
+              <SectionSkeleton cards={3} charts={1} />
             ) : (
               <>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
@@ -179,8 +177,8 @@ function IccSection({ user, isPublicView = false }) {
                   }}>
                     <div style={{ position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Total Complaints</span>
+                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Complaints</span>
                       </div>
                       <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
                         {summary.total}
@@ -198,8 +196,8 @@ function IccSection({ user, isPublicView = false }) {
                   }}>
                     <div style={{ position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Resolved</span>
+                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Resolved</span>
                       </div>
                       <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
                         {summary.resolved}
@@ -217,8 +215,8 @@ function IccSection({ user, isPublicView = false }) {
                   }}>
                     <div style={{ position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '34px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '24px', fontWeight: '500' }}>Pending</span>
+                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
+                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Pending</span>
                       </div>
                       <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
                         {summary.pending}
@@ -229,6 +227,7 @@ function IccSection({ user, isPublicView = false }) {
 
                 <div style={{
                   display: 'flex',
+                  flexWrap: 'wrap',
                   gap: '10px',
                   marginBottom: '20px',
                   borderBottom: '2px solid #e0e0e0',
