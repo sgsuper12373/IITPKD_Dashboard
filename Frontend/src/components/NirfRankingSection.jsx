@@ -43,6 +43,7 @@ const NirfRankingSection = ({ user }) => {
     }, [uploadVersion]);
 
     const canUpload = user && [3].includes(user.role_id);
+    const isGuest = !user || user.role_id === 0;
     const token = localStorage.getItem('authToken');
 
     if (loading) {
@@ -158,7 +159,7 @@ const NirfRankingSection = ({ user }) => {
             </div>
 
             {/* ── NIRF Overall Rank Trend ── */}
-            {rankData.length > 0 && (
+            {recentData.length > 0 && (
                 <>
                     <div style={{ marginBottom: '32px' }}>
                         <div style={{
@@ -181,7 +182,7 @@ const NirfRankingSection = ({ user }) => {
                                     {recentFirst?.year}–{recentLatest?.year}
                                 </div>
                                 <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#1a237e', lineHeight: 1 }}>
-                                    #{latestRank}
+                                    {latestRank != null ? `#${latestRank}` : 'N/A'}
                                 </div>
                                 <div style={{ fontSize: '12px', marginTop: '8px', fontWeight: 600 }}>
                                     {rankDelta === null ? null : rankDelta < 0 ? (
@@ -291,78 +292,82 @@ const NirfRankingSection = ({ user }) => {
                 </>
             )}
 
-            {/* ── Per-Metric Trend Cards (last 7 years) ── */}
-            <h3 style={{ fontSize: '1rem', color: '#555', marginBottom: '16px', fontWeight: 600 }}>
-                Per-Metric Trend Cards
-            </h3>
+            {/* ── Per-Metric Trend Cards (last 7 years) — hidden from guests ── */}
+            {!isGuest && (
+                <>
+                    <h3 style={{ fontSize: '1rem', color: '#555', marginBottom: '16px', fontWeight: 600 }}>
+                        Per-Metric Trend Cards
+                    </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-                {metrics.map(({ key, label, fullName, color, fill }) => {
-                    const latest = Number(recentLatest[key] ?? 0);
-                    const first = Number(recentFirst[key] ?? 0);
-                    const delta = latest - first;
-                    return (
-                        <div key={key} style={{
-                            background: '#fff',
-                            border: `1px solid ${fill}`,
-                            borderRadius: '14px',
-                            padding: '16px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            overflow: 'hidden'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                <div>
-                                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#555' }}>{label}</div>
-                                    <div style={{ fontSize: '11px', color: '#888' }}>{fullName}</div>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '26px', fontWeight: 'bold', color }}>{latest}</div>
-                                    <div style={{
-                                        fontSize: '11px',
-                                        fontWeight: 600,
-                                        color: delta >= 0 ? '#22c55e' : '#ef4444'
-                                    }}>
-                                        {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)} since {recentFirst?.year}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                        {metrics.map(({ key, label, fullName, color, fill }) => {
+                            const latest = Number(recentLatest[key] ?? 0);
+                            const first = Number(recentFirst[key] ?? 0);
+                            const delta = latest - first;
+                            return (
+                                <div key={key} style={{
+                                    background: '#fff',
+                                    border: `1px solid ${fill}`,
+                                    borderRadius: '14px',
+                                    padding: '16px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                                    overflow: 'hidden'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                        <div>
+                                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#555' }}>{label}</div>
+                                            <div style={{ fontSize: '11px', color: '#888' }}>{fullName}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div style={{ fontSize: '26px', fontWeight: 'bold', color }}>{latest}</div>
+                                            <div style={{
+                                                fontSize: '11px',
+                                                fontWeight: 600,
+                                                color: delta >= 0 ? '#22c55e' : '#ef4444'
+                                            }}>
+                                                {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)} since {recentFirst?.year}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="compact-chart" style={{ height: 130 }}>
+                                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                                            {chartType === 'bar' ? (
+                                                <BarChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }} barCategoryGap="15%">
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                                    <XAxis dataKey="year" tick={{ fontSize: 9 }} />
+                                                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+                                                    <Tooltip
+                                                        contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                        formatter={(v) => [v, label]}
+                                                    />
+                                                    <Bar dataKey={key} fill={color} radius={[4, 4, 0, 0]} barSize={16} />
+                                                </BarChart>
+                                            ) : (
+                                                <LineChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                                                    <XAxis dataKey="year" tick={{ fontSize: 9 }} padding={{ left: 10, right: 10 }} />
+                                                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+                                                    <Tooltip
+                                                        contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
+                                                        formatter={(v) => [v, label]}
+                                                    />
+                                                    <Line type="linear"
+                                                        dataKey={key}
+                                                        stroke={color}
+                                                        strokeWidth={2}
+                                                        dot={{ r: 3, fill: color }}
+                                                        activeDot={{ r: 5 }}
+                                                    />
+                                                </LineChart>
+                                            )}
+                                        </ResponsiveContainer>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="compact-chart" style={{ height: 130 }}>
-                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                                    {chartType === 'bar' ? (
-                                        <BarChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }} barCategoryGap="15%">
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="year" tick={{ fontSize: 9 }} />
-                                            <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
-                                            <Tooltip
-                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
-                                                formatter={(v) => [v, label]}
-                                            />
-                                            <Bar dataKey={key} fill={color} radius={[4, 4, 0, 0]} barSize={16} />
-                                        </BarChart>
-                                    ) : (
-                                        <LineChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                            <XAxis dataKey="year" tick={{ fontSize: 9 }} padding={{ left: 10, right: 10 }} />
-                                            <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
-                                            <Tooltip
-                                                contentStyle={{ fontSize: '11px', borderRadius: '6px' }}
-                                                formatter={(v) => [v, label]}
-                                            />
-                                            <Line type="linear"
-                                                dataKey={key}
-                                                stroke={color}
-                                                strokeWidth={2}
-                                                dot={{ r: 3, fill: color }}
-                                                activeDot={{ r: 5 }}
-                                            />
-                                        </LineChart>
-                                    )}
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
 
             <DataUploadModal
                 isOpen={isUploadModalOpen}
