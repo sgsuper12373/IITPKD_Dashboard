@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import './Page.css';
 import './Profile.css';
+import TruncateConfirmModal from './TruncateConfirmModal';
 
 const API_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/auth`;
 const API_EXPORT_URL = `${import.meta.env.VITE_API_BASE_URL}/api/export`;
@@ -44,6 +46,23 @@ function Profile({ user }) {
   const [exportError, setExportError] = useState('');
   const [exportSuccess, setExportSuccess] = useState('');
 
+  // --- Truncate State ---
+  const [truncateModalOpen, setTruncateModalOpen] = useState(false);
+  const [truncatingTable, setTruncatingTable] = useState(null);
+  const [truncateError, setTruncateError] = useState('');
+
+  // --- Toast State ---
+  const [toast, setToast] = useState(null); // { message, type: 'success'|'error' }
+  const toastTimerRef = useRef(null);
+
+  const showToast = (message, type = 'success') => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ message, type });
+    toastTimerRef.current = setTimeout(() => setToast(null), 4000);
+  };
+
+  useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
+
 
 
   const handleCreateUserClick = () => {
@@ -58,6 +77,7 @@ function Profile({ user }) {
       if (panel === 'roles') fetchRoles();
       if (panel === 'users') { fetchUsers(); fetchRoles(); }
       if (panel === 'export') fetchTables();
+      if (panel === 'truncate') { fetchTables(); setTruncateError(''); setTruncateSuccess(''); }
     }
   };
 
@@ -350,6 +370,13 @@ function Profile({ user }) {
                   >
                     📥 Export Data
                   </button>
+                  <button
+                    className="page-upload-btn"
+                    onClick={() => togglePanel('truncate')}
+                    style={{ backgroundColor: activePanel === 'truncate' ? '#ef4444' : undefined, color: activePanel === 'truncate' ? '#fff' : undefined, borderColor: activePanel === 'truncate' ? '#ef4444' : undefined }}
+                  >
+                    ⚠ Truncate Tables
+                  </button>
                 </div>
 
                 {/* Users Management Panel */}
@@ -562,6 +589,58 @@ function Profile({ user }) {
                     )}
                   </div>
                 )}
+
+                {/* Truncate Tables Panel */}
+                {activePanel === 'truncate' && (
+                  <div className="roles-panel">
+                    <h3 className="roles-panel-title" style={{ color: '#991b1b' }}>⚠ Truncate Tables</h3>
+                    <p style={{ color: '#666', fontSize: '0.875rem', margin: '0 0 1rem 0' }}>
+                      Permanently delete all rows from a table. Export the data first to keep a backup.
+                    </p>
+                    {truncateError && <div className="roles-msg roles-msg-error">{truncateError}</div>}
+
+                    {exportLoading ? (
+                      <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
+                    ) : (
+                      <div style={{ overflowX: 'auto' }}>
+                        <table className="roles-table">
+                          <thead>
+                            <tr>
+                              <th>Table Name</th>
+                              <th style={{ width: '220px' }}>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tables.map((t) => (
+                              <tr key={t}>
+                                <td style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{t}</td>
+                                <td>
+                                  <div className="roles-action-btns">
+                                    <button
+                                      className="roles-btn roles-btn-edit"
+                                      onClick={() => downloadTableAsCSV(t)}
+                                      title="Download table as CSV before truncating"
+                                    >
+                                      Export First
+                                    </button>
+                                    <button
+                                      className="roles-btn roles-btn-delete"
+                                      style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
+                                      onClick={() => { setTruncatingTable(t); setTruncateModalOpen(true); }}
+                                      title={`Truncate table ${t}`}
+                                    >
+                                      Truncate
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -570,6 +649,26 @@ function Profile({ user }) {
         )}
         {/* {!canUploadData && <p className="coming-soon">Full profile page implementation coming soon...</p>} */}
       </div>
+
+      {toast && createPortal(
+        <div className={`profile-toast profile-toast-${toast.type}`} onClick={() => setToast(null)}>
+          {toast.message}
+        </div>,
+        document.body
+      )}
+
+      <TruncateConfirmModal
+        isOpen={truncateModalOpen}
+        onClose={() => { setTruncateModalOpen(false); setTruncatingTable(null); }}
+        tableName={truncatingTable}
+        token={token}
+        onExportFirst={(t) => downloadTableAsCSV(t)}
+        onTruncateSuccess={(t) => {
+          showToast(`Table "${t}" truncated successfully.`);
+          setTruncateModalOpen(false);
+          setTruncatingTable(null);
+        }}
+      />
     </div>
   );
 }
