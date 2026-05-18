@@ -26,20 +26,19 @@ function IndustryConnect({ user }) {
       title: 'ICSR Section',
       route: '/industry-connect/icsr',
       description: 'Industry interaction events, workshops, and engagement activities',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 9]
     },
     {
       title: 'Industry-Academia Conclave',
       route: '/industry-connect/conclave',
       description: 'Year-wise conclave information, themes, and participating companies',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 12]
     }
   ];
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  const hasCards = [3, 2, 9, 12].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <IndustryConnectPublicView user={user} />;
   }
 

@@ -4,9 +4,9 @@
 
 .people-campus-grid {
   display: grid;
-  /* 2-col on mobile: min(140px, 100%) lets two columns fit comfortably at 360px */
-  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
-  gap: 1.5rem;
+  /* Cap at 4 columns; min 220px keeps cards readable even on narrow viewports */
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: 1.25rem;
   margin-top: 2rem;
 }
 
@@ -101,24 +101,22 @@
 /* ===================================================== */
 
 .card-title {
-  /* Desktop: scales fluidly between 1rem and 1.45rem */
-  font-size: clamp(1rem, 2.5vw, 1.45rem);
+  font-size: 1.05rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: var(--text-main);
   line-height: 1.3;
-  word-break: break-word;   /* prevent text escaping card boundary */
-  overflow-wrap: break-word;
+  overflow-wrap: break-word;   /* only break if a word is truly too long */
+  hyphens: auto;
   transition: color 0.3s ease;
 }
 
 .card-description {
-  font-size: 0.95rem;
-  line-height: 1.55;
+  font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--text-muted);
   margin: 0;
   flex-grow: 1;
-  word-break: break-word;
   overflow-wrap: break-word;
   transition: color 0.3s ease;
 }
@@ -134,6 +132,11 @@
 /* ===================================================== */
 /* ARROW */
 /* ===================================================== */
+
+/* Some cards include a .card-arrow div in JSX; hide it — ::after handles the arrow */
+.card-arrow {
+  display: none;
+}
 
 .people-campus-card::after {
   content: '→';
@@ -191,10 +194,8 @@
   }
 
   .people-campus-card {
-    padding: 0.9rem;
-    min-height: unset;       /* let content dictate height, no forced min */
-    /* Extra padding-bottom so arrow (if ever visible) never overlaps text */
-    padding-bottom: 0.9rem;
+    padding: 1rem;
+    min-height: unset;
   }
 
   .card-icon {
@@ -205,14 +206,13 @@
   }
 
   .card-title {
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.9rem;
     margin-bottom: 0.25rem;
     line-height: 1.25;
   }
 
   .card-description {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     line-height: 1.35;
     display: none; /* hide description on mobile — too cramped in 2-col */
   }
@@ -224,10 +224,10 @@
   }
 
   .people-campus-card {
-    padding: 0.75rem;
+    padding: 0.85rem;
   }
 
   .card-title {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
   }
 }

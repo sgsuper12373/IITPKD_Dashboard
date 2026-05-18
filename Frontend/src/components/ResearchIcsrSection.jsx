@@ -190,7 +190,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 9;
 
   const safeSetViewType = (type) => {
     if (isRestrictedUser && type !== 'projects' && !(mouOnly && type === 'mou')) return;

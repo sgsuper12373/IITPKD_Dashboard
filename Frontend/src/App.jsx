@@ -9,6 +9,8 @@ import Login from './components/Login';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import lazyWithRetry from './utils/lazyWithRetry';
 import NavigationLoader from './components/NavigationLoader';
+import AccessDenied from './components/AccessDenied';
+import { canViewSection } from './utils/rolePermissions';
 
 // ── Lazy route chunks ──────────────────────────────────────────────────────
 // Each import() becomes its own JS chunk; the browser only fetches a chunk
@@ -187,10 +189,13 @@ function App() {
   const AuthRoute = ({ children }) =>
     token ? children : <Navigate to="/login" replace />;
 
-  const AdminRoute = ({ children }) => {
-    // role 0 users can now access these sections (they see restricted views)
-    if (!user) {
-      return <Navigate to="/" replace />;
+  const AdminRoute = ({ children, sectionKey }) => {
+    if (!user) return <Navigate to="/" replace />;
+    // Roles 0 and 1 pass through — they see read-only/restricted views inside sections
+    const roleId = user.role_id;
+    if (roleId === 0 || roleId === 1 || roleId === 3) return children;
+    if (sectionKey && !canViewSection(roleId, sectionKey)) {
+      return <AccessDenied user={user} />;
     }
     return children;
   };
@@ -223,33 +228,33 @@ function App() {
           >
             <Route index element={<HomePage user={user} />} />
             <Route path="people-campus" element={<PeopleCampus user={user} />} />
-            <Route path="people-campus/academic-section" element={<AdminRoute><AcademicSection user={user} /></AdminRoute>} />
-            <Route path="people-campus/administrative-section" element={<AdminRoute><AdministrativeSection user={user} /></AdminRoute>} />
-            <Route path="people-campus/igrc" element={<AdminRoute><IgrcSection user={user} /></AdminRoute>} />
-            <Route path="people-campus/icc" element={<AdminRoute><IccSection user={user} /></AdminRoute>} />
-            <Route path="people-campus/ewd" element={<AdminRoute><EwdSection user={user} /></AdminRoute>} />
-            <Route path="people-campus/iar" element={<AdminRoute><IarSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/academic-section" element={<AdminRoute sectionKey="people-campus/academic-section"><AcademicSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/administrative-section" element={<AdminRoute sectionKey="people-campus/administrative-section"><AdministrativeSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/igrc" element={<AdminRoute sectionKey="people-campus/igrc"><IgrcSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/icc" element={<AdminRoute sectionKey="people-campus/icc"><IccSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/ewd" element={<AdminRoute sectionKey="people-campus/ewd"><EwdSection user={user} /></AdminRoute>} />
+            <Route path="people-campus/iar" element={<AdminRoute sectionKey="people-campus/iar"><IarSection user={user} /></AdminRoute>} />
             <Route path="research" element={<Research user={user} />} />
-            <Route path="research/icsr" element={<AdminRoute><ResearchIcsrSection user={user} /></AdminRoute>} />
+            <Route path="research/icsr" element={<AdminRoute sectionKey="research/icsr"><ResearchIcsrSection user={user} /></AdminRoute>} />
             <Route path="patents" element={<AdminRoute><Patents user={user} /></AdminRoute>} />
             <Route path="mou-collaborations" element={<AdminRoute><MoUCollaborations user={user} /></AdminRoute>} />
-            <Route path="research/administrative-section" element={<AdminRoute><IndustryAdministrativeSection user={user} /></AdminRoute>} />
-            <Route path="research/library" element={<AdminRoute><ResearchLibrarySection user={user} /></AdminRoute>} />
+            <Route path="research/administrative-section" element={<AdminRoute sectionKey="industry-connect/administrative"><IndustryAdministrativeSection user={user} /></AdminRoute>} />
+            <Route path="research/library" element={<AdminRoute sectionKey="research/library"><ResearchLibrarySection user={user} /></AdminRoute>} />
             <Route path="education" element={<Education user={user} />} />
-            <Route path="education/placements" element={<AdminRoute><PlacementSection user={user} /></AdminRoute>} />
-            <Route path="education/academic-section" element={<AdminRoute><EducationAcademicSection user={user} /></AdminRoute>} />
-            <Route path="education/iar" element={<AdminRoute><EducationIarSection user={user} /></AdminRoute>} />
+            <Route path="education/placements" element={<AdminRoute sectionKey="education/placements"><PlacementSection user={user} /></AdminRoute>} />
+            <Route path="education/academic-section" element={<AdminRoute sectionKey="education/academic-section"><EducationAcademicSection user={user} /></AdminRoute>} />
+            <Route path="education/iar" element={<AdminRoute sectionKey="education/iar"><EducationIarSection user={user} /></AdminRoute>} />
             <Route path="industry-connect" element={<IndustryConnect user={user} />} />
             <Route path="innovation-entrepreneurship" element={<InnovationEntrepreneurship user={user} />} />
-            <Route path="innovation-entrepreneurship/iptif" element={<AdminRoute><IptifSection user={user} /></AdminRoute>} />
-            <Route path="innovation-entrepreneurship/techin" element={<AdminRoute><TechinSection user={user} /></AdminRoute>} />
+            <Route path="innovation-entrepreneurship/iptif" element={<AdminRoute sectionKey="innovation/iptif"><IptifSection user={user} /></AdminRoute>} />
+            <Route path="innovation-entrepreneurship/techin" element={<AdminRoute sectionKey="innovation/techin"><TechinSection user={user} /></AdminRoute>} />
             <Route path="innovation-entrepreneurship/home-ground-startup" element={<HomeGroundStartup user={user} />} />
-            <Route path="industry-connect/icsr" element={<AdminRoute><IcsrSection user={user} /></AdminRoute>} />
-            <Route path="industry-connect/conclave" element={<AdminRoute><ConclaveSection user={user} /></AdminRoute>} />
+            <Route path="industry-connect/icsr" element={<AdminRoute sectionKey="industry-connect/icsr"><IcsrSection user={user} /></AdminRoute>} />
+            <Route path="industry-connect/conclave" element={<AdminRoute sectionKey="industry-connect/conclave"><ConclaveSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension" element={<OutreachExtension user={user} />} />
-            <Route path="outreach-extension/open-house" element={<AdminRoute><OpenHouseSection user={user} /></AdminRoute>} />
-            <Route path="outreach-extension/nptel" element={<AdminRoute><NptelSection user={user} /></AdminRoute>} />
-            <Route path="outreach-extension/uba" element={<AdminRoute><UbaSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/open-house" element={<AdminRoute sectionKey="outreach/open-house"><OpenHouseSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/nptel" element={<AdminRoute sectionKey="outreach/nptel"><NptelSection user={user} /></AdminRoute>} />
+            <Route path="outreach-extension/uba" element={<AdminRoute sectionKey="outreach/uba"><UbaSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension/social-engagements" element={<AdminRoute><SocialEngagement user={user} /></AdminRoute>} />
             <Route path="outreach-extension/students-engagements" element={<AdminRoute><StudentsEngagementSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension/outreach" element={<AdminRoute><OutreachSection user={user} /></AdminRoute>} />

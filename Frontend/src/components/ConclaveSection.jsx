@@ -20,7 +20,7 @@ function ConclaveSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 12;
 
   const [summary, setSummary] = useState({
     total_conclaves: 0,

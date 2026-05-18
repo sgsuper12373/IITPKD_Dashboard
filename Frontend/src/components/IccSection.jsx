@@ -58,7 +58,7 @@ function IccSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 8;
 
   useEffect(() => {
     const loadData = async () => {

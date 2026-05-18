@@ -4,6 +4,7 @@ import { fetchOutreachList } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
+import { OUTREACH_PROGRAM_ROLES } from '../utils/rolePermissions';
 import './Page.css';
 import './OutreachMinimal.css';
 
@@ -328,6 +329,9 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
   const matching = records.filter((r) => programConfig.match(r.program_name));
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const roleId = user?.role_id;
+  const allowedRoles = OUTREACH_PROGRAM_ROLES[programConfig.key] ?? [3];
+  const canModify = allowedRoles.includes(roleId);
 
   // If a new program is selected from outside, reset selectedRecord
   useEffect(() => {
@@ -366,7 +370,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
             filename={`outreach_${programConfig.key}_list`}
             title={`${programConfig.title} Records`}
           />
-          {user?.role_id >= 2 && (
+          {canModify && (
             <button
               className="page-upload-btn"
               style={{ flexShrink: 0 }}
@@ -387,7 +391,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
             <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#6e6e73' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📭</div>
               <p style={{ margin: 0 }}>No records found for <strong>{programConfig.title}</strong>.</p>
-              {user?.role_id >= 2 && (
+              {canModify && (
                 <p style={{ marginTop: '0.4rem', fontSize: '0.85rem' }}>
                   Use the <strong>Upload Data</strong> button above to add records.
                 </p>

@@ -100,7 +100,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 2;
 
   // Whether the current user can see the Directory tab
   const canViewDirectory = user !== undefined && user?.role_id !== 0;

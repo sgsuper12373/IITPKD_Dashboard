@@ -20,18 +20,19 @@ function Research({ user }) {
       title: 'ICSR Section',
       route: '/research/icsr',
       description: 'Industrial consultancy & sponsored research metrics',
-      allowedRoles: [3]
+      allowedRoles: [3, 9]
     },
     {
       title: 'Library',
       route: '/research/library',
       description: 'Research publications and scholarly outputs',
-      allowedRoles: [3]
+      allowedRoles: [3, 10]
     }
   ];
 
-  // Show public view for unauthenticated users or role_id === 0, 1, 2
-  if (!user || roleId === 0 || roleId === 1 || roleId === 2) {
+  const hasCards = [3, 9, 10].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <ResearchPublicView user={user} />;
   }
 
@@ -58,7 +59,7 @@ function Research({ user }) {
     <div className="page-container">
       <div className="page-content">
         {/* 🔹 ADDITION: Public view button for non-public users */}
-        {roleId !== 0 && roleId !== 1 && roleId !== 2 && (
+        {hasCards && (
           <div style={{ marginBottom: '1rem' }}>
           <button
             className="page-upload-btn"

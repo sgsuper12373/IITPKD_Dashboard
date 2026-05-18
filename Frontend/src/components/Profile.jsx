@@ -14,14 +14,12 @@ function Profile({ user }) {
 
   const isAdmin = user && user.role_id === 3;
 
-  // Active Panel State ('roles', 'users', 'export', or null)
+  // Active Panel State
   const [activePanel, setActivePanel] = useState(null);
 
   // --- Roles State ---
   const [roles, setRoles] = useState([]);
   const [rolesLoading, setRolesLoading] = useState(false);
-  const [rolesError, setRolesError] = useState('');
-  const [rolesSuccess, setRolesSuccess] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
   const [newRoleName, setNewRoleName] = useState('');
@@ -32,8 +30,6 @@ function Profile({ user }) {
   // --- Users State ---
   const [usersList, setUsersList] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
-  const [usersError, setUsersError] = useState('');
-  const [usersSuccess, setUsersSuccess] = useState('');
   const [editingUserId, setEditingUserId] = useState(null);
   const [editUserRole, setEditUserRole] = useState('');
   const [editUserPassword, setEditUserPassword] = useState('');
@@ -43,15 +39,12 @@ function Profile({ user }) {
   const [tables, setTables] = useState([]);
   const [selectedTables, setSelectedTables] = useState([]);
   const [exportLoading, setExportLoading] = useState(false);
-  const [exportError, setExportError] = useState('');
-  const [exportSuccess, setExportSuccess] = useState('');
 
   // --- Truncate State ---
   const [truncateModalOpen, setTruncateModalOpen] = useState(false);
   const [truncatingTable, setTruncatingTable] = useState(null);
-  const [truncateError, setTruncateError] = useState('');
 
-  // --- Toast State ---
+  // --- Toast ---
   const [toast, setToast] = useState(null); // { message, type: 'success'|'error' }
   const toastTimerRef = useRef(null);
 
@@ -62,7 +55,6 @@ function Profile({ user }) {
   };
 
   useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
-
 
 
   const handleCreateUserClick = () => {
@@ -77,23 +69,21 @@ function Profile({ user }) {
       if (panel === 'roles') fetchRoles();
       if (panel === 'users') { fetchUsers(); fetchRoles(); }
       if (panel === 'export') fetchTables();
-      if (panel === 'truncate') { fetchTables(); setTruncateError(''); setTruncateSuccess(''); }
+      if (panel === 'truncate') fetchTables();
     }
   };
 
   // --- Roles Methods ---
   const fetchRoles = async () => {
     setRolesLoading(true);
-    setRolesError('');
     try {
       const res = await fetch(`${API_AUTH_URL}/roles`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch roles');
-      const data = await res.json();
-      setRoles(data);
+      setRoles(await res.json());
     } catch (err) {
-      setRolesError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setRolesLoading(false);
     }
@@ -102,8 +92,6 @@ function Profile({ user }) {
   const handleEditStart = (role) => {
     setEditingId(role.id);
     setEditName(role.name);
-    setRolesSuccess('');
-    setRolesError('');
   };
 
   const handleEditCancel = () => {
@@ -114,25 +102,20 @@ function Profile({ user }) {
   const handleEditSave = async (roleId) => {
     if (!editName.trim()) return;
     setSavingId(roleId);
-    setRolesError('');
-    setRolesSuccess('');
     try {
       const res = await fetch(`${API_AUTH_URL}/roles/${roleId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: editName.trim() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update role');
-      setRolesSuccess(`Role "${data.name}" updated successfully.`);
+      showToast(`Role "${data.name}" updated successfully.`);
       setEditingId(null);
       setEditName('');
       fetchRoles();
     } catch (err) {
-      setRolesError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setSavingId(null);
     }
@@ -141,25 +124,20 @@ function Profile({ user }) {
   const handleCreateRole = async () => {
     if (!newRoleName.trim() || newRoleId === '') return;
     setSavingId('new');
-    setRolesError('');
-    setRolesSuccess('');
     try {
       const res = await fetch(`${API_AUTH_URL}/roles`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ id: parseInt(newRoleId, 10), name: newRoleName.trim() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to create role');
-      setRolesSuccess(`Role "${data.name}" (ID: ${data.id}) created successfully.`);
+      showToast(`Role "${data.name}" (ID: ${data.id}) created successfully.`);
       setNewRoleName('');
       setNewRoleId('');
       fetchRoles();
     } catch (err) {
-      setRolesError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setSavingId(null);
     }
@@ -168,8 +146,6 @@ function Profile({ user }) {
   const handleDeleteRole = async (role) => {
     if (!window.confirm(`Delete role "${role.name}" (ID: ${role.id})? This cannot be undone.`)) return;
     setDeletingId(role.id);
-    setRolesError('');
-    setRolesSuccess('');
     try {
       const res = await fetch(`${API_AUTH_URL}/roles/${role.id}`, {
         method: 'DELETE',
@@ -177,10 +153,10 @@ function Profile({ user }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to delete role');
-      setRolesSuccess(data.message);
+      showToast(data.message);
       fetchRoles();
     } catch (err) {
-      setRolesError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setDeletingId(null);
     }
@@ -189,16 +165,14 @@ function Profile({ user }) {
   // --- Users Methods ---
   const fetchUsers = async () => {
     setUsersLoading(true);
-    setUsersError('');
     try {
       const res = await fetch(`${API_AUTH_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch users');
-      const data = await res.json();
-      setUsersList(data);
+      setUsersList(await res.json());
     } catch (err) {
-      setUsersError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setUsersLoading(false);
     }
@@ -209,8 +183,6 @@ function Profile({ user }) {
     setEditUserRole(u.role_id);
     setEditUserPassword('');
     setEditUserConfirmPassword('');
-    setUsersError('');
-    setUsersSuccess('');
   };
 
   const handleUserEditCancel = () => {
@@ -221,49 +193,37 @@ function Profile({ user }) {
   };
 
   const handleUserEditSave = async (userId) => {
-    setUsersError('');
-    setUsersSuccess('');
-
     if (editUserPassword && editUserPassword !== editUserConfirmPassword) {
-      setUsersError("Passwords do not match!");
+      showToast('Passwords do not match!', 'error');
       return;
     }
-
     try {
       const res = await fetch(`${API_AUTH_URL}/users/${userId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          role_id: editUserRole,
-          password: editUserPassword || undefined
-        }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ role_id: editUserRole, password: editUserPassword || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update user');
-      setUsersSuccess(`User updated successfully.`);
+      showToast('User updated successfully.');
       setEditingUserId(null);
       fetchUsers();
     } catch (err) {
-      setUsersError(err.message);
+      showToast(err.message, 'error');
     }
   };
 
   // --- Export Methods ---
   const fetchTables = async () => {
     setExportLoading(true);
-    setExportError('');
     try {
       const res = await fetch(`${API_EXPORT_URL}/tables`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch tables');
-      const data = await res.json();
-      setTables(data);
+      setTables(await res.json());
     } catch (err) {
-      setExportError(err.message);
+      showToast(err.message, 'error');
     } finally {
       setExportLoading(false);
     }
@@ -281,7 +241,6 @@ function Profile({ user }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`Failed to download ${tableName}`);
-
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -292,22 +251,20 @@ function Profile({ user }) {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setExportError(prev => prev ? `${prev}\n${err.message}` : err.message);
+      showToast(err.message, 'error');
     }
   };
 
   const handleExportSelected = async () => {
-    setExportError('');
-    setExportSuccess('');
     if (selectedTables.length === 0) {
-      setExportError('Please select at least one table.');
+      showToast('Please select at least one table.', 'error');
       return;
     }
-    setExportSuccess('Starting downloads...');
+    showToast('Starting downloads…', 'info');
     for (const tableName of selectedTables) {
       await downloadTableAsCSV(tableName);
     }
-    setExportSuccess('Downloads complete!');
+    showToast('Downloads complete!');
   };
 
 
@@ -383,9 +340,6 @@ function Profile({ user }) {
                 {activePanel === 'users' && (
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Manage Users</h3>
-                    {usersError && <div className="roles-msg roles-msg-error">{usersError}</div>}
-                    {usersSuccess && <div className="roles-msg roles-msg-success">{usersSuccess}</div>}
-
                     {usersLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading users…</p>
                     ) : (
@@ -468,9 +422,6 @@ function Profile({ user }) {
                 {activePanel === 'roles' && (
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Manage Roles</h3>
-                    {rolesError && <div className="roles-msg roles-msg-error">{rolesError}</div>}
-                    {rolesSuccess && <div className="roles-msg roles-msg-success">{rolesSuccess}</div>}
-
                     {rolesLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading roles…</p>
                     ) : (
@@ -544,9 +495,6 @@ function Profile({ user }) {
                 {activePanel === 'export' && (
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Export Database Tables</h3>
-                    {exportError && <div className="roles-msg roles-msg-error">{exportError}</div>}
-                    {exportSuccess && <div className="roles-msg roles-msg-success">{exportSuccess}</div>}
-
                     {exportLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
                     ) : (
@@ -597,41 +545,36 @@ function Profile({ user }) {
                     <p style={{ color: '#666', fontSize: '0.875rem', margin: '0 0 1rem 0' }}>
                       Permanently delete all rows from a table. Export the data first to keep a backup.
                     </p>
-                    {truncateError && <div className="roles-msg roles-msg-error">{truncateError}</div>}
-
                     {exportLoading ? (
                       <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
                     ) : (
-                      <div style={{ overflowX: 'auto' }}>
-                        <table className="roles-table">
+                      <div className="truncate-list-wrap">
+                        <table className="roles-table truncate-list-table">
                           <thead>
                             <tr>
                               <th>Table Name</th>
-                              <th style={{ width: '220px' }}>Actions</th>
+                              <th className="truncate-actions-col">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
                             {tables.map((t) => (
-                              <tr key={t}>
-                                <td style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{t}</td>
-                                <td>
-                                  <div className="roles-action-btns">
-                                    <button
-                                      className="roles-btn roles-btn-edit"
-                                      onClick={() => downloadTableAsCSV(t)}
-                                      title="Download table as CSV before truncating"
-                                    >
-                                      Export First
-                                    </button>
-                                    <button
-                                      className="roles-btn roles-btn-delete"
-                                      style={{ padding: '0.4rem 0.85rem', fontSize: '0.8rem' }}
-                                      onClick={() => { setTruncatingTable(t); setTruncateModalOpen(true); }}
-                                      title={`Truncate table ${t}`}
-                                    >
-                                      Truncate
-                                    </button>
-                                  </div>
+                              <tr key={t} className="truncate-list-row">
+                                <td className="truncate-list-name" data-label="Table">{t}</td>
+                                <td className="truncate-list-actions" data-label="Actions">
+                                  <button
+                                    className="roles-btn roles-btn-edit"
+                                    onClick={() => downloadTableAsCSV(t)}
+                                    title="Download table as CSV before truncating"
+                                  >
+                                    Export First
+                                  </button>
+                                  <button
+                                    className="roles-btn roles-btn-delete truncate-list-delete-btn"
+                                    onClick={() => { setTruncatingTable(t); setTruncateModalOpen(true); }}
+                                    title={`Truncate table ${t}`}
+                                  >
+                                    Truncate
+                                  </button>
                                 </td>
                               </tr>
                             ))}

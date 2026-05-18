@@ -79,7 +79,7 @@ function PlacementSection({ user, isPublicView = false }) {
   // ── Role checks (defined early so they can be used in useState initialisers) ──
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 11;
   const isRestrictedUser = typeof user === 'undefined' || !user || user?.role_id === 0;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);

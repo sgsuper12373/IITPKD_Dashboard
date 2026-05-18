@@ -20,48 +20,44 @@ function PeopleCampus({ user }) {
       title: 'Academic Section',
       route: '/people-campus/academic-section',
       description: 'Academic programs and statistics',
-      // 🔹 ADDITION
       allowedRoles: [3, 4]
     },
     {
       title: 'Administrative Section',
       route: '/people-campus/administrative-section',
       description: 'Administrative services and information',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 2]
     },
     {
       title: 'IGRC',
       route: '/people-campus/igrc',
       description: 'Institute Grievance Redressal Committee',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 7]
     },
     {
       title: 'ICC',
       route: '/people-campus/icc',
       description: 'Internal Complaints Committee',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 8]
     },
     {
       title: 'EWD',
       route: '/people-campus/ewd',
       description: 'Engineering & Works Division sustainability metrics',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 6]
     },
     {
       title: 'IAR',
       route: '/people-campus/iar',
       description: 'International & Alumni Relations insights',
-      // 🔹 ADDITION
-      allowedRoles: [3]
+      allowedRoles: [3, 5]
     }
   ];
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  // Roles with at least one card on this page
+  const hasCards = [3, 2, 4, 5, 6, 7, 8].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <PeopleCampusPublicView user={user} />;
   }
   // 🔹 ADDITION: If non-public user explicitly chooses public view

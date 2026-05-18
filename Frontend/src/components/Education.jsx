@@ -11,15 +11,13 @@ const EDUCATION_SECTIONS = [
     title: 'Placement Office',
     description: 'Career outcomes, recruiters, and placement analytics',
     route: '/education/placements',
-    // 🔹 ADDITION
-    allowedRoles: [3]
+    allowedRoles: [3, 11]
   },
   {
     code: 'A',
     title: 'Academic Section',
     description: 'Academic programs, statistics, and student metrics',
     route: '/education/academic-section',
-    // 🔹 ADDITION
     allowedRoles: [3, 4]
   },
   {
@@ -27,7 +25,7 @@ const EDUCATION_SECTIONS = [
     title: 'IAR',
     description: 'International & Alumni Relations MoUs',
     route: '/education/iar',
-    allowedRoles: [3]
+    allowedRoles: [3, 5]
   }
 ];
 
@@ -35,8 +33,9 @@ function Education({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  const hasCards = [3, 4, 5, 11].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <EducationPublicView user={user} />;
   }
 

@@ -325,6 +325,103 @@
   }
 }
 
+/* ===== Truncate Panel Table ===== */
+
+.truncate-list-wrap {
+  overflow-x: auto;
+}
+
+.truncate-list-table .truncate-actions-col {
+  width: 210px;
+}
+
+.truncate-list-name {
+  font-family: monospace;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.truncate-list-actions {
+  white-space: nowrap;
+}
+
+.truncate-list-delete-btn {
+  padding: 0.4rem 0.85rem !important;
+  font-size: 0.8rem !important;
+}
+
+/* Card layout on mobile */
+@media (max-width: 600px) {
+  .truncate-list-wrap {
+    overflow-x: visible;
+  }
+
+  .truncate-list-table thead {
+    display: none;
+  }
+
+  .truncate-list-table,
+  .truncate-list-table tbody,
+  .truncate-list-row {
+    display: block;
+    width: 100%;
+  }
+
+  .truncate-list-row {
+    border: 1px solid #e3e1dc;
+    border-radius: 8px;
+    margin-bottom: 0.6rem;
+    padding: 0.75rem;
+    background: #fff;
+  }
+
+  .truncate-list-row:hover {
+    background: #fffbf0;
+  }
+
+  .truncate-list-name,
+  .truncate-list-actions {
+    display: block;
+    border: none;
+    padding: 0;
+  }
+
+  .truncate-list-name::before {
+    content: attr(data-label) ': ';
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #999;
+    display: block;
+    margin-bottom: 0.2rem;
+    font-family: inherit;
+  }
+
+  .truncate-list-name {
+    font-size: 0.88rem;
+    margin-bottom: 0.65rem;
+    color: #222;
+  }
+
+  .truncate-list-actions {
+    display: flex;
+    gap: 0.5rem;
+    white-space: normal;
+  }
+
+  .truncate-list-actions .roles-btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .truncate-list-delete-btn {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.5rem !important;
+  }
+}
+
 /* ===== Floating Toast ===== */
 
 .profile-toast {
@@ -363,6 +460,12 @@
   background: #fef2f2;
   color: #991b1b;
   border: 1px solid #fecaca;
+}
+
+.profile-toast-info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
 @media (max-width: 480px) {

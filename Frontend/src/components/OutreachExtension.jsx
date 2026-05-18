@@ -11,56 +11,56 @@ const OUTREACH_EXTENSION_SECTIONS = [
     title: 'Open House',
     description: 'Community Engagement Events',
     route: '/outreach-extension/open-house',
-    allowedRoles: [3]
+    allowedRoles: [3, 15]
   },
   {
     code: '📚',
     title: 'CCE',
     description: 'Centre for Continuing Education',
     route: '/outreach-extension/nptel',
-    allowedRoles: [3]
+    allowedRoles: [3, 16]
   },
   {
     code: '🌾',
     title: 'Unnat Bharat Abhiyan',
     description: 'Rural Development Initiative',
     route: '/outreach-extension/uba',
-    allowedRoles: [3]
+    allowedRoles: [3, 17]
   },
   {
     code: '🔬',
     title: 'Science Quest',
     description: 'Science outreach and laboratory programmes for school students',
     route: '/outreach-extension/outreach?program=science_quest',
-    allowedRoles: [3]
+    allowedRoles: [3, 18]
   },
   {
     code: '📐',
     title: 'Palakkad Math Circle',
     description: 'Mathematics enrichment sessions for school students',
     route: '/outreach-extension/outreach?program=palakkad_math_circle',
-    allowedRoles: [3]
+    allowedRoles: [3, 19]
   },
   {
     code: '🌠',
     title: 'Pale Blue Dot',
     description: 'Astronomy and space science public lecture series',
     route: '/outreach-extension/outreach?program=pale_blue_dot',
-    allowedRoles: [3]
+    allowedRoles: [3, 20]
   },
   {
     code: '🏫',
     title: 'Institute Visits',
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     route: '/outreach-extension/outreach?program=institute_visits',
-    allowedRoles: [3]
+    allowedRoles: [3, 21]
   },
   {
     code: '🤝',
     title: 'NSS Activities',
     description: 'National Service Scheme community service initiatives',
     route: '/outreach-extension/outreach?program=nss_activities',
-    allowedRoles: [3]
+    allowedRoles: [3, 22]
   },
 ];
 
@@ -68,8 +68,9 @@ function OutreachExtension({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  const hasCards = [3, 15, 16, 17, 18, 19, 20, 21, 22].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <OutreachPublicView user={user} />;
   }
 

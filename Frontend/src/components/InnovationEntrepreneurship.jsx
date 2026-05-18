@@ -11,23 +11,27 @@ function InnovationEntrepreneurship({ user }) {
     {
       title: 'Home Grown Startup',
       route: '/innovation-entrepreneurship/home-ground-startup',
-      description: 'Internal Startups'
+      description: 'Internal Startups',
+      allowedRoles: [3, 13, 14]
     },
     {
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       route: '/innovation-entrepreneurship/iptif',
-      description: 'Innovation'
+      description: 'Innovation',
+      allowedRoles: [3, 14]
     },
     {
       title: 'TechIn',
       route: '/innovation-entrepreneurship/techin',
-      description: 'Entrepreneurship'
+      description: 'Entrepreneurship',
+      allowedRoles: [3, 13]
     }
   ];
   const [showPublicView, setShowPublicView] = useState(false);
 
-  // Show public view for unauthenticated users or role_id === 0
-  if (!user || roleId === 0 || roleId === 1) {
+  const hasCards = [3, 13, 14].includes(roleId);
+
+  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
     return <InnovationPublicView user={user} />;
   }
 
@@ -66,6 +70,8 @@ function InnovationEntrepreneurship({ user }) {
 
         <div className="people-campus-grid" style={{ marginTop: '2rem' }}>
           {sections.map((section, index) => {
+            const isAllowed = roleId === 3 || (section.allowedRoles && section.allowedRoles.includes(roleId));
+            if (!isAllowed) return null;
             return (
               <Link
                 key={index}

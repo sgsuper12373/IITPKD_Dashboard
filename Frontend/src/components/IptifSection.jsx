@@ -119,7 +119,7 @@ function IptifSection({ user, isPublicView = false }) {
   const isGuestUser = !user;
   const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  const isAdmin = user?.role_id === 3 || user?.role_id === 14;
 
   /* modal */
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
