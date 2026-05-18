@@ -299,8 +299,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
   const serializedEduFilters = JSON.stringify(eduFilters);
   useEffect(() => {
+    const parsedEduFilters = JSON.parse(serializedEduFilters);
     let isMounted = true;
-    fetchEduFilterOptions(eduFilters, token).then(options => {
+    fetchEduFilterOptions(parsedEduFilters, token).then(options => {
       if (!isMounted) return;
       const fetchedYears = Array.isArray(options?.years) ? [...options.years].sort((a, b) => b - a) : [];
       setEduFilterOptions({
@@ -316,7 +317,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
       setEduFilters(prev => (prev.year === 'All' && !(isReadOnlyView && eduView === 'distribution')) ? { ...prev, year: defaultYear } : prev);
     }).catch(err => setEduError(err.message || 'Failed to load education filter options.'));
     return () => { isMounted = false; };
-  }, [serializedEduFilters, token, uploadVersion, eduFilters, eduView, isReadOnlyView]);
+  }, [serializedEduFilters, token, uploadVersion, eduView, isReadOnlyView]);
 
   useEffect(() => {
     const loadEduData = async () => {

@@ -4,6 +4,7 @@ import './Page.css';
 import './HomePage.css';
 import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
+import { PAGE_ACCESS_ROLES } from '../utils/rolePermissions';
 
 // ImageSlider carries its own CSS and animation logic; defer it so it doesn't
 // block the initial paint of the welcome text and splash screen.
@@ -29,6 +30,15 @@ function HomePage({ user }) {
     setShowSplash(false);
   };
 
+  const roleId = user?.role_id;
+
+  // Guests (0/1) and super-admin (3) see every pillar card.
+  // Section-specific roles (2–22) only see cards for pages they can manage.
+  const canSeePage = (pageKey) => {
+    if (roleId == null || roleId === 0 || roleId === 1 || roleId === 3) return true;
+    return PAGE_ACCESS_ROLES[pageKey]?.includes(roleId) ?? false;
+  };
+
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
@@ -47,42 +57,48 @@ function HomePage({ user }) {
 
               {/* Top Row: People & Campus, Research, Education */}
               <div className="vision-pillars-grid">
-                <Link to="/people-campus" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">🌿</span> <span className="vision-pillar-title-text"><u>People</u> &amp; Campus</span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Be a diverse and inclusive community</li>
-                    <li>Promote wellness and personal development among our community</li>
-                    <li>Nourish strong ties with our alumni</li>
-                    <li>Achieve a net-zero carbon campus by 2040</li>
-                  </ul>
-                </Link>
+                {canSeePage('people-campus') && (
+                  <Link to="/people-campus" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">🌿</span> <span className="vision-pillar-title-text"><u>People</u> &amp; Campus</span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Be a diverse and inclusive community</li>
+                      <li>Promote wellness and personal development among our community</li>
+                      <li>Nourish strong ties with our alumni</li>
+                      <li>Achieve a net-zero carbon campus by 2040</li>
+                    </ul>
+                  </Link>
+                )}
 
-                <Link to="/research" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">🔬</span> <span className="vision-pillar-title-text"><u>Research</u></span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Be at the forefront of both applied research and blue sky research</li>
-                    <li>Nurture a collaborative ecosystem for interdisciplinary and transdisciplinary inquiry</li>
-                    <li>Develop state-of-the-art research infrastructure accessible to institutions and industries</li>
-                    <li>Provide solutions that sustain ecologically sensitive regions, with emphasis on our neighbourhood</li>
-                  </ul>
-                </Link>
+                {canSeePage('research') && (
+                  <Link to="/research" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">🔬</span> <span className="vision-pillar-title-text"><u>Research</u></span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Be at the forefront of both applied research and blue sky research</li>
+                      <li>Nurture a collaborative ecosystem for interdisciplinary and transdisciplinary inquiry</li>
+                      <li>Develop state-of-the-art research infrastructure accessible to institutions and industries</li>
+                      <li>Provide solutions that sustain ecologically sensitive regions, with emphasis on our neighbourhood</li>
+                    </ul>
+                  </Link>
+                )}
 
-                <Link to="/education" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">🎓</span> <span className="vision-pillar-title-text"><u>Education</u></span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Design programmes that prepare students for a leading role in an ever-changing world</li>
-                    <li>Provide broad-based, flexible and rigorous undergraduate education</li>
-                    <li>Offer rigorous masters &amp; doctoral programmes attuned to industry and academia</li>
-                    <li>Be flexible and innovative in teaching practices catering to diverse learning needs</li>
-                    <li>Promote hands-on and research-based learning</li>
-                  </ul>
-                </Link>
+                {canSeePage('education') && (
+                  <Link to="/education" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">🎓</span> <span className="vision-pillar-title-text"><u>Education</u></span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Design programmes that prepare students for a leading role in an ever-changing world</li>
+                      <li>Provide broad-based, flexible and rigorous undergraduate education</li>
+                      <li>Offer rigorous masters &amp; doctoral programmes attuned to industry and academia</li>
+                      <li>Be flexible and innovative in teaching practices catering to diverse learning needs</li>
+                      <li>Promote hands-on and research-based learning</li>
+                    </ul>
+                  </Link>
+                )}
               </div>
 
               {/* Dark Banner */}
@@ -92,40 +108,46 @@ function HomePage({ user }) {
 
               {/* Bottom Row: Industry Connect, Innovation & Entrepreneurship, Outreach & Extension */}
               <div className="vision-pillars-grid">
-                <Link to="/industry-connect" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">🏭</span> <span className="vision-pillar-title-text"><u>Industry</u> Connect</span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Synergize R&amp;D goals with industry and be a technological solution provider</li>
-                    <li>Champion academic initiatives that benefit from mutual knowledge exchange</li>
-                    <li>Offer opportunities for students to become industry-ready professionals</li>
-                    <li>Leverage proximity to an industrial corridor to contribute to India's self-reliance mission</li>
-                  </ul>
-                </Link>
+                {canSeePage('industry-connect') && (
+                  <Link to="/industry-connect" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">🏭</span> <span className="vision-pillar-title-text"><u>Industry</u> Connect</span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Synergize R&amp;D goals with industry and be a technological solution provider</li>
+                      <li>Champion academic initiatives that benefit from mutual knowledge exchange</li>
+                      <li>Offer opportunities for students to become industry-ready professionals</li>
+                      <li>Leverage proximity to an industrial corridor to contribute to India's self-reliance mission</li>
+                    </ul>
+                  </Link>
+                )}
 
-                <Link to="/innovation-entrepreneurship" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">💡</span> <span className="vision-pillar-title-text"><u>Innovation &amp; Entrepreneurship</u></span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Build a vibrant ecosystem spanning ideation, prototyping, product development and incubation</li>
-                    <li>Foster a culture of innovation; encourage students, staff and faculty to take ideas to market</li>
-                    <li>Connect innovation activities to solve societal challenges</li>
-                  </ul>
-                </Link>
+                {canSeePage('innovation-entrepreneurship') && (
+                  <Link to="/innovation-entrepreneurship" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">💡</span> <span className="vision-pillar-title-text"><u>Innovation &amp; Entrepreneurship</u></span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Build a vibrant ecosystem spanning ideation, prototyping, product development and incubation</li>
+                      <li>Foster a culture of innovation; encourage students, staff and faculty to take ideas to market</li>
+                      <li>Connect innovation activities to solve societal challenges</li>
+                    </ul>
+                  </Link>
+                )}
 
-                <Link to="/outreach-extension" className="vision-pillar-card">
-                  <h3 className="vision-pillar-title">
-                    <span className="vision-pillar-icon">🌱</span> <span className="vision-pillar-title-text"><u>Outreach &amp; Extension</u></span>
-                  </h3>
-                  <ul className="vision-pillar-list">
-                    <li>Be actively engaged with the local community</li>
-                    <li>Partner with local organisations to strengthen public engagement with science and technology</li>
-                    <li>Inspire young minds to dream big and nurture them in their pursuits</li>
-                    <li>Be a hub for continuing education and skill development</li>
-                  </ul>
-                </Link>
+                {canSeePage('outreach-extension') && (
+                  <Link to="/outreach-extension" className="vision-pillar-card">
+                    <h3 className="vision-pillar-title">
+                      <span className="vision-pillar-icon">🌱</span> <span className="vision-pillar-title-text"><u>Outreach &amp; Extension</u></span>
+                    </h3>
+                    <ul className="vision-pillar-list">
+                      <li>Be actively engaged with the local community</li>
+                      <li>Partner with local organisations to strengthen public engagement with science and technology</li>
+                      <li>Inspire young minds to dream big and nurture them in their pursuits</li>
+                      <li>Be a hub for continuing education and skill development</li>
+                    </ul>
+                  </Link>
+                )}
               </div>
 
             </div>

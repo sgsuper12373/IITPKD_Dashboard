@@ -1,7 +1,7 @@
 """Flask application factory."""
 import os
 import secrets
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
@@ -63,5 +63,28 @@ def create_app():
     @app.route('/health')
     def health_check():
         return "Server is running!"
+
+    @app.after_request
+    def add_cache_headers(response):
+        """
+        Add Cache-Control to read-only endpoints so the browser can skip
+        round-trips on repeated calls within the same session.
+
+        filter-options  → 5 min  (these almost never change between requests)
+        all other GETs  → 30 s   (light freshness buffer, cuts duplicate calls)
+        non-GET         → no-store (uploads, auth — must always hit the server)
+        """
+        if request.method != 'GET':
+            response.headers['Cache-Control'] = 'no-store'
+            return response
+
+        path = request.path
+        if 'filter-options' in path or 'filter_options' in path:
+            # Authenticated responses: private so proxies don't share across users
+            response.headers['Cache-Control'] = 'private, max-age=300'
+        else:
+            response.headers['Cache-Control'] = 'private, max-age=30'
+
+        return response
 
     return app

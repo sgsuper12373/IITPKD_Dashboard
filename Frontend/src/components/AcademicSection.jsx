@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import useDebounce from '../utils/useDebounce';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, AreaChart, Area, LineChart, Line,
@@ -406,6 +407,17 @@ function AcademicSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
+  // Serialize filter objects so useDebounce can do a stable string comparison
+  const serializedFilters = useMemo(() => JSON.stringify(filters), [filters]);
+  const serializedGTF    = useMemo(() => JSON.stringify(genderTrendFilters), [genderTrendFilters]);
+  const serializedPTF    = useMemo(() => JSON.stringify(programTrendFilters), [programTrendFilters]);
+  const serializedSDF    = useMemo(() => JSON.stringify(stateDistributionFilters), [stateDistributionFilters]);
+
+  const debouncedFilters = useDebounce(serializedFilters, 300);
+  const debouncedGTF     = useDebounce(serializedGTF, 300);
+  const debouncedPTF     = useDebounce(serializedPTF, 300);
+  const debouncedSDF     = useDebounce(serializedSDF, 300);
+
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 4;
@@ -494,31 +506,34 @@ function AcademicSection({ user, isPublicView = false }) {
 
   // ── Gender distribution (for top-level year filter) ──────────────────────
   useEffect(() => {
+    const parsedFilters = JSON.parse(debouncedFilters);
     const load = async () => {
-      if (filters.yearofadmission === null) return;
-      try { setLoading(true); setError(null); const r = await fetchGenderDistributionFiltered(filters, token); setGenderData(r.data); setTotal(r.total); }
+      if (parsedFilters.yearofadmission === null) return;
+      try { setLoading(true); setError(null); const r = await fetchGenderDistributionFiltered(parsedFilters, token); setGenderData(r.data); setTotal(r.total); }
       catch { setError('Failed to load gender distribution data.'); }
       finally { setLoading(false); }
     };
     load();
-  }, [filters, token, uploadVersion]);
+  }, [debouncedFilters, token, uploadVersion]);
 
   // ── Gender trend ─────────────────────────────────────────────────────────
   useEffect(() => {
+    const parsedGTF = JSON.parse(debouncedGTF);
     const load = async () => {
-      try { setGenderTrendLoading(true); const r = await fetchGenderTrends(genderTrendFilters, token); setGenderTrendData(r.data); }
+      try { setGenderTrendLoading(true); const r = await fetchGenderTrends(parsedGTF, token); setGenderTrendData(r.data); }
       catch (err) { console.error(err); }
       finally { setGenderTrendLoading(false); }
     };
     load();
-  }, [genderTrendFilters, token, uploadVersion]);
+  }, [debouncedGTF, token, uploadVersion]);
 
   // ── Program trend ─────────────────────────────────────────────────────────
   useEffect(() => {
+    const parsedPTF = JSON.parse(debouncedPTF);
     const load = async () => {
       try {
         setProgramTrendLoading(true);
-        const r = await fetchProgramTrends(programTrendFilters, token);
+        const r = await fetchProgramTrends(parsedPTF, token);
         setProgramTrendData(r.data);
         setProgramTrendPrograms(r.programs);
         setGenderByGroup(r.gender_by_group || []);
@@ -526,20 +541,21 @@ function AcademicSection({ user, isPublicView = false }) {
       finally { setProgramTrendLoading(false); }
     };
     load();
-  }, [programTrendFilters, token, uploadVersion]);
+  }, [debouncedPTF, token, uploadVersion]);
 
   // ── State distribution ───────────────────────────────────────────────────
   useEffect(() => {
+    const parsedSDF = JSON.parse(debouncedSDF);
     const load = async () => {
       try {
         setStateDistributionLoading(true);
-        const r = await fetchStateDistributionFiltered(stateDistributionFilters, token);
+        const r = await fetchStateDistributionFiltered(parsedSDF, token);
         setStateDistribution(r.data || []);
       } catch (err) { console.error(err); }
       finally { setStateDistributionLoading(false); }
     };
     load();
-  }, [stateDistributionFilters, token, uploadVersion]);
+  }, [debouncedSDF, token, uploadVersion]);
 
   // ── Derived display data ──────────────────────────────────────────────────
   const displayGenderTrendData = useMemo(() => {

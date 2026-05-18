@@ -3,64 +3,33 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
+import { PAGE_ACCESS_ROLES } from '../utils/rolePermissions';
 
-// Five primary tabs for the mobile bottom bar
-// The last tab (More) opens the existing sidebar drawer instead of navigating
-const BOTTOM_TABS = [
-  {
-    icon: '🏠',
-    label: 'Home',
-    path: '/',
-    match: (p) => p === '/'
-  },
-  {
-    icon: '👥',
-    label: 'People',
-    path: '/people-campus',
-    match: (p) => p.startsWith('/people-campus')
-  },
-  {
-    icon: '🔬',
-    label: 'Research',
-    path: '/research',
-    match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations')
-  },
-  {
-    icon: '🎓',
-    label: 'Education',
-    path: '/education',
-    match: (p) => p.startsWith('/education')
-  },
-  {
-    icon: '☰',
-    label: 'More',
-    path: null,   // null = open sidebar, not navigate
-    match: () => false
-  },
+// All top-level nav entries with their page-key for role filtering
+const ALL_NAV_LINKS = [
+  { label: 'People and Campus',            path: '/people-campus',               pageKey: 'people-campus' },
+  { label: 'Research',                     path: '/research',                    pageKey: 'research' },
+  { label: 'Education',                    path: '/education',                   pageKey: 'education' },
+  { label: 'Industry Connect',             path: '/industry-connect',            pageKey: 'industry-connect' },
+  { label: 'Innovation and Entrepreneurship', path: '/innovation-entrepreneurship', pageKey: 'innovation-entrepreneurship' },
+  { label: 'Outreach and Extension',       path: '/outreach-extension',          pageKey: 'outreach-extension' },
 ];
 
-const SIDEBAR_LINKS = [
-  {
-    label: 'Main Sections',
-    items: [
-      { icon: '🏛️', label: 'People and Campus', path: '/people-campus' },
-      { icon: '🔬', label: 'Research', path: '/research' },
-      { icon: '🎓', label: 'Education', path: '/education' },
-      { icon: '🏭', label: 'Industry Connect', path: '/industry-connect' },
-      { icon: '💡', label: 'Innovation and Entrepreneurship', path: '/innovation-entrepreneurship' },
-      { icon: '🌱', label: 'Outreach and Extension', path: '/outreach-extension' },
-    ],
-  },
-  {
-    label: 'Quick Navigation',
-    items: [
-      { icon: '🏠', label: 'Home', path: '/' },
-      { icon: '📊', label: 'Student Overview', path: '/people-campus/academic-section' },
-      { icon: '👥', label: 'Employee Overview', path: '/people-campus/administrative-section' },
-      { icon: '📝', label: 'Patents', path: '/patents' },
-      { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
-    ],
-  },
+// All potential mobile bottom tabs (excluding More which is always present)
+const ALL_BOTTOM_TABS = [
+  { icon: '🏠', label: 'Home',     path: '/',               pageKey: null, match: (p) => p === '/' },
+  { icon: '👥', label: 'People',   path: '/people-campus',  pageKey: 'people-campus', match: (p) => p.startsWith('/people-campus') },
+  { icon: '🔬', label: 'Research', path: '/research',       pageKey: 'research', match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
+  { icon: '🎓', label: 'Education', path: '/education',     pageKey: 'education', match: (p) => p.startsWith('/education') },
+];
+
+const MORE_TAB = { icon: '☰', label: 'More', path: null, match: () => false };
+
+// Sidebar "Quick Navigation" items that are always shown regardless of role
+const QUICK_NAV_ITEMS = [
+  { icon: '🏠', label: 'Home', path: '/' },
+  { icon: '📝', label: 'Patents', path: '/patents' },
+  { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
 ];
 
 function Header({ user, onLogout, isGuest }) {
@@ -72,6 +41,18 @@ function Header({ user, onLogout, isGuest }) {
     const navigate = useNavigate();
     const location = useLocation();
     const dropdownRef = useRef(null);
+
+    const roleId = user?.role_id;
+
+    // Guests (0/1) and super-admin (3) see all pages; section roles (2–22) see only their pages
+    const canSeePage = (pageKey) => {
+        if (pageKey == null) return true; // Home tab always visible
+        if (roleId == null || roleId === 0 || roleId === 1 || roleId === 3) return true;
+        return PAGE_ACCESS_ROLES[pageKey]?.includes(roleId) ?? false;
+    };
+
+    const visibleNavLinks   = ALL_NAV_LINKS.filter((l) => canSeePage(l.pageKey));
+    const visibleBottomTabs = [...ALL_BOTTOM_TABS.filter((t) => canSeePage(t.pageKey)), MORE_TAB];
 
     // Track whether we're on a breakpoint where the navbar is CSS-hidden
     useEffect(() => {
@@ -221,24 +202,15 @@ function Header({ user, onLogout, isGuest }) {
 
                 {/* Navigation Bar */}
                 <nav className={`main-navbar ${showNavbar ? '' : 'navbar-hidden'}`}>
-                    <Link to="/people-campus" className={`nav-link ${location.pathname.startsWith('/people-campus') ? 'active' : ''}`}>
-                        People and Campus
-                    </Link>
-                    <Link to="/research" className={`nav-link ${location.pathname.startsWith('/research') ? 'active' : ''}`}>
-                        Research
-                    </Link>
-                    <Link to="/education" className={`nav-link ${location.pathname.startsWith('/education') ? 'active' : ''}`}>
-                        Education
-                    </Link>
-                    <Link to="/industry-connect" className={`nav-link ${location.pathname.startsWith('/industry-connect') ? 'active' : ''}`}>
-                        Industry Connect
-                    </Link>
-                    <Link to="/innovation-entrepreneurship" className={`nav-link ${location.pathname.startsWith('/innovation-entrepreneurship') ? 'active' : ''}`}>
-                        Innovation and Entrepreneurship
-                    </Link>
-                    <Link to="/outreach-extension" className={`nav-link ${location.pathname.startsWith('/outreach-extension') ? 'active' : ''}`}>
-                        Outreach and Extension
-                    </Link>
+                    {visibleNavLinks.map((link) => (
+                        <Link
+                            key={link.path}
+                            to={link.path}
+                            className={`nav-link ${location.pathname.startsWith(link.path) ? 'active' : ''}`}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
                 </nav>
             </div>
 
@@ -265,25 +237,43 @@ function Header({ user, onLogout, isGuest }) {
                         </button>
                     </div>
 
-                    {SIDEBAR_LINKS
-                        .filter(section =>
-                            !(navbarActuallyVisible && section.label === 'Main Sections')
-                        )
-                        .map((section) => (
-                            <div key={section.label}>
-                                <p className="sidebar-section-label">{section.label}</p>
-                                {section.items.map((item) => (
-                                    <button
-                                        key={item.path}
-                                        className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                                        onClick={() => { navigate(item.path); setSidebarOpen(false); }}
-                                    >
-                                        <span className="sidebar-nav-icon">{item.icon}</span>
-                                        <span>{item.label}</span>
-                                    </button>
-                                ))}
-                            </div>
+                    {/* Main Sections — only show when nav bar is hidden (mobile) or always in sidebar */}
+                    {!navbarActuallyVisible && visibleNavLinks.length > 0 && (
+                        <div>
+                            <p className="sidebar-section-label">Main Sections</p>
+                            {visibleNavLinks.map((link) => (
+                                <button
+                                    key={link.path}
+                                    className={`sidebar-nav-item ${location.pathname.startsWith(link.path) ? 'active' : ''}`}
+                                    onClick={() => { navigate(link.path); setSidebarOpen(false); }}
+                                >
+                                    <span className="sidebar-nav-icon">
+                                        {link.pageKey === 'people-campus' ? '🏛️' :
+                                         link.pageKey === 'research' ? '🔬' :
+                                         link.pageKey === 'education' ? '🎓' :
+                                         link.pageKey === 'industry-connect' ? '🏭' :
+                                         link.pageKey === 'innovation-entrepreneurship' ? '💡' : '🌱'}
+                                    </span>
+                                    <span>{link.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Quick Navigation */}
+                    <div>
+                        <p className="sidebar-section-label">Quick Navigation</p>
+                        {QUICK_NAV_ITEMS.map((item) => (
+                            <button
+                                key={item.path}
+                                className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                                onClick={() => { navigate(item.path); setSidebarOpen(false); }}
+                            >
+                                <span className="sidebar-nav-icon">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </button>
                         ))}
+                    </div>
 
                     <div className="sidebar-divider" />
 
@@ -301,10 +291,9 @@ function Header({ user, onLogout, isGuest }) {
             {/* Bottom Tab Bar — mobile only (≤768px) */}
             <nav className="mobile-tab-bar" aria-label="Primary navigation" role="navigation">
               <div className="mobile-tab-bar__inner">
-                {BOTTOM_TABS.map((tab) => {
+                {visibleBottomTabs.map((tab) => {
                   const isActive = tab.path ? tab.match(location.pathname) : false;
                   if (tab.path === null) {
-                    // "More" tab opens the sidebar drawer
                     return (
                       <button
                         key="more"

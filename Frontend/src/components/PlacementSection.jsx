@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useDebounce from '../utils/useDebounce';
 import {
   ResponsiveContainer,
   LineChart,
@@ -187,6 +188,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
   const currentFilters = getCurrentFilters();
   const serializedFilters = JSON.stringify(currentFilters);
+  // Debounce so rapid filter changes don't fire a request on every keystroke
+  const debouncedFilters = useDebounce(serializedFilters, 300);
 
   // ── Filter options ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -238,7 +241,7 @@ function PlacementSection({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-  }, [serializedFilters, token, uploadVersion, viewType, currentFilters, handleFilterChange]);
+  }, [debouncedFilters, token, uploadVersion, viewType, handleFilterChange]);
 
   // ── Summary cards loader — runs for ALL users, independently of viewType ──
   useEffect(() => {

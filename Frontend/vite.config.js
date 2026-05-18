@@ -12,11 +12,15 @@ export default defineConfig({
     extensions: ['.jsx', '.js', '.tsx', '.ts', '.json'],
   },
   build: {
+    // esnext keeps output smaller (no legacy polyfills) — safe for modern browsers
+    target: 'esnext',
+    // Inline assets ≤ 8 kB as data-URIs to avoid extra HTTP requests
+    assetsInlineLimit: 8192,
     rollupOptions: {
       output: {
-        chunkFileNames: "assets/[name]-[hash].js",   // stable names
+        chunkFileNames: "assets/[name]-[hash].js",   // stable names → long-lived browser cache
         manualChunks: (id) => {
-          // React core — always cached together, never changes between deploys
+          // React core — tiny, always needed, long-lived cache
           if (id.includes('node_modules/react/') ||
               id.includes('node_modules/react-dom/') ||
               id.includes('node_modules/react-router-dom/') ||
@@ -24,12 +28,19 @@ export default defineConfig({
               id.includes('node_modules/scheduler/')) {
             return 'vendor-react';
           }
-          // Recharts + its deps (d3, victory-vendor) — largest single dependency
+          // Recharts + its heavy deps (d3, victory-vendor) — loaded lazily
           if (id.includes('node_modules/recharts') ||
               id.includes('node_modules/d3') ||
               id.includes('node_modules/victory-vendor') ||
               id.includes('node_modules/react-smooth')) {
             return 'vendor-charts';
+          }
+          // PDF export libs — large (~700 kB) but only used on explicit export action
+          // Separating them prevents them from blocking first paint
+          if (id.includes('node_modules/jspdf') ||
+              id.includes('node_modules/jspdf-autotable') ||
+              id.includes('node_modules/html2canvas')) {
+            return 'vendor-pdf';
           }
           // HTTP / utilities
           if (id.includes('node_modules/axios')) {
@@ -38,7 +49,7 @@ export default defineConfig({
         },
       },
     },
-    // Warn when any single chunk exceeds 600 kB (Vite default is 500 kB)
+    // Warn when any single chunk exceeds 600 kB
     chunkSizeWarningLimit: 600,
   },
 })

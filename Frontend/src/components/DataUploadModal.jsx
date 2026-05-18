@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
+import cachedAxios from '../utils/cachedAxios';
 import './DataUploadModal.css';
 
 /**
@@ -45,6 +46,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         onClose();
 
         if (wasSuccess) {
+            cachedAxios.clearAll(); // invalidate all cached API responses after data upload
             window.dispatchEvent(new CustomEvent('iitpkd:upload-success', { detail: { tableName } }));
             if (onUploadSuccess) {
                 onUploadSuccess();
