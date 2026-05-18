@@ -4,8 +4,7 @@
 
 .people-campus-grid {
   display: grid;
-  /* Cap at 4 columns; min 220px keeps cards readable even on narrow viewports */
-  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
   margin-top: 2rem;
 }
@@ -190,7 +189,6 @@
 @media (max-width: 768px) {
   .people-campus-grid {
     gap: 0.75rem;
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .people-campus-card {
@@ -214,7 +212,7 @@
   .card-description {
     font-size: 0.78rem;
     line-height: 1.35;
-    display: none; /* hide description on mobile — too cramped in 2-col */
+    display: none; /* hide description on mobile — too cramped */
   }
 }
 

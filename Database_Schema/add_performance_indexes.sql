@@ -84,14 +84,16 @@ CREATE INDEX IF NOT EXISTS idx_placement_packages_year
     ON placement_packages (placement_year);
 
 -- ── ICSR research tables ──────────────────────────────────────────────────────
-CREATE INDEX IF NOT EXISTS idx_icsr_sponsored_year
-    ON icsr_sponsered_projects (year);
+-- icsr_sponsered_projects has start_date (not year) and principal_investigator_department (not department)
+CREATE INDEX IF NOT EXISTS idx_icsr_sponsored_start_date
+    ON icsr_sponsered_projects (start_date);
 
 CREATE INDEX IF NOT EXISTS idx_icsr_sponsored_department
-    ON icsr_sponsered_projects (department);
+    ON icsr_sponsered_projects (principal_investigator_department);
 
-CREATE INDEX IF NOT EXISTS idx_icsr_consultancy_year
-    ON icsr_consultancy_projects (year);
+-- icsr_consultancy_projects has start_date (not year) but does have department
+CREATE INDEX IF NOT EXISTS idx_icsr_consultancy_start_date
+    ON icsr_consultancy_projects (start_date);
 
 CREATE INDEX IF NOT EXISTS idx_icsr_consultancy_department
     ON icsr_consultancy_projects (department);
