@@ -843,10 +843,15 @@ function PlacementSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="placement-trend-container" className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative', padding: '10px' }}>
+              <div
+                id="placement-trend-container"
+                className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`}
+                style={{ position: 'relative', padding: '10px' }}
+              >
                 <div className={`section-empty-state ${placementTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
+
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   {['bar', 'trend'].map((mode) => (
                     <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
@@ -856,27 +861,32 @@ function PlacementSection({ user, isPublicView = false }) {
                     }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
                   ))}
                 </div>
-                <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
-                  {trendChartMode === 'bar' ? (
-                    <div 
-                      className="chart-wrapper clickable-chart"
-                      onClick={() => setExpandedChart({
-                        title: "Placement Trends",
-                        content: (
-                          <ResponsiveContainer width="100%" height={450}>
-                            <BarChart data={placementTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                              <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                              <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                              <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]} />
-                              <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]} />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        )
-                      })}
-                    >
+
+                {/* ── FIX: Bar chart and Line chart are now direct children of
+                    ResponsiveContainer — no extra <div> wrapper in between.
+                    The expand onClick is moved to the outer chart-container div. ── */}
+                {trendChartMode === 'bar' ? (
+                  <div
+                    className="clickable-chart"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setExpandedChart({
+                      title: "Placement Trends",
+                      content: (
+                        <ResponsiveContainer width="100%" height={450}>
+                          <BarChart data={placementTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                            <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                            <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                            <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                            <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )
+                    })}
+                  >
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                       <BarChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                         <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -890,8 +900,10 @@ function PlacementSection({ user, isPublicView = false }) {
                           <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
                         </Bar>
                       </BarChart>
-                    </div >
-                  ) : (
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
                     <LineChart data={placementTrendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
@@ -908,8 +920,9 @@ function PlacementSection({ user, isPublicView = false }) {
                         <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
                       </Line>
                     </LineChart>
-                  )}
-                </ResponsiveContainer>
+                  </ResponsiveContainer>
+                )}
+
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div className="metric-value-sm" style={{ color: '#6366f1' }}>{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
@@ -945,8 +958,8 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Gender-wise Placement Status"
                 />
               </div>
-              <div id="placement-gender-container" 
-                className={`chart-container clickable-chart ${!genderBarData.length ? 'chart-has-empty' : ''}`} 
+              <div id="placement-gender-container"
+                className={`chart-container clickable-chart ${!genderBarData.length ? 'chart-has-empty' : ''}`}
                 style={{ position: 'relative', padding: '10px' }}
                 onClick={() => setExpandedChart({
                   title: "Gender Breakdown",
@@ -1018,8 +1031,8 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Program-wise Placement Performance"
                 />
               </div>
-              <div id="placement-program-container" 
-                className={`chart-container clickable-chart ${!programStatusChartData.length ? 'chart-has-empty' : ''}`} 
+              <div id="placement-program-container"
+                className={`chart-container clickable-chart ${!programStatusChartData.length ? 'chart-has-empty' : ''}`}
                 style={{ position: 'relative', padding: '10px' }}
                 onClick={() => setExpandedChart({
                   title: "Program-wise Status",
@@ -1088,8 +1101,8 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Recruiter Statistics"
                 />
               </div>
-              <div id="placement-recruiters-container" 
-                className={`chart-container clickable-chart ${!recruiterChartData.length ? 'chart-has-empty' : ''}`} 
+              <div id="placement-recruiters-container"
+                className={`chart-container clickable-chart ${!recruiterChartData.length ? 'chart-has-empty' : ''}`}
                 style={{ position: 'relative', padding: '10px' }}
                 onClick={() => setExpandedChart({
                   title: "Recruiter Statistics",
@@ -1204,8 +1217,8 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Salary Package Trends (LPA)"
                 />
               </div>
-              <div id="placement-packages-container" 
-                className={`chart-container clickable-chart ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`} 
+              <div id="placement-packages-container"
+                className={`chart-container clickable-chart ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`}
                 style={{ position: 'relative', padding: '10px' }}
                 onClick={() => setExpandedChart({
                   title: "Salary Package Trends",
