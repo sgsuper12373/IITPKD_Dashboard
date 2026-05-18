@@ -54,10 +54,7 @@ function PeopleCampus({ user }) {
     }
   ];
 
-  // Roles with at least one card on this page
-  const hasCards = [3, 2, 4, 5, 6, 7, 8].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <PeopleCampusPublicView user={user} />;
   }
   // 🔹 ADDITION: If non-public user explicitly chooses public view

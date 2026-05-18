@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
-import { PAGE_ACCESS_ROLES } from '../utils/rolePermissions';
 
 // All top-level nav entries with their page-key for role filtering
 const ALL_NAV_LINKS = [
@@ -42,14 +41,8 @@ function Header({ user, onLogout, isGuest }) {
     const location = useLocation();
     const dropdownRef = useRef(null);
 
-    const roleId = user?.role_id;
-
-    // Guests (0/1) and super-admin (3) see all pages; section roles (2–22) see only their pages
-    const canSeePage = (pageKey) => {
-        if (pageKey == null) return true; // Home tab always visible
-        if (roleId == null || roleId === 0 || roleId === 1 || roleId === 3) return true;
-        return PAGE_ACCESS_ROLES[pageKey]?.includes(roleId) ?? false;
-    };
+    // Every user sees all nav links — each page has a public view.
+    const canSeePage = () => true;
 
     const visibleNavLinks   = ALL_NAV_LINKS.filter((l) => canSeePage(l.pageKey));
     const visibleBottomTabs = [...ALL_BOTTOM_TABS.filter((t) => canSeePage(t.pageKey)), MORE_TAB];

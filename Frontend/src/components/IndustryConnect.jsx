@@ -36,9 +36,7 @@ function IndustryConnect({ user }) {
     }
   ];
 
-  const hasCards = [3, 2, 9, 12].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <IndustryConnectPublicView user={user} />;
   }
 

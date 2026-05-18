@@ -68,9 +68,7 @@ function OutreachExtension({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  const hasCards = [3, 15, 16, 17, 18, 19, 20, 21, 22].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <OutreachPublicView user={user} />;
   }
 

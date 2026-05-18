@@ -33,9 +33,7 @@ function Education({ user }) {
   const [showPublicView, setShowPublicView] = useState(false);
   const roleId = user?.role_id;
 
-  const hasCards = [3, 4, 5, 11].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <EducationPublicView user={user} />;
   }
 

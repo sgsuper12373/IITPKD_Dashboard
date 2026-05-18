@@ -4,7 +4,6 @@ import './Page.css';
 import './HomePage.css';
 import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
-import { PAGE_ACCESS_ROLES } from '../utils/rolePermissions';
 
 // ImageSlider carries its own CSS and animation logic; defer it so it doesn't
 // block the initial paint of the welcome text and splash screen.
@@ -30,14 +29,8 @@ function HomePage({ user }) {
     setShowSplash(false);
   };
 
-  const roleId = user?.role_id;
-
-  // Guests (0/1) and super-admin (3) see every pillar card.
-  // Section-specific roles (2–22) only see cards for pages they can manage.
-  const canSeePage = (pageKey) => {
-    if (roleId == null || roleId === 0 || roleId === 1 || roleId === 3) return true;
-    return PAGE_ACCESS_ROLES[pageKey]?.includes(roleId) ?? false;
-  };
+  // Every user sees all six pillar cards — each page has a public view.
+  const canSeePage = () => true;
 
   return (
     <>

@@ -30,9 +30,7 @@ function Research({ user }) {
     }
   ];
 
-  const hasCards = [3, 9, 10].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <ResearchPublicView user={user} />;
   }
 
@@ -58,9 +56,7 @@ function Research({ user }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        {/* 🔹 ADDITION: Public view button for non-public users */}
-        {hasCards && (
-          <div style={{ marginBottom: '1rem' }}>
+        <div style={{ marginBottom: '1rem' }}>
           <button
             className="page-upload-btn"
             onClick={() => setShowPublicView(true)}
@@ -68,7 +64,6 @@ function Research({ user }) {
             View Public Page
           </button>
         </div>
-        )}
 
         <div className="people-campus-grid">
           {sections.map((section, index) => {

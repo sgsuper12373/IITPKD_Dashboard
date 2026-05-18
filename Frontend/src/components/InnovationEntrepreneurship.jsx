@@ -29,9 +29,7 @@ function InnovationEntrepreneurship({ user }) {
   ];
   const [showPublicView, setShowPublicView] = useState(false);
 
-  const hasCards = [3, 13, 14].includes(roleId);
-
-  if (!user || roleId === 0 || roleId === 1 || !hasCards) {
+  if (!user || roleId === 0 || roleId === 1) {
     return <InnovationPublicView user={user} />;
   }
 
