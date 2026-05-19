@@ -110,15 +110,15 @@ function PeopleCampusPublicView({ user }) {
                         {section.isGrievances ? (
                           <div className="grievances-combined-section">
                             <div className="grievance-subsection">
-                              <h2 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1a1a1a', fontSize: '1.5rem' }}>
+                              <h2 className="grievance-section-h2">
                                 Internal Grievance Resolution Cell (IGRC)
                               </h2>
                               <div className="subsection-content">
                                 <IgrcSection user={user} isPublicView={true} />
                               </div>
                             </div>
-                            <div className="grievance-subsection" style={{ marginTop: '3rem', paddingTop: '3rem', borderTop: '1px solid #eee' }}>
-                              <h2 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1a1a1a', fontSize: '1.5rem' }}>
+                            <div className="grievance-subsection grievance-subsection--second">
+                              <h2 className="grievance-section-h2">
                                 Internal Complaints Committee (ICC)
                               </h2>
                               <div className="subsection-content">

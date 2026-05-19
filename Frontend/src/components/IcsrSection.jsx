@@ -32,6 +32,7 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import '../DesignSystem.css';
+import './IcsrSection.css';
 
 const EVENT_TYPE_COLORS = [
   '#4f46e5', '#22c55e', '#0ea5e9', '#f97316',
@@ -139,24 +140,15 @@ function IcsrSection({ user, isPublicView = false }) {
     <>
       {!isReadOnlyView && (
         <button className="page-back-btn" onClick={() => navigate('/industry-connect')}>
-          ← Back to Industry Connect
+          &#8592; Back to Industry Connect
         </button>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-        {error && (
-          <div className="error-message" style={{
-            padding: '10px',
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            borderRadius: '4px',
-            marginBottom: '20px',
-            width: '100%'
-          }}>{error}</div>
-        )}
+      <div className="icsr-action-row">
+        {error && <div className="icsr-error">{error}</div>}
         {!isReadOnlyView && isAdmin && (
           <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-            <span>📤</span> Upload Events
+            <span>&#128228;</span> Upload Events
           </button>
         )}
       </div>
@@ -169,30 +161,25 @@ function IcsrSection({ user, isPublicView = false }) {
         {expandedChart?.content}
       </ChartExpandModal>
 
-      <div className="grid-2" style={{ gap: '24px', marginBottom: '40px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)', borderRadius: '20px', padding: '28px', color: 'white' }}>
-          <h3 style={{ margin: '0 0 10px 0', opacity: 0.9 }}>Total Events</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.total_events)}</div>
+      <div className="icsr-cards">
+        <div className="icsr-card icsr-card--indigo">
+          <h3 className="icsr-card-h3">Total Events</h3>
+          <div className="icsr-card-value">{formatNumber(summary.total_events)}</div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #22c55e 0%, #166534 100%)', borderRadius: '20px', padding: '28px', color: 'white' }}>
-          <h3 style={{ margin: '0 0 10px 0', opacity: 0.9 }}>Total Funding</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatCompactCurrency(summary.total_funding)}</div>
+        <div className="icsr-card icsr-card--green">
+          <h3 className="icsr-card-h3">Total Funding</h3>
+          <div className="icsr-card-value">{formatCompactCurrency(summary.total_funding)}</div>
         </div>
       </div>
 
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', padding: '24px', marginBottom: '30px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+      <div className="icsr-panel">
+        <div className="icsr-panel-header">
+          <div className="icsr-tab-row">
             {['yearly', 'eventTypes', 'eventsDirectory'].map(v => (
               <button
                 key={v}
                 onClick={() => setViewType(v)}
-                style={{
-                  padding: '8px 16px', borderRadius: '8px', border: 'none',
-                  backgroundColor: viewType === v ? '#4f46e5' : '#f1f5f9',
-                  color: viewType === v ? '#fff' : '#475569',
-                  fontWeight: 600, cursor: 'pointer'
-                }}
+                className={`icsr-tab-btn${viewType === v ? ' icsr-tab-btn--active' : ' icsr-tab-btn--inactive'}`}
               >
                 {v === 'yearly' ? 'Trend' : v === 'eventTypes' ? 'Types' : 'Directory'}
               </button>
@@ -250,7 +237,7 @@ function IcsrSection({ user, isPublicView = false }) {
                 <ResponsiveContainer width="100%" height={450}>
                   <PieChart>
                     <Pie data={eventTypesPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={150} label>
-                      {eventTypesPieData.map((row, i) => <Cell key={i} fill={EVENT_TYPE_COLORS[i % EVENT_TYPE_COLORS.length]} />)}
+                      {eventTypesPieData.map((_, i) => <Cell key={i} fill={EVENT_TYPE_COLORS[i % EVENT_TYPE_COLORS.length]} />)}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
@@ -273,40 +260,40 @@ function IcsrSection({ user, isPublicView = false }) {
 
         {viewType === 'eventsDirectory' && (
           chartIsMobile ? (
-            <div id="icsr-directory-table" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div id="icsr-directory-table" className="icsr-mobile-list">
               {eventsList.map((event, i) => (
-                <div key={i} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: '700', color: '#4f46e5', fontSize: '14px' }}>{event.event_year}</span>
-                    <span style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>{event.event_type}</span>
+                <div key={i} className="icsr-mobile-card">
+                  <div className="icsr-mobile-top">
+                    <span className="icsr-mobile-year">{event.event_year}</span>
+                    <span className="icsr-mobile-badge">{event.event_type}</span>
                   </div>
-                  <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{event.event_name}</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: '#666' }}>
-                    <div><strong>Budget:</strong> ₹{formatNumber(event.budget)}</div>
+                  <h4 className="icsr-mobile-h4">{event.event_name}</h4>
+                  <div className="icsr-mobile-details">
+                    <div><strong>Budget:</strong> &#8377;{formatNumber(event.budget)}</div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="table-responsive">
-              <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '12px', overflow: 'hidden' }}>
+              <table id="icsr-directory-table" className="icsr-table">
                 <thead>
-                  <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                    <th style={{ padding: '16px', textAlign: 'left' }}>Year</th>
-                    <th style={{ padding: '16px', textAlign: 'left' }}>Event Name</th>
-                    <th style={{ padding: '16px', textAlign: 'left' }}>Organization</th>
-                    <th style={{ padding: '16px', textAlign: 'left' }}>Type</th>
-                    <th style={{ padding: '16px', textAlign: 'left' }}>Budget</th>
+                  <tr>
+                    <th>Year</th>
+                    <th>Event Name</th>
+                    <th>Organization</th>
+                    <th>Type</th>
+                    <th>Budget</th>
                   </tr>
                 </thead>
                 <tbody>
                   {eventsList.map((event, i) => (
-                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                      <td style={{ padding: '16px' }}>{event.event_year}</td>
-                      <td style={{ padding: '16px', fontWeight: 500 }}>{event.event_name}</td>
-                      <td style={{ padding: '16px' }}>{event.organization_name}</td>
-                      <td style={{ padding: '16px' }}><span style={{ color: '#4f46e5', fontWeight: 600 }}>{event.event_type}</span></td>
-                      <td style={{ padding: '16px' }}>₹{formatNumber(event.budget)}</td>
+                    <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                      <td>{event.event_year}</td>
+                      <td className="icsr-td-name">{event.event_name}</td>
+                      <td>{event.organization_name}</td>
+                      <td><span className="icsr-td-type">{event.event_type}</span></td>
+                      <td>&#8377;{formatNumber(event.budget)}</td>
                     </tr>
                   ))}
                 </tbody>

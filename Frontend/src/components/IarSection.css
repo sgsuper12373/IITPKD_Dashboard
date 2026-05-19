@@ -12,9 +12,561 @@
   text-align: left;
 }
 
-.indicator-grid,
-.indicator-card {
-  /* Placeholder to reuse EWD indicator styles when both dashboards are present */
+/* ============================================================ */
+/* IAR-SPECIFIC LAYOUT                                          */
+/* ============================================================ */
+
+.iar-body {
+  position: relative;
+  min-height: 600px;
+}
+
+.iar-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ── Summary stats cards (3-col flex grid) ── */
+.iar-stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.iar-stats-grid > * {
+  flex: 1 1 min(220px, 100%);
+}
+
+/* ── Individual gradient stat card ── */
+.iar-stat-card {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.iar-stat-card--alumni {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+}
+.iar-stat-card--higher {
+  background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+  box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2);
+}
+.iar-stat-card--corporate {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+}
+.iar-stat-card-decor {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+.iar-stat-card-body {
+  position: relative;
+  z-index: 1;
+}
+.iar-stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.iar-stat-card-icon {
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+}
+.iar-stat-card-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+}
+.iar-stat-card-value {
+  color: white;
+  margin-bottom: 8px;
+}
+.iar-stat-card-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.iar-stat-card-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.iar-stat-card-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── View selector tabs ── */
+.iar-view-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+.iar-view-tab {
+  padding: 10px 24px;
+  background-color: #f8f9fa;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Filter bar ── */
+.iar-filter-bar {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 20px;
+}
+.iar-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.iar-filter-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1a1a1a;
+}
+.iar-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.iar-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 min(180px, 100%);
+}
+.iar-filter-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.iar-filter-select {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  border-radius: 7px;
+  border: 1px solid #ced4da;
+  width: 100%;
+}
+
+/* ── Chart type toggle (Bar / Trend) ── */
+.chart-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.chart-mode-btn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: #e9ecef;
+  color: #555;
+}
+
+/* ── IAR chart header (flex row with export action) ── */
+.iar-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.iar-chart-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  font-weight: 700;
+}
+.iar-chart-header > div > h2 {
+  margin: 0 0 6px 0;
+}
+.iar-chart-header .chart-description {
+  color: #666;
+  margin: 0;
+}
+.iar-icon-span {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* ── Stats summary bar (4-col flex) ── */
+.iar-stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+.iar-stats-bar > * {
+  flex: 1 1 min(80px, 100%);
+  text-align: center;
+}
+.iar-stat-metric {
+  font-weight: bold;
+  font-size: 20px;
+}
+.iar-stat-metric--purple  { color: #667eea; }
+.iar-stat-metric--cyan    { color: #22d3ee; }
+.iar-stat-metric--orange  { color: #f97316; }
+.iar-stat-metric--violet  { color: #a855f7; }
+.iar-stat-metric--green   { color: #43e97b; }
+.iar-stat-metric--pink    { color: #fa709a; }
+.iar-stat-sub {
+  color: #666;
+  font-size: 11px;
+}
+
+/* ── Info box (state / country summary text) ── */
+.iar-info-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+.iar-info-box h2 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.iar-info-highlight--purple { font-weight: bold; color: #667eea; font-size: 22px; }
+.iar-info-highlight--green  { font-weight: bold; color: #22c55e; font-size: 18px; }
+.iar-info-highlight--orange { font-weight: bold; color: #f97316; font-size: 18px; }
+
+/* ── Pie tooltip ── */
+.iar-pie-tooltip {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+}
+.iar-pie-tooltip-name {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: #333;
+}
+.iar-pie-tooltip-row {
+  margin: 0 0 2px;
+  color: #555;
+}
+.iar-pie-tooltip-row:last-child {
+  margin: 0;
+}
+
+/* ── Pie distribution: mobile cards ── */
+.iar-pie-dist-mobile {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.iar-pie-dist-item {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.iar-pie-dist-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.iar-pie-dist-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.iar-pie-dist-name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+.iar-pie-dist-right {
+  text-align: right;
+}
+.iar-pie-dist-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: #667eea;
+}
+.iar-pie-dist-pct {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ── Pie distribution: desktop table ── */
+.iar-pie-dist-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+}
+.iar-pie-dist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.iar-pie-dist-table thead tr {
+  background-color: #667eea;
+  color: #fff;
+}
+.iar-pie-dist-table th {
+  padding: 8px 10px;
+  font-weight: 600;
+}
+.iar-pie-dist-table th:first-child { text-align: left; }
+.iar-pie-dist-table th:not(:first-child) { text-align: right; }
+.iar-pie-dist-table td {
+  padding: 7px 10px;
+}
+.iar-pie-dist-table td:not(:first-child) { text-align: right; }
+.iar-pie-dist-table td:nth-child(2) { font-weight: 500; }
+.iar-pie-dist-table td:nth-child(3) { color: #667eea; font-weight: 600; }
+.iar-pie-dist-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.iar-pie-dist-cell-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* ── Outcome section ── */
+.iar-graph-table-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.iar-toggle-btn {
+  padding: 7px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  background: #e9ecef;
+  color: #555;
+  transition: all 0.2s ease;
+}
+.iar-fixed-panel {
+  overflow: hidden;
+  height: 450px;
+}
+.iar-chart-section-mb { margin-bottom: 30px; }
+.iar-relative          { position: relative; }
+.chart-mode-btn--active { background: #667eea; color: #fff; }
+.iar-toggle-btn--active { background: #43e97b; color: #fff; }
+.iar-graph-panel {
+  flex-direction: column;
+  height: 100%;
+}
+.iar-legend {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  justify-content: flex-end;
+}
+.iar-legend-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+.iar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.iar-legend-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+}
+.iar-chart-area {
+  flex: 1;
+  min-height: 0;
+  max-height: 450px;
+}
+.iar-table-panel {
+  flex-direction: column;
+  height: 100%;
+}
+.iar-table-export-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.iar-table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  width: 100%;
+  max-height: 450px;
+}
+
+/* ── Outcome: mobile cards ── */
+.iar-mobile-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.iar-mobile-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.iar-mobile-card-dept {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+.iar-mobile-card-stats {
+  display: flex;
+  gap: 8px;
+}
+.iar-mobile-stat {
+  flex: 1;
+  text-align: center;
+}
+.iar-mobile-stat-label {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+.iar-mobile-stat-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+.iar-mobile-stat-value--total   { color: #1e293b; }
+.iar-mobile-stat-value--higher  { color: #43e97b; }
+.iar-mobile-stat-value--corp    { color: #fa709a; }
+
+/* ── Outcome: desktop table ── */
+.iar-outcome-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.iar-outcome-thead {
+  position: sticky;
+  top: 0;
+  background-color: #43e97b;
+  color: white;
+  z-index: 1;
+}
+.iar-outcome-thead th {
+  padding: 10px;
+  text-align: left;
+}
+.iar-outcome-table tbody td {
+  padding: 8px;
+}
+.iar-outcome-table tbody td:nth-child(3) { color: #43e97b; font-weight: 500; }
+.iar-outcome-table tbody td:nth-child(4) { color: #fa709a; font-weight: 500; }
+
+/* ── CTA Banner ── */
+.iar-cta-banner {
+  margin-top: 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(253, 221, 161, 1);
+}
+.iar-cta-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.iar-cta-title {
+  padding: 0 50px 0 0;
+  margin: 0 40px 4px 0;
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+}
+.iar-cta-desc {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 13px;
+}
+.iar-cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  color: #000;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.iar-cta-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================================ */
@@ -26,6 +578,14 @@
   .chart-section .grievance-table td {
     font-size: 0.82rem;
     padding: 0.5rem 0.6rem;
+  }
+  .iar-cta-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .iar-cta-title {
+    padding: 0;
+    margin: 0 0 4px 0;
   }
 }
 
@@ -39,6 +599,10 @@
     font-size: 0.76rem;
     padding: 0.4rem 0.5rem;
   }
+  .iar-view-tab {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -46,4 +610,3 @@
     font-size: 0.72rem;
   }
 }
-

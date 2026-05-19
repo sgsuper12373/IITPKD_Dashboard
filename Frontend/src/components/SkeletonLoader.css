@@ -66,10 +66,11 @@
   height: 13px;
 }
 
-.sk-line-sm  { width: 55%; }
-.sk-line-md  { width: 75%; height: 13px; }
-.sk-line-lg  { width: 45%; height: 26px; }
+.sk-line-sm    { width: 55%; }
+.sk-line-md    { width: 75%; height: 13px; }
+.sk-line-lg    { width: 45%; height: 26px; }
 .sk-line-title { width: 38%; height: 18px; }
+.sk-line-55    { width: 55%; }
 
 /* ============================================================ */
 /* CHART SECTION PLACEHOLDER                                    */

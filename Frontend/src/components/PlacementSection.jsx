@@ -35,6 +35,7 @@ import CustomTooltip from './CustomTooltip';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
+import './PlacementSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
 
@@ -44,9 +45,9 @@ const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
 const formatCurrency = (value) => {
-  if (value === null || value === undefined) return '–';
+  if (value === null || value === undefined) return '&#8211;';
   const numeric = Number(value);
-  if (Number.isNaN(numeric) || numeric === 0) return '–';
+  if (Number.isNaN(numeric) || numeric === 0) return '&#8211;';
   return `${numeric.toFixed(2)} LPA`;
 };
 
@@ -57,7 +58,6 @@ const formatPercentage = (value) => {
   return `${numeric.toFixed(2)}%`;
 };
 
-// Which filter fields each view uses
 const VIEW_FILTER_FIELDS = {
   placementTrend: ['year', 'program', 'gender', 'branch'],
   genderWise: ['year', 'program', 'gender', 'branch'],
@@ -70,14 +70,12 @@ const VIEW_FILTER_FIELDS = {
 
 const DEFAULT_FILTERS = { year: 'All', program: 'All', gender: 'All', branch: 'All', sector: 'All' };
 
-// Views that are restricted from role_id === 0 or undefined users
 const RESTRICTED_VIEWS = new Set(['placementTrend', 'topRecruiters', 'packageTrend', 'genderWise']);
 
 function PlacementSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
 
-  // ── Role checks (defined early so they can be used in useState initialisers) ──
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 11;
@@ -101,11 +99,9 @@ function PlacementSection({ user, isPublicView = false }) {
     sectors: []
   });
 
-  // Restricted users default to 'programWise' so they never land on a blank/forbidden view
   const [viewType, setViewType] = useState(isRestrictedUser ? 'programWise' : 'placementTrend');
   const [trendChartMode, setTrendChartMode] = useState('bar');
 
-  // One filter state per view
   const [trendFilters, setTrendFilters] = useState({ ...DEFAULT_FILTERS });
   const [genderFilters, setGenderFilters] = useState({ ...DEFAULT_FILTERS });
   const [programFilters, setProgramFilters] = useState({ ...DEFAULT_FILTERS });
@@ -114,7 +110,6 @@ function PlacementSection({ user, isPublicView = false }) {
   const [packageFilters, setPackageFilters] = useState({ ...DEFAULT_FILTERS });
   const [topRecruitersFilters, setTopRecruitersFilters] = useState({ ...DEFAULT_FILTERS });
 
-  // Dedicated filter state for the always-visible summary cards
   const [summaryFilters] = useState({ ...DEFAULT_FILTERS });
 
   const [summary, setSummary] = useState({
@@ -146,7 +141,6 @@ function PlacementSection({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
   const getCurrentFilters = useCallback(() => {
     switch (viewType) {
       case 'placementTrend': return trendFilters;
@@ -188,10 +182,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
   const currentFilters = getCurrentFilters();
   const serializedFilters = JSON.stringify(currentFilters);
-  // Debounce so rapid filter changes don't fire a request on every keystroke
   const debouncedFilters = useDebounce(serializedFilters, 300);
 
-  // ── Filter options ────────────────────────────────────────────────────────
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
@@ -207,7 +199,6 @@ function PlacementSection({ user, isPublicView = false }) {
           sectors: Array.isArray(options?.sectors) ? options.sectors : []
         });
 
-        // Auto-correct invalid filter selections
         let hasChanges = false;
         const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
         const corrections = {};
@@ -243,13 +234,11 @@ function PlacementSection({ user, isPublicView = false }) {
     return () => { isMounted = false; };
   }, [debouncedFilters, token, uploadVersion, viewType, handleFilterChange]);
 
-  // ── Summary cards loader — runs for ALL users, independently of viewType ──
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
       try {
         setLoading(p => ({ ...p, summary: true }));
-        // Use latest year for summary cards when no year is selected
         const resolvedFilters = { ...summaryFilters };
         if (resolvedFilters.year === 'All' && latestYear) {
           resolvedFilters.year = latestYear;
@@ -271,11 +260,9 @@ function PlacementSection({ user, isPublicView = false }) {
     };
     load();
     return () => { isMounted = false; };
-    // Re-fetch whenever latestYear resolves or upload happens
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, uploadVersion, latestYear, JSON.stringify(summaryFilters)]);
 
-  // ── Data loaders ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (viewType !== 'placementTrend') return;
     if (isRestrictedUser) return;
@@ -399,7 +386,6 @@ function PlacementSection({ user, isPublicView = false }) {
     load();
   }, [topRecruitersFilters, token, viewType, uploadVersion, isRestrictedUser]);
 
-  // ── Chart data ────────────────────────────────────────────────────────────
   const placementTrendChartData = useMemo(() => {
     const data = trendData.map(row => ({
       year: row.year,
@@ -460,7 +446,6 @@ function PlacementSection({ user, isPublicView = false }) {
     return chartIsMobile && data.length > 3 ? data.slice(-3) : data;
   }, [packageTrend, chartIsMobile]);
 
-  // ── Radio buttons config — restricted views filtered out for restricted users ──
   const ALL_RADIO_BUTTONS = [
     { id: 'placementTrend', label: 'Placement Trend', color: '#6366f1' },
     { id: 'genderWise', label: 'Gender Breakdown', color: '#ec4899' },
@@ -475,73 +460,29 @@ function PlacementSection({ user, isPublicView = false }) {
     btn => !isRestrictedUser || !RESTRICTED_VIEWS.has(btn.id)
   );
 
-  // ── Unified filter panel (dynamic fields) ────────────────────────────────
   const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
 
   const renderFilterPanel = () => (
-    <div style={{
-      marginBottom: '10px',
-      padding: '16px 20px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '10px',
-      border: '1px solid #e9ecef'
-    }}>
-      {/* Heading row */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '14px'
-      }}>
-        <h4 style={{ margin: 0, color: '#333', fontSize: '14px', fontWeight: '700' }}>
-          🔍 Filters
-        </h4>
-        <button
-          onClick={handleClearFilters}
-          style={{
-            padding: '5px 12px',
-            backgroundColor: '#dc3545',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px',
-            fontWeight: '600'
-          }}
-        >
-          Clear Filters
-        </button>
+    <div className="filter-panel">
+      <div className="filter-panel-header">
+        <h4 className="shared-filter-panel-title">&#128269; Filters</h4>
+        <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
       </div>
 
-      {/* Radio buttons — full width, each button stretches equally */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '10px',
-        width: '100%',
-        marginBottom: activeFields.length ? '16px' : '0',
-        paddingBottom: activeFields.length ? '16px' : '0',
-        borderBottom: activeFields.length ? '1px solid #dee2e6' : 'none'
+      <div className="mode-toggle-row" style={{
+        marginBottom: activeFields.length ? 'var(--space-4)' : 0,
+        paddingBottom: activeFields.length ? 'var(--space-4)' : 0,
+        borderBottom: activeFields.length ? '1px solid var(--color-border)' : 'none'
       }}>
         {radioButtons.map((btn) => (
           <label
             key={btn.id}
+            className="view-radio-label"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              padding: '7px 16px',
-              flex: '1 1 0',
-              minWidth: '120px',
               backgroundColor: viewType === btn.id ? btn.color : 'transparent',
               color: viewType === btn.id ? 'white' : '#555',
-              borderRadius: '40px',
-              transition: 'all 0.25s ease',
               border: `2px solid ${viewType === btn.id ? btn.color : '#d1d5db'}`,
               boxShadow: viewType === btn.id ? `0 3px 10px ${btn.color}40` : 'none',
-              userSelect: 'none'
             }}
           >
             <input
@@ -559,20 +500,15 @@ function PlacementSection({ user, isPublicView = false }) {
         ))}
       </div>
 
-      {/* Dynamic filter fields */}
       {activeFields.length > 0 && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '12px'
-        }}>
+        <div className="filter-grid">
           {activeFields.includes('year') && (
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Year</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Year</label>
               <select
+                className="filter-select"
                 value={currentFilters.year}
                 onChange={(e) => handleFilterChange('year', e.target.value)}
-                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
               >
                 <option value="All">All Years</option>
                 {filterOptions.years.map((year) => (
@@ -583,12 +519,12 @@ function PlacementSection({ user, isPublicView = false }) {
           )}
 
           {activeFields.includes('program') && (
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Program</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Program</label>
               <select
+                className="filter-select"
                 value={currentFilters.program}
                 onChange={(e) => handleFilterChange('program', e.target.value)}
-                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
               >
                 <option value="All">All Programs</option>
                 {filterOptions.programs.map((program) => (
@@ -599,12 +535,12 @@ function PlacementSection({ user, isPublicView = false }) {
           )}
 
           {activeFields.includes('gender') && (
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Gender</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Gender</label>
               <select
+                className="filter-select"
                 value={currentFilters.gender}
                 onChange={(e) => handleFilterChange('gender', e.target.value)}
-                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
               >
                 <option value="All">All Genders</option>
                 {filterOptions.genders.map((gender) => (
@@ -615,12 +551,12 @@ function PlacementSection({ user, isPublicView = false }) {
           )}
 
           {activeFields.includes('branch') && !(isRestrictedUser && viewType === 'programWise') && (
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Branch</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Branch</label>
               <select
+                className="filter-select"
                 value={currentFilters.branch}
                 onChange={(e) => handleFilterChange('branch', e.target.value)}
-                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
               >
                 <option value="All">All Branches</option>
                 {filterOptions.branches.map((branch) => (
@@ -631,12 +567,12 @@ function PlacementSection({ user, isPublicView = false }) {
           )}
 
           {activeFields.includes('sector') && (
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Sector</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Sector</label>
               <select
+                className="filter-select"
                 value={currentFilters.sector}
                 onChange={(e) => handleFilterChange('sector', e.target.value)}
-                style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
               >
                 <option value="All">All Sectors</option>
                 {filterOptions.sectors.map((sector) => (
@@ -650,70 +586,50 @@ function PlacementSection({ user, isPublicView = false }) {
     </div>
   );
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
 
         {!isReadOnlyView && (
-          <button
-            className="page-back-btn"
-            onClick={() => navigate('/education')}
-          >
-            ← Back to Education
+          <button className="page-back-btn" onClick={() => navigate('/education')}>
+            &#8592; Back to Education
           </button>
         )}
 
         {!isReadOnlyView && (
           <div className="section-header">
             <div className="section-header-left">
-              <h1>Placements & Career Outcomes</h1>
+              <h1>Placements &amp; Career Outcomes</h1>
             </div>
 
             {!isReadOnlyView && isAdmin && (
               <div className="section-header-actions">
                 <button
                   className="page-upload-btn"
-                  onClick={() => {
-                    setActiveUploadTable('placement_summary');
-                    setIsUploadModalOpen(true);
-                  }}
+                  onClick={() => { setActiveUploadTable('placement_summary'); setIsUploadModalOpen(true); }}
                 >
-                  <span>📤</span> Upload Summary
+                  <span>&#128228;</span> Upload Summary
                 </button>
-
                 <button
                   className="page-upload-btn"
-                  onClick={() => {
-                    setActiveUploadTable('placement_companies');
-                    setIsUploadModalOpen(true);
-                  }}
+                  onClick={() => { setActiveUploadTable('placement_companies'); setIsUploadModalOpen(true); }}
                 >
-                  <span>📤</span> Upload Companies
+                  <span>&#128228;</span> Upload Companies
                 </button>
-
                 <button
                   className="page-upload-btn"
-                  onClick={() => {
-                    setActiveUploadTable('placement_packages');
-                    setIsUploadModalOpen(true);
-                  }}
+                  onClick={() => { setActiveUploadTable('placement_packages'); setIsUploadModalOpen(true); }}
                 >
-                  <span>📤</span> Upload Packages
+                  <span>&#128228;</span> Upload Packages
                 </button>
               </div>
             )}
           </div>
         )}
 
-        {error && (
-          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
-        {/* Summary Cards */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+        <div className="export-row">
           <ExportMenu
             elementId="placement-summary-cards-container"
             data={[summary]}
@@ -724,112 +640,91 @@ function PlacementSection({ user, isPublicView = false }) {
           />
         </div>
 
-        <div id="placement-summary-cards-container" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '24px',
-          marginBottom: '40px'
-        }}>
-          {/* Registered */}
-          <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(99,102,241,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Registered {summary.year && `(${summary.year})`}</h3>
+        <div id="placement-summary-cards-container" className="summary-cards-grid-5">
+          <div className="metric-card pls-metric-card--indigo">
+            <div className="metric-card-inner">
+              <div className="metric-card-icon-row">
+                <span className="metric-card-icon">&#127891;</span>
+                <h3 className="metric-card-label">Registered {summary.year && `(${summary.year})`}</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.registered)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Eligible students</span>
+              <div className="metric-card-value">{formatNumber(summary.registered)}</div>
+              <div className="metric-card-footer">
+                <span className="metric-card-dot" />
+                <span className="metric-card-subtitle">Eligible students</span>
               </div>
             </div>
           </div>
 
-          {/* Placed */}
-          <div style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(16,185,129,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>💼</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placed {summary.year && `(${summary.year})`}</h3>
+          <div className="metric-card pls-metric-card--green">
+            <div className="metric-card-inner">
+              <div className="metric-card-icon-row">
+                <span className="metric-card-icon">&#128188;</span>
+                <h3 className="metric-card-label">Placed {summary.year && `(${summary.year})`}</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatNumber(summary.placed)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successful outcomes</span>
+              <div className="metric-card-value">{formatNumber(summary.placed)}</div>
+              <div className="metric-card-footer">
+                <span className="metric-card-dot" />
+                <span className="metric-card-subtitle">Successful outcomes</span>
               </div>
             </div>
           </div>
 
-          {/* Placement % */}
-          <div style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 25px rgba(245,158,11,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>📈</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Placement % {summary.year && `(${summary.year})`}</h3>
+          <div className="metric-card pls-metric-card--amber">
+            <div className="metric-card-inner">
+              <div className="metric-card-icon-row">
+                <span className="metric-card-icon">&#128200;</span>
+                <h3 className="metric-card-label">Placement % {summary.year && `(${summary.year})`}</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{formatPercentage(summary.placement_percentage)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Success rate</span>
+              <div className="metric-card-value">{formatPercentage(summary.placement_percentage)}</div>
+              <div className="metric-card-footer">
+                <span className="metric-card-dot" />
+                <span className="metric-card-subtitle">Success rate</span>
               </div>
             </div>
           </div>
+
           {!isRestrictedUser && (
-            <>
-              {/* Highest Package */}
-              <div style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(168,85,247,0.2)', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>🏆</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Highest {summary.year && `(${summary.year})`}</span>
-                  </div>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.highest_package)}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Top package</span>
-                  </div>
+            <div className="metric-card pls-metric-card--violet">
+              <div className="metric-card-glow" />
+              <div className="metric-card-inner">
+                <div className="metric-card-icon-row">
+                  <span className="metric-card-icon">&#127942;</span>
+                  <span className="metric-card-label">Highest {summary.year && `(${summary.year})`}</span>
+                </div>
+                <div className="metric-card-value">{formatCurrency(summary.highest_package)}</div>
+                <div className="metric-card-footer">
+                  <span className="metric-card-dot" />
+                  <span className="metric-card-subtitle">Top package</span>
                 </div>
               </div>
-            </>
+            </div>
           )}
-          {/* Average Package */}
-          <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', borderRadius: '16px', padding: '20px', boxShadow: '0 10px 20px rgba(14,165,233,0.2)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px' }}>📈</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px', fontWeight: '500' }}>Average {summary.year && `(${summary.year})`}</span>
+
+          <div className="metric-card pls-metric-card--sky">
+            <div className="metric-card-glow" />
+            <div className="metric-card-inner">
+              <div className="metric-card-icon-row">
+                <span className="metric-card-icon">&#128200;</span>
+                <span className="metric-card-label">Average {summary.year && `(${summary.year})`}</span>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>{formatCurrency(summary.average_package)}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>Mean package</span>
+              <div className="metric-card-value">{formatCurrency(summary.average_package)}</div>
+              <div className="metric-card-footer">
+                <span className="metric-card-dot" />
+                <span className="metric-card-subtitle">Mean package</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Unified Filter + Chart Container ── */}
-        <div style={{
-          border: '1px solid #e2e8f0',
-          borderRadius: '14px',
-          padding: '24px',
-          backgroundColor: '#fff',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.06)'
-        }}>
-
+        <div className="chart-panel">
           {renderFilterPanel()}
 
-          {/* ── Chart Views ── */}
-
-          {/* Placement Trend — restricted to non-restricted users only */}
           {viewType === 'placementTrend' && !isRestrictedUser && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Placement Percentage Trend</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>
+                  <p className="chart-description">
                     Evolution of students registered vs placed and the resulting placement percentage.
                   </p>
                 </div>
@@ -845,30 +740,27 @@ function PlacementSection({ user, isPublicView = false }) {
 
               <div
                 id="placement-trend-container"
-                className={`chart-container ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}
+                className={`chart-container pls-chart-area ${!placementTrendChartData.length ? 'chart-has-empty' : ''}`}
               >
                 <div className={`section-empty-state ${placementTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div className="mode-toggle-row">
                   {['bar', 'trend'].map((mode) => (
-                    <button key={mode} onClick={() => setTrendChartMode(mode)} style={{
-                      padding: '6px 16px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', cursor: 'pointer', border: 'none',
-                      backgroundColor: trendChartMode === mode ? '#6366f1' : '#f1f5f9',
-                      color: trendChartMode === mode ? '#fff' : '#555'
-                    }}>{mode === 'bar' ? 'Bar' : 'Trend'}</button>
+                    <button
+                      key={mode}
+                      onClick={() => setTrendChartMode(mode)}
+                      className={`chart-toggle-btn${trendChartMode === mode ? ' plc-trend-active' : ''}`}
+                    >
+                      {mode === 'bar' ? 'Bar' : 'Trend'}
+                    </button>
                   ))}
                 </div>
 
-                {/* ── FIX: Bar chart and Line chart are now direct children of
-                    ResponsiveContainer — no extra <div> wrapper in between.
-                    The expand onClick is moved to the outer chart-container div. ── */}
                 {trendChartMode === 'bar' ? (
                   <div
                     className="clickable-chart"
-                    style={{ cursor: 'pointer' }}
                     onClick={() => setExpandedChart({
                       title: "Placement Trends",
                       content: (
@@ -923,31 +815,30 @@ function PlacementSection({ user, isPublicView = false }) {
                   </ResponsiveContainer>
                 )}
 
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div className="metric-value-sm" style={{ color: '#6366f1' }}>{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Registered</div>
+                <div className="stat-summary-box">
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-indigo">{placementTrendChartData.reduce((sum, item) => sum + item.registered, 0)}</div>
+                    <div className="stat-summary-label">Total Registered</div>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div className="metric-value-sm" style={{ color: '#22c55e' }}>{placementTrendChartData.reduce((sum, item) => sum + item.placed, 0)}</div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Total Placed</div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-green">{placementTrendChartData.reduce((sum, item) => sum + item.placed, 0)}</div>
+                    <div className="stat-summary-label">Total Placed</div>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div className="metric-value-sm" style={{ color: '#38bdf8' }}>{placementTrendChartData.length}</div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>Years Covered</div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-sky">{placementTrendChartData.length}</div>
+                    <div className="stat-summary-label">Years Covered</div>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Gender-wise */}
           {viewType === 'genderWise' && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="section-header-left">
                   <h2>Gender Breakdown</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Comparison of placement metrics across genders.</p>
+                  <p className="chart-description">Comparison of placement metrics across genders.</p>
                 </div>
                 <ExportMenu
                   elementId="placement-gender-container"
@@ -958,9 +849,9 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Gender-wise Placement Status"
                 />
               </div>
-              <div id="placement-gender-container"
-                className={`chart-container clickable-chart ${!genderBarData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}
+              <div
+                id="placement-gender-container"
+                className={`chart-container clickable-chart pls-chart-area ${!genderBarData.length ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Gender Breakdown",
                   content: (
@@ -1000,13 +891,13 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
+                <div className="stat-summary-box">
                   {genderBarData.map((item, index) => (
-                    <div key={item.gender} style={{ textAlign: 'center', minWidth: '120px' }}>
-                      <div style={{ color: GENDER_COLORS[index % GENDER_COLORS.length], fontWeight: 'bold', fontSize: '20px' }}>
+                    <div key={item.gender} className="stat-summary-item">
+                      <div className="metric-value-sm" style={{ color: GENDER_COLORS[index % GENDER_COLORS.length] }}>
                         {item.registered} / {item.placed}
                       </div>
-                      <div style={{ color: '#666', fontSize: '12px' }}>{item.gender} (Reg/Placed)</div>
+                      <div className="stat-summary-label">{item.gender} (Reg/Placed)</div>
                     </div>
                   ))}
                 </div>
@@ -1014,13 +905,12 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {/* Program-wise */}
           {viewType === 'programWise' && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="section-header-left">
                   <h2>Program-wise Status</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Placement performance across different academic programs.</p>
+                  <p className="chart-description">Placement performance across different academic programs.</p>
                 </div>
                 <ExportMenu
                   elementId="placement-program-container"
@@ -1031,9 +921,9 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Program-wise Placement Performance"
                 />
               </div>
-              <div id="placement-program-container"
-                className={`chart-container clickable-chart ${!programStatusChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}
+              <div
+                id="placement-program-container"
+                className={`chart-container clickable-chart pls-chart-area ${!programStatusChartData.length ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Program-wise Status",
                   content: (
@@ -1072,11 +962,11 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px' }}>
+                <div className="stat-summary-box">
                   {programStatusChartData.map((item) => (
-                    <div key={item.program} style={{ textAlign: 'center', minWidth: '80px' }}>
-                      <div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '18px' }}>{formatPercentage(item.percentage)}</div>
-                      <div style={{ color: '#666', fontSize: '12px' }}>{item.program}</div>
+                    <div key={item.program} className="stat-summary-item">
+                      <div className="metric-value-sm plc-color-indigo">{formatPercentage(item.percentage)}</div>
+                      <div className="stat-summary-label">{item.program}</div>
                     </div>
                   ))}
                 </div>
@@ -1084,13 +974,12 @@ function PlacementSection({ user, isPublicView = false }) {
             </div>
           )}
 
-          {/* Recruiters */}
           {viewType === 'recruiters' && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="section-header-left">
                   <h2>Recruiter Statistics</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Yearly trends of companies visiting and offers made.</p>
+                  <p className="chart-description">Yearly trends of companies visiting and offers made.</p>
                 </div>
                 <ExportMenu
                   elementId="placement-recruiters-container"
@@ -1101,9 +990,9 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Recruiter Statistics"
                 />
               </div>
-              <div id="placement-recruiters-container"
-                className={`chart-container clickable-chart ${!recruiterChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}
+              <div
+                id="placement-recruiters-container"
+                className={`chart-container clickable-chart pls-chart-area ${!recruiterChartData.length ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Recruiter Statistics",
                   content: (
@@ -1142,19 +1031,27 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#6366f1', fontWeight: 'bold', fontSize: '24px' }}>{recruiterChartData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Years Active</div></div>
+                <div className="stat-summary-box">
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-amber">{recruiterChartData.reduce((s, i) => s + i.companies, 0)}</div>
+                    <div className="stat-summary-label">Total Companies</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-sky">{recruiterChartData.reduce((s, i) => s + i.offers, 0)}</div>
+                    <div className="stat-summary-label">Total Offers</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-indigo">{recruiterChartData.length}</div>
+                    <div className="stat-summary-label">Years Active</div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Sector-wise */}
           {viewType === 'sectorWise' && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Sector-wise Company Split</h2>
                   <p className="chart-description">Distribution of visiting recruiters by industry sector (Top 5 sectors shown).</p>
@@ -1168,7 +1065,7 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Sector-wise Company Split"
                 />
               </div>
-              <div id="placement-sector-pie-container" className={`chart-container ${!sectorPieData.length ? 'chart-has-empty' : ''}`} style={{ position: 'relative' }}>
+              <div id="placement-sector-pie-container" className={`chart-container pls-chart-area--no-pad ${!sectorPieData.length ? 'chart-has-empty' : ''}`}>
                 <div className={`section-empty-state ${sectorPieData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
                 </div>
@@ -1191,22 +1088,30 @@ function PlacementSection({ user, isPublicView = false }) {
                     </ResponsiveContainer>
                   );
                 })()}
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Sectors</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((s, i) => s + i.companies, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Companies</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '24px' }}>{sectorPieData.reduce((s, i) => s + i.offers, 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
+                <div className="stat-summary-box">
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-dark-indigo">{sectorPieData.length}</div>
+                    <div className="stat-summary-label">Total Sectors</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-green">{sectorPieData.reduce((s, i) => s + i.companies, 0)}</div>
+                    <div className="stat-summary-label">Total Companies</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-orange">{sectorPieData.reduce((s, i) => s + i.offers, 0)}</div>
+                    <div className="stat-summary-label">Total Offers</div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Package Trend — restricted to non-restricted users only */}
           {viewType === 'packageTrend' && !isRestrictedUser && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="section-header-left">
                   <h2>Salary Package Trends</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Evolution of average, highest, and lowest salary packages.</p>
+                  <p className="chart-description">Evolution of average, highest, and lowest salary packages.</p>
                 </div>
                 <ExportMenu
                   elementId="placement-packages-container"
@@ -1217,9 +1122,9 @@ function PlacementSection({ user, isPublicView = false }) {
                   title="Salary Package Trends (LPA)"
                 />
               </div>
-              <div id="placement-packages-container"
-                className={`chart-container clickable-chart ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`}
-                style={{ position: 'relative', padding: '10px' }}
+              <div
+                id="placement-packages-container"
+                className={`chart-container clickable-chart pls-chart-area ${!packageTrendChartData.length ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Salary Package Trends",
                   content: (
@@ -1258,19 +1163,27 @@ function PlacementSection({ user, isPublicView = false }) {
                     </Line>
                   </LineChart>
                 </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#10b981', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.average_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Average</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.highest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Highest</div></div>
-                  <div style={{ textAlign: 'center' }}><div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '20px' }}>{formatCurrency(summary.lowest_package)}</div><div style={{ color: '#666', fontSize: '12px' }}>Overall Lowest</div></div>
+                <div className="stat-summary-box">
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-emerald">{formatCurrency(summary.average_package)}</div>
+                    <div className="stat-summary-label">Overall Average</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-blue">{formatCurrency(summary.highest_package)}</div>
+                    <div className="stat-summary-label">Overall Highest</div>
+                  </div>
+                  <div className="stat-summary-item">
+                    <div className="metric-value-sm plc-color-red">{formatCurrency(summary.lowest_package)}</div>
+                    <div className="stat-summary-label">Overall Lowest</div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Top Recruiters — restricted to non-restricted users only */}
           {viewType === 'topRecruiters' && !isRestrictedUser && (
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }}>
+            <div className="chart-section">
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Top Recruiters</h2>
                   <p className="chart-description">Highlights of visiting recruiters, their sectors, and offer volume.</p>
@@ -1287,69 +1200,63 @@ function PlacementSection({ user, isPublicView = false }) {
               </div>
               <div id="placement-top-recruiters-table">
                 {chartIsMobile ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="faculty-card-list">
                     {topRecruiters.map((row) => (
-                      <div key={`${row.year}-${row.company_name}`} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e0e0e0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <div key={`${row.year}-${row.company_name}`} className="faculty-card">
+                        <div className="recruiter-card-header">
                           <div>
-                            <div style={{ fontSize: '12px', color: '#666', fontWeight: '600', marginBottom: '4px' }}>{row.year}</div>
-                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a' }}>{row.company_name}</div>
+                            <div className="recruiter-card-year">{row.year}</div>
+                            <div className="recruiter-card-company">{row.company_name}</div>
                           </div>
-                          {row.sector && (
-                            <span style={{ backgroundColor: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                              {row.sector}
-                            </span>
-                          )}
+                          {row.sector && <span className="sector-badge">{row.sector}</span>}
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', paddingTop: '12px', borderTop: '1px dashed #eee' }}>
-                          <div>
-                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Offers</div>
-                            <div style={{ fontSize: '16px', fontWeight: '700', color: '#8b5cf6' }}>{formatNumber(row.offers)}</div>
+                        <div className="recruiter-card-stats">
+                          <div className="recruiter-card-stat">
+                            <div className="recruiter-stat-label">Offers</div>
+                            <div className="recruiter-stat-offers">{formatNumber(row.offers)}</div>
                           </div>
-                          <div>
-                            <div style={{ fontSize: '11px', color: '#666', marginBottom: '2px' }}>Hires</div>
-                            <div style={{ fontSize: '16px', fontWeight: '700', color: '#10b981' }}>{formatNumber(row.hires)}</div>
+                          <div className="recruiter-card-stat">
+                            <div className="recruiter-stat-label">Hires</div>
+                            <div className="recruiter-stat-hires">{formatNumber(row.hires)}</div>
                           </div>
                         </div>
                       </div>
                     ))}
                     {!topRecruiters.length && (
-                      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px dashed #d1d5db', color: '#6b7280' }}>
+                      <div className="recruiter-no-data">
                         No information available for the selected filter
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="table-responsive" style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-                    <table className="grievance-table" style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e0e0e0', minWidth: '600px' }}>
-                      <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                        <tr style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
-                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Year</th>
-                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Company</th>
-                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Sector</th>
-                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Offers</th>
-                          <th style={{ padding: '12px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#8b5cf6' }}>Hires</th>
+                  <div className="drilldown-table-wrap pls-tr-table-wrap">
+                    <table className="data-table pls-tr-table">
+                      <thead>
+                        <tr>
+                          <th>Year</th>
+                          <th>Company</th>
+                          <th>Sector</th>
+                          <th>Offers</th>
+                          <th>Hires</th>
                         </tr>
                       </thead>
                       <tbody>
                         {topRecruiters.map((row, index) => (
-                          <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                            <td style={{ padding: '10px', fontSize: '13px' }}>{row.year}</td>
-                            <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{row.company_name}</td>
-                            <td style={{ padding: '10px', fontSize: '13px' }}>
+                          <tr key={`${row.year}-${row.company_name}`} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                            <td>{row.year}</td>
+                            <td className="pls-td-strong">{row.company_name}</td>
+                            <td>
                               {row.sector && (
-                                <span style={{ backgroundColor: '#e0e7ff', color: '#3730a3', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>
-                                  {row.sector}
-                                </span>
+                                <span className="sector-badge sector-badge--indigo">{row.sector}</span>
                               )}
                             </td>
-                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.offers)}</td>
-                            <td style={{ padding: '10px', fontSize: '13px' }}>{formatNumber(row.hires)}</td>
+                            <td>{formatNumber(row.offers)}</td>
+                            <td>{formatNumber(row.hires)}</td>
                           </tr>
                         ))}
                         {!topRecruiters.length && (
                           <tr>
-                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                            <td colSpan={6} className="pls-td-empty">
                               No information available for the selected filter
                             </td>
                           </tr>
@@ -1359,38 +1266,39 @@ function PlacementSection({ user, isPublicView = false }) {
                   </div>
                 )}
                 {topRecruiters.length > 0 && (
-                  <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <div style={{ textAlign: 'center' }}><div style={{ color: '#8b5cf6', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.length}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Entries</div></div>
-                    <div style={{ textAlign: 'center' }}><div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '24px' }}>{new Set(topRecruiters.map(r => r.company_name)).size}</div><div style={{ color: '#666', fontSize: '12px' }}>Unique Companies</div></div>
-                    <div style={{ textAlign: 'center' }}><div style={{ color: '#22c55e', fontWeight: 'bold', fontSize: '24px' }}>{topRecruiters.reduce((s, r) => s + (r.offers || 0), 0)}</div><div style={{ color: '#666', fontSize: '12px' }}>Total Offers</div></div>
+                  <div className="stat-summary-box">
+                    <div className="stat-summary-item">
+                      <div className="metric-value-sm plc-color-violet">{topRecruiters.length}</div>
+                      <div className="stat-summary-label">Total Entries</div>
+                    </div>
+                    <div className="stat-summary-item">
+                      <div className="metric-value-sm plc-color-amber">{new Set(topRecruiters.map(r => r.company_name)).size}</div>
+                      <div className="stat-summary-label">Unique Companies</div>
+                    </div>
+                    <div className="stat-summary-item">
+                      <div className="metric-value-sm plc-color-green">{topRecruiters.reduce((s, r) => s + (r.offers || 0), 0)}</div>
+                      <div className="stat-summary-label">Total Offers</div>
+                    </div>
                   </div>
                 )}
               </div>
-
             </div>
           )}
 
-        </div>{/* ── end unified filter+chart container ── */}
+        </div>
 
-
-        <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(241, 229, 196, 1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div>
-              <span style={{ width: '100px', height: '100px' }}></span>
-              <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore Careere Development Center of IIT Palakkad</h3>
-              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Empowering students for successful careers through training, internships, and placements at Career Development Centre IIT Palakkad
-              </p>
-            </div>
+        <div className="cdc-promo">
+          <div>
+            <h3>Explore Career Development Center of IIT Palakkad</h3>
+            <p>Empowering students for successful careers through training, internships, and placements at Career Development Centre IIT Palakkad</p>
           </div>
           <a
             href="https://cdc.iitpkd.ac.in/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+            className="cdc-promo-link"
           >
-            Visit  → cdc.iitpkd.ac.in
+            Visit &#8594; cdc.iitpkd.ac.in
           </a>
         </div>
 
@@ -1411,7 +1319,6 @@ function PlacementSection({ user, isPublicView = false }) {
         {expandedChart?.content}
       </ChartExpandModal>
     </div>
-
   );
 }
 

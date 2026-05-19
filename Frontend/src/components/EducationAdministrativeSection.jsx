@@ -26,6 +26,7 @@ import '../DesignSystem.css';
 import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './AcademicSection.css';
+import './EducationAdministrativeSection.css';
 import { useNavigate } from 'react-router-dom';
 import ChartExpandModal from './ChartExpandModal';
 import ExportMenu from './ExportMenu';
@@ -212,7 +213,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
   const currentFilters = getCurrentFilters();
   const serializedFilters = JSON.stringify(currentFilters);
 
-  // Fetch filter options â€” cross-filtering: refetch when current filters change
+  // Fetch filter options â€" cross-filtering: refetch when current filters change
   useEffect(() => {
     let isMounted = true;
     const loadFilterOptions = async () => {
@@ -496,7 +497,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </button>
         )}
         {!isReadOnlyView && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div className="chart-title-row">
             <h1>Administrative Section - External Academic Engagement</h1>
             {!isReadOnlyView && isAdmin && (
               <button
@@ -516,187 +517,65 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
         )}
 
         {/* Radio Buttons - Outside and Centered */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '15px',
-          marginBottom: '30px',
-          flexWrap: 'wrap'
-        }}>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            backgroundColor: viewType === 'summary' ? '#667eea' : '#f8f9fa',
-            color: viewType === 'summary' ? 'white' : '#333',
-            borderRadius: '30px',
-            transition: 'all 0.3s ease',
-            border: viewType === 'summary' ? '2px solid #667eea' : '2px solid #e0e0e0'
-          }}>
-            <input
-              type="radio"
-              name="viewType"
-              value="summary"
-              checked={viewType === 'summary'}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: '#667eea', width: '16px', height: '16px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === 'summary' ? 'bold' : 'normal', fontSize: '14px' }}>
-              ðŸ“Š Summary Indicators
+        <div className="mode-toggle-row edu-adm-toggle-row">
+          <label className={`view-radio-label edu-adm-radio edu-adm-radio--summary${viewType === 'summary' ? ' active' : ''}`}>
+            <input type="radio" name="viewType" value="summary" checked={viewType === 'summary'} onChange={(e) => setViewType(e.target.value)} />
+            <span>
+              ðŸ"Š Summary Indicators
             </span>
           </label>
 
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            backgroundColor: viewType === 'department' ? '#22c55e' : '#f8f9fa',
-            color: viewType === 'department' ? 'white' : '#333',
-            borderRadius: '30px',
-            transition: 'all 0.3s ease',
-            border: viewType === 'department' ? '2px solid #22c55e' : '2px solid #e0e0e0'
-          }}>
-            <input
-              type="radio"
-              name="viewType"
-              value="department"
-              checked={viewType === 'department'}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: '#22c55e', width: '16px', height: '16px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === 'department' ? 'bold' : 'normal', fontSize: '14px' }}>
+          <label className={`view-radio-label edu-adm-radio edu-adm-radio--dept${viewType === 'department' ? ' active' : ''}`}>
+            <input type="radio" name="viewType" value="department" checked={viewType === 'department'} onChange={(e) => setViewType(e.target.value)} />
+            <span>
               ðŸ¢ Department-wise
             </span>
           </label>
 
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            backgroundColor: viewType === 'trend' ? '#f97316' : '#f8f9fa',
-            color: viewType === 'trend' ? 'white' : '#333',
-            borderRadius: '30px',
-            transition: 'all 0.3s ease',
-            border: viewType === 'trend' ? '2px solid #f97316' : '2px solid #e0e0e0'
-          }}>
-            <input
-              type="radio"
-              name="viewType"
-              value="trend"
-              checked={viewType === 'trend'}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: '#f97316', width: '16px', height: '16px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === 'trend' ? 'bold' : 'normal', fontSize: '14px' }}>
-              ðŸ“ˆ Year-wise Trends
+          <label className={`view-radio-label edu-adm-radio edu-adm-radio--trend${viewType === 'trend' ? ' active' : ''}`}>
+            <input type="radio" name="viewType" value="trend" checked={viewType === 'trend'} onChange={(e) => setViewType(e.target.value)} />
+            <span>
+              ðŸ"ˆ Year-wise Trends
             </span>
           </label>
 
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            backgroundColor: viewType === 'distribution' ? '#a855f7' : '#f8f9fa',
-            color: viewType === 'distribution' ? 'white' : '#333',
-            borderRadius: '30px',
-            transition: 'all 0.3s ease',
-            border: viewType === 'distribution' ? '2px solid #a855f7' : '2px solid #e0e0e0'
-          }}>
-            <input
-              type="radio"
-              name="viewType"
-              value="distribution"
-              checked={viewType === 'distribution'}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: '#a855f7', width: '16px', height: '16px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === 'distribution' ? 'bold' : 'normal', fontSize: '14px' }}>
+          <label className={`view-radio-label edu-adm-radio edu-adm-radio--dist${viewType === 'distribution' ? ' active' : ''}`}>
+            <input type="radio" name="viewType" value="distribution" checked={viewType === 'distribution'} onChange={(e) => setViewType(e.target.value)} />
+            <span>
               ðŸ¥§ Type Distribution
             </span>
           </label>
 
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            backgroundColor: viewType === 'details' ? '#0ea5e9' : '#f8f9fa',
-            color: viewType === 'details' ? 'white' : '#333',
-            borderRadius: '30px',
-            transition: 'all 0.3s ease',
-            border: viewType === 'details' ? '2px solid #0ea5e9' : '2px solid #e0e0e0'
-          }}>
-            <input
-              type="radio"
-              name="viewType"
-              value="details"
-              checked={viewType === 'details'}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: '#0ea5e9', width: '16px', height: '16px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === 'details' ? 'bold' : 'normal', fontSize: '14px' }}>
-              ðŸ“‹ Engagement Details
+          <label className={`view-radio-label edu-adm-radio edu-adm-radio--details${viewType === 'details' ? ' active' : ''}`}>
+            <input type="radio" name="viewType" value="details" checked={viewType === 'details'} onChange={(e) => setViewType(e.target.value)} />
+            <span>
+              ðŸ"‹ Engagement Details
             </span>
           </label>
 
 
         </div>
 
-        <div style={{ position: 'relative', minHeight: '400px' }}>
+        <div className="edu-adm-panels">
 
 
           {/* Summary Indicators View */}
-          <div style={{ display: viewType === 'summary' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
+          <div className={viewType !== 'summary' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
               {/* Filters for Summary View */}
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Summary View</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Summary View</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
 
-                <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={summaryFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -708,9 +587,9 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
-                  <h2 style={{ margin: 0 }}>Summary Indicators</h2>
+                  <h2>Summary Indicators</h2>
                   <p className="chart-description">
                     Total counts by faculty engagement type
                   </p>
@@ -726,140 +605,52 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
               </div>
 
               <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                <div id="education-summary-cards-container" style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '1.5rem',
-                  marginTop: '1.5rem'
-                }}>
+                <div id="education-summary-cards-container" className="engagement-cards-grid">
                   {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
                     <div
                       key={card.type}
+                      className="engagement-card"
                       onClick={() => setSelectedCardType(card.type)}
                       style={{
-                        backgroundColor: '#fff',
-                        padding: '1.5rem',
-                        borderRadius: '12px',
-                        border: selectedCardType === card.type
-                          ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}`
-                          : '1px solid var(--border-light)',
-                        boxShadow: selectedCardType === card.type
-                          ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20`
-                          : '0 4px 12px rgba(0, 0, 0, 0.08)',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        transform: selectedCardType === card.type ? 'translateY(-4px)' : 'none',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (selectedCardType !== card.type) {
-                          e.currentTarget.style.transform = 'translateY(-4px)';
-                          e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (selectedCardType !== card.type) {
-                          e.currentTarget.style.transform = 'none';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-                        }
+                        border: selectedCardType === card.type ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}` : undefined,
+                        boxShadow: selectedCardType === card.type ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20` : undefined,
+                        transform: selectedCardType === card.type ? 'translateY(-4px)' : undefined,
                       }}
                     >
-                      <div style={{
-                        fontSize: '0.9rem',
-                        color: 'var(--text-muted)',
-                        marginBottom: '0.5rem',
-                        fontWeight: '600'
-                      }}>
-                        {ENGAGEMENT_LABELS[card.type] || card.type}
-                      </div>
-                      <div style={{
-                        fontSize: '2rem',
-                        fontWeight: 'bold',
-                        color: ENGAGEMENT_COLORS[card.type] || '#667eea',
-                        marginBottom: '0.25rem'
-                      }}>
+                      <div className="engagement-card-label">{ENGAGEMENT_LABELS[card.type] || card.type}</div>
+                      <div className="engagement-card-value" style={{ color: ENGAGEMENT_COLORS[card.type] || '#667eea' }}>
                         {formatNumber(card.total)}
                       </div>
-                      <div style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--text-muted)'
-                      }}>
-                        Active: {formatNumber(card.active)}
-                      </div>
+                      <div className="engagement-card-subtitle">Active: {formatNumber(card.active)}</div>
                       {selectedCardType === card.type && (
-                        <div style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          height: '4px',
-                          backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea'
-                        }} />
+                        <div className="engagement-card-indicator" style={{ backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea' }} />
                       )}
                     </div>
                   ))}
                   {summaryCards.length === 0 && (
-                    <div style={{
-                      gridColumn: '1 / -1',
-                      textAlign: 'center',
-                      padding: '2rem',
-                      color: 'var(--text-muted)'
-                    }}>
-                      No data available
-                    </div>
+                    <div className="engagement-card-empty">No data available</div>
                   )}
                 </div>
               )}</>
 
               {summary.overall_total > 0 && (
-                <div style={{
-                  marginTop: '1.5rem',
-                  padding: '1rem',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  textAlign: 'center'
-                }}>
-                  <strong style={{ fontSize: '1.1rem' }}>
-                    Overall Total: {formatNumber(summary.overall_total)} |
-                    Active: {formatNumber(summary.overall_active)}
-                  </strong>
+                <div className="overall-total-box">
+                  <strong>Overall Total: {formatNumber(summary.overall_total)} | Active: {formatNumber(summary.overall_active)}</strong>
                 </div>
               )}
 
               {/* Drill-down details list */}
               {selectedCardType && (
-                <div style={{
-                  marginTop: '2rem',
-                  backgroundColor: '#fff',
-                  borderRadius: '12px',
-                  border: '1px solid var(--border-light)',
-                  padding: '1.5rem',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-                  animation: 'fadeIn 0.3s ease'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '1.5rem',
-                    paddingBottom: '1rem',
-                    borderBottom: '1px solid #eee'
-                  }}>
-                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
-                        backgroundColor: ENGAGEMENT_COLORS[selectedCardType] || '#667eea'
-                      }} />
+                <div className="drilldown-panel">
+                  <div className="drilldown-panel-header">
+                    <h3 className="edu-adm-drilldown-h3">
+                      <span className="engagement-dot" style={{ backgroundColor: ENGAGEMENT_COLORS[selectedCardType] || '#667eea' }} />
                       {ENGAGEMENT_LABELS[selectedCardType] || selectedCardType} Faculty List
-                      <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal', marginLeft: '10px' }}>
+                      <span className="edu-adm-year-label">
                         ({summaryFilters.year === 'All' ? 'All Years' : `Year: ${summaryFilters.year}`})
                       </span>
                     </h3>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div className="edu-adm-drilldown-actions">
                       <ExportMenu 
                         elementId="education-summary-drilldown-table"
                         data={cardDetailsData}
@@ -869,25 +660,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         title={`${ENGAGEMENT_LABELS[selectedCardType] || selectedCardType} Faculty List`}
                         exportType="table"
                       />
-                      <button
-                        onClick={() => setSelectedCardType(null)}
-                        style={{
-                          background: '#f1f5f9',
-                          border: 'none',
-                          borderRadius: '6px',
-                          padding: '6px 12px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          fontSize: '13px',
-                          fontWeight: '600',
-                          color: '#475569',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => { e.target.style.backgroundColor = '#e2e8f0'; }}
-                        onMouseLeave={(e) => { e.target.style.backgroundColor = '#f1f5f9'; }}
-                      >
+                      <button className="close-btn" onClick={() => setSelectedCardType(null)}>
                         âœ• Close
                       </button>
                     </div>
@@ -895,43 +668,39 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
                     <div id="education-summary-drilldown-table">
                       {chartIsMobile ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div className="faculty-card-list">
                           {cardDetailsData.length > 0 ? (
                             cardDetailsData.map((faculty, idx) => (
-                              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{faculty.faculty_name}</div>
-                                <div style={{ fontSize: '13px', color: '#64748b' }}>{faculty.department}</div>
+                              <div key={idx} className="faculty-card">
+                                <div className="faculty-card-name">{faculty.faculty_name}</div>
+                                <div className="faculty-card-dept">{faculty.department}</div>
                               </div>
                             ))
                           ) : (
-                            <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                              No faculty found for this category and year.
-                            </div>
+                            <div className="engagement-card-empty">No faculty found for this category and year.</div>
                           )}
                         </div>
                       ) : (
-                        <div style={{ overflowX: 'auto' }}>
+                        <div className="table-responsive">
                           <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                            <table className="data-table">
                               <thead>
-                                <tr style={{ backgroundColor: '#f8fafc' }}>
-                                  <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
-                                  <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
+                                <tr>
+                                  <th>FACULTY NAME</th>
+                                  <th>DEPARTMENT</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {cardDetailsData.length > 0 ? (
                                   cardDetailsData.map((faculty, idx) => (
-                                    <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }}>
-                                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{faculty.faculty_name}</td>
-                                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{faculty.department}</td>
+                                    <tr key={idx}>
+                                      <td>{faculty.faculty_name}</td>
+                                      <td>{faculty.department}</td>
                                     </tr>
                                   ))
                                 ) : (
                                   <tr>
-                                    <td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                                      No faculty found for this category and year.
-                                    </td>
+                                    <td colSpan="2">No faculty found for this category and year.</td>
                                   </tr>
                                 )}
                               </tbody>
@@ -947,47 +716,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
 
           {/* Department-wise Breakdown View */}
-          <div style={{ display: viewType === 'department' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
+          <div className={viewType !== 'department' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
               {/* Filters for Department View */}
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Department-wise View</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Department-wise View</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
 
-                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={departmentFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -997,11 +741,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <label className="shared-filter-label">Department</label>
                     <select
                       value={departmentFilters.department}
                       onChange={(e) => handleFilterChange('department', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Departments</option>
                       {filterOptions.departments.map((dept) => (
@@ -1011,11 +755,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <label className="shared-filter-label">Engagement Type</label>
                     <select
                       value={departmentFilters.engagement_type}
                       onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Types</option>
                       {filterOptions.engagement_types.map((type) => (
@@ -1027,7 +771,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Department-wise Breakdown</h2>
                   <p className="chart-description">
@@ -1044,9 +788,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-dept-chart-container" 
-                className={`bar-chart-container clickable-chart ${departmentChartData.length === 0 ? 'chart-has-empty' : ''}`} 
-                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+              <div id="education-dept-chart-container"
+                className={`bar-chart-container clickable-chart edu-adm-chart-lg ${departmentChartData.length === 0 ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Department-wise Breakdown",
                   content: (
@@ -1072,11 +815,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {departmentChartData.length === 0 && !loading.department && (
-                  <div className="no-data-overlay" style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
-                  }}>
+                  <div className="no-data-overlay">
                     <p>No department data available for the selected filters.</p>
                   </div>
                 )}
@@ -1125,47 +864,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
 
           {/* Year-wise Trends View */}
-          <div style={{ display: viewType === 'trend' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
+          <div className={viewType !== 'trend' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
               {/* Filters for Trend View */}
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Year-wise Trends</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Year-wise Trends</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
 
-                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={trendFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -1175,11 +889,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <label className="shared-filter-label">Department</label>
                     <select
                       value={trendFilters.department}
                       onChange={(e) => handleFilterChange('department', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Departments</option>
                       {filterOptions.departments.map((dept) => (
@@ -1189,11 +903,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <label className="shared-filter-label">Engagement Type</label>
                     <select
                       value={trendFilters.engagement_type}
                       onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Types</option>
                       {filterOptions.engagement_types.map((type) => (
@@ -1205,7 +919,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Year-wise Trends</h2>
                   <p className="chart-description">
@@ -1222,9 +936,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-trend-chart-container" 
-                className={`bar-chart-container clickable-chart ${yearTrendChartData.length === 0 ? 'chart-has-empty' : ''}`} 
-                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+              <div id="education-trend-chart-container"
+                className={`bar-chart-container clickable-chart edu-adm-chart-lg ${yearTrendChartData.length === 0 ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Year-wise Trends",
                   content: (
@@ -1250,11 +963,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {yearTrendChartData.length === 0 && !loading.trend && (
-                  <div className="no-data-overlay" style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
-                  }}>
+                  <div className="no-data-overlay">
                     <p>No trend data available for the selected filters.</p>
                   </div>
                 )}
@@ -1301,47 +1010,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
 
           {/* Type Distribution View */}
-          <div style={{ display: viewType === 'distribution' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
+          <div className={viewType !== 'distribution' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
               {/* Filters for Distribution View */}
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Type Distribution</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Type Distribution</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
 
-                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={distributionFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -1351,11 +1035,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <label className="shared-filter-label">Department</label>
                     <select
                       value={distributionFilters.department}
                       onChange={(e) => handleFilterChange('department', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Departments</option>
                       {filterOptions.departments.map((dept) => (
@@ -1365,11 +1049,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </div>
 
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <label className="shared-filter-label">Engagement Type</label>
                     <select
                       value={distributionFilters.engagement_type}
                       onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Types</option>
                       {filterOptions.engagement_types.map((type) => (
@@ -1381,7 +1065,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Type Distribution</h2>
                   <p className="chart-description">
@@ -1398,9 +1082,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div id="education-distribution-chart-container" 
-                className={`bar-chart-container clickable-chart ${pieChartData.length === 0 ? 'chart-has-empty' : ''}`} 
-                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+              <div id="education-distribution-chart-container"
+                className={`bar-chart-container clickable-chart edu-adm-chart-lg ${pieChartData.length === 0 ? 'chart-has-empty' : ''}`}
                 onClick={() => setExpandedChart({
                   title: "Type Distribution",
                   content: (
@@ -1419,11 +1102,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {pieChartData.length === 0 && !loading.distribution && (
-                  <div className="no-data-overlay" style={{
-                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                    backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, borderRadius: '12px'
-                  }}>
+                  <div className="no-data-overlay">
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
@@ -1460,45 +1139,20 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
 
           {/* Engagement Details View */}
-          <div style={{ display: viewType === 'details' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Engagement Details</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+          <div className={viewType !== 'details' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Engagement Details</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
-                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={detailsFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -1507,11 +1161,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <label className="shared-filter-label">Department</label>
                     <select
                       value={detailsFilters.department}
                       onChange={(e) => handleFilterChange('department', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Departments</option>
                       {filterOptions.departments.map((dept) => (
@@ -1520,11 +1174,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <label className="shared-filter-label">Engagement Type</label>
                     <select
                       value={detailsFilters.engagement_type}
                       onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Types</option>
                       {filterOptions.engagement_types.map((type) => (
@@ -1535,7 +1189,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>External Academic Engagement Details</h2>
                   <p className="chart-description">Detailed list of all external academic engagements</p>
@@ -1553,58 +1207,48 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
               <div id="education-engagement-details-table">
                 {chartIsMobile ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="faculty-card-list">
                     {engagementList.map((item, index) => (
-                      <div key={item.engagement_code || index} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                          <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{item.faculty_name || 'â€”'}</div>
-                          <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>#{index + 1}</span>
+                      <div key={item.engagement_code || index} className="faculty-card">
+                        <div className="edu-adm-mobile-top">
+                          <div className="faculty-card-name">{item.faculty_name || '—'}</div>
+                          <span className="sector-badge">#{index + 1}</span>
                         </div>
-                        <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
-                          <span style={{ fontWeight: '600', color: '#64748b' }}>Discipline:</span> {item.department || 'â€”'}
-                        </div>
-                        <div style={{ fontSize: '14px', color: '#475569', marginBottom: '12px' }}>
-                          <span style={{ fontWeight: '600', color: '#64748b' }}>Background:</span> {item.fc_bg_type || 'â€”'}
-                        </div>
-                        {item.remarks && (
-                          <div style={{ backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', fontSize: '13px', fontStyle: 'italic', color: '#64748b', borderLeft: '3px solid #cbd5e1' }}>
-                            {item.remarks}
-                          </div>
-                        )}
+                        <div className="engagement-card-detail"><strong>Discipline:</strong> {item.department || '—'}</div>
+                        <div className="engagement-card-detail"><strong>Background:</strong> {item.fc_bg_type || '—'}</div>
+                        {item.remarks && <div className="engagement-remarks">{item.remarks}</div>}
                       </div>
                     ))}
                     {engagementList.length === 0 && (
-                      <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                        No engagement data available for the selected filters.
-                      </div>
+                      <div className="engagement-card-empty">No engagement data available for the selected filters.</div>
                     )}
                   </div>
                 ) : (
-                  <div className="table-responsive accelerated-scroll" style={{ height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '8px', backgroundColor: '#fff', position: 'relative' }}>
+                  <div className="edu-details-wrap">
                     {engagementList.length === 0 && !loading.details && (
-                      <div className="no-data-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5 }}>
+                      <div className="no-data-overlay">
                         <p>No engagement data available for the selected filters.</p>
                       </div>
                     )}
                     <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                      <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
-                        <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                      <table className="data-table">
+                        <thead className="edu-adm-sticky-thead">
                           <tr>
-                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                            <th>Sl No</th>
+                            <th>Name</th>
+                            <th>Academia or Industry</th>
+                            <th>Discipline</th>
+                            <th>Remarks</th>
                           </tr>
                         </thead>
                         <tbody>
                           {engagementList.map((item, index) => (
-                            <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                              <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || 'â€”'}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || 'â€”'}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || 'â€”'}</td>
-                              <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || 'â€”'}</td>
+                            <tr key={item.engagement_code || index} style={{ backgroundColor: index % 2 !== 0 ? '#fafafa' : undefined }}>
+                              <td>{index + 1}</td>
+                              <td>{item.faculty_name || '—'}</td>
+                              <td>{item.fc_bg_type || '—'}</td>
+                              <td>{item.department || '—'}</td>
+                              <td>{item.remarks || '—'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1618,45 +1262,20 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
 
           {/* Honorary Professors View */}
-          <div style={{ display: viewType === 'honorary' ? 'block' : 'none' }}>
-            <div className="chart-section" style={{ marginTop: '0' }}>
-              <div className="filter-panel" style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '8px',
-                border: '1px solid #e9ecef'
-              }}>
-                <div className="filter-header" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '15px'
-                }}>
-                  <h4 style={{ margin: '0', color: '#333' }}>Filters for Honorary Professors</h4>
-                  <button
-                    className="clear-filters-btn"
-                    onClick={handleClearFilters}
-                    style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#dc3545',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Clear Filters
-                  </button>
+          <div className={viewType !== 'honorary' ? 'edu-adm-hidden' : ''}>
+            <div className="chart-section">
+              <div className="filter-panel">
+                <div className="filter-panel-header">
+                  <h4 className="shared-filter-panel-title">Filters for Honorary Professors</h4>
+                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
                 </div>
-                <div className="filter-grid filter-grid-3" style={{ gap: '12px' }}>
+                <div className="filter-grid">
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Year</label>
+                    <label className="shared-filter-label">Year</label>
                     <select
                       value={honoraryFilters.year}
                       onChange={(e) => handleFilterChange('year', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Years</option>
                       {filterOptions.years.map((year) => (
@@ -1665,11 +1284,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Department</label>
+                    <label className="shared-filter-label">Department</label>
                     <select
                       value={honoraryFilters.department}
                       onChange={(e) => handleFilterChange('department', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Departments</option>
                       {filterOptions.departments.map((dept) => (
@@ -1678,11 +1297,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#555' }}>Engagement Type</label>
+                    <label className="shared-filter-label">Engagement Type</label>
                     <select
                       value={honoraryFilters.engagement_type}
                       onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      style={{ width: '100%', padding: '6px', fontSize: '13px', borderRadius: '4px', border: '1px solid #ced4da' }}
+                      className="filter-select"
                     >
                       <option value="All">All Types</option>
                       {filterOptions.engagement_types.map((type) => (
@@ -1693,76 +1312,66 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div className="chart-header">
                   <h2>Honorary Professors</h2>
                   <p className="chart-description">List of honorary professors for the selected filters</p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <ExportMenu 
-                    elementId="education-honorary-professors-table"
-                    data={engagementList}
-                    headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
-                    keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
-                    filename="honorary_professors"
-                    title="Honorary Professors"
-                    exportType="table"
-                  />
-                </div>
+                <ExportMenu
+                  elementId="education-honorary-professors-table"
+                  data={engagementList}
+                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                  filename="honorary_professors"
+                  title="Honorary Professors"
+                  exportType="table"
+                />
               </div>
 
               {viewType === 'honorary' && (
                 <div id="education-honorary-professors-table">
                   {chartIsMobile ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="faculty-card-list">
                       {engagementList.map((item, index) => (
-                        <div key={item.engagement_code || index} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{item.faculty_name || 'â€”'}</div>
-                            <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>#{index + 1}</span>
+                        <div key={item.engagement_code || index} className="faculty-card">
+                          <div className="edu-adm-mobile-top">
+                            <div className="faculty-card-name">{item.faculty_name || '—'}</div>
+                            <span className="sector-badge">#{index + 1}</span>
                           </div>
-                          <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: '600', color: '#64748b' }}>Discipline:</span> {item.department || 'â€”'}
-                          </div>
-                          {item.remarks && (
-                            <div style={{ backgroundColor: '#f8fafc', padding: '10px', borderRadius: '8px', fontSize: '13px', fontStyle: 'italic', color: '#64748b', borderLeft: '3px solid #cbd5e1' }}>
-                              {item.remarks}
-                            </div>
-                          )}
+                          <div className="engagement-card-detail"><strong>Discipline:</strong> {item.department || '—'}</div>
+                          {item.remarks && <div className="engagement-remarks">{item.remarks}</div>}
                         </div>
                       ))}
                       {engagementList.length === 0 && (
-                        <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                          No honorary professor data available.
-                        </div>
+                        <div className="engagement-card-empty">No honorary professor data available.</div>
                       )}
                     </div>
                   ) : (
-                    <div className="table-responsive accelerated-scroll" style={{ height: '400px', maxHeight: '400px', overflowY: 'auto', overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '8px', backgroundColor: '#fff', position: 'relative' }}>
+                    <div className="edu-details-wrap">
                       {engagementList.length === 0 && !loading.details && (
-                        <div className="no-data-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5 }}>
+                        <div className="no-data-overlay">
                           <p>No honorary professor data available for the selected filters.</p>
                         </div>
                       )}
                       <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                        <table className="performance-table" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
-                          <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                        <table className="data-table">
+                          <thead className="edu-adm-sticky-thead">
                             <tr>
-                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Sl No</th>
-                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Name</th>
-                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Academia or Industry</th>
-                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Discipline</th>
-                              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>Remarks</th>
+                              <th>Sl No</th>
+                              <th>Name</th>
+                              <th>Academia or Industry</th>
+                              <th>Discipline</th>
+                              <th>Remarks</th>
                             </tr>
                           </thead>
                           <tbody>
                             {engagementList.map((item, index) => (
-                              <tr key={item.engagement_code || index} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: index % 2 === 0 ? '#fff' : '#fafafa' }}>
-                                <td style={{ padding: '10px', fontSize: '13px' }}>{index + 1}</td>
-                                <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || 'â€”'}</td>
-                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || 'â€”'}</td>
-                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || 'â€”'}</td>
-                                <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || 'â€”'}</td>
+                              <tr key={item.engagement_code || index} style={{ backgroundColor: index % 2 !== 0 ? '#fafafa' : undefined }}>
+                                <td>{index + 1}</td>
+                                <td>{item.faculty_name || '—'}</td>
+                                <td>{item.fc_bg_type || '—'}</td>
+                                <td>{item.department || '—'}</td>
+                                <td>{item.remarks || '—'}</td>
                               </tr>
                             ))}
                           </tbody>

@@ -40,9 +40,8 @@ function Research({ user }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="page-upload-btn"
+            className="page-upload-btn mb-space-4"
             onClick={() => setShowPublicView(false)}
-            style={{ marginBottom: '1rem' }}
           >
             ← Back to Admin View
           </button>
@@ -56,7 +55,7 @@ function Research({ user }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        <div style={{ marginBottom: '1rem' }}>
+        <div className="mb-space-4">
           <button
             className="page-upload-btn"
             onClick={() => setShowPublicView(true)}

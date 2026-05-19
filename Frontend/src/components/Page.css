@@ -1,211 +1,149 @@
+/* Page.css — page-level layout tokens and shared patterns
+   All :root tokens are defined in src/styles/global.css.
+   This file contains only page-specific overrides and shared layout patterns. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* Page entrance animation — gives a native app page-open feel */
+/* ── Page entrance animation ── */
 @keyframes pageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ================================================================ */
-/* FLUID TYPE SCALE — use these tokens throughout the project        */
-/* ================================================================ */
-:root {
-  --text-xs:   clamp(0.7rem,  1.8vw, 0.8rem);
-  --text-sm:   clamp(0.78rem, 2vw,   0.9rem);
-  --text-base: clamp(0.875rem,2.2vw, 1rem);
-  --text-lg:   clamp(1rem,    3vw,   1.15rem);
-  --text-xl:   clamp(1.1rem,  3.5vw, 1.4rem);
-  --text-2xl:  clamp(1.25rem, 4.5vw, 1.75rem);
-  --text-3xl:  clamp(1.5rem,  5.5vw, 2.25rem);
-
-  /* Spacing scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-
-  /* Touch targets */
-  --min-touch: 44px;
-}
-
-/* ================================================================ */
-/* PAGE CONTAINER — FROSTED GLASS                                   */
-/* ================================================================ */
+/* ================================================================
+   PAGE CONTAINER — frosted glass panel
+   ================================================================ */
 .page-content {
   position: relative;
-
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
-  padding: 2.5rem 3rem;
-
+  padding: clamp(1rem, 3vw, 2.5rem) clamp(0.75rem, 3vw, 3rem);
   background: linear-gradient(135deg,
-      rgba(255, 165, 0, 0.18),
-      rgba(255, 140, 0, 0.10));
-
+    rgba(255, 165, 0, 0.18),
+    rgba(255, 140, 0, 0.10));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 200, 120, 0.35);
-
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 20px rgba(255, 140, 0, 0.25);
-
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 140, 0, 0.20);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color: #1f1f1f;
+  color: var(--color-text);
   line-height: 1.6;
-
-  /* Native feel: page slides in on mount */
-  animation: pageSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-  -webkit-overflow-scrolling: touch;
-
-  /* IMPORTANT: do NOT use overflow: hidden/clip here —
-     it clips recharts SVG overflow and hides Y-axis labels */
   overflow: visible;
-  transition: box-shadow 0.3s ease;
+  animation: pageSlideIn 0.28s var(--ease-spring) both;
 }
 
-/* Header contrast layer */
+/* Header contrast gradient */
 .page-content::before {
-  content: "";
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
   height: 140px;
-
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.5),
-      rgba(0, 0, 0, 0));
-
-  border-radius: 14px 14px 0 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   pointer-events: none;
   z-index: 0;
 }
 
-/* ================================================================ */
-/* HEADINGS                                                         */
-/* ================================================================ */
+/* ── Headings ── */
 .page-content h1 {
-  font-size: clamp(1.25rem, 5vw, 2rem);
+  font-size: clamp(1.1rem, 5vw, 2rem);
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.3px;
-
   color: #ffffff;
-
-  text-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.5),
-    0 0 1px rgba(0, 0, 0, 0.6);
-
-  margin: 0 0 10px 0;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6);
+  margin: 0 0 var(--space-3) 0;
   position: relative;
   z-index: 1;
 }
 
-/* Subtitle */
 .page-content > p {
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 1rem;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: var(--space-4);
   position: relative;
   z-index: 1;
   font-size: var(--text-base);
 }
 
-/* ================================================================ */
-/* SECTION HEADER                                                   */
-/* ================================================================ */
-.section-title {
-  color: var(--text-main);
-  font-size: var(--text-2xl);
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
+/* ================================================================
+   SECTION HEADER ROW
+   ================================================================ */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: .5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border-light);
-  margin-top: 1rem;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  margin-top: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.section-title {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
 .section-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
-/* ================================================================ */
-/* BUTTONS                                                          */
-/* ================================================================ */
+/* ── Spacing utilities (used by page-container components) ── */
+.mb-space-4 { margin-bottom: var(--space-4); }
+.mb-space-8 { margin-bottom: var(--space-8); }
+.mt-space-8 { margin-top: var(--space-8); }
+
+/* ================================================================
+   PAGE NAV BUTTONS (Back / Upload) — alias for .page-action-btn
+   ================================================================ */
 .page-back-btn,
 .page-upload-btn {
   background: rgba(255, 248, 236, 0.65);
-  color: #000000;
-
-  border: 1.5px solid #F4F7FB;
-  border-radius: 8px;
-  padding: 7px 15px;
-  font-size: 0.8rem;
+  color: var(--color-text);
+  border: 1.5px solid rgba(244, 247, 251, 0.8);
+  border-radius: var(--radius-sm);
+  padding: clamp(0.35rem, 1vw, 0.5rem) clamp(0.625rem, 2vw, 0.9rem);
+  font-size: var(--text-xs);
   font-weight: 600;
-
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   cursor: pointer;
   white-space: nowrap;
-
-  min-height: 36px;
-  min-width: auto;
-
-  /* Touch-friendly: no 300ms delay */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-
   backdrop-filter: blur(10px) saturate(1.6);
   -webkit-backdrop-filter: blur(10px) saturate(1.6);
-
-  transition: all 0.25s ease;
+  font-family: inherit;
+  transition: var(--transition);
+  min-height: 36px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .page-back-btn:hover,
 .page-upload-btn:hover {
-  background: rgba(255, 248, 236, 0.72);
+  background: rgba(255, 248, 236, 0.82);
   transform: translateY(-1px);
-  color: #1a0800;
+  color: var(--color-text);
 }
 
-/* ================================================================ */
-/* FILTER PANEL                                                     */
-/* ================================================================ */
+/* ================================================================
+   FILTER PANEL
+   ================================================================ */
 .filter-panel {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: clamp(0.875rem, 2.5vw, 1.5rem);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   width: 100%;
   box-sizing: border-box;
 }
@@ -215,60 +153,229 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 15px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
+/* Filter grid — flex-based, replaces CSS grid */
 .filter-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.filter-grid > * {
+  flex: 1 1 min(180px, 100%);
 }
 
 .filter-select {
   width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  padding: 0.65rem 0.75rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: clamp(0.5rem, 1.5vw, 0.65rem) clamp(0.625rem, 2vw, 0.75rem);
   font-size: var(--text-sm);
+  font-family: inherit;
   appearance: none;
   touch-action: manipulation;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-/* ================================================================ */
-/* SUMMARY CARDS                                                    */
-/* ================================================================ */
+.filter-select:hover { border-color: var(--color-primary); }
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* ================================================================
+   SUMMARY / STAT CARDS
+   ================================================================ */
 .summary-card {
-  background-color: #fffaf0;
-  border-radius: 14px;
-  padding: 1.25rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fffaf0;
+  border-radius: var(--radius-lg);
+  padding: clamp(0.875rem, 2vw, 1.25rem);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
 }
 
-.summary-card:hover {
-  transform: translateY(-4px);
-}
+.summary-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
 .summary-card-label {
   color: #92400e;
   font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
 }
 
 .summary-card-value {
-  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-size: clamp(1.3rem, 4vw, 1.9rem);
   font-weight: 700;
-  color: #111;
+  color: var(--color-text);
 }
 
-/* ================================================================ */
-/* TABLE                                                            */
-/* ================================================================ */
+/* Stat card grid — flex replaces CSS grid */
+.stat-card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.625rem, 2vw, 0.875rem);
+  margin-bottom: var(--space-6);
+}
+
+.stat-card-grid > * {
+  flex: 1 1 min(150px, 100%);
+}
+
+.stat-card-label {
+  color: rgba(255,255,255,0.9);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.stat-card-value {
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+}
+
+/* ================================================================
+   VIEW TYPE BAR (Trend | Department | Directory)
+   ================================================================ */
+.view-type-bar {
+  display: flex;
+  gap: 3px;
+  background: #e9ecef;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+  touch-action: manipulation;
+}
+
+.view-type-btn {
+  flex: 1;
+  min-width: 56px;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-family: inherit;
+  transition: var(--transition);
+  text-align: center;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  color: #555;
+}
+
+.view-type-btn.active {
+  background: var(--color-bg-card);
+  color: var(--color-indigo);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+}
+
+/* ================================================================
+   CHART TOGGLE BUTTONS
+   ================================================================ */
+.chart-toggle-btn {
+  padding: 5px 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-family: inherit;
+  transition: var(--transition);
+  background: transparent;
+  color: #555;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chart-toggle-btn.active {
+  background: var(--color-bg-card);
+  color: var(--color-indigo);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.10);
+}
+
+/* ================================================================
+   FLEX UTILITY CLASSES (replaces .grid-2/3/4 which used CSS grid)
+   ================================================================ */
+.flex-row-2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+.flex-row-2 > * { flex: 1 1 calc(50% - var(--space-4)); min-width: min(280px, 100%); }
+
+.flex-row-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+.flex-row-3 > * { flex: 1 1 calc(33.33% - var(--space-4)); min-width: min(220px, 100%); }
+
+.flex-row-4 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+.flex-row-4 > * { flex: 1 1 calc(25% - var(--space-4)); min-width: min(180px, 100%); }
+
+/* shared-filter-grid — flex auto fill */
+.shared-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.shared-filter-grid > * { flex: 1 1 min(110px, 100%); }
+
+/* ================================================================
+   RECHARTS GLOBAL FIXES
+   ================================================================ */
+.recharts-responsive-container {
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+[class*="chart-card"],
+[class*="chart-container"],
+[class*="chart-wrapper"] {
+  max-width: 100%;
+}
+
+.compact-chart .recharts-responsive-container { overflow: hidden !important; }
+
+.recharts-surface text,
+.recharts-layer text {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+}
+
+/* Horizontal scroll wrapper for tables */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* ================================================================
+   GRIEVANCE TABLE (section-specific)
+   ================================================================ */
 .grievance-table-wrapper {
-  background-color: #fffaf0;
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: #fffaf0;
+  border-radius: var(--radius-lg);
+  padding: clamp(0.875rem, 2vw, 1.5rem);
 }
 
 .grievance-table-wrapper table {
@@ -277,334 +384,93 @@
 }
 
 .grievance-table-wrapper th {
-  background-color: #fff7ed;
-  padding: 0.75rem 0.85rem;
-  font-size: var(--text-sm);
+  background: #fff7ed;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.5rem, 2vw, 0.85rem);
+  font-size: var(--text-xs);
+  font-weight: 600;
 }
 
 .grievance-table-wrapper td {
-  padding: 0.65rem 0.85rem;
+  padding: clamp(0.4rem, 1.2vw, 0.65rem) clamp(0.5rem, 2vw, 0.85rem);
   font-size: var(--text-sm);
 }
 
-/* ================================================================ */
-/* VIEW TYPE BAR (Trend | Department | Directory pills)             */
-/* ================================================================ */
-.view-type-bar {
-  display: flex;
-  gap: 4px;
-  background: #e9ecef;
-  padding: 4px;
-  border-radius: 8px;
-  flex-wrap: wrap;
-  touch-action: manipulation;
-}
-
-.view-type-btn {
-  flex: 1;
-  min-width: 56px;
-  padding: 6px 6px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  transition: all 0.2s;
-  text-align: center;
-  white-space: nowrap;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ================================================================ */
-/* STAT CARD GRID                                                   */
-/* ================================================================ */
-.stat-card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.stat-card-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: var(--text-base);
-  font-weight: 500;
-  line-height: 1.2;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-.stat-card-value {
-  font-weight: bold;
-  color: white;
-  line-height: 1.1;
-  font-size: clamp(1.6rem, 5vw, 2.4rem);
-}
-
-/* ================================================================ */
-/* CHART TOGGLE BUTTONS                                             */
-/* ================================================================ */
-.chart-toggle-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s;
-  background-color: transparent;
-  color: #555;
-  box-shadow: none;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.chart-toggle-btn.active {
-  background-color: #fff;
-  color: #667eea;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* ================================================================ */
-/* RESPONSIVE GRID UTILITIES                                        */
-/* ================================================================ */
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); }
-.filter-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); }
-.filter-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
-
-/* ================================================================ */
-/* GLOBAL RECHARTS FIXES — prevent overflow issues                  */
-/* ================================================================ */
-
-/* Never clip recharts containers */
-.recharts-responsive-container {
-  max-width: 100% !important;
-  overflow: visible !important;
-}
-
-/* Chart wrappers must not clip SVG overflow */
-[class*="chart-card"],
-[class*="chart-container"],
-[class*="chart-wrapper"] {
-  max-width: 100%;
-  /* NO overflow: hidden here */
-}
-
-/* Compact-chart override — used in NIRF etc */
-.compact-chart .recharts-responsive-container {
-  overflow: hidden !important; /* only compact charts clip */
-}
-
-/* Recharts SVG text — prevent parent word-break from corrupting labels */
-.recharts-surface text,
-.recharts-layer text {
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  white-space: nowrap !important;
-}
-
-/* Tables — use wrapper scroll, not display:block which breaks sticky headers */
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-}
-
-/* ================================================================ */
-/* BREAKPOINT: 1024px TABLET                                        */
-/* ================================================================ */
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================================ */
 @media (max-width: 1024px) {
-  .page-content {
-    padding: 2rem 2rem;
-  }
-
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
-
-  .stat-card-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
-
-  .filter-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
+  .page-content { padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem); }
+  .stat-card-grid > * { flex: 1 1 min(140px, 100%); }
 }
 
-/* ================================================================ */
-/* BREAKPOINT: 768px PHABLET / LARGE MOBILE                        */
-/* ================================================================ */
 @media (max-width: 768px) {
   .page-content {
-    padding: 1.5rem 1rem;
-    border-radius: 10px;
-    /* keep overflow: visible — do not add hidden here */
+    padding: clamp(1rem, 2.5vw, 1.5rem) clamp(0.75rem, 2.5vw, 1rem);
+    border-radius: var(--radius-md);
   }
+  .page-content h1 { font-size: clamp(1.1rem, 5vw, 1.5rem); }
 
-  .page-content h1 {
-    font-size: clamp(1.1rem, 5vw, 1.5rem);
-  }
-
-  .filter-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  .section-title {
-    font-size: var(--text-xl);
-  }
-
-  .section-header {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding-bottom: 0.875rem;
-  }
-
-  .section-header-actions {
-    justify-content: flex-start;
-  }
+  .section-title { font-size: var(--text-xl); }
+  .section-header { padding-bottom: var(--space-4); }
+  .section-header-actions { justify-content: flex-start; }
 
   .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    min-height: 34px;
-  }
+  .page-upload-btn { font-size: 0.74rem; padding: 5px 11px; min-height: 32px; }
 
-  .stat-card-label { font-size: 13px; }
-  .stat-card-value { font-size: clamp(1.4rem, 4vw, 2rem); }
+  .stat-card-label { font-size: var(--text-xs); }
+  .stat-card-value { font-size: clamp(1.3rem, 4vw, 2rem); }
 
-  /* Shrink recharts legend text */
+  .filter-grid > * { flex: 1 1 calc(50% - var(--space-2)); }
+
   .recharts-legend-wrapper ul,
-  .recharts-legend-wrapper li {
-    font-size: 10px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .recharts-label-list text {
-    font-size: 8px !important;
-  }
+  .recharts-legend-wrapper li { font-size: 10px !important; }
+  .recharts-label-list text { font-size: 8px !important; }
 }
 
-/* ================================================================ */
-/* BREAKPOINT: 640px MOBILE                                         */
-/* ================================================================ */
 @media (max-width: 640px) {
-  .grid-2  { grid-template-columns: 1fr; }
-  .grid-3  { grid-template-columns: 1fr; }
-  .grid-4  { grid-template-columns: 1fr; }
-  .filter-grid-2 { grid-template-columns: 1fr; }
-  .filter-grid-3 { grid-template-columns: 1fr; }
+  .flex-row-2 > *,
+  .flex-row-3 > *,
+  .flex-row-4 > * { flex: 1 1 100%; }
 
-  .view-type-btn {
-    font-size: 10.5px;
-    padding: 4px 4px;
-    min-width: 44px;
-  }
+  .shared-filter-grid > * { flex: 1 1 calc(50% - var(--space-1)); }
 
-  /* Tighten recharts legend on narrower screens */
+  .view-type-btn { font-size: 10px; padding: 4px 5px; min-width: 44px; }
+
   .recharts-legend-wrapper ul,
-  .recharts-legend-wrapper li {
-    font-size: 9px !important;
-    gap: 6px !important;
-    white-space: nowrap !important;
-  }
+  .recharts-legend-wrapper li { font-size: 9px !important; gap: 6px !important; }
 }
 
-/* ================================================================ */
-/* BREAKPOINT: 480px SMALL PHONE                                    */
-/* ================================================================ */
 @media (max-width: 480px) {
-  .page-content {
-    padding: 1.1rem 0.75rem;
-    border-radius: 8px;
-  }
+  .page-content { padding: clamp(0.875rem, 2vw, 1rem) clamp(0.625rem, 2vw, 0.75rem); border-radius: var(--radius-sm); }
 
   .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.72rem;
-    padding: 5px 10px;
-    gap: 4px;
-    min-height: 32px;
-  }
+  .page-upload-btn { font-size: 0.7rem; padding: 4px 8px; gap: 3px; min-height: 30px; }
 
-  .section-title {
-    font-size: var(--text-lg);
-  }
+  .section-title { font-size: var(--text-lg); }
 
-  .filter-panel {
-    padding: 1rem;
-    margin-bottom: 1rem;
-  }
+  .filter-panel { padding: var(--space-4); margin-bottom: var(--space-4); }
+  .filter-grid > * { flex: 1 1 100%; }
+  .shared-filter-grid > * { flex: 1 1 100%; }
 
-  .filter-grid {
-    grid-template-columns: 1fr;
-    gap: 0.625rem;
-  }
+  .summary-card { padding: var(--space-4); }
 
-  .summary-card {
-    padding: 1rem;
-  }
+  .stat-card-grid { gap: var(--space-2); margin-bottom: var(--space-4); }
+  .stat-card-grid > * { flex: 1 1 calc(50% - var(--space-2)); }
+  .stat-card-label { font-size: var(--text-xs); }
+  .stat-card-value { font-size: clamp(1.2rem, 5vw, 1.75rem); }
 
-  .stat-card-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
+  .chart-toggle-btn { padding: 4px 8px; font-size: 11px; }
 
-  .stat-card-label { font-size: 12px; }
-  .stat-card-value { font-size: clamp(1.3rem, 5vw, 1.75rem); }
-
-  .chart-toggle-btn {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-
-  /* Tighten Y-axis tick width so bars have more room */
-  .recharts-yAxis {
-    width: 36px !important;
-  }
-
-  /* Shrink axis tick text */
-  .recharts-cartesian-axis-tick text {
-    font-size: 9px !important;
-  }
-
-  /* Shrink legend text */
-  .recharts-legend-wrapper {
-    font-size: 10px !important;
-  }
-
-  /* Hide value labels on bars — too cramped at this width */
-  .recharts-label-list {
-    display: none !important;
-  }
+  .recharts-yAxis { width: 36px !important; }
+  .recharts-cartesian-axis-tick text { font-size: 9px !important; }
+  .recharts-legend-wrapper { font-size: 10px !important; }
+  .recharts-label-list { display: none !important; }
 }
 
-/* ================================================================ */
-/* BREAKPOINT: 360px ULTRA SMALL                                    */
-/* ================================================================ */
 @media (max-width: 360px) {
-  .page-content {
-    padding: 0.875rem 0.625rem;
-  }
+  .page-content { padding: 0.75rem 0.5rem; }
+  .stat-card-grid > * { flex: 1 1 100%; }
+  .shared-filter-grid > * { flex: 1 1 100%; }
 
-  .page-back-btn,
-  .page-upload-btn {
-    font-size: 0.68rem;
-    padding: 4px 8px;
-    gap: 3px;
-  }
-
-  .stat-card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Prevent long text from overflowing card/container boundaries.
-     Only target block-level HTML content — never recharts SVG text. */
-  p, h1, h2, h3, h4, h5, h6, td, th, li {
-    overflow-wrap: break-word;
-  }
+  p, h1, h2, h3, h4, h5, h6, td, th, li { overflow-wrap: break-word; }
 }

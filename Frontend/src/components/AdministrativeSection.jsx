@@ -21,6 +21,7 @@ import CustomTooltip from './CustomTooltip';
 import { getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
+import './AdministrativeSection.css';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -60,11 +61,6 @@ const NUM_YEARS_OPTIONS = [
   { value: 10, label: 'Last 10 Yrs' },
 ];
 
-const CHART_BOX = {
-  backgroundColor: '#fff', borderRadius: '16px', padding: '24px',
-  boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
-};
-
 const ENGAGEMENT_COLORS = {
   Adjunct: '#667eea', Honorary: '#764ba2', Visiting: '#f093fb',
   FacultyFellow: '#4facfe', PoP: '#00f2fe'
@@ -94,6 +90,23 @@ const CURRENT_YEAR = String(new Date().getFullYear());
 // chartToggleStyle replaced by .chart-toggle-btn CSS class (see Page.css)
 
 // ── Sub-components ──────────────────────────────────────────────────────────
+
+// Reusable ordered legend for recharts Legend content prop
+function ChartLegendContent({ payload, orderedKeys, size = 'compact' }) {
+  const ordered = getOrderedLegend(payload, orderedKeys);
+  const large = size === 'large';
+  return (
+    <ul className="chart-legend-inline" style={{ gap: large ? '16px' : '12px', fontSize: large ? '13px' : '12px' }}>
+      {ordered.map(entry => (
+        <li key={entry.dataKey ?? entry.value} className="chart-legend-item">
+          <span className="chart-legend-swatch"
+            style={{ backgroundColor: entry.color, width: large ? 12 : 10, height: large ? 12 : 10, borderRadius: large ? 3 : 2 }} />
+          <span style={large ? { fontWeight: 600, color: '#334155' } : undefined}>{entry.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 const CustomXAxisTick = ({ x, y, payload }) => {
   const label = payload.value || '';
@@ -414,20 +427,6 @@ function AdministrativeSection({ user, isPublicView = false }) {
     [eduTypeDistribution]);
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SHARED STYLES
-  // ══════════════════════════════════════════════════════════════════════════
-
-  const labelStyle = {
-    fontSize: '12px', fontWeight: '600', color: '#555',
-    marginBottom: '4px', display: 'block'
-  };
-
-  const selectStyle = {
-    padding: '8px', fontSize: '13px', width: '100%',
-    borderRadius: '6px', border: '1px solid #ddd', outline: 'none'
-  };
-
-  // ══════════════════════════════════════════════════════════════════════════
   // LEGEND KEY ARRAYS (used by getOrderedLegend)
   // ══════════════════════════════════════════════════════════════════════════
 
@@ -446,38 +445,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
     const regYears = (filterOptions.years || []).map(String);
 
     return (
-      <div style={{
-        background: '#f8f9fa', border: '1px solid #e9ecef',
-        borderRadius: '12px', padding: '15px', marginBottom: '20px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-      }}>
+      <div className="filter-panel">
 
         {/* ── Header row ── */}
-        <div className="filter-panel-header" style={{ marginBottom: '12px' }}>
-          <span style={{ fontWeight: 700, fontSize: '14px', color: '#333' }}>Dashboard Filters</span>
-          <button
-            onClick={isEdu ? handleEduClearFilters : handleClearFilters}
-            style={{
-              padding: '6px 12px', fontSize: '12px', borderRadius: '6px', border: 'none',
-              cursor: 'pointer', backgroundColor: '#ef4444', color: '#fff', fontWeight: '500'
-            }}
-          >
+        <div className="filter-panel-header">
+          <span className="shared-filter-panel-title">Dashboard Filters</span>
+          <button className="btn-danger" onClick={isEdu ? handleEduClearFilters : handleClearFilters}>
             Clear All Filters
           </button>
         </div>
 
         {/* ── Section Toggle ── */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <div className="mode-toggle-row">
           {[
             { key: 'regular', label: '👥 Regular Employees', color: '#667eea' },
             { key: 'education', label: '🎓 Non-Regular Faculty', color: '#22c55e' },
           ].map(({ key, label, color }) => (
             <button
               key={key}
+              className="section-toggle-btn"
               onClick={() => setSection(key)}
               style={{
-                padding: '10px 22px', borderRadius: '10px', border: 'none',
-                cursor: 'pointer', fontSize: '13px', fontWeight: '600', transition: 'all 0.2s',
                 backgroundColor: section === key ? color : '#f1f5f9',
                 color: section === key ? 'white' : '#475569',
                 boxShadow: section === key ? `0 4px 12px ${color}40` : 'none',
@@ -489,21 +477,17 @@ function AdministrativeSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── View-type pills ── */}
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '6px', display: 'block' }}>
-            View Type
-          </label>
-          <div style={{ display: 'flex', gap: '6px', background: '#e9ecef', padding: '6px', borderRadius: '8px', flexWrap: 'wrap' }}>
+        <div className="shared-filter-item adm-filter-view-item">
+          <label className="shared-filter-label">View Type</label>
+          <div className="view-type-bar">
             {isEdu
               ? EDU_VIEWS.filter(view => !(view.value === 'details' && (typeof user === 'undefined' || user?.role_id === 0)))
                 .map(({ value, label, color }) => (
                   <button
                     key={value}
+                    className="view-type-btn"
                     onClick={() => setEduView(value)}
                     style={{
-                      flex: 1, padding: '6px 10px', border: 'none', borderRadius: '6px',
-                      cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
-                      whiteSpace: 'nowrap',
                       backgroundColor: eduView === value ? color : 'transparent',
                       color: eduView === value ? 'white' : '#475569',
                     }}
@@ -514,13 +498,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
               : REGULAR_VIEWS.map(({ value, label, icon }) => (
                 <button
                   key={value}
+                  className={`view-type-btn${activeView === value ? ' active' : ''}`}
                   onClick={() => { setRegError(null); setActiveView(value); }}
-                  style={{
-                    padding: '6px 10px', border: 'none', borderRadius: '6px',
-                    cursor: 'pointer', fontSize: '12px', fontWeight: '600',
-                    backgroundColor: activeView === value ? '#667eea' : 'transparent',
-                    color: activeView === value ? 'white' : '#475569',
-                  }}
                 >
                   {icon} {label}
                 </button>
@@ -530,14 +509,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
         </div>
 
         {/* ── Dimension filters ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+        <div className="filter-grid">
 
           {/* ══ REGULAR filters ══ */}
 
           {!isEdu && activeView === 'yearwise' && (
-            <div>
-              <label style={labelStyle}>Year</label>
-              <select value={regYearYW} onChange={e => setRegYearYW(e.target.value)} style={selectStyle}>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Year</label>
+              <select value={regYearYW} onChange={e => setRegYearYW(e.target.value)} className="filter-select">
                 <option value="All">All Years</option>
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -545,28 +524,28 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && activeView === 'department' && (
-            <div>
-              <label style={labelStyle}>Year</label>
-              <select value={regYearFD} onChange={e => setRegYearFD(e.target.value)} style={selectStyle}>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Year</label>
+              <select value={regYearFD} onChange={e => setRegYearFD(e.target.value)} className="filter-select">
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           )}
 
           {!isEdu && activeView === 'gender' && (
-            <div>
-              <label style={labelStyle}>Year</label>
-              <select value={regYearGR} onChange={e => setRegYearGR(e.target.value)} style={selectStyle}>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Year</label>
+              <select value={regYearGR} onChange={e => setRegYearGR(e.target.value)} className="filter-select">
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           )}
 
           {!isEdu && ['yearwise', 'gender'].includes(activeView) && (
-            <div>
-              <label style={labelStyle}>Employee Type</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Employee Type</label>
               <select value={filters.emp_type || 'All'}
-                onChange={(e) => handleFilterChange('emp_type', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('emp_type', e.target.value)} className="filter-select">
                 <option value="All">All</option>
                 {filterOptions.emp_type?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
@@ -574,10 +553,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div>
-              <label style={labelStyle}>Department</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Department</label>
               <select value={filters.department || 'All'}
-                onChange={(e) => handleFilterChange('department', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('department', e.target.value)} className="filter-select">
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.department : filterOptions.department)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -587,10 +566,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div>
-              <label style={labelStyle}>Designation</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Designation</label>
               <select value={filters.designation || 'All'}
-                onChange={(e) => handleFilterChange('designation', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('designation', e.target.value)} className="filter-select">
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.designation : filterOptions.designation)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -600,10 +579,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department'].includes(activeView) && (
-            <div>
-              <label style={labelStyle}>Gender</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Gender</label>
               <select value={filters.gender || 'All'}
-                onChange={(e) => handleFilterChange('gender', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('gender', e.target.value)} className="filter-select">
                 <option value="All">All</option>
                 {filterOptions.gender?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
@@ -611,10 +590,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div>
-              <label style={labelStyle}>Group</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Group</label>
               <select value={filters.group_name || 'All'}
-                onChange={(e) => handleFilterChange('group_name', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('group_name', e.target.value)} className="filter-select">
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.group_name : filterOptions.group_name)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -624,10 +603,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && activeView === 'yearwise' && (
-            <div>
-              <label style={labelStyle}>No. of Years</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">No. of Years</label>
               <select value={filters.num_years}
-                onChange={(e) => handleFilterChange('num_years', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleFilterChange('num_years', e.target.value)} className="filter-select">
                 {NUM_YEARS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
@@ -636,10 +615,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ══ EDUCATION filters ══ */}
 
           {isEdu && eduView !== 'trend' && (
-            <div>
-              <label style={labelStyle}>Year</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Year</label>
               <select value={eduFilters.year}
-                onChange={(e) => handleEduFilterChange('year', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleEduFilterChange('year', e.target.value)} className="filter-select">
                 {(!isReadOnlyView || eduView === 'distribution') && <option value="All">All Years</option>}
                 {eduFilterOptions.years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -647,20 +626,20 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {isEdu && eduView === 'trend' && (
-            <div>
-              <label style={labelStyle}>No. of Years</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">No. of Years</label>
               <select value={eduTrendNumYears}
-                onChange={(e) => setEduTrendNumYears(Number(e.target.value))} style={selectStyle}>
+                onChange={(e) => setEduTrendNumYears(Number(e.target.value))} className="filter-select">
                 {NUM_YEARS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           )}
 
           {isEdu && eduView !== 'trend' && (
-            <div>
-              <label style={labelStyle}>Department</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Department</label>
               <select value={eduFilters.department}
-                onChange={(e) => handleEduFilterChange('department', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleEduFilterChange('department', e.target.value)} className="filter-select">
                 <option value="All">All Departments</option>
                 {eduFilterOptions.departments.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
@@ -668,10 +647,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {isEdu && eduView !== 'distribution' && (
-            <div>
-              <label style={labelStyle}>Engagement Type</label>
+            <div className="shared-filter-item">
+              <label className="shared-filter-label">Engagement Type</label>
               <select value={eduFilters.engagement_type}
-                onChange={(e) => handleEduFilterChange('engagement_type', e.target.value)} style={selectStyle}>
+                onChange={(e) => handleEduFilterChange('engagement_type', e.target.value)} className="filter-select">
                 <option value="All">All Types</option>
                 {eduFilterOptions.engagement_types.map(t => (
                   <option key={t} value={t}>{ENGAGEMENT_LABELS[t] || t}</option>
@@ -692,7 +671,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
     if (section === 'regular') {
       return (
         <>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <div className="export-row">
             <ExportMenu
               elementId="admin-summary-cards-container"
               data={[{
@@ -707,30 +686,22 @@ function AdministrativeSection({ user, isPublicView = false }) {
               title="Employee Summary"
             />
           </div>
-          <div id="admin-summary-cards-container" className="grid-4" style={{ gap: '20px', marginBottom: '30px' }}>
+          <div id="admin-summary-cards-container" className="summary-cards-grid-4">
             {/* Year picker card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(102,126,234,0.3)',
-              position: 'relative', overflow: 'hidden'
-            }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
-                  <span style={{ color: 'white', fontSize: '16px', fontWeight: '600' }}>Filter by Year</span>
+            <div className="metric-card adm-metric-card--purple">
+              <div className="metric-card-glow" />
+              <div className="metric-card-inner">
+                <div className="metric-card-icon-row adm-metric-icon-row--mb">
+                  <span className="metric-card-icon">📅</span>
+                  <span className="metric-card-label adm-metric-label--lg">Filter by Year</span>
                 </div>
-                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} style={{
-                  width: '100%', padding: '10px 12px', borderRadius: '10px',
-                  border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.15)',
-                  color: 'white', fontSize: '14px', fontWeight: '500', cursor: 'pointer', outline: 'none'
-                }}>
-                  <option value="All" style={{ color: '#333', background: '#fff' }}>All Years</option>
+                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="metric-card-filter-select">
+                  <option value="All">All Years</option>
                   {(filterOptions.years || []).map(yr => (
-                    <option key={yr} value={String(yr)} style={{ color: '#333', background: '#fff' }}>{yr}</option>
+                    <option key={yr} value={String(yr)}>{yr}</option>
                   ))}
                 </select>
-                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginTop: '10px', marginBottom: 0 }}>Focus on a specific year</p>
+                <p className="metric-card-subtitle adm-metric-subtitle--mt">Focus on a specific year</p>
               </div>
             </div>
 
@@ -743,17 +714,17 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 ? data.reduce((s, r) => s + (r.Total || 0), 0)
                 : (data.find(r => String(r.year) === selectedYear)?.Total || 0);
               return (
-                <div key={label} style={{ background: grad, borderRadius: '16px', padding: '24px', boxShadow: `0 10px 20px ${shadow}`, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                  <div style={{ position: 'relative', zIndex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>{icon}</span>
-                      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>{label}</span>
+                <div key={label} className="metric-card" style={{ background: grad, boxShadow: `0 10px 20px ${shadow}` }}>
+                  <div className="metric-card-glow" />
+                  <div className="metric-card-inner">
+                    <div className="metric-card-icon-row">
+                      <span className="metric-card-icon">{icon}</span>
+                      <span className="metric-card-label">{label}</span>
                     </div>
-                    <div className="stat-card-value" style={{ marginBottom: '8px' }}>{data.length === 0 ? '—' : val}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
+                    <div className="metric-card-value">{data.length === 0 ? '—' : val}</div>
+                    <div className="metric-card-footer">
+                      <span className="metric-card-dot" />
+                      <span className="metric-card-subtitle">
                         {selectedYear === 'All' ? 'Sum across all years' : `In year ${selectedYear}`}
                       </span>
                     </div>
@@ -774,16 +745,16 @@ function AdministrativeSection({ user, isPublicView = false }) {
     const isAllSelected = selectedCardType === '__all__';
 
     const DrilldownTable = ({ typeLabel, typeColor, data, exportId, exportFilename, exportTitle }) => (
-      <div className="chart-section" style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #eee', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="chart-section adm-dt-section">
+        <div className="chart-title-row adm-dt-title-row">
+          <h3 className="adm-dt-h3">
             <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
             {typeLabel} Faculty List
-            <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
+            <span className="adm-dt-year-label">
               ({eduFilters.year === 'All' ? 'All Years' : `Year: ${eduFilters.year}`})
             </span>
           </h3>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div className="mode-toggle-row adm-toggle-row--no-mb">
             <ExportMenu
               elementId={exportId}
               data={data}
@@ -793,46 +764,43 @@ function AdministrativeSection({ user, isPublicView = false }) {
               title={exportTitle}
               exportType="table"
             />
-            <button onClick={() => setSelectedCardType(null)} style={{
-              background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 12px',
-              cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#475569'
-            }}>✕ Close</button>
+            <button className="page-back-btn" onClick={() => setSelectedCardType(null)}>✕ Close</button>
           </div>
         </div>
         <div id={exportId}>
           {chartIsMobile ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="faculty-card-list">
               {data.length > 0 ? data.map((f, i) => (
-                <div key={i} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{f.faculty_name}</div>
-                  <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{f.department}</div>
-                  <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                <div key={i} className="faculty-card">
+                  <div className="faculty-card-name">{f.faculty_name}</div>
+                  <div className="faculty-card-dept">{f.department}</div>
+                  <span className="faculty-badge">
                     {ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}
                   </span>
                 </div>
               )) : (
-                <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No faculty found.</div>
+                <div className="no-data">No faculty found.</div>
               )}
             </div>
           ) : (
-            <div style={{ overflowX: 'auto', maxHeight: '400px', overflowY: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ position: 'sticky', top: 0, zIndex: 2, backgroundColor: '#f8fafc' }}>
+            <div className="drilldown-table-wrap">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>FACULTY NAME</th>
-                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>DEPARTMENT</th>
-                    <th style={{ padding: '12px 16px', borderBottom: '2px solid #edf2f7', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>ENGAGEMENT TYPE</th>
+                    <th>FACULTY NAME</th>
+                    <th>DEPARTMENT</th>
+                    <th>ENGAGEMENT TYPE</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.length > 0 ? data.map((f, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: '500', color: '#1e293b' }}>{f.faculty_name}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{f.department}</td>
-                      <td style={{ padding: '12px 16px', fontSize: '14px', color: '#475569' }}>{ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}</td>
+                    <tr key={i}>
+                      <td className="adm-td-name">{f.faculty_name}</td>
+                      <td>{f.department}</td>
+                      <td>{ENGAGEMENT_LABELS[f.engagement_type] || f.engagement_type || '—'}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No faculty found.</td></tr>
+                    <tr><td colSpan="3" className="no-data">No faculty found.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -845,7 +813,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
     return (
       <>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+        <div className="export-row">
           <ExportMenu
             elementId="nonreg-summary-cards-container"
             data={eduSummaryCards.filter(c => c.type !== 'FacultyFellow')}
@@ -855,45 +823,28 @@ function AdministrativeSection({ user, isPublicView = false }) {
             title="Non-Regular Faculty Summary"
           />
         </div>
-        <div
-          id="nonreg-summary-cards-container"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${visibleCards.length + 1}, 1fr)`,
-            gap: '20px',
-            marginBottom: '30px'
-          }}
-        >
+        <div id="nonreg-summary-cards-container" className="summary-cards-grid-5">
           {/* Total Non-Regular card */}
           <div
+            className={`metric-card adm-metric-card--purple adm-selectable-card${isAllSelected ? ' adm-selectable-card--selected' : ''}`}
             onClick={() => setSelectedCardType(isAllSelected ? null : '__all__')}
-            style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '16px', padding: '24px',
-              boxShadow: '0 10px 20px rgba(102,126,234,0.3)',
-              position: 'relative', overflow: 'hidden',
-              cursor: 'pointer',
-              outline: isAllSelected ? '3px solid white' : 'none',
-              transition: 'transform 0.15s, box-shadow 0.15s',
-              transform: isAllSelected ? 'translateY(-4px)' : 'none',
-            }}
           >
-            <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🎓</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Non-Regular</span>
+            <div className="metric-card-glow" />
+            <div className="metric-card-inner">
+              <div className="metric-card-icon-row">
+                <span className="metric-card-icon">🎓</span>
+                <span className="metric-card-label">Total Non-Regular</span>
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
+              <div className="metric-card-value">
                 {eduSummary.overall_active > 0 ? formatNumber(eduSummary.overall_active) : '—'}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active faculty</span>
+              <div className="metric-card-footer">
+                <span className="metric-card-dot" />
+                <span className="metric-card-subtitle">Active faculty</span>
               </div>
               {isAllSelected && (
-                <div style={{ marginTop: '8px', fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>
-                  ▼ Showing details below
+                <div className="adm-selected-hint">
+                  &#9660; Showing details below
                 </div>
               )}
             </div>
@@ -906,34 +857,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
             return (
               <div
                 key={type}
+                className={`metric-card adm-selectable-card${isSelected ? ' adm-selectable-card--selected' : ''}`}
                 onClick={() => setSelectedCardType(isSelected ? null : type)}
                 style={{
                   background: grad,
-                  borderRadius: '16px', padding: '24px',
                   boxShadow: `0 10px 20px ${shadow}`,
-                  position: 'relative', overflow: 'hidden',
-                  cursor: 'pointer',
-                  outline: isSelected ? '3px solid white' : 'none',
-                  transition: 'transform 0.15s, box-shadow 0.15s',
-                  transform: isSelected ? 'translateY(-4px)' : 'none',
                 }}
               >
-                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>{icon}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>{label}</span>
+                <div className="metric-card-glow" />
+                <div className="metric-card-inner">
+                  <div className="metric-card-icon-row">
+                    <span className="metric-card-icon">{icon}</span>
+                    <span className="metric-card-label">{label}</span>
                   </div>
-                  <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                    {formatNumber(card.active)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                    <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active faculty</span>
+                  <div className="metric-card-value">{formatNumber(card.active)}</div>
+                  <div className="metric-card-footer">
+                    <span className="metric-card-dot" />
+                    <span className="metric-card-subtitle">Active faculty</span>
                   </div>
                   {isSelected && (
-                    <div style={{ marginTop: '8px', fontSize: '11px', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>
-                      ▼ Showing details below
+                    <div className="adm-selected-hint">
+                      &#9660; Showing details below
                     </div>
                   )}
                 </div>
@@ -1033,9 +977,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
         )}
 
         {(regError || eduError) && (
-          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>
-            {regError || eduError}
-          </div>
+          <div className="error-message">{regError || eduError}</div>
         )}
 
         {renderSummaryCards()}
@@ -1047,7 +989,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Yearwise Strength ── */}
           {section === 'regular' && activeView === 'yearwise' && (
             <>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
+              <div className="mode-toggle-row adm-toggle-bar">
                 {['Bar', 'Trend'].map(mode => (
                   <button key={mode} type="button" onClick={() => setYearwiseChartType(mode)}
                     className={`chart-toggle-btn${yearwiseChartType === mode ? ' active' : ''}`}>
@@ -1055,19 +997,17 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 5px 0', color: '#1a1a1a', fontSize: '24px' }}>Year-wise Employee Strength</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Total employees and gender-wise breakdown year over year.</p>
+                  <h2 className="adm-chart-h2">Year-wise Employee Strength</h2>
+                  <p className="chart-description">Total employees and gender-wise breakdown year over year.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div className="mode-toggle-row adm-toggle-row--no-mb">
                   {SERIES_META.map(({ key, color, label }) => (
-                    <button key={key} type="button" onClick={() => toggleSeries(key)} style={{
-                      padding: '6px 12px', border: 'none', borderRadius: '20px', cursor: 'pointer',
-                      fontSize: '12px', fontWeight: '500', transition: 'all 0.2s',
-                      backgroundColor: visibleSeries[key] ? color : '#f0f0f0',
-                      color: visibleSeries[key] ? 'white' : '#666'
-                    }}>{label}</button>
+                    <button key={key} type="button" className="series-toggle-btn" onClick={() => toggleSeries(key)}
+                      style={{ backgroundColor: visibleSeries[key] ? color : '#f0f0f0', color: visibleSeries[key] ? 'white' : '#666' }}>
+                      {label}
+                    </button>
                   ))}
                   <ExportMenu
                     elementId="admin-yearwise-chart-container"
@@ -1079,11 +1019,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   />
                 </div>
               </div>
-              <div id="admin-yearwise-chart-container" style={{ position: 'relative' }}>
+              <div id="admin-yearwise-chart-container" className="state-dist-wrap">
                 {yearwiseData.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-                    <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-                    <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No employee records match the current filters.</p>
+                  <div className="no-data-overlay">
+                    <span className="no-data-overlay-icon">📊</span>
+                    <p className="no-data-overlay-text">No employee records match the current filters.</p>
                   </div>
                 )}
 
@@ -1099,19 +1039,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} content={(props) => {
-                            const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
-                            return (
-                              <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
-                                {ordered.map(entry => (
-                                  <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
-                                    <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            );
-                          }} />
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
+                            content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Bar key={key} dataKey={key} name={label} fill={color} radius={[6, 6, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
                               <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
@@ -1128,23 +1057,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to SERIES_META */}
-                      <Legend
-                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '12px', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} />} />
                       {SERIES_META.map(({ key, color, label }) => (
                         <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
                           <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
@@ -1166,19 +1080,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} content={(props) => {
-                            const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
-                            return (
-                              <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
-                                {ordered.map(entry => (
-                                  <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
-                                    <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            );
-                          }} />
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
+                            content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }} hide={!visibleSeries[key]}>
                               <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
@@ -1203,23 +1106,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to SERIES_META */}
-                      <Legend
-                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, regularSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '12px', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} />} />
                       {SERIES_META.map(({ key, color, label }) => (
                         <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={2} hide={!visibleSeries[key]}>
                           <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
@@ -1235,10 +1123,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Faculty Department Wise ── */}
           {section === 'regular' && activeView === 'department' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 5px 0', color: '#1a1a1a', fontSize: '24px' }}>Faculty Department Wise Count</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>
+                  <h2 className="adm-chart-h2">Faculty Department Wise Count</h2>
+                  <p className="chart-description">
                     Currently active teaching faculty grouped by department. Total: <strong>{expertiseTotal}</strong>
                   </p>
                 </div>
@@ -1251,17 +1139,16 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   title="Faculty Department Wise Count"
                 />
               </div>
-              <div style={{ position: 'relative' }}>
+              <div className="state-dist-wrap">
                 {!hasDeptData && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-                    <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-                    <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No active faculty match the current filters.</p>
+                  <div className="no-data-overlay">
+                    <span className="no-data-overlay-icon">📊</span>
+                    <p className="no-data-overlay-text">No active faculty match the current filters.</p>
                   </div>
                 )}
                 <div
                   id="admin-expertise-chart-container"
-                  className="clickable-chart"
-                  style={{ padding: '10px' }}
+                  className="clickable-chart adm-chart-container-sm"
                   onClick={() => setExpandedChart({
                     title: "Faculty Department Wise Count",
                     content: (
@@ -1298,10 +1185,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Gender Distribution ── */}
           {section === 'regular' && activeView === 'gender' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 5px 0', color: '#1a1a1a', fontSize: '24px' }}>Gender Distribution</h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: 0 }}>Gender distribution of currently active employees.</p>
+                  <h2 className="adm-chart-h2">Gender Distribution</h2>
+                  <p className="chart-description">Gender distribution of currently active employees.</p>
                 </div>
                 <ExportMenu
                   elementId="admin-gender-chart-container"
@@ -1314,8 +1201,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               </div>
               <div
                 id="admin-gender-chart-container"
-                className="clickable-chart"
-                style={{ position: 'relative', padding: '10px' }}
+                className="clickable-chart state-dist-wrap adm-chart-container-sm"
                 onClick={() => setExpandedChart({
                   title: "Gender Distribution",
                   content: (
@@ -1334,9 +1220,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {genderData.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-                    <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-                    <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No gender data matches the current filters.</p>
+                  <div className="no-data-overlay">
+                    <span className="no-data-overlay-icon">📊</span>
+                    <p className="no-data-overlay-text">No gender data matches the current filters.</p>
                   </div>
                 )}
                 <ResponsiveContainer width="100%" height={chartIsMobile ? 300 : 420}>
@@ -1361,9 +1247,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   </PieChart>
                 </ResponsiveContainer>
                 {genderData.length > 0 && (
-                  <div style={{ textAlign: 'center', fontWeight: 700, color: '#1a1a1a', fontSize: '0.85rem', marginTop: '10px' }}>
-                    Total Employees: {genderTotal}
-                  </div>
+                  <div className="chart-value-center">Total Employees: {genderTotal}</div>
                 )}
               </div>
             </>
@@ -1375,27 +1259,19 @@ function AdministrativeSection({ user, isPublicView = false }) {
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'department' && (
             <>
-              {/* Chart type toggle */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
-                {[
-                  { mode: 'Bar', icon: '📊' },
-                  { mode: 'Trend', icon: '📈' },
-                ].map(({ mode, icon }) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setEduDeptChartType(mode)}
-                    className={`chart-toggle-btn${eduDeptChartType === mode ? ' active' : ''}`}
-                  >
+              <div className="mode-toggle-row adm-toggle-bar">
+                {[{ mode: 'Bar', icon: '📊' }, { mode: 'Trend', icon: '📈' }].map(({ mode, icon }) => (
+                  <button key={mode} type="button" onClick={() => setEduDeptChartType(mode)}
+                    className={`chart-toggle-btn${eduDeptChartType === mode ? ' active' : ''}`}>
                     {icon} {mode}
                   </button>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '1rem' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px' }}>🏢 Department-wise Breakdown</h2>
-                  <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Active external academic engagements by department</p>
+                  <h2 className="adm-chart-h2--lg">&#127962; Department-wise Breakdown</h2>
+                  <p className="chart-description">Active external academic engagements by department</p>
                 </div>
                 <ExportMenu
                   elementId="edu-dept-chart-container"
@@ -1407,10 +1283,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div
-                id="edu-dept-chart-container"
-                className="clickable-chart"
-                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+              <div id="edu-dept-chart-container" className="clickable-chart state-dist-wrap adm-chart-container-lg"
                 onClick={() => setExpandedChart({
                   title: "Department-wise Breakdown",
                   content: (
@@ -1420,19 +1293,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                         <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
                         <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
-                                  <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }} />
+                        <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }}
+                          content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
                         {renderEduBarSeries()}
                       </BarChart>
                     </ResponsiveContainer>
@@ -1440,12 +1302,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {eduDeptChartData.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
+                  <div className="no-data-overlay">
                     <p>No department data available for the selected filters.</p>
                   </div>
                 )}
 
-                {/* Bar chart */}
                 <div className={`chart-wrapper ${eduDeptChartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
@@ -1453,31 +1314,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
-                      <Legend
-                        verticalAlign="top"
-                        wrapperStyle={{ paddingBottom: '20px' }}
-                        iconType="rect"
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect"
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* Trend (Line) chart */}
                 <div className={`chart-wrapper ${eduDeptChartType === 'Trend' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
@@ -1485,25 +1328,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
-                      <Legend
-                        verticalAlign="top"
-                        wrapperStyle={{ paddingBottom: '20px' }}
-                        iconType="rect"
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect"
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>
@@ -1518,31 +1344,21 @@ function AdministrativeSection({ user, isPublicView = false }) {
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'trend' && (
             <>
-              {/* Chart type toggle */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', background: '#f0f0f0', padding: '4px', borderRadius: '8px', width: 'fit-content' }}>
-                {[
-                  { mode: 'Bar', icon: '📊' },
-                  { mode: 'Line', icon: '📈' },
-                ].map(({ mode, icon }) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setEduTrendChartType(mode)}
-                    className={`chart-toggle-btn${eduTrendChartType === mode ? ' active' : ''}`}
-                  >
+              <div className="mode-toggle-row adm-toggle-bar">
+                {[{ mode: 'Bar', icon: '📊' }, { mode: 'Line', icon: '📈' }].map(({ mode, icon }) => (
+                  <button key={mode} type="button" onClick={() => setEduTrendChartType(mode)}
+                    className={`chart-toggle-btn${eduTrendChartType === mode ? ' active' : ''}`}>
                     {icon} {mode}
                   </button>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px' }}>📈 Year-wise Trends</h2>
-                  <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>
+                  <h2 className="adm-chart-h2--lg">&#128200; Year-wise Trends</h2>
+                  <p className="chart-description">
                     Active faculty engagement trends over multiple years
-                    <span style={{ marginLeft: '8px', fontSize: '12px', background: '#f97316', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
-                      Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}
-                    </span>
+                    <span className="trend-badge">Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span>
                   </p>
                 </div>
                 <ExportMenu
@@ -1555,10 +1371,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <div
-                id="edu-trend-chart-container"
-                className="clickable-chart"
-                style={{ position: 'relative', minHeight: '400px', padding: '10px' }}
+              <div id="edu-trend-chart-container" className="clickable-chart state-dist-wrap adm-chart-container-lg"
                 onClick={() => setExpandedChart({
                   title: "Year-wise Trends",
                   content: (
@@ -1568,19 +1381,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                         <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 13, fontWeight: 600 }} />
                         <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px' }} content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '13px', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 12, height: 12, backgroundColor: entry.color, display: 'inline-block', borderRadius: 3, flexShrink: 0 }} />
-                                  <span style={{ fontWeight: 600, color: '#334155' }}>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }} />
+                        <Legend wrapperStyle={{ paddingTop: '20px' }}
+                          content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
                         {renderEduLineSeries()}
                       </LineChart>
                     </ResponsiveContainer>
@@ -1588,12 +1390,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {eduTrendChartData.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
+                  <div className="no-data-overlay">
                     <p>No trend data available for the selected filters.</p>
                   </div>
                 )}
 
-                {/* Bar chart */}
                 <div className={`chart-wrapper ${eduTrendChartType === 'Bar' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
@@ -1601,30 +1402,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
-                      <Legend
-                        wrapperStyle={{ paddingTop: '20px' }}
-                        iconType="rect"
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect"
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
                       {renderEduBarSeries()}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* Line chart */}
                 <div className={`chart-wrapper ${eduTrendChartType === 'Line' ? 'active' : 'inactive'}`}>
                   <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
@@ -1632,24 +1416,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      {/* ✅ FIX: use getOrderedLegend to lock legend order to EDU_ENGAGEMENT_ORDER */}
-                      <Legend
-                        wrapperStyle={{ paddingTop: '20px' }}
-                        iconType="rect"
-                        content={(props) => {
-                          const ordered = getOrderedLegend(props.payload, eduSeriesKeys);
-                          return (
-                            <ul style={{ display: 'flex', justifyContent: 'center', gap: '16px', listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', flexWrap: 'wrap' }}>
-                              {ordered.map(entry => (
-                                <li key={entry.dataKey ?? entry.value} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span style={{ width: 10, height: 10, backgroundColor: entry.color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }} />
-                                  <span>{entry.value}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }}
-                      />
+                      <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect"
+                        content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
                       {renderEduLineSeries()}
                     </LineChart>
                   </ResponsiveContainer>
@@ -1661,10 +1429,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── EDUCATION: Type Distribution ── */}
           {section === 'education' && eduView === 'distribution' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px' }}>🥧 Type Distribution</h2>
-                  <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>Active faculty by engagement type</p>
+                  <h2 className="adm-chart-h2--lg">&#129383; Type Distribution</h2>
+                  <p className="chart-description">Active faculty by engagement type</p>
                 </div>
                 <ExportMenu
                   elementId="edu-distribution-chart-container"
@@ -1677,8 +1445,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               </div>
               <div
                 id="edu-distribution-chart-container"
-                className="clickable-chart"
-                style={{ position: 'relative', minHeight: '480px', padding: '10px' }}
+                className="clickable-chart state-dist-wrap adm-chart-container-xl"
                 onClick={() => setExpandedChart({
                   title: "Type Distribution",
                   content: (
@@ -1697,7 +1464,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 })}
               >
                 {eduPieData.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.8)' }}>
+                  <div className="no-data-overlay">
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
@@ -1758,10 +1525,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── EDUCATION: Engagement Details ── */}
           {(typeof user === 'undefined' || user?.role_id !== 0) && section === 'education' && eduView === 'details' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div className="chart-title-row">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', fontSize: '24px' }}>📋 Engagement Details</h2>
-                  <p style={{ color: '#666', margin: 0, fontSize: '14px' }}>
+                  <h2 className="adm-chart-h2--lg">&#128203; Engagement Details</h2>
+                  <p className="chart-description">
                     Detailed list of all external academic engagements · {eduEngagementList.length} records
                   </p>
                 </div>
@@ -1775,37 +1542,34 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   exportType="table"
                 />
               </div>
-              <div id="edu-engagement-details-table" className="table-responsive" style={{
-                height: '420px', overflowY: 'auto', overflowX: 'auto',
-                border: '1px solid #e2e8f0', borderRadius: '10px', backgroundColor: '#fff', position: 'relative'
-              }}>
+              <div id="edu-engagement-details-table" className="edu-details-wrap">
                 {eduEngagementList.length === 0 && (
-                  <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.9)' }}>
-                    <p style={{ color: '#94a3b8' }}>No engagement data available for the selected filters.</p>
+                  <div className="no-data-overlay">
+                    <p>No engagement data available for the selected filters.</p>
                   </div>
                 )}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0 }}>
-                    <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#f8f9fa' }}>
+                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                  <table className="data-table performance-table">
+                    <thead>
                       <tr>
                         {['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks'].map(h => (
-                          <th key={h} style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0', color: '#555', fontSize: '13px', fontWeight: '600' }}>{h}</th>
+                          <th key={h}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {eduEngagementList.map((item, i) => (
-                        <tr key={item.engagement_code || i} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{i + 1}</td>
-                          <td style={{ padding: '10px', fontSize: '13px', fontWeight: '500' }}>{item.faculty_name || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.fc_bg_type || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.department || '—'}</td>
-                          <td style={{ padding: '10px', fontSize: '13px' }}>{item.remarks || '—'}</td>
+                        <tr key={item.engagement_code || i}>
+                          <td>{i + 1}</td>
+                          <td className="adm-td-name">{item.faculty_name || '—'}</td>
+                          <td>{item.fc_bg_type || '—'}</td>
+                          <td>{item.department || '—'}</td>
+                          <td>{item.remarks || '—'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                )}</>
+                )}
               </div>
             </>
           )}

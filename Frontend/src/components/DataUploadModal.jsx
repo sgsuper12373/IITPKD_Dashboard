@@ -4,16 +4,6 @@ import axios from 'axios';
 import cachedAxios from '../utils/cachedAxios';
 import './DataUploadModal.css';
 
-/**
- * Reusable modal for bulk-uploading CSV data to a specific database table.
- * 
- * @param {Object} props
- * @param {boolean} props.isOpen - Visibilitiy toggle.
- * @param {function} props.onClose - Callback to close the modal.
- * @param {string} props.tableName - The backend database table to update.
- * @param {string} props.token - JWT Auth token.
- * @param {function} props.onUploadSuccess - Callback to refresh parent component data.
- */
 function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewData, setPreviewData] = useState(null);
@@ -46,7 +36,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         onClose();
 
         if (wasSuccess) {
-            cachedAxios.clearAll(); // invalidate all cached API responses after data upload
+            cachedAxios.clearAll();
             window.dispatchEvent(new CustomEvent('iitpkd:upload-success', { detail: { tableName } }));
             if (onUploadSuccess) {
                 onUploadSuccess();
@@ -113,11 +103,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
             const successMsg = response.data.message || `Successfully updated table ${tableName}`;
             setMessage({ type: 'success', text: successMsg });
             setUploadSuccess(true);
-            
-            // Note: window.dispatchEvent and onUploadSuccess() are now handled
-            // inside handleClose() so the parent components don't immediately refresh data,
-            // unmount/re-render the modal, and cause the success message to instantly "flash".
-            
+
         } catch (error) {
             const errorMsg = error.response?.data?.message || error.message || 'An error occurred during upload.';
             const errorDetails = error.response?.data?.details;
@@ -134,7 +120,6 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         }
     };
 
-    // Template Data for various tables
     const getTemplateData = (table) => {
         switch (table) {
             case 'alumni':
@@ -302,7 +287,6 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                     headers: ["academic_year", "created_by", "created_at", "program_name", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "sq_stipend_provided", "sq_travel_allowance", "sq_num_lab_sessions", "sq_districts_covered", "pmc_target_class", "pmc_mathematician_led", "pmc_num_sessions", "pbd_lecture_topic", "pbd_speaker_name", "pbd_speaker_affiliation", "iv_visiting_institution", "iv_visiting_institution_type", "iv_num_groups", "nss_activity_type", "nss_volunteer_count", "nss_community_reached", "extra_data"],
                     sample: ["Sample academic_year", "Sample created_by", "2023-01-01", "Sample program_name", "Sample program_type", "Sample engagement_type", "Sample association", "2023-01-01", "2023-01-01", "Sample targeted_audience", "1", "1", "1", "Sample geographic_reach", "Sample remarks", "TRUE", "TRUE", "1", "Sample sq_districts_covered", "Sample pmc_target_class", "TRUE", "1", "Sample pbd_lecture_topic", "Sample pbd_speaker_name", "Sample pbd_speaker_affiliation", "Sample iv_visiting_institution", "Sample iv_visiting_institution_type", "1", "Sample nss_activity_type", "1", "Sample nss_community_reached", "Sample extra_data"]
                 };
-            // ── Outreach: per-program templates (program_name injected by backend) ──
             case 'outreach_science_quest':
                 return {
                     headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "sq_stipend_provided", "sq_travel_allowance", "sq_num_lab_sessions", "sq_districts_covered"],
@@ -376,19 +360,10 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                     <strong>Warning:</strong> You are directly modifying the database.
                                     Ensure the CSV format matches the table schema exactly.
 
-                                    <div style={{ marginTop: '0.5rem' }}>
+                                    <div className="dum-template-mt">
                                         <button
                                             className="download-template-btn"
                                             onClick={handleDownloadTemplate}
-                                            style={{
-                                                backgroundColor: 'transparent',
-                                                border: '1px solid #f59e0b',
-                                                color: '#f59e0b',
-                                                padding: '0.25rem 0.5rem',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontSize: '0.85rem'
-                                            }}
                                         >
                                             Download CSV Template
                                         </button>
@@ -396,17 +371,9 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                 </div>
                             </div>
 
-                            <div className="required-format-section" style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#ccc' }}>
+                            <div className="dum-format-section">
                                 <strong>Required Column Headers:</strong>
-                                <div style={{
-                                    backgroundColor: '#2d3748',
-                                    padding: '0.5rem',
-                                    borderRadius: '4px',
-                                    marginTop: '0.25rem',
-                                    fontFamily: 'monospace',
-                                    overflowX: 'auto',
-                                    whiteSpace: 'nowrap'
-                                }}>
+                                <div className="dum-format-code">
                                     {templateInfo.headers.join(', ')}
                                 </div>
                             </div>
@@ -423,28 +390,24 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                             {previewData && (
                                 <div className="preview-section">
                                     <h4>CSV Preview (First {previewData.rows.length} Rows)</h4>
-                                    <div style={{ maxHeight: '200px', overflowY: 'auto', overflowX: 'auto' }}>
-                                    <table className="preview-table">
-                                        <thead>
-                                            <tr>
-                                                {previewData.header.map((head, i) => <th key={i}>{head}</th>)}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {previewData.rows.map((row, i) => {
-                                                // i is 0-based; failingRow is 1-based data row number
-                                                const isFailingRow = failingRow !== null && failingRow === i + 1;
-                                                return (
-                                                    <tr key={i} style={isFailingRow ? {
-                                                        backgroundColor: 'rgba(220, 53, 69, 0.25)',
-                                                        outline: '2px solid #dc3545'
-                                                    } : {}}>
-                                                        {row.map((cell, j) => <td key={j}>{cell}</td>)}
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
+                                    <div className="dum-preview-scroll">
+                                        <table className="preview-table">
+                                            <thead>
+                                                <tr>
+                                                    {previewData.header.map((head, i) => <th key={i}>{head}</th>)}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {previewData.rows.map((row, i) => {
+                                                    const isFailingRow = failingRow !== null && failingRow === i + 1;
+                                                    return (
+                                                        <tr key={i} className={isFailingRow ? 'dum-row--error' : ''}>
+                                                            {row.map((cell, j) => <td key={j}>{cell}</td>)}
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             )}
@@ -452,7 +415,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                             {message && (
                                 <div className={`status-message ${message.type}`}>
                                     {message.type === 'error' && failingRow && (
-                                        <div style={{ fontWeight: 'bold', marginBottom: '0.3rem' }}>
+                                        <div className="dum-error-row-header">
                                             Problem at CSV row {failingRow}
                                             {failingRow <= 50
                                                 ? ' (highlighted in preview above)'
@@ -477,28 +440,16 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                             </div>
                         </>
                     ) : (
-                        <div className="success-view" style={{ textAlign: 'center', padding: '2rem 0' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
-                            <h3 style={{ color: '#2ecc71', marginBottom: '1rem' }}>Upload Successful!</h3>
-                            <p style={{ marginBottom: '2rem', color: '#555' }}>
+                        <div className="dum-success-view">
+                            <div className="dum-success-icon">✅</div>
+                            <h3 className="dum-success-h3">Upload Successful!</h3>
+                            <p className="dum-success-msg">
                                 {message?.text || `Successfully updated table ${tableName}`}
                             </p>
-                            <p style={{ fontSize: '0.9rem', color: '#888', marginBottom: '2rem' }}>
+                            <p className="dum-success-hint">
                                 Click OK to close this window.
                             </p>
-                            <button
-                                onClick={handleClose}
-                                style={{
-                                    padding: '10px 30px',
-                                    backgroundColor: '#2ecc71',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    fontSize: '1rem',
-                                    fontWeight: 'bold'
-                                }}
-                            >
+                            <button className="dum-ok-btn" onClick={handleClose}>
                                 OK
                             </button>
                         </div>

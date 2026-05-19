@@ -46,7 +46,7 @@ function EwdSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [yearlyData, setYearlyData] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(null); // null means "Latest"
+  const [selectedYear, setSelectedYear] = useState(null);
   const [summary, setSummary] = useState({
     totalAnnualElectricity: 0,
     averagePerCapitaElectricity: 0,
@@ -57,8 +57,8 @@ function EwdSection({ user, isPublicView = false }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeView, setActiveView] = useState('electricity'); // 'electricity' | 'perCapita' | 'environment'
-  const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
+  const [activeView, setActiveView] = useState('electricity');
+  const [chartType, setChartType] = useState('Bar');
   const [expandedChart, setExpandedChart] = useState(null);
 
   const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
@@ -126,23 +126,18 @@ function EwdSection({ user, isPublicView = false }) {
     loadData();
   }, [token, uploadVersion]);
 
-  // Get available years from yearlyData
   const availableYears = useMemo(() => {
-    return yearlyData.map(row => row.year).sort((a, b) => b - a); // Sort descending
+    return yearlyData.map(row => row.year).sort((a, b) => b - a);
   }, [yearlyData]);
 
-  // Yearly data filtered based on selectedYear for use in charts
   const filteredYearlyData = useMemo(() => {
     if (!yearlyData.length) return [];
-    // When "Latest" is selected (selectedYear === null), show full multi-year trend
     if (selectedYear === null) return yearlyData;
     return yearlyData.filter(row => row.year === selectedYear);
   }, [yearlyData, selectedYear]);
 
-  // Get selected year data or latest year data
   const selectedYearData = useMemo(() => {
     if (selectedYear === null) {
-      // Return latest year data
       return summary.latest ? {
         year: summary.latest.year,
         perCapitaElectricity: summary.latest.perCapitaElectricity,
@@ -152,7 +147,6 @@ function EwdSection({ user, isPublicView = false }) {
       } : null;
     }
 
-    // Find selected year data from yearlyData
     const yearData = yearlyData.find(row => row.year === selectedYear);
     if (!yearData) return null;
 
@@ -165,13 +159,10 @@ function EwdSection({ user, isPublicView = false }) {
     };
   }, [selectedYear, yearlyData, summary.latest]);
 
-
-
-  // Scale data for Annual Electricity Consumption chart (divide by 1000 to show in thousands)
   const scaledYearlyData = useMemo(() => {
     return filteredYearlyData.map(row => ({
       ...row,
-      annualElectricityScaled: row.annualElectricity / 1000 // Scale to thousands
+      annualElectricityScaled: row.annualElectricity / 1000
     }));
   }, [filteredYearlyData]);
 
@@ -183,7 +174,7 @@ function EwdSection({ user, isPublicView = false }) {
             className="page-back-btn"
             onClick={() => navigate('/people-campus')}
           >
-            ← Back to People & Campus
+            &#8592; Back to People &amp; Campus
           </button>
         )}
 
@@ -192,32 +183,26 @@ function EwdSection({ user, isPublicView = false }) {
             <div className="section-header-left">
               <h1>Engineering and Works Division (EWD)</h1>
             </div>
-
             <div className="section-header-actions">
               {!isReadOnlyView && isAdmin && (
                 <button
                   className="page-upload-btn"
                   onClick={() => setIsUploadModalOpen(true)}
                 >
-                  <span>📤</span> Upload Data
+                  <span>&#128228;</span> Upload Data
                 </button>
               )}
             </div>
           </div>
         )}
-        {error && <div className="error-message" style={{
-          padding: '10px',
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          borderRadius: '4px',
-          marginBottom: '20px'
-        }}>{error}</div>}
+
+        {error && <div className="error-message">{error}</div>}
 
         {loading ? (
           <SectionSkeleton cards={3} charts={3} />
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="ewd-export-row">
               <ExportMenu
                 elementId="ewd-summary-cards-container"
                 data={[summary]}
@@ -227,143 +212,65 @@ function EwdSection({ user, isPublicView = false }) {
                 title="EWD Summary"
               />
             </div>
-            {/* Modern Summary Cards */}
-            <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<div id="ewd-summary-cards-container" style={{
-              display: 'grid',
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))",
-              gap: '16px',
-              marginBottom: '24px'
-            }}>
-              {/* Total Annual Electricity Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '16px',
-                padding: '18px',
-                boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                minWidth: 0
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '80px',
-                  height: '80px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px', flexShrink: 0 }}>⚡</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500', lineHeight: 1.3 }}>Total Annual Electricity</span>
+
+            {(typeof user === 'undefined' || user?.role_id !== 0) && (
+              <div id="ewd-summary-cards-container" className="ewd-cards-grid">
+                <div className="ewd-stat-card ewd-stat-card--indigo">
+                  <div className="ewd-stat-card-decor" />
+                  <div className="ewd-stat-card-body">
+                    <div className="ewd-stat-card-header">
+                      <span className="ewd-stat-card-icon">&#9889;</span>
+                      <span className="ewd-stat-card-label">Total Annual Electricity</span>
+                    </div>
+                    <div className="ewd-stat-card-value">{formatNumber(summary.totalAnnualElectricity)}</div>
+                    <div className="ewd-stat-card-status">
+                      <span className="ewd-stat-card-dot" />
+                      <span className="ewd-stat-card-subtext">Cumulative kWh</span>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2.4rem)', fontWeight: 'bold', color: 'white', marginBottom: '8px', wordBreak: 'break-all', lineHeight: 1.1 }}>
-                    {formatNumber(summary.totalAnnualElectricity)}
+                </div>
+
+                <div className="ewd-stat-card ewd-stat-card--amber">
+                  <div className="ewd-stat-card-decor" />
+                  <div className="ewd-stat-card-body">
+                    <div className="ewd-stat-card-header">
+                      <span className="ewd-stat-card-icon">&#128161;</span>
+                      <span className="ewd-stat-card-label">Avg. Per Capita Electricity</span>
+                    </div>
+                    <div className="ewd-stat-card-value">{formatDecimal(summary.averagePerCapitaElectricity)}</div>
+                    <div className="ewd-stat-card-status">
+                      <span className="ewd-stat-card-dot" />
+                      <span className="ewd-stat-card-subtext">kWh per person</span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Cumulative kWh</span>
+                </div>
+
+                <div className="ewd-stat-card ewd-stat-card--green">
+                  <div className="ewd-stat-card-decor" />
+                  <div className="ewd-stat-card-body">
+                    <div className="ewd-stat-card-header">
+                      <span className="ewd-stat-card-icon">&#128167;</span>
+                      <span className="ewd-stat-card-label">Avg. Per Capita Water</span>
+                    </div>
+                    <div className="ewd-stat-card-value">{formatDecimal(summary.averagePerCapitaWater)}</div>
+                    <div className="ewd-stat-card-status">
+                      <span className="ewd-stat-card-dot" />
+                      <span className="ewd-stat-card-subtext">Litres per person</span>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Avg. Per Capita Electricity Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                borderRadius: '16px',
-                padding: '18px',
-                boxShadow: '0 10px 20px rgba(245, 158, 11, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                minWidth: 0
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '80px',
-                  height: '80px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px', flexShrink: 0 }}>💡</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500', lineHeight: 1.3 }}>Avg. Per Capita Electricity</span>
-                  </div>
-                  <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2.4rem)', fontWeight: 'bold', color: 'white', marginBottom: '8px', wordBreak: 'break-all', lineHeight: 1.1 }}>
-                    {formatDecimal(summary.averagePerCapitaElectricity)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>kWh per person</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Avg. Per Capita Water Card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                borderRadius: '16px',
-                padding: '18px',
-                boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                minWidth: 0
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '80px',
-                  height: '80px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '50%'
-                }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '20px', background: 'rgba(255,255,255,0.2)', padding: '6px', borderRadius: '8px', flexShrink: 0 }}>💧</span>
-                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500', lineHeight: 1.3 }}>Avg. Per Capita Water</span>
-                  </div>
-                  <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2.4rem)', fontWeight: 'bold', color: 'white', marginBottom: '8px', wordBreak: 'break-all', lineHeight: 1.1 }}>
-                    {formatDecimal(summary.averagePerCapitaWater)}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%', flexShrink: 0 }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Litres per person</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-)}</>
-
+            )}
 
             {selectedYearData && (
-              <div style={{
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
-                marginBottom: '30px'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '20px',
-                  flexWrap: 'wrap',
-                  gap: '15px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px', background: '#f0f0f0', padding: '8px', borderRadius: '8px' }}>📊</span>
-                    <h2 style={{ margin: 0, fontSize: '20px', color: '#333' }}>Current Year Indicators</h2>
+              <div className="ewd-indicators-panel">
+                <div className="ewd-indicators-header">
+                  <div className="ewd-indicators-title-group">
+                    <span className="ewd-indicators-icon">&#128202;</span>
+                    <h2 className="ewd-indicators-h2">Current Year Indicators</h2>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <label htmlFor="year-selector" style={{ fontWeight: '600', fontSize: '14px', color: '#555' }}>
-                      Select Year:
-                    </label>
+                  <div className="ewd-indicators-controls">
+                    <label htmlFor="year-selector" className="ewd-year-label">Select Year:</label>
                     <select
                       id="year-selector"
                       value={selectedYear || 'latest'}
@@ -371,15 +278,7 @@ function EwdSection({ user, isPublicView = false }) {
                         const value = e.target.value;
                         setSelectedYear(value === 'latest' ? null : parseInt(value));
                       }}
-                      style={{
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        border: '1px solid #e0e0e0',
-                        fontSize: '14px',
-                        backgroundColor: '#fff',
-                        cursor: 'pointer',
-                        minWidth: '150px'
-                      }}
+                      className="ewd-year-select"
                     >
                       <option value="latest">Latest Year</option>
                       {availableYears.map(year => (
@@ -397,155 +296,64 @@ function EwdSection({ user, isPublicView = false }) {
                   </div>
                 </div>
 
-                <div id="ewd-current-year-indicators-container" className="grid-4" style={{ gap: '15px' }}>
-                  {/* Per Capita Electricity Card */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #f59e0b15 0%, #f59e0b05 100%)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    border: '1px solid #f59e0b30',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '14px', color: '#f59e0b', fontWeight: '600', marginBottom: '8px' }}>
-                      ⚡ Per Capita Electricity
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#f59e0b', marginBottom: '4px' }}>
-                      {formatDecimal(selectedYearData.perCapitaElectricity)}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>kWh</div>
+                <div id="ewd-current-year-indicators-container" className="ewd-indicators-grid">
+                  <div className="ewd-indicator-card ewd-indicator-card--amber">
+                    <div className="ewd-indicator-label ewd-indicator-label--amber">&#9889; Per Capita Electricity</div>
+                    <div className="ewd-indicator-value ewd-indicator-value--amber">{formatDecimal(selectedYearData.perCapitaElectricity)}</div>
+                    <div className="ewd-indicator-unit">kWh</div>
                   </div>
 
-                  {/* Per Capita Water Card */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #43e97b15 0%, #43e97b05 100%)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    border: '1px solid #43e97b30',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '14px', color: '#43e97b', fontWeight: '600', marginBottom: '8px' }}>
-                      💧 Per Capita Water
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#43e97b', marginBottom: '4px' }}>
-                      {formatDecimal(selectedYearData.perCapitaWater)}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>Litres</div>
+                  <div className="ewd-indicator-card ewd-indicator-card--green">
+                    <div className="ewd-indicator-label ewd-indicator-label--green">&#128167; Per Capita Water</div>
+                    <div className="ewd-indicator-value ewd-indicator-value--green">{formatDecimal(selectedYearData.perCapitaWater)}</div>
+                    <div className="ewd-indicator-unit">Litres</div>
                   </div>
 
-                  {/* Per Capita Recycled Card */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #fa709a15 0%, #fa709a05 100%)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    border: '1px solid #fa709a30',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '14px', color: '#fa709a', fontWeight: '600', marginBottom: '8px' }}>
-                      🔄 Per Capita Recycled
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fa709a', marginBottom: '4px' }}>
-                      {formatDecimal(selectedYearData.perCapitaRecycled)}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>Litres</div>
+                  <div className="ewd-indicator-card ewd-indicator-card--pink">
+                    <div className="ewd-indicator-label ewd-indicator-label--pink">&#128260; Per Capita Recycled</div>
+                    <div className="ewd-indicator-value ewd-indicator-value--pink">{formatDecimal(selectedYearData.perCapitaRecycled)}</div>
+                    <div className="ewd-indicator-unit">Litres</div>
                   </div>
 
-                  {/* Green Coverage Card */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #34d39915 0%, #34d39905 100%)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    border: '1px solid #34d39930',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: '14px', color: '#34d399', fontWeight: '600', marginBottom: '8px' }}>
-                      🌳 Green Coverage
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#34d399', marginBottom: '4px' }}>
-                      {formatDecimal(selectedYearData.greenCoverage)}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>sq.m</div>
+                  <div className="ewd-indicator-card ewd-indicator-card--teal">
+                    <div className="ewd-indicator-label ewd-indicator-label--teal">&#127795; Green Coverage</div>
+                    <div className="ewd-indicator-value ewd-indicator-value--teal">{formatDecimal(selectedYearData.greenCoverage)}</div>
+                    <div className="ewd-indicator-unit">sq.m</div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* View selector for different EWD charts */}
-            <div style={{
-              display: 'flex',
-              gap: '10px',
-              marginBottom: '20px',
-              borderBottom: '2px solid #e0e0e0',
-              paddingBottom: '10px',
-              flexWrap: 'wrap'
-            }}>
+            <div className="ewd-view-tabs">
               <button
                 type="button"
                 onClick={() => setActiveView('electricity')}
-                style={{
-                  padding: '10px 24px',
-                  backgroundColor: activeView === 'electricity' ? '#667eea' : '#f8f9fa',
-                  color: activeView === 'electricity' ? 'white' : '#333',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: activeView === 'electricity' ? '600' : '500',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className={`ewd-view-tab${activeView === 'electricity' ? ' ewd-view-tab--active-electricity' : ''}`}
               >
-                <span>⚡</span> Annual Electricity
+                <span>&#9889;</span> Annual Electricity
               </button>
               <button
                 type="button"
                 onClick={() => setActiveView('perCapita')}
-                style={{
-                  padding: '10px 24px',
-                  backgroundColor: activeView === 'perCapita' ? '#f59e0b' : '#f8f9fa',
-                  color: activeView === 'perCapita' ? 'white' : '#333',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: activeView === 'perCapita' ? '600' : '500',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className={`ewd-view-tab${activeView === 'perCapita' ? ' ewd-view-tab--active-perCapita' : ''}`}
               >
-                <span>📊</span> Per Capita Trends
+                <span>&#128202;</span> Per Capita Trends
               </button>
               <button
                 type="button"
                 onClick={() => setActiveView('environment')}
-                style={{
-                  padding: '10px 24px',
-                  backgroundColor: activeView === 'environment' ? '#34d399' : '#f8f9fa',
-                  color: activeView === 'environment' ? 'white' : '#333',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: activeView === 'environment' ? '600' : '500',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className={`ewd-view-tab${activeView === 'environment' ? ' ewd-view-tab--active-environment' : ''}`}
               >
-                <span>🌳</span> Environmental Summary
+                <span>&#127795;</span> Environmental Summary
               </button>
             </div>
 
             {activeView === 'electricity' && (
               <div className="chart-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="ewd-chart-header-row">
                   <div className="chart-header">
-                    <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Annual Electricity Consumption</h2>
-                    <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Institution-wide electricity usage (kWh) recorded by EWD each financial year.</p>
+                    <h2 className="ewd-chart-h2">Annual Electricity Consumption</h2>
+                    <p className="ewd-chart-desc">Institution-wide electricity usage (kWh) recorded by EWD each financial year.</p>
                   </div>
                   <ExportMenu
                     elementId="ewd-electricity-chart-container"
@@ -557,33 +365,24 @@ function EwdSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div className="ewd-mode-toggle">
                   {['Bar', 'Trend'].map(mode => (
-                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
-                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                      color: chartType === mode ? '#fff' : '#333',
-                      fontWeight: chartType === mode ? '600' : '400',
-                      fontSize: '13px', transition: 'all 0.2s'
-                    }}>
+                    <button key={mode} type="button" onClick={() => setChartType(mode)}
+                      className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
                       {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
-                  <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                    <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>⚡</span>
-                    <p style={{ color: '#666', fontSize: '16px' }}>No EWD records available.</p>
+                  <div className="ewd-no-data">
+                    <span className="ewd-no-data-icon">&#9889;</span>
+                    <p className="ewd-no-data-text">No EWD records available.</p>
                   </div>
                 ) : (
-                  <div id="ewd-electricity-chart-container" className="chart-container" style={{ padding: '10px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '10px', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
-                      Scale: 1 unit = 1,000 kWh
-                    </div>
-                    {/* Bar chart */}
-                    <div 
+                  <div id="ewd-electricity-chart-container" className="chart-container ewd-chart-area">
+                    <div className="ewd-scale-note">Scale: 1 unit = 1,000 kWh</div>
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Annual Electricity Consumption",
@@ -603,7 +402,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <BarChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -616,10 +415,9 @@ function EwdSection({ user, isPublicView = false }) {
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
-                      )}</>
+                      )}
                     </div>
-                    {/* Trend chart */}
-                    <div 
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Annual Electricity Trends",
@@ -639,7 +437,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <LineChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -652,7 +450,7 @@ function EwdSection({ user, isPublicView = false }) {
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
-                      )}</>
+                      )}
                     </div>
                   </div>
                 )}
@@ -661,10 +459,10 @@ function EwdSection({ user, isPublicView = false }) {
 
             {activeView === 'perCapita' && (
               <div className="chart-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="ewd-chart-header-row">
                   <div className="chart-header">
-                    <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Per Capita Consumption Trends</h2>
-                    <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Electricity and water consumption metrics normalised per capita.</p>
+                    <h2 className="ewd-chart-h2">Per Capita Consumption Trends</h2>
+                    <p className="ewd-chart-desc">Electricity and water consumption metrics normalised per capita.</p>
                   </div>
                   <ExportMenu
                     elementId="ewd-percapita-chart-container"
@@ -676,30 +474,23 @@ function EwdSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div className="ewd-mode-toggle">
                   {['Bar', 'Trend'].map(mode => (
-                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
-                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                      color: chartType === mode ? '#fff' : '#333',
-                      fontWeight: chartType === mode ? '600' : '400',
-                      fontSize: '13px', transition: 'all 0.2s'
-                    }}>
+                    <button key={mode} type="button" onClick={() => setChartType(mode)}
+                      className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
                       {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
-                  <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                    <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📊</span>
-                    <p style={{ color: '#666', fontSize: '16px' }}>No per capita consumption records available.</p>
+                  <div className="ewd-no-data">
+                    <span className="ewd-no-data-icon">&#128202;</span>
+                    <p className="ewd-no-data-text">No per capita consumption records available.</p>
                   </div>
                 ) : (
-                  <div id="ewd-percapita-chart-container" className="chart-container" style={{ padding: '10px' }}>
-                    {/* Bar chart */}
-                    <div 
+                  <div id="ewd-percapita-chart-container" className="chart-container ewd-chart-area">
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Per Capita Consumption",
@@ -725,30 +516,28 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
-                        <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                          <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
-                          </Bar>
-                          <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
-                          </Bar>
-                          <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-)}</>
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
+                          <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                            </Bar>
+                            <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                            </Bar>
+                            <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )}
                     </div>
-                    {/* Trend chart */}
-                    <div 
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Per Capita Consumption Trends",
@@ -774,27 +563,26 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
-                        <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                          <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                            <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
-                          </Line>
-                          <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 4, fill: '#43e97b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                            <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
-                          </Line>
-                          <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 4, fill: '#fa709a', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                            <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
-                          </Line>
-                        </LineChart>
-                      </ResponsiveContainer>
-)}</>
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
+                          <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                            </Line>
+                            <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 4, fill: '#43e97b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                            </Line>
+                            <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 4, fill: '#fa709a', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                            </Line>
+                          </LineChart>
+                        </ResponsiveContainer>
+                      )}
                     </div>
                   </div>
                 )}
@@ -803,10 +591,10 @@ function EwdSection({ user, isPublicView = false }) {
 
             {activeView === 'environment' && (
               <div className="chart-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="ewd-chart-header-row">
                   <div className="chart-header">
-                    <h2 style={{ margin: '0 0 5px 0', fontSize: '20px', color: '#333' }}>Environmental Summary</h2>
-                    <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>Green coverage (sq.m) illustrates campus sustainability efforts over time.</p>
+                    <h2 className="ewd-chart-h2">Environmental Summary</h2>
+                    <p className="ewd-chart-desc">Green coverage (sq.m) illustrates campus sustainability efforts over time.</p>
                   </div>
                   <ExportMenu
                     elementId="ewd-environment-chart-container"
@@ -818,30 +606,23 @@ function EwdSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                {/* Bar / Trend toggle */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div className="ewd-mode-toggle">
                   {['Bar', 'Trend'].map(mode => (
-                    <button key={mode} type="button" onClick={() => setChartType(mode)} style={{
-                      padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                      backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                      color: chartType === mode ? '#fff' : '#333',
-                      fontWeight: chartType === mode ? '600' : '400',
-                      fontSize: '13px', transition: 'all 0.2s'
-                    }}>
+                    <button key={mode} type="button" onClick={() => setChartType(mode)}
+                      className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
                       {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
-                  <div className="no-data" style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                    <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>🌳</span>
-                    <p style={{ color: '#666', fontSize: '16px' }}>No environmental records available.</p>
+                  <div className="ewd-no-data">
+                    <span className="ewd-no-data-icon">&#127795;</span>
+                    <p className="ewd-no-data-text">No environmental records available.</p>
                   </div>
                 ) : (
-                  <div id="ewd-environment-chart-container" className="chart-container" style={{ padding: '10px' }}>
-                    {/* Bar chart */}
-                    <div 
+                  <div id="ewd-environment-chart-container" className="chart-container ewd-chart-area">
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Environmental Summary",
@@ -861,24 +642,22 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
-                        <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                          <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                            <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-)}</>
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
+                          <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )}
                     </div>
-                    {/* Trend (Area) chart */}
-                    <div 
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Environmental Trends",
@@ -898,27 +677,26 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
-                        <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
-                          <defs>
-                            <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
-                              <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                          <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                          <Line type="linear" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" fill="url(#colorGreenCoverage)" strokeWidth={2} dot={{ r: 4, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                            <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
-                          </Line>
-                        </LineChart>
-                      </ResponsiveContainer>
-)}</>
+                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                        <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
+                          <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
+                            <defs>
+                              <linearGradient id="colorGreenCoverage" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <Tooltip content={<CustomTooltip hidePercentage={true} />} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Line type="linear" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" fill="url(#colorGreenCoverage)" strokeWidth={2} dot={{ r: 4, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                            </Line>
+                          </LineChart>
+                        </ResponsiveContainer>
+                      )}
                     </div>
                   </div>
                 )}
@@ -928,7 +706,6 @@ function EwdSection({ user, isPublicView = false }) {
         )}
       </div>
 
-      {/* Upload Modal */}
       <DataUploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
@@ -936,7 +713,6 @@ function EwdSection({ user, isPublicView = false }) {
         token={token}
       />
 
-      {/* Fullscreen Chart Modal */}
       <ChartExpandModal
         isOpen={!!expandedChart}
         onClose={() => setExpandedChart(null)}

@@ -1,0 +1,50 @@
+/* ============================================================ */
+/* PLACEMENT SECTION — component-specific styles               */
+/* ============================================================ */
+
+/* ── Metric card gradient variants ── */
+.pls-metric-card--indigo  { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 10px 25px rgba(99,102,241,0.2); }
+.pls-metric-card--green   { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 10px 25px rgba(16,185,129,0.2); }
+.pls-metric-card--amber   { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 10px 25px rgba(245,158,11,0.2); }
+.pls-metric-card--violet  { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); box-shadow: 0 10px 20px rgba(168,85,247,0.2); }
+.pls-metric-card--sky     { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); box-shadow: 0 10px 20px rgba(14,165,233,0.2); }
+
+/* ── Chart area (relative + padded wrapper) ── */
+.pls-chart-area {
+  position: relative;
+  padding: 10px;
+}
+.pls-chart-area--no-pad {
+  position: relative;
+}
+
+/* ── Top-recruiters table ── */
+.pls-tr-table-wrap { overflow-x: auto; }
+.pls-tr-table { min-width: 600px; }
+.pls-tr-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #8b5cf6;
+  color: white;
+}
+.pls-tr-table thead th { background-color: #8b5cf6; }
+
+/* ── Table cell helpers ── */
+.pls-td-strong { font-weight: 500; }
+.pls-td-empty  { text-align: center; color: #6c757d; font-weight: 500; }
+
+/* ── Chart-mode button active state (indigo) ── */
+.plc-trend-active { background-color: #6366f1; color: #fff; }
+
+/* ── Metric-value-sm semantic color modifiers ── */
+.plc-color-indigo  { color: #6366f1; }
+.plc-color-green   { color: #22c55e; }
+.plc-color-sky     { color: #38bdf8; }
+.plc-color-dark-indigo { color: #4f46e5; }
+.plc-color-amber   { color: #f59e0b; }
+.plc-color-red     { color: #ef4444; }
+.plc-color-blue    { color: #3b82f6; }
+.plc-color-emerald { color: #10b981; }
+.plc-color-violet  { color: #8b5cf6; }
+.plc-color-orange  { color: #f97316; }

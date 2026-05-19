@@ -1,0 +1,42 @@
+/* ============================================================ */
+/* ICSR SECTION — component-specific styles                     */
+/* ============================================================ */
+
+/* ── Action row ── */
+.icsr-action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px; }
+
+/* ── Error ── */
+.icsr-error { padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 4px; margin-bottom: 20px; width: 100%; }
+
+/* ── Summary cards ── */
+.icsr-cards          { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
+.icsr-card           { flex: 1 1 min(280px, 100%); border-radius: 20px; padding: 28px; color: white; }
+.icsr-card--indigo   { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); }
+.icsr-card--green    { background: linear-gradient(135deg, #22c55e 0%, #166534 100%); }
+.icsr-card-h3        { margin: 0 0 10px 0; opacity: 0.9; }
+.icsr-card-value     { font-size: 48px; font-weight: bold; }
+
+/* ── Chart panel ── */
+.icsr-panel        { background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; padding: 24px; margin-bottom: 30px; }
+.icsr-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.icsr-tab-row      { display: flex; gap: 10px; flex-wrap: wrap; }
+.icsr-tab-btn          { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+.icsr-tab-btn--active  { background-color: #4f46e5; color: #fff; }
+.icsr-tab-btn--inactive { background-color: #f1f5f9; color: #475569; }
+
+/* ── Mobile directory ── */
+.icsr-mobile-list    { display: flex; flex-direction: column; gap: 16px; }
+.icsr-mobile-card    { background-color: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+.icsr-mobile-top     { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.icsr-mobile-year    { font-weight: 700; color: #4f46e5; font-size: 14px; }
+.icsr-mobile-badge   { background-color: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.icsr-mobile-h4      { margin: 0 0 10px 0; font-size: 15px; color: #111; line-height: 1.4; }
+.icsr-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+
+/* ── Directory table ── */
+.icsr-table           { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; }
+.icsr-table thead tr  { background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
+.icsr-table th        { padding: 16px; text-align: left; }
+.icsr-table td        { padding: 16px; border-bottom: 1px solid #e0e0e0; }
+.icsr-td-name         { font-weight: 500; }
+.icsr-td-type         { color: #4f46e5; font-weight: 600; }

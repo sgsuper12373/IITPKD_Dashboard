@@ -422,6 +422,51 @@
   }
 }
 
+/* ── Profile admin button row ── */
+.profile-btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* ── Active panel button states ── */
+.page-upload-btn--active       { background-color: #f7a600 !important; color: #fff !important; }
+.page-upload-btn--active-danger { background-color: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; }
+
+/* ── Loading / status text ── */
+.profile-loading-text { color: #666; padding: 1rem 0; }
+
+/* ── Users table scroll wrapper ── */
+.profile-table-scroll { overflow-x: auto; }
+.profile-users-table  { min-width: 600px; }
+
+/* ── Column widths ── */
+.profile-actions-col { width: 160px; }
+.profile-id-col      { width: 80px; }
+
+/* ── Select auto-width in table cell ── */
+.profile-role-select { width: auto; }
+
+/* ── Role ID display in table ── */
+.profile-role-id { font-weight: 600; color: #333; }
+
+/* ── Password edit column ── */
+.profile-pw-col   { display: flex; flex-direction: column; gap: 5px; }
+.profile-pw-input { width: 100%; min-width: 140px; }
+
+/* ── Masked password display ── */
+.profile-pw-dots { color: #999; font-size: 12px; }
+
+/* ── Export table grid (flex, replaces CSS grid) ── */
+.profile-export-grid        { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.profile-export-grid > *    { flex: 1 1 min(200px, 100%); }
+.profile-export-label       { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.profile-table-name         { font-size: 14px; color: #333; }
+
+/* ── Export action row ── */
+.profile-export-actions      { display: flex; gap: 10px; align-items: center; }
+.profile-export-download-btn { padding: 8px 16px; font-size: 14px; }
+
+/* ── Truncate panel ── */
+.roles-panel-title--danger { color: #991b1b; }
+.profile-truncate-desc     { color: #666; font-size: 0.875rem; margin: 0 0 1rem 0; }
+
 /* ===== Floating Toast ===== */
 
 .profile-toast {

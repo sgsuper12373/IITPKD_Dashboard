@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import './ChunkErrorBoundary.css';
 
 // Recognises the various ways browsers/bundlers report a failed dynamic import
 // for a code-split chunk that no longer exists on the server (typical after a
@@ -60,16 +61,8 @@ class ChunkErrorBoundary extends Component {
     // Render a brief loader instead of nothing so users see continuity.
     if (this.state.isChunkError && !this.state.reloadAlreadyAttempted) {
       return (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          height: '100vh', background: '#f8f9fa'
-        }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: '50%',
-            border: '4px solid #e9ecef', borderTopColor: '#667eea',
-            animation: 'cberr-spin 0.75s linear infinite'
-          }} />
-          <style>{`@keyframes cberr-spin { to { transform: rotate(360deg); } }`}</style>
+        <div className="cberr-full-center">
+          <div className="cberr-spinner" />
         </div>
       );
     }
@@ -77,23 +70,12 @@ class ChunkErrorBoundary extends Component {
     // Either a non-chunk render error, or a chunk error that survived a
     // reload — give the user a manual escape hatch.
     return (
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', height: '100vh', background: '#f8f9fa',
-        fontFamily: 'system-ui, sans-serif', padding: 24, textAlign: 'center'
-      }}>
-        <h2 style={{ marginBottom: 12, color: '#333' }}>Something went wrong loading this page.</h2>
-        <p style={{ marginBottom: 24, color: '#666', maxWidth: 480 }}>
+      <div className="cberr-error-box">
+        <h2 className="cberr-h2">Something went wrong loading this page.</h2>
+        <p className="cberr-p">
           The application may have been updated. Please reload to fetch the latest version.
         </p>
-        <button
-          onClick={this.handleRetry}
-          style={{
-            padding: '10px 24px', fontSize: 16, borderRadius: 6,
-            border: 'none', background: '#667eea', color: '#fff',
-            cursor: 'pointer'
-          }}
-        >
+        <button onClick={this.handleRetry} className="cberr-reload-btn">
           Reload
         </button>
       </div>

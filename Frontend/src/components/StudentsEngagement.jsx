@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-/*import './Page.css';*/
-/*import './PeopleCampusMinimal.css';*/
 import './StudentsEngagement.css';
 
 import NptelSection from './NptelSection';
@@ -72,62 +70,36 @@ function StudentsEngagementSection({ user }) {
 
   const grid = (
     <>
-      <div style={{ marginTop: '1rem' }}>
+      <div className="se-intro-wrap">
         <div className="page-container-studentsEngagement">
-          <div className='page-content-studentsEngagement'>
-            <div style={{ marginBottom: '2rem' }}>
-              <h1 style={{ margin: '0 0 0.5rem 0', color: '#111', textShadow: '0 1px 4px rgba(255,255,255,0.8)' }}>Students Engagement</h1>
-              {/* <p style={{ color: '#666', fontSize: '1rem', margin: 0 }}>
-                Student participation in NPTEL courses, certifications, and learning programmes
-              </p> */}
+          <div className="page-content-studentsEngagement">
+            <div className="se-header-wrap">
+              <h1 className="se-heading">Students Engagement</h1>
             </div>
 
-            <div className="students-section-grid">
+            <div className="se-cards-grid">
               {SECTIONS.map((s) => (
                 <div
                   key={s.id}
+                  className="se-card"
                   onClick={() => setActiveSection(s.id)}
-                  style={{
-                    background: s.grad,
-                    borderRadius: '24px',
-                    padding: '32px',
-                    boxShadow: `0 20px 40px ${s.shadow}`,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)';
-                    e.currentTarget.style.boxShadow = `0 25px 50px ${s.shadowHover}`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = `0 20px 40px ${s.shadow}`;
-                  }}
+                  style={{ background: s.grad, boxShadow: `0 20px 40px ${s.shadow}` }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 25px 50px ${s.shadowHover}`; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = `0 20px 40px ${s.shadow}`; }}
                 >
-                  <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                  <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: '250px', height: '250px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
+                  <div className="se-card-decor1" />
+                  <div className="se-card-decor2" />
 
-                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '24px' }}>
-                      <span style={{ fontSize: '64px', background: 'rgba(255,255,255,0.2)', padding: '20px', borderRadius: '24px', marginBottom: '16px', display: 'inline-block' }}>{s.icon}</span>
-                      <h2 style={{ margin: 0, color: 'white', fontSize: '32px', fontWeight: 'bold', letterSpacing: '1px' }}>{s.title}</h2>
-                      <p style={{ margin: '8px 0 0 0', color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>{s.subtitle}</p>
+                  <div className="se-card-content">
+                    <div className="se-card-header">
+                      <span className="se-card-icon-wrap">{s.icon}</span>
+                      <h2 className="se-card-h2">{s.title}</h2>
+                      <p className="se-card-subtitle">{s.subtitle}</p>
                     </div>
-                    <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: '15px', lineHeight: '1.6', marginBottom: '30px', textAlign: 'center', padding: '0 10px' }}>
-                      {s.description}
-                    </p>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'auto' }}>
-                      <div
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', backgroundColor: 'rgba(255,255,255,0.15)', padding: '12px 24px', borderRadius: '40px', backdropFilter: 'blur(5px)', border: '1px solid rgba(255,255,255,0.2)', transition: 'all 0.3s ease', cursor: 'pointer' }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'scale(1)'; }}
-                      >
-                        <span style={{ color: 'white', fontSize: '16px', fontWeight: '500' }}>View →</span>
+                    <p className="se-card-desc">{s.description}</p>
+                    <div className="se-card-footer">
+                      <div className="se-view-btn">
+                        <span className="se-view-label">View &#8594;</span>
                       </div>
                     </div>
                   </div>
@@ -146,7 +118,7 @@ function StudentsEngagementSection({ user }) {
         <div className="expanded-card-container">
           <div className="expanded-card-top-bar">
             <button className="back-button-inline" onClick={() => setActiveSection(null)}>
-              <span className="back-arrow">←</span>
+              <span className="back-arrow">&#8592;</span>
               <span>Back</span>
             </button>
             <div className="section-icon-header">{activeItem.icon}</div>
@@ -166,7 +138,7 @@ function StudentsEngagementSection({ user }) {
     <div className="page-container">
       <div className="page-content">
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-          ← Back to Outreach Extension
+          &#8592; Back to Outreach Extension
         </button>
         {content}
       </div>

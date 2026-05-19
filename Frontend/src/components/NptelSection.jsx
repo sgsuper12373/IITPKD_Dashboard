@@ -17,6 +17,7 @@ import {
 } from 'recharts';
 import './Page.css';
 import './AcademicSection.css';
+import './NptelSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import CustomTooltip from './CustomTooltip';
@@ -76,7 +77,7 @@ function NptelSection({ user, isPublicView = false }) {
     return (
       <div className="page-container">
         <div className="page-content">
-          <h1>NPTEL – CCE</h1>
+          <h1>NPTEL &#8211; CCE</h1>
           <p className="error-message">{error}</p>
         </div>
       </div>
@@ -87,18 +88,18 @@ function NptelSection({ user, isPublicView = false }) {
     <>
       {!isReadOnlyView && (
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-          ← Back to Outreach Extension
+          &#8592; Back to Outreach Extension
         </button>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-        <h1 style={{ margin: 0 }}>CCE Statistics</h1>
+      <div className="nptel-header">
+        <h1 className="nptel-header-h1">CCE Statistics</h1>
         {!isReadOnlyView && isAdmin && (
           <button
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('nptel_courses'); setIsUploadModalOpen(true); }}
           >
-            <span>📖</span> Upload NPTEL Data
+            <span>&#128214;</span> Upload NPTEL Data
           </button>
         )}
       </div>
@@ -111,26 +112,26 @@ function NptelSection({ user, isPublicView = false }) {
         {expandedChart?.content}
       </ChartExpandModal>
 
-      <div id="nptel-summary-cards-container" className="grid-2" style={{ gap: '24px', marginBottom: '40px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '20px', padding: '28px', color: 'white', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '32px', background: 'rgba(255, 255, 255, 0.2)', padding: '10px', borderRadius: '12px' }}>📚</span>
-            <h3 style={{ margin: 0, opacity: 0.9 }}>Total Courses Offered</h3>
+      <div id="nptel-summary-cards-container" className="nptel-cards">
+        <div className="nptel-card nptel-card--purple">
+          <div className="nptel-card-header">
+            <span className="nptel-card-icon">&#128218;</span>
+            <h3 className="nptel-card-h3">Total Courses Offered</h3>
           </div>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.total_courses)}</div>
+          <div className="nptel-card-value">{formatNumber(summary.total_courses)}</div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '20px', padding: '28px', color: 'white', boxShadow: '0 10px 20px rgba(240, 147, 251, 0.2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '32px', background: 'rgba(255, 255, 255, 0.2)', padding: '10px', borderRadius: '12px' }}>👥</span>
-            <h3 style={{ margin: 0, opacity: 0.9 }}>Total Enrollments</h3>
+        <div className="nptel-card nptel-card--pink">
+          <div className="nptel-card-header">
+            <span className="nptel-card-icon">&#128101;</span>
+            <h3 className="nptel-card-h3">Total Enrollments</h3>
           </div>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.total_enrollments)}</div>
+          <div className="nptel-card-value">{formatNumber(summary.total_enrollments)}</div>
         </div>
       </div>
 
-      <div style={{ marginBottom: '40px', padding: '24px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h3 style={{ margin: 0 }}>Enrollment & Certification Trends</h3>
+      <div className="nptel-panel nptel-panel--mb">
+        <div className="nptel-panel-header">
+          <h3 className="nptel-panel-h3">Enrollment &amp; Certification Trends</h3>
           <ExportMenu
             elementId="nptel-chart-container"
             data={summary.yearly_stats}
@@ -182,14 +183,14 @@ function NptelSection({ user, isPublicView = false }) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>No trend data available</div>
+            <div className="nptel-chart-empty">No trend data available</div>
           )}
         </div>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
-          <h3 style={{ margin: 0 }}>Course Directory</h3>
+      <div className="nptel-panel">
+        <div className="nptel-panel-header">
+          <h3 className="nptel-panel-h3">Course Directory</h3>
           <ExportMenu
             elementId="nptel-courses-list-container"
             data={listData}
@@ -201,24 +202,18 @@ function NptelSection({ user, isPublicView = false }) {
         </div>
 
         {chartIsMobile ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="nptel-mobile-list">
             {listData.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No courses found</div>
+              <div className="nptel-mobile-empty">No courses found</div>
             ) : (
               listData.map((course) => (
-                <div key={course.course_id} style={{
-                  backgroundColor: '#fff',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  border: '1px solid #e0e0e0',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: '700', color: '#667eea', fontSize: '14px' }}>FY {course.course_year}</span>
-                    <span style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>{course.department_name}</span>
+                <div key={course.course_id} className="nptel-mobile-card">
+                  <div className="nptel-mobile-top">
+                    <span className="nptel-mobile-year">FY {course.course_year}</span>
+                    <span className="nptel-mobile-dept">{course.department_name}</span>
                   </div>
-                  <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{course.course_name}</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: '#666' }}>
+                  <h4 className="nptel-mobile-h4">{course.course_name}</h4>
+                  <div className="nptel-mobile-details">
                     <div><strong>Faculty:</strong> {course.faculty_coordinator || '—'}</div>
                     <div><strong>Enrollment:</strong> {course.student_enrollment || '0'}</div>
                   </div>
@@ -227,28 +222,28 @@ function NptelSection({ user, isPublicView = false }) {
             )}
           </div>
         ) : (
-          <div id="nptel-courses-list-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '12px', overflow: 'hidden' }}>
+          <div id="nptel-courses-list-container" className="table-responsive">
+            <table className="nptel-table">
               <thead>
-                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Year</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Course Name</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Department</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Faculty</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Enrollment</th>
+                <tr>
+                  <th>Year</th>
+                  <th>Course Name</th>
+                  <th>Department</th>
+                  <th>Faculty</th>
+                  <th>Enrollment</th>
                 </tr>
               </thead>
               <tbody>
                 {listData.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#666' }}>No records found</td></tr>
+                  <tr><td colSpan="5" className="nptel-td-empty">No records found</td></tr>
                 ) : (
                   listData.map((course, index) => (
-                    <tr key={course.course_id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#667eea', fontWeight: '600' }}>{course.course_year}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#333', fontWeight: '500' }}>{course.course_name}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#555' }}>{course.department_name}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#555' }}>{course.faculty_coordinator || '—'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#333', fontWeight: '500' }}>{course.student_enrollment}</td>
+                    <tr key={course.course_id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                      <td className="nptel-td-year">{course.course_year}</td>
+                      <td className="nptel-td-name">{course.course_name}</td>
+                      <td className="nptel-td-text">{course.department_name}</td>
+                      <td className="nptel-td-text">{course.faculty_coordinator || '—'}</td>
+                      <td className="nptel-td-bold">{course.student_enrollment}</td>
                     </tr>
                   ))
                 )}

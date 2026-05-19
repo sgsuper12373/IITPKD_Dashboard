@@ -1,0 +1,36 @@
+/* ── Recharts custom tooltip ── */
+.ct-box {
+    background-color: rgba(255, 255, 255, 0.96);
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.ct-label {
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.ct-entries { display: flex; flex-direction: column; gap: 4px; }
+
+.ct-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.ct-name-wrap { display: flex; align-items: center; gap: 6px; }
+
+/* backgroundColor stays inline (data-driven per entry) */
+.ct-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.ct-name { font-size: 13px; color: #64748b; font-weight: 500; }
+
+.ct-value-wrap { text-align: right; }
+.ct-value      { font-size: 13px; color: #1e293b; font-weight: 600; }
+.ct-pct        { font-size: 11px; color: #94a3b8; margin-left: 6px; font-weight: 500; }

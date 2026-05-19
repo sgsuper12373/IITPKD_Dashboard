@@ -42,9 +42,8 @@ function Education({ user }) {
       <div className="page-container">
         <div className="page-content">
           <button
-            className="page-upload-btn"
+            className="page-upload-btn mb-space-4"
             onClick={() => setShowPublicView(false)}
-            style={{ marginBottom: '1rem' }}
           >
             ← Back to Education Modules
           </button>
@@ -58,7 +57,7 @@ function Education({ user }) {
     <div className="page-container">
       <div className="page-content">
         {roleId !== 0 && roleId !== 1 && (
-          <div style={{ marginBottom: '2rem' }}>
+          <div className="mb-space-8">
             <button className="page-upload-btn" onClick={() => setShowPublicView(true)}>
               View Public Page
             </button>

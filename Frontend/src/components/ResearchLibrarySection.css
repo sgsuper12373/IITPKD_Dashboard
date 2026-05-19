@@ -1,0 +1,285 @@
+/* ============================================================ */
+/* RESEARCH LIBRARY SECTION — component-specific styles         */
+/* ============================================================ */
+
+/* ── Export row ── */
+.rls-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* ── Summary cards: data-driven bg/shadow stay inline; sub-element CSS ── */
+.rls-summary-card {
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  /* background and boxShadow stay inline (array-driven) */
+}
+.rls-card-decor {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+.rls-card-body {
+  position: relative;
+  z-index: 1;
+}
+.rls-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.rls-card-icon {
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 5px;
+  border-radius: 6px;
+}
+.rls-card-value { margin-bottom: 4px; }
+.rls-card-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rls-card-dot {
+  width: 5px;
+  height: 5px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.rls-card-sub {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Filter bar ── */
+.rls-filter-bar {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.rls-filter-h4 {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Clear filters button ── */
+.rls-clear-btn {
+  padding: 6px 12px;
+  background-color: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.rls-clear-btn:hover { background-color: #dc2626; }
+
+/* ── View type wrapper ── */
+.rls-view-type-wrapper { margin-bottom: 12px; }
+.rls-view-type-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* ── Filter grid (flex replaces CSS grid) ── */
+.rls-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.rls-filter-grid > * { flex: 1 1 min(180px, 100%); }
+
+/* ── Filter label & select ── */
+.rls-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+  display: block;
+}
+.rls-filter-select {
+  padding: 8px;
+  font-size: 13px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-family: inherit;
+}
+
+/* ── Chart section (reuses shared .chart-section + overrides) ── */
+.rls-chart-section {
+  margin-bottom: 30px;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+}
+
+/* ── Chart header row ── */
+.rls-chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.rls-chart-h2 {
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+}
+.rls-chart-icon { font-size: 28px; }
+.rls-chart-desc { color: #666; margin: 0; font-size: 14px; }
+
+/* ── Mode toggle (trend chart) ── */
+.rls-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 8px;
+  width: fit-content;
+}
+.rls-mode-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  background-color: transparent;
+  color: #555;
+  box-shadow: none;
+}
+.rls-mode-btn--active {
+  background-color: #fff;
+  color: #6366f1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Chart container ── */
+.rls-chart-container {
+  position: relative;
+  padding: 10px;
+}
+
+/* ── No-data message ── */
+.rls-no-data {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+}
+
+/* ── Directory table wrapper ── */
+.rls-table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+/* ── Directory table ── */
+.rls-table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+.rls-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #a855f7;
+  color: white;
+}
+.rls-table th {
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+.rls-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+.rls-table-empty-td {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+}
+
+/* ── CTA banner ── */
+.rls-cta-banner {
+  margin-top: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(241, 229, 196, 1);
+}
+.rls-cta-left { display: flex; align-items: center; gap: 16px; }
+.rls-cta-h3 {
+  padding: 0 50px 0 0;
+  margin: 0 40px 4px 0;
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+}
+.rls-cta-p { margin: 0; color: rgba(0, 0, 0, 0.85); font-size: 13px; }
+.rls-cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  color: #000;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.rls-cta-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .rls-chart-header-row { flex-direction: column; align-items: flex-start; }
+  .rls-cta-banner { flex-direction: column; align-items: flex-start; }
+  .rls-cta-h3 { padding: 0; margin: 0 0 4px 0; }
+}

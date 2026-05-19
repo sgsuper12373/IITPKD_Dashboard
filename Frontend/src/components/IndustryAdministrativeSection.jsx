@@ -26,6 +26,7 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './ResearchSection.css';
 import '../DesignSystem.css';
+import './IndustryAdministrativeSection.css';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
@@ -69,9 +70,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
     externship_years: []
   });
 
-  // View type selection with radio buttons
   const [viewType, setViewType] = useState('yearly'); // 'yearly' | 'department' | 'externshipTable'
-  const [deptChartType, setDeptChartType] = useState('bar'); // 'bar' | 'trend' for department view
+  const [deptChartType, setDeptChartType] = useState('bar'); // 'bar' | 'trend'
 
   const [filters, setFilters] = useState({
     department: 'All',
@@ -102,7 +102,6 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 2;
 
-  // Whether the current user can see the Directory tab
   const canViewDirectory = user !== undefined && user?.role_id !== 0;
 
   const serializedFilters = JSON.stringify(filters);
@@ -117,7 +116,6 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
         setFilterOptions({ externship_departments, externship_years });
         setError(null);
 
-        // Auto-correct invalid selections
         const corrections = {};
         if (filters.department !== 'All' && filters.department && !externship_departments.includes(filters.department)) corrections.department = 'All';
         if (filters.externship_year !== 'All' && filters.externship_year && !externship_years.map(String).includes(String(filters.externship_year))) corrections.externship_year = 'All';
@@ -182,11 +180,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
     });
   }, [summary.yearly, externshipTypeKeys]);
 
-  // Process data for department-wise yearly trend line graph
   const departmentYearlyTrendData = useMemo(() => {
     if (!summary.yearly.length) return { trendData: [], departments: [] };
 
-    // Get all departments from the data
     const departments = new Set();
     summary.yearly.forEach((yearData) => {
       Object.keys(yearData).forEach((key) => {
@@ -196,7 +192,6 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
       });
     });
 
-    // Transform data for line chart
     const trendData = summary.yearly.map((yearData) => {
       const yearItem = { year: yearData.year };
       departments.forEach((dept) => {
@@ -212,7 +207,6 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
     };
   }, [summary.yearly]);
 
-  // Comparison data for Department Bar Chart (X-axis = Department)
   const departmentComparisonData = useMemo(() => {
     if (!summary.department.length) return [];
     return summary.department.map(item => ({
@@ -264,14 +258,12 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
     });
   };
 
-  // Using shared CustomTooltip from chartUtils
-
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
         {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/industry-connect')}>
-            ← Back to Industry Connect
+            &#8592; Back to Industry Connect
           </button>
         )}
 
@@ -287,22 +279,16 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   className="page-upload-btn"
                   onClick={() => setIsUploadModalOpen(true)}
                 >
-                  <span>📤</span> Upload Externship Data
+                  <span>&#128228;</span> Upload Externship Data
                 </button>
               </div>
             )}
           </div>
         )}
 
-        {error && <div className="error-message" style={{
-          padding: '10px',
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          borderRadius: '4px',
-          marginBottom: '20px'
-        }}>{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1rem' }}>
+        <div className="ias-export-row">
           <ExportMenu
             elementId="externship-summary-cards-container"
             data={[{
@@ -317,169 +303,95 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             title="Faculty Industry Stint Summary"
           />
         </div>
-        {/* Modern Summary Cards */}
-        <div id="externship-summary-cards-container" className="stat-card-grid" style={{ gap: '20px' }}>
-          {/* Total Externships Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '100px',
-              height: '100px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Faculty Industry Stints</span>
+
+        <div id="externship-summary-cards-container" className="stat-card-grid ias-stat-grid">
+          <div className="ias-stat-card ias-stat-card--indigo">
+            <div className="ias-stat-card-decor" />
+            <div className="ias-stat-card-body">
+              <div className="ias-stat-card-header">
+                <span className="ias-stat-card-icon">&#128188;</span>
+                <span className="ias-stat-card-label">Total Faculty Industry Stints</span>
               </div>
-              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
+              <div className="stat-card-value ias-stat-card-value">
                 {formatNumber(summary.total)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Total industry engagements</span>
+              <div className="ias-stat-card-status">
+                <span className="ias-stat-dot" />
+                <span className="ias-stat-subtext">Total industry engagements</span>
               </div>
             </div>
           </div>
 
-          {/* Participating Departments Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 10px 20px rgba(34, 197, 94, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '100px',
-              height: '100px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🏢</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Departments</span>
+          <div className="ias-stat-card ias-stat-card--green">
+            <div className="ias-stat-card-decor" />
+            <div className="ias-stat-card-body">
+              <div className="ias-stat-card-header">
+                <span className="ias-stat-card-icon">&#127962;</span>
+                <span className="ias-stat-card-label">Departments</span>
               </div>
-              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
+              <div className="stat-card-value ias-stat-card-value">
                 {formatNumber(participatingDepartments)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Active departments</span>
+              <div className="ias-stat-card-status">
+                <span className="ias-stat-dot" />
+                <span className="ias-stat-subtext">Active departments</span>
               </div>
             </div>
           </div>
 
-          {/* Timeline Coverage Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-20px',
-              right: '-20px',
-              width: '100px',
-              height: '100px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
-                <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Timeline Coverage</span>
+          <div className="ias-stat-card ias-stat-card--orange">
+            <div className="ias-stat-card-decor" />
+            <div className="ias-stat-card-body">
+              <div className="ias-stat-card-header">
+                <span className="ias-stat-card-icon">&#128197;</span>
+                <span className="ias-stat-card-label">Timeline Coverage</span>
               </div>
-              <div className="stat-card-value" style={{ marginBottom: '8px' }}>
+              <div className="stat-card-value ias-stat-card-value">
                 {formatNumber(activeYears)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Years of activity</span>
+              <div className="ias-stat-card-status">
+                <span className="ias-stat-dot" />
+                <span className="ias-stat-subtext">Years of activity</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="contain-layout" style={{ position: 'relative', minHeight: '520px', transition: 'opacity 0.3s ease' }}>
-          {/* Main Chart Section - Persistently Mounted */}
-          <section className="chart-section" style={{
-            marginBottom: '30px',
-            backgroundColor: '#fff',
-            borderRadius: '16px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-            border: '1px solid #f0f0f0',
-            position: 'relative',
-            overflow: 'hidden',
-            padding: '24px'  // added padding to contain inner elements nicely
-          }}>
+        <div className="contain-layout">
+          <section className="chart-section">
             {/* Common Filters Section */}
-            <div style={{
-              marginBottom: '20px', padding: '15px',
-              backgroundColor: '#f8f9fa', borderRadius: '12px',
-              border: '1px solid #e9ecef', boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-            }}>
+            <div className="ias-filter-panel">
               <div className="filter-panel-header">
-                <h4 style={{ margin: 0, color: '#333', fontSize: '14px', fontWeight: '600' }}>Dashboard Filters</h4>
-                <button
-                  onClick={handleClearFilters}
-                  style={{
-                    padding: '6px 12px', backgroundColor: '#ef4444', color: '#fff',
-                    border: 'none', borderRadius: '6px', cursor: 'pointer',
-                    fontSize: '12px', fontWeight: '500', transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
-                >
+                <h4 className="ias-filter-h4">Dashboard Filters</h4>
+                <button className="ias-clear-btn" onClick={handleClearFilters}>
                   Clear All Filters
                 </button>
               </div>
 
-              <div className="filter-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', alignItems: 'end' }}>
+              <div className="ias-filter-grid">
 
-                {/* View Type Buttons — leftmost */}
+                {/* View Type Buttons */}
                 <div className="filter-group">
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>View Type</label>
+                  <label className="ias-filter-label">View Type</label>
                   <div className="view-type-bar">
                     <button
                       onClick={() => setViewType('yearly')}
-                      className="view-type-btn"
-                      style={{ backgroundColor: viewType === 'yearly' ? '#6366f1' : 'transparent', color: viewType === 'yearly' ? 'white' : '#475569' }}
+                      className={`view-type-btn${viewType === 'yearly' ? ' view-type-btn--yearly-active' : ''}`}
                     >
-                      📊 Year
+                      &#128202; Year
                     </button>
                     <button
                       onClick={() => setViewType('department')}
-                      className="view-type-btn"
-                      style={{ backgroundColor: viewType === 'department' ? '#22c55e' : 'transparent', color: viewType === 'department' ? 'white' : '#475569' }}
+                      className={`view-type-btn${viewType === 'department' ? ' view-type-btn--dept-active' : ''}`}
                     >
-                      🏢 Dept
+                      &#127962; Dept
                     </button>
                     {canViewDirectory && (
                       <button
                         onClick={() => setViewType('externshipTable')}
-                        className="view-type-btn"
-                        style={{ backgroundColor: viewType === 'externshipTable' ? '#f97316' : 'transparent', color: viewType === 'externshipTable' ? 'white' : '#475569' }}
+                        className={`view-type-btn${viewType === 'externshipTable' ? ' view-type-btn--dir-active' : ''}`}
                       >
-                        📋 Dir
+                        &#128203; Dir
                       </button>
                     )}
                   </div>
@@ -487,12 +399,11 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Department Filter */}
                 <div className="filter-group">
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Department</label>
+                  <label className="ias-filter-label">Department</label>
                   <select
                     className="filter-select"
                     value={filters.department}
                     onChange={(e) => handleFilterChange('department', e.target.value)}
-                    style={{ padding: '8px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd', outline: 'none' }}
                   >
                     <option value="All">All Departments</option>
                     {filterOptions.externship_departments.map((dept) => (
@@ -503,12 +414,11 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Year Filter */}
                 <div className="filter-group">
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', marginBottom: '4px', display: 'block' }}>Faculty Industry Stint Year</label>
+                  <label className="ias-filter-label">Faculty Industry Stint Year</label>
                   <select
                     className="filter-select"
                     value={filters.externship_year}
                     onChange={(e) => handleFilterChange('externship_year', e.target.value)}
-                    style={{ padding: '8px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd', outline: 'none' }}
                   >
                     <option value="All">All Years</option>
                     {filterOptions.externship_years.map((year) => (
@@ -520,14 +430,14 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* 1. Year-wise Externships (Always Mounted) */}
+            {/* 1. Year-wise Externships */}
             <div className={`chart-view ${viewType === 'yearly' ? 'active' : 'inactive'}`}>
-              <div className="chart-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="ias-chart-header-row">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                    <span style={{ fontSize: '28px' }}>📊</span> Year-wise Faculty Industry Stints
+                  <h2 className="ias-chart-h2">
+                    <span className="ias-chart-icon">&#128202;</span> Year-wise Faculty Industry Stints
                   </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                  <p className="chart-description">
                     Distribution by externship type across the chosen timeframe
                   </p>
                 </div>
@@ -540,10 +450,10 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   title="Year-wise Faculty Industry Stints"
                 />
               </div>
-              <div 
+              <div
                 id="externships-yearly-container"
-                className="bar-chart-container clickable-chart"
-                style={{ position: 'relative', height: chartIsMobile ? '240px' : '400px' }}
+                className="bar-chart-container clickable-chart ias-chart-container"
+                style={{ height: chartIsMobile ? '240px' : '400px' }}
                 onClick={() => setExpandedChart({
                   title: "Year-wise Faculty Industry Stints",
                   content: (
@@ -586,33 +496,26 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* 2. Department-wise Analysis (Always Mounted) */}
+            {/* 2. Department-wise Analysis */}
             <div className={`chart-view ${viewType === 'department' ? 'active' : 'inactive'}`}>
-              <div className="chart-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+              <div className="ias-chart-header-row ias-chart-header-row--top">
                 <div>
-                  <h2 style={{ margin: '0 0 8px 0', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px' }}>
-                    <span style={{ fontSize: '28px' }}>🏢</span> Department-wise Analysis
+                  <h2 className="ias-chart-h2">
+                    <span className="ias-chart-icon">&#127962;</span> Department-wise Analysis
                   </h2>
-                  <p className="chart-description" style={{ color: '#666', margin: '0', fontSize: '14px' }}>
+                  <p className="chart-description">
                     {deptChartType === 'bar' ? 'Distribution across departments' : 'Yearly trend per department'}
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', gap: '8px', background: '#f0f0f0', padding: '4px', borderRadius: '8px' }}>
+                <div className="ias-mode-toggle-wrap">
+                  <div className="ias-mode-toggle">
                     {['bar', 'trend'].map((mode) => (
                       <button
                         key={mode}
                         onClick={() => setDeptChartType(mode)}
-                        style={{
-                          padding: '6px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer',
-                          fontSize: '13px', fontWeight: '600',
-                          backgroundColor: deptChartType === mode ? '#fff' : 'transparent',
-                          color: deptChartType === mode ? '#22c55e' : '#666',
-                          boxShadow: deptChartType === mode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
-                          transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
-                        }}
+                        className={`ias-mode-btn${deptChartType === mode ? ' ias-mode-btn--active' : ''}`}
                       >
-                        {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                        {mode === 'bar' ? '&#128202; Bar' : '&#128200; Trend'}
                       </button>
                     ))}
                   </div>
@@ -626,14 +529,14 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   />
                 </div>
               </div>
-              <div 
+              <div
                 id="externships-dept-container"
-                className="bar-chart-container clickable-chart"
-                style={{ position: 'relative', height: chartIsMobile ? '240px' : '400px' }}
+                className="bar-chart-container clickable-chart ias-chart-container"
+                style={{ height: chartIsMobile ? '240px' : '400px' }}
                 onClick={() => setExpandedChart({
                   title: deptChartType === 'bar' ? "Department-wise Externships" : "Department Yearly Trend",
                   content: (
-                    <div style={{ height: '500px', padding: '20px' }}>
+                    <div className="ias-expanded-chart">
                       {deptChartType === 'bar' ? (
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={departmentComparisonData} margin={{ top: 40, right: 30, left: 40, bottom: 100 }}>
@@ -680,7 +583,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div style={{ height: chartIsMobile ? '240px' : '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                    <div className="ias-empty-chart" style={{ height: chartIsMobile ? '240px' : '400px' }}>
                       No department data available
                     </div>
                   )}
@@ -708,7 +611,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       </LineChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div style={{ height: chartIsMobile ? '240px' : '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' }}>
+                    <div className="ias-empty-chart" style={{ height: chartIsMobile ? '240px' : '400px' }}>
                       No trend data available
                     </div>
                   )}
@@ -716,15 +619,15 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               </div>
             </div>
 
-            {/* 3. Externship Directory Table — hidden for role_id 0 or undefined */}
+            {/* 3. Externship Directory Table */}
             {canViewDirectory && viewType === 'externshipTable' && (
               <div className="chart-view active performance-render-auto">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="ias-dir-header-row">
                   <div className="chart-header">
-                    <h2 style={{ margin: 0, color: '#1a1a1a', fontSize: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>📋</span> Faculty Industry Stint Directory
+                    <h2 className="ias-chart-h2">
+                      <span>&#128203;</span> Faculty Industry Stint Directory
                     </h2>
-                    <p style={{ fontSize: '14px', color: '#666', margin: '4px 0 0 0' }}>
+                    <p className="chart-description">
                       Displaying {externshipList.length} total records
                     </p>
                   </div>
@@ -740,43 +643,39 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 </div>
                 <div id="externship-directory-table">
                   {chartIsMobile ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="ias-mobile-list">
                       {externshipList.length > 0 ? (
                         externshipList.map((e) => (
-                          <div key={e.externship_id} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                            <div style={{ fontSize: '18px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>{e.faculty_name}</div>
-                            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>{e.department}</div>
-                            <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
-                              <span style={{ fontWeight: '600', color: '#64748b' }}>Partner:</span> {e.industry_name}
+                          <div key={e.externship_id} className="ias-mobile-card">
+                            <div className="ias-mobile-card-name">{e.faculty_name}</div>
+                            <div className="ias-mobile-card-dept">{e.department}</div>
+                            <div className="ias-mobile-card-partner">
+                              <span className="ias-mobile-partner-label">Partner:</span> {e.industry_name}
                             </div>
-                            <div style={{ marginBottom: '12px' }}>
-                              <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
-                                {e.type}
-                              </span>
+                            <div className="ias-mobile-card-type">
+                              <span className="ias-type-badge">{e.type}</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
-                              <div style={{ fontSize: '13px', color: '#475569' }}>
+                            <div className="ias-mobile-card-footer">
+                              <div className="ias-mobile-card-duration">
                                 <strong>{formatDuration(e.duration_days)}</strong>
                               </div>
-                              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                              <div className="ias-mobile-card-dates">
                                 {formatDate(e.startdate)} - {formatDate(e.enddate)}
                               </div>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>No externship records found</div>
+                        <div className="ias-empty-msg">No externship records found</div>
                       )}
                     </div>
                   ) : (
-                    <div className="table-responsive accelerated-scroll" style={{ maxHeight: '600px', overflowY: 'auto', borderRadius: '12px', border: '1px solid #eee' }}>
-                      <table className="performance-table" style={{ width: '100%', fontSize: '13px', borderCollapse: 'separate', borderSpacing: 0 }}>
-                        <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                          <tr style={{ backgroundColor: '#f97316' }}>
+                    <div className="table-responsive accelerated-scroll ias-table-wrapper">
+                      <table className="performance-table ias-table">
+                        <thead>
+                          <tr>
                             {['Faculty', 'Dept', 'Partner', 'Type', 'Duration', 'Start', 'End'].map(header => (
-                              <th key={header} style={{ padding: '16px 12px', textAlign: 'left', color: 'white', fontWeight: '600', borderBottom: '2px solid rgba(0,0,0,0.1)' }}>
-                                {header}
-                              </th>
+                              <th key={header}>{header}</th>
                             ))}
                           </tr>
                         </thead>
@@ -785,25 +684,23 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                             externshipList.map((e, i) => (
                               <tr
                                 key={e.externship_id}
-                                style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa', transition: 'background-color 0.2s' }}
                                 className="table-row-hover"
+                                style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}
                               >
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.faculty_name}</td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.department}</td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>{e.industry_name}</td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                                  <span style={{ padding: '4px 8px', borderRadius: '6px', backgroundColor: '#fef3c7', color: '#92400e', fontSize: '11px', fontWeight: '600' }}>
-                                    {e.type}
-                                  </span>
+                                <td>{e.faculty_name}</td>
+                                <td>{e.department}</td>
+                                <td>{e.industry_name}</td>
+                                <td>
+                                  <span className="ias-type-badge">{e.type}</span>
                                 </td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: '500' }}>{formatDuration(e.duration_days)}</td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.startdate)}</td>
-                                <td style={{ padding: '12px', borderBottom: '1px solid #eee', color: '#666' }}>{formatDate(e.enddate)}</td>
+                                <td className="ias-td-strong">{formatDuration(e.duration_days)}</td>
+                                <td className="ias-td-muted">{formatDate(e.startdate)}</td>
+                                <td className="ias-td-muted">{formatDate(e.enddate)}</td>
                               </tr>
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
+                              <td colSpan="7" className="ias-td-empty">
                                 No externship records found
                               </td>
                             </tr>
@@ -827,7 +724,6 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           token={token}
         />
 
-        {/* Fullscreen Chart Modal */}
         <ChartExpandModal
           isOpen={!!expandedChart}
           onClose={() => setExpandedChart(null)}

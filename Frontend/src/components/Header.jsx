@@ -271,11 +271,11 @@ function Header({ user, onLogout, isGuest }) {
                     <div className="sidebar-divider" />
 
                     {/* User info at bottom */}
-                    <div style={{ padding: '12px 20px', marginTop: 'auto' }}>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                    <div className="sidebar-user-box">
+                        <div className="sidebar-user-label">
                             Signed in as
                         </div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                        <div className="sidebar-user-name">
                             {isGuest ? 'Guest' : (user?.display_name || user?.email || 'User')}
                         </div>
                     </div>

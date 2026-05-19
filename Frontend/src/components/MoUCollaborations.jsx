@@ -26,6 +26,7 @@ import ChartExpandModal from './ChartExpandModal';
 import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
+import './MoUCollaborations.css';
 
 const ICSR_COLOR = '#a855f7';
 const IAR_COLOR = '#14b8a6';
@@ -77,7 +78,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
     return () => window.removeEventListener('resize', handle);
   }, []);
 
-  // Load ICSR filter options (cross-filtered by active mou_year)
   useEffect(() => {
     const load = async () => {
       try {
@@ -92,7 +92,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
     load();
   }, [icsrFilters.mou_year, token, uploadVersion]);
 
-  // Load ICSR MoU data
   useEffect(() => {
     const load = async () => {
       try {
@@ -111,7 +110,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
     load();
   }, [icsrFilters, token, uploadVersion]);
 
-  // Load IAR filter options (cross-filtered by active mou_year)
   useEffect(() => {
     const load = async () => {
       try {
@@ -124,7 +122,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
     load();
   }, [iarFilters.mou_year, token, uploadVersion]);
 
-  // Load IAR MoU data
   useEffect(() => {
     const load = async () => {
       try {
@@ -169,61 +166,44 @@ function MoUCollaborations({ user, isPublicView = false }) {
     filterOpts, filters, onFilterChange, onClearFilters,
     showIarColumns = false, chartIsMobile, setExpandedChart
   }) => (
-
-    <section style={{
-      backgroundColor: '#fff', borderRadius: '10px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden'
-    }}>
+    <section className="mou-section-panel">
       {/* Filter bar */}
-      <div style={{ padding: '16px 20px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #e9ecef' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <h4 style={{ margin: 0, color: '#333', fontSize: '14px' }}>Filters</h4>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      <div className="mou-filter-bar">
+        <div className="mou-filter-bar-row">
+          <div className="mou-filter-left">
+            <h4 className="mou-filter-h4">Filters</h4>
+            <div className="mou-view-btns-row">
               <button
                 onClick={() => setViewType('trend')}
+                className="mou-view-btn"
                 style={{
-                  padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
                   border: viewType === 'trend' ? `2px solid ${color}` : '1px solid #e2e8f0',
                   backgroundColor: viewType === 'trend' ? (color === ICSR_COLOR ? '#faf5ff' : '#ccfbf1') : '#fff',
                   color: viewType === 'trend' ? (color === ICSR_COLOR ? '#6b21a8' : '#0f766e') : '#333',
-                  cursor: 'pointer', fontWeight: 600
                 }}
               >
-                📈 MoUs Trend
+                &#128200; MoUs Trend
               </button>
               {!isRestricted && (
                 <button
                   onClick={() => setViewType('directory')}
-                  style={{
-                    padding: '6px 14px', fontSize: '13px', borderRadius: '6px',
-                    border: viewType === 'directory' ? '2px solid #0ea5e9' : '1px solid #e2e8f0',
-                    backgroundColor: viewType === 'directory' ? '#e0f2fe' : '#fff',
-                    color: viewType === 'directory' ? '#0369a1' : '#333',
-                    cursor: 'pointer', fontWeight: 600
-                  }}
+                  className={`mou-view-btn${viewType === 'directory' ? ' mou-view-btn--directory-active' : ''}`}
                 >
-                  📋 MoUs Directory
+                  &#128203; MoUs Directory
                 </button>
               )}
             </div>
           </div>
-          <button
-            onClick={onClearFilters}
-            style={{
-              padding: '6px 12px', backgroundColor: '#dc3545', color: '#fff',
-              border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px'
-            }}
-          >
+          <button className="mou-clear-btn" onClick={onClearFilters}>
             Clear Filters
           </button>
         </div>
-        <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '200px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 500, color: '#555' }}>MoU Year</label>
+        <div className="mou-year-filter">
+          <label className="mou-year-label">MoU Year</label>
           <select
+            className="mou-year-select"
             value={filters.mou_year}
             onChange={(e) => onFilterChange('mou_year', e.target.value)}
-            style={{ padding: '8px', fontSize: '13px', borderRadius: '6px', border: '1px solid #ddd', outline: 'none' }}
           >
             <option value="All">All Years</option>
             {filterOpts.mou_years.map((y) => <option key={y} value={y}>{y}</option>)}
@@ -232,10 +212,10 @@ function MoUCollaborations({ user, isPublicView = false }) {
       </div>
 
       {/* Body */}
-      <div style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ margin: 0, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}>
-            <span>{viewType === 'trend' ? '🤝' : '📋'}</span>
+      <div className="mou-body">
+        <div className="mou-body-header-row">
+          <h2 className="mou-body-h2">
+            <span>{viewType === 'trend' ? '&#129309;' : '&#128203;'}</span>
             {viewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
           </h2>
           <ExportMenu
@@ -261,16 +241,15 @@ function MoUCollaborations({ user, isPublicView = false }) {
 
         {viewType === 'trend' && (
           <>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <div className="mou-mode-btns-row">
               {['bar', 'trend'].map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setChartMode(mode)}
+                  className="mou-mode-btn"
                   style={{
-                    padding: '6px 16px', fontSize: '13px', fontWeight: 600,
-                    borderRadius: '6px', cursor: 'pointer', border: 'none',
                     backgroundColor: chartMode === mode ? color : '#f1f5f9',
-                    color: chartMode === mode ? '#fff' : '#555'
+                    color: chartMode === mode ? '#fff' : '#555',
                   }}
                 >
                   {mode === 'bar' ? 'Bar' : 'Trend'}
@@ -279,8 +258,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
             </div>
             <div
               id={trendId}
-              className={`chart-container clickable-chart ${!chartData.length ? 'chart-has-empty' : ''}`}
-              style={{ position: 'relative', padding: '10px' }}
+              className={`chart-container clickable-chart mou-chart-container ${!chartData.length ? 'chart-has-empty' : ''}`}
               onClick={() => setExpandedChart({
                 title: filenamePrefix.includes('industry') ? 'Industry MoUs Trend' : 'Education MoUs Trend',
                 content: (
@@ -348,22 +326,16 @@ function MoUCollaborations({ user, isPublicView = false }) {
 
         {viewType === 'directory' && (
           <>
-            <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>{list.length} records found</p>
+            <p className="mou-records-count">{list.length} records found</p>
             {chartIsMobile ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="mou-mobile-list">
                 {list.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No records found</div>
+                  <div className="mou-mobile-empty">No records found</div>
                 ) : (
                   list.map((m, i) => (
-                    <div key={m.mou_id ?? m.id ?? i} style={{
-                      backgroundColor: '#fff',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                    }}>
-                      <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{m.partner_name}</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#666' }}>
+                    <div key={m.mou_id ?? m.id ?? i} className="mou-mobile-card">
+                      <h4 className="mou-mobile-card-h4">{m.partner_name}</h4>
+                      <div className="mou-mobile-card-fields">
                         <div><strong>Signed:</strong> {formatDate(m.date_signed)}</div>
                         <div><strong>Valid till:</strong> {formatDate(m.validity_end)}</div>
                       </div>
@@ -372,31 +344,27 @@ function MoUCollaborations({ user, isPublicView = false }) {
                 )}
               </div>
             ) : (
-              <div
-                id={directoryId}
-                className="table-responsive"
-                style={{ maxHeight: '450px', overflowY: 'auto' }}
-              >
-              {!isRestricted && (
-                <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
-                    <thead style={{ position: 'sticky', top: 0, backgroundColor: color, color: 'white' }}>
+              <div id={directoryId} className="table-responsive mou-table-wrapper">
+                {!isRestricted && (
+                  <table className="mou-table">
+                    <thead style={{ backgroundColor: color }}>
                       <tr>
                         {showIarColumns ? (
                           <>
-                            <th style={{ padding: '10px' }}>Sl. No.</th>
-                            <th style={{ padding: '10px' }}>Partner</th>
-                            <th style={{ padding: '10px' }}>Framework</th>
-                            <th style={{ padding: '10px' }}>Country</th>
-                            <th style={{ padding: '10px' }}>Collaboration Nature</th>
-                            <th style={{ padding: '10px' }}>Signed</th>
-                            <th style={{ padding: '10px' }}>Valid Till</th>
+                            <th className="mou-th">Sl. No.</th>
+                            <th className="mou-th">Partner</th>
+                            <th className="mou-th">Framework</th>
+                            <th className="mou-th">Country</th>
+                            <th className="mou-th">Collaboration Nature</th>
+                            <th className="mou-th">Signed</th>
+                            <th className="mou-th">Valid Till</th>
                           </>
                         ) : (
                           <>
-                            <th style={{ padding: '10px' }}>Partner</th>
-                            <th style={{ padding: '10px' }}>Focus</th>
-                            <th style={{ padding: '10px' }}>Signed</th>
-                            <th style={{ padding: '10px' }}>Valid Till</th>
+                            <th className="mou-th">Partner</th>
+                            <th className="mou-th">Focus</th>
+                            <th className="mou-th">Signed</th>
+                            <th className="mou-th">Valid Till</th>
                           </>
                         )}
                       </tr>
@@ -406,34 +374,34 @@ function MoUCollaborations({ user, isPublicView = false }) {
                         <tr key={m.mou_id ?? m.id ?? i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
                           {showIarColumns ? (
                             <>
-                              <td style={{ padding: '8px', fontWeight: 600 }}>{i + 1}</td>
-                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                              <td style={{ padding: '8px' }}>{m.framework}</td>
-                              <td style={{ padding: '8px' }}>{m.country}</td>
-                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                              <td className="mou-td mou-td--strong">{i + 1}</td>
+                              <td className="mou-td">{m.partner_name}</td>
+                              <td className="mou-td">{m.framework}</td>
+                              <td className="mou-td">{m.country}</td>
+                              <td className="mou-td">{m.collaboration_nature}</td>
+                              <td className="mou-td">{formatDate(m.date_signed)}</td>
+                              <td className="mou-td">{formatDate(m.validity_end)}</td>
                             </>
                           ) : (
                             <>
-                              <td style={{ padding: '8px' }}>{m.partner_name}</td>
-                              <td style={{ padding: '8px' }}>{m.collaboration_nature}</td>
-                              <td style={{ padding: '8px' }}>{formatDate(m.date_signed)}</td>
-                              <td style={{ padding: '8px' }}>{formatDate(m.validity_end)}</td>
+                              <td className="mou-td">{m.partner_name}</td>
+                              <td className="mou-td">{m.collaboration_nature}</td>
+                              <td className="mou-td">{formatDate(m.date_signed)}</td>
+                              <td className="mou-td">{formatDate(m.validity_end)}</td>
                             </>
                           )}
                         </tr>
                       ))}
                       {!list.length && (
                         <tr>
-                          <td colSpan={showIarColumns ? 7 : 4} style={{ padding: '32px', textAlign: 'center', color: '#6c757d', fontWeight: 500 }}>
+                          <td colSpan={showIarColumns ? 7 : 4} className="mou-td mou-td--empty">
                             No information available for the selected filter
                           </td>
                         </tr>
                       )}
                     </tbody>
-                </table>
-              )}
+                  </table>
+                )}
               </div>
             )}
           </>
@@ -447,7 +415,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
       <div className={isPublicView ? '' : 'page-content'}>
         {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/')}>
-            ← Back to Home
+            &#8592; Back to Home
           </button>
         )}
 
@@ -462,7 +430,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                   className="page-upload-btn"
                   onClick={() => activeTab === 'industry' ? setIcsrUploadOpen(true) : setIarUploadOpen(true)}
                 >
-                  <span>📤</span> Upload MoUs
+                  <span>&#128228;</span> Upload MoUs
                 </button>
               </div>
             )}
@@ -470,96 +438,73 @@ function MoUCollaborations({ user, isPublicView = false }) {
         )}
 
         {/* Summary Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '28px' }}>
-          <div style={{
-            background: `linear-gradient(135deg, ${ICSR_COLOR} 0%, #9333ea 100%)`,
-            borderRadius: '20px', padding: '24px',
-            boxShadow: '0 10px 25px rgba(168,85,247,0.2)',
-            position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🏭</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Industry MoUs</h3>
+        <div className="mou-cards-grid">
+          <div className="mou-stat-card mou-stat-card--purple">
+            <div className="mou-stat-card-body">
+              <div className="mou-stat-card-header">
+                <span className="mou-stat-card-icon">&#127981;</span>
+                <h3 className="mou-stat-card-h3">Industry MoUs</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{icsrTotalMous}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Industry collaborations</span>
+              <div className="metric-value">{icsrTotalMous}</div>
+              <div className="mou-stat-card-status">
+                <span className="mou-stat-dot" />
+                <span className="mou-stat-subtext">Industry collaborations</span>
               </div>
             </div>
           </div>
 
-          <div style={{
-            background: `linear-gradient(135deg, ${IAR_COLOR} 0%, #0d9488 100%)`,
-            borderRadius: '20px', padding: '24px',
-            boxShadow: '0 10px 25px rgba(20,184,166,0.2)',
-            position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🎓</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Education MoUs</h3>
+          <div className="mou-stat-card mou-stat-card--teal">
+            <div className="mou-stat-card-body">
+              <div className="mou-stat-card-header">
+                <span className="mou-stat-card-icon">&#127891;</span>
+                <h3 className="mou-stat-card-h3">Education MoUs</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{iarTotalMous}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Academic collaborations</span>
+              <div className="metric-value">{iarTotalMous}</div>
+              <div className="mou-stat-card-status">
+                <span className="mou-stat-dot" />
+                <span className="mou-stat-subtext">Academic collaborations</span>
               </div>
             </div>
           </div>
 
-          <div style={{
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-            borderRadius: '20px', padding: '24px',
-            boxShadow: '0 10px 25px rgba(59,130,246,0.2)',
-            position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '22px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '10px' }}>🤝</span>
-                <h3 style={{ margin: 0, color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '500' }}>Total MoUs</h3>
+          <div className="mou-stat-card mou-stat-card--blue">
+            <div className="mou-stat-card-body">
+              <div className="mou-stat-card-header">
+                <span className="mou-stat-card-icon">&#129309;</span>
+                <h3 className="mou-stat-card-h3">Total MoUs</h3>
               </div>
-              <div className="metric-value" style={{ color: 'white' }}>{icsrTotalMous + iarTotalMous}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-                <span style={{ width: '6px', height: '6px', background: '#4ade80', borderRadius: '50%' }} />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Combined partnerships</span>
+              <div className="metric-value">{icsrTotalMous + iarTotalMous}</div>
+              <div className="mou-stat-card-status">
+                <span className="mou-stat-dot" />
+                <span className="mou-stat-subtext">Combined partnerships</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Toggle Tabs */}
-        <div style={{
-          display: 'flex', gap: '0', marginBottom: '24px',
-          background: '#f1f5f9', borderRadius: '10px', padding: '4px',
-          width: 'fit-content'
-        }}>
+        <div className="mou-tab-bar">
           <button
             onClick={() => setActiveTab('industry')}
+            className="mou-tab-btn"
             style={{
-              padding: '10px 24px', fontSize: '14px', fontWeight: 600,
-              borderRadius: '8px', border: 'none', cursor: 'pointer',
               backgroundColor: activeTab === 'industry' ? '#fff' : 'transparent',
               color: activeTab === 'industry' ? ICSR_COLOR : '#64748b',
               boxShadow: activeTab === 'industry' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-              transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            🏭 Research Collaborations
+            &#127981; Research Collaborations
           </button>
           <button
             onClick={() => setActiveTab('education')}
+            className="mou-tab-btn"
             style={{
-              padding: '10px 24px', fontSize: '14px', fontWeight: 600,
-              borderRadius: '8px', border: 'none', cursor: 'pointer',
               backgroundColor: activeTab === 'education' ? '#fff' : 'transparent',
               color: activeTab === 'education' ? IAR_COLOR : '#64748b',
               boxShadow: activeTab === 'education' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-              transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            🎓 Academic Collaborations
+            &#127891; Academic Collaborations
           </button>
         </div>
 
@@ -578,7 +523,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
           setExpandedChart
         })}
 
-        {/* Education Collaborations */}
         {activeTab === 'education' && renderMouChartSection({
           color: IAR_COLOR,
           viewType: iarViewType, setViewType: setIarViewType,
@@ -594,7 +538,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
           setExpandedChart
         })}
 
-
         <DataUploadModal
           isOpen={icsrUploadOpen}
           onClose={() => setIcsrUploadOpen(false)}
@@ -608,7 +551,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
           token={token}
         />
 
-        {/* Fullscreen Chart Modal */}
         <ChartExpandModal
           isOpen={!!expandedChart}
           onClose={() => setExpandedChart(null)}
@@ -620,6 +562,5 @@ function MoUCollaborations({ user, isPublicView = false }) {
     </div>
   );
 }
-
 
 export default MoUCollaborations;

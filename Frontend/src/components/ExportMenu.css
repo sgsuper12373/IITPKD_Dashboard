@@ -1,0 +1,66 @@
+/* ── Export dropdown wrapper ── */
+.em-wrapper { position: relative; display: inline-block; }
+
+/* ── Export trigger button ── */
+.em-btn {
+    padding: 8px 14px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: auto;
+    min-width: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+.em-btn:hover { background-color: #f8fafc; }
+
+/* ── Dropdown panel ── */
+.em-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    min-width: 180px;
+    padding: 6px;
+    animation: emFadeIn 0.2s ease-out;
+}
+
+@keyframes emFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Dropdown menu item ── */
+.em-item {
+    width: 100%;
+    padding: 10px 12px;
+    text-align: left;
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: auto;
+    transition: background-color 0.1s ease;
+}
+.em-item:hover { background-color: #f1f5f9; }
+
+/* ── Icon in menu items ── */
+.em-icon { font-size: 16px; }

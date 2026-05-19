@@ -1,0 +1,64 @@
+/* ============================================================ */
+/* ADMINISTRATIVE SECTION — component-specific styles          */
+/* ============================================================ */
+
+/* ── Year picker metric card ── */
+.adm-metric-card--purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* ── Year picker inner overrides ── */
+.adm-metric-icon-row--mb { margin-bottom: 1rem; }
+.adm-metric-label--lg { font-size: 1rem; font-weight: 600; color: white; }
+.adm-metric-subtitle--mt { margin-top: 10px; }
+
+/* ── Selectable card (cursor pointer) ── */
+.adm-selectable-card { cursor: pointer; }
+.adm-selectable-card--selected { outline: 3px solid white; transform: translateY(-4px); }
+
+/* ── Selected-state hint text inside a card ── */
+.adm-selected-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+/* ── Toggle toolbar (bg pill container) ── */
+.adm-toggle-bar {
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+/* ── mode-toggle-row with no bottom margin ── */
+.adm-toggle-row--no-mb { margin-bottom: 0; }
+
+/* ── Filter bar view-type wrapper ── */
+.adm-filter-view-item { margin-bottom: 1rem; }
+
+/* ── Chart h2 margin variants ── */
+.adm-chart-h2    { margin: 0 0 5px 0; }
+.adm-chart-h2--lg { margin: 0 0 8px 0; }
+
+/* ── Chart container with min-height + padding ── */
+.adm-chart-container-lg { min-height: 400px; padding: 10px; }
+.adm-chart-container-xl { min-height: 480px; padding: 10px; }
+.adm-chart-container-sm { padding: 10px; }
+
+/* ── DrilldownTable helpers ── */
+.adm-dt-section { margin-bottom: 24px; }
+.adm-dt-title-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+.adm-dt-h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.adm-dt-year-label { font-size: 0.9rem; color: #666; font-weight: normal; }
+.adm-td-name { font-weight: 500; }

@@ -1,0 +1,50 @@
+/* ============================================================ */
+/* OPEN HOUSE SECTION — component-specific styles               */
+/* ============================================================ */
+
+/* ── Page header row ── */
+.oh-header    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px; }
+.oh-header-h1 { margin: 0; }
+
+/* ── Summary cards ── */
+.oh-cards       { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
+.oh-card        { flex: 1 1 min(200px, 100%); border-radius: 20px; padding: 28px; color: white; }
+.oh-card--purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2); }
+.oh-card--pink   { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 10px 20px rgba(240, 147, 251, 0.2); }
+.oh-card--green  { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 10px 20px rgba(67, 233, 123, 0.2); }
+.oh-card-h3    { margin: 0 0 10px 0; opacity: 0.9; }
+.oh-card-value { font-size: 48px; font-weight: bold; }
+
+/* ── Content panels ── */
+.oh-panel      { padding: 24px; background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; }
+.oh-panel--mb  { margin-bottom: 40px; }
+.oh-panel--mb2 { margin-bottom: 30px; }
+.oh-panel-header   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
+.oh-panel-h3       { margin: 0; }
+.oh-panel-h2       { margin: 0; font-size: 24px; }
+.oh-chart-empty    { text-align: center; padding: 40px; color: #666; }
+
+/* ── Directory header controls ── */
+.oh-dir-controls { display: flex; gap: 10px; align-items: center; }
+.oh-search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; }
+
+/* ── Mobile card list ── */
+.oh-mobile-list    { display: flex; flex-direction: column; gap: 16px; }
+.oh-mobile-card    { background-color: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+.oh-mobile-top     { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.oh-mobile-year    { font-weight: 700; color: #667eea; font-size: 14px; }
+.oh-mobile-h4      { margin: 0 0 10px 0; font-size: 15px; color: #111; line-height: 1.4; }
+.oh-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+
+/* ── Events table ── */
+.oh-table          { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; }
+.oh-table thead tr { background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
+.oh-table th       { padding: 16px; text-align: left; color: #555; }
+.oh-table td       { padding: 16px; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
+.oh-td-year        { color: #667eea; font-weight: 600; }
+.oh-td-bold        { font-weight: 500; }
+.oh-td-link        { color: #667eea; text-decoration: none; font-size: 13px; }
+
+/* ── Pagination ── */
+.oh-pagination      { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+.oh-pagination-info { align-self: center; }

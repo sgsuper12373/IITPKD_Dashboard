@@ -1,13 +1,13 @@
-    import { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import './UploadForm.css';
 
-// This list should match the 'UPDATABLE_TABLES' dict in the backend
 const tableOptions = [
   'student',
   'course',
   'department',
   'alumni',
-  'alumini',  // Alternative spelling
+  'alumini',
   'designation',
   'employee',
   'employment_history',
@@ -38,12 +38,6 @@ const tableOptions = [
   'uba_events'
 ];
 
-/**
- * A form for administrators to upload CSV files and bulk-update database tables.
- * @param {Object} props
- * @param {string} props.token - The user's auth token.
- * @param {Function} props.onLogout - Callback to log the user out.
- */
 function UploadForm({ token, onLogout }) {
   const [selectedTable, setSelectedTable] = useState(tableOptions[0]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -51,20 +45,13 @@ function UploadForm({ token, onLogout }) {
   const [message, setMessage] = useState('');
   const [previewData, setPreviewData] = useState(null);
 
-  /**
-   * Parses the first 5 lines of a CSV text buffer into a preview table.
-   * @param {string} csvText - The raw CSV string.
-   */
   const parseCSVPreview = (csvText) => {
     try {
       const lines = csvText.trim().split('\n');
       const header = lines[0].split(',');
-      
-      // Get rows (next 5 lines, or fewer if the file is short)
       const rows = lines.slice(1, 6)
-        .filter(line => line) // Filter out empty lines
+        .filter(line => line)
         .map(line => line.split(','));
-
       setPreviewData({ header, rows });
     } catch (e) {
       console.error("Failed to parse CSV preview:", e);
@@ -77,7 +64,6 @@ function UploadForm({ token, onLogout }) {
     const file = event.target.files[0];
     setSelectedFile(file);
     setMessage('');
-    
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => parseCSVPreview(e.target.result);
@@ -107,13 +93,12 @@ function UploadForm({ token, onLogout }) {
     formData.append('table_name', selectedTable);
     formData.append('csv_file', selectedFile);
 
-    // Validate token before making request
     if (!token) {
       setMessage('Error: No authentication token found. Please log in again.');
       setIsLoading(false);
       return;
     }
-    
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/upload-csv`,
@@ -127,28 +112,22 @@ function UploadForm({ token, onLogout }) {
 
       setMessage(`Success: ${response.data.message}`);
       setSelectedFile(null);
-      setPreviewData(null); // Clear preview
-      event.target.reset(); // Reset the form
-      
+      setPreviewData(null);
+      event.target.reset();
+
     } catch (error) {
       let errorMessage = 'An unknown error occurred.';
       if (error.response) {
-        // Use the specific error message from the backend
         errorMessage = error.response.data.message;
-        
-        // Handle token errors specifically
         if (error.response.status === 401) {
            errorMessage += " Your session may have expired. Please log out and log back in.";
         }
-        
-        // (rest of the error handling logic is the same)
         if (error.response.data.details) {
-          // ... (same as before)
+          // details appended server-side
         }
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
       setMessage(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
@@ -157,26 +136,25 @@ function UploadForm({ token, onLogout }) {
 
   return (
     <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="uf-header">
         <h2>Update Database from CSV</h2>
-        <button onClick={onLogout} style={{ height: 'fit-content' }}>
+        <button onClick={onLogout} className="uf-logout-btn">
           Logout
         </button>
       </div>
       <p>Select a table, upload a CSV file, and preview it before updating.</p>
-      
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {/* --- Form Inputs (same as before) --- */}
+
+      <form onSubmit={handleSubmit} className="uf-form">
         <div>
-          <label htmlFor="table-select" style={{ marginRight: '1rem' }}>
+          <label htmlFor="table-select" className="uf-label">
             Table to Update:
           </label>
-          <select 
+          <select
             id="table-select"
             value={selectedTable}
             onChange={handleTableChange}
             disabled={isLoading}
-            style={{ padding: '0.5em', fontSize: '1em' }}
+            className="uf-select"
           >
             {tableOptions.map((table) => (
               <option key={table} value={table}>
@@ -187,7 +165,7 @@ function UploadForm({ token, onLogout }) {
         </div>
 
         <div>
-          <label htmlFor="file-input" style={{ marginRight: '1rem' }}>
+          <label htmlFor="file-input" className="uf-label">
             Upload CSV File:
           </label>
           <input
@@ -198,12 +176,11 @@ function UploadForm({ token, onLogout }) {
             disabled={isLoading}
           />
         </div>
-        
-        {/* --- NEW: CSV Preview Table --- */}
+
         {previewData && (
           <div className="csv-preview">
             <h4>CSV Preview (First 5 Rows)</h4>
-            <table style={{ width: '100%', tableLayout: 'auto' }}>
+            <table className="uf-preview-table">
               <thead>
                 <tr>
                   {previewData.header.map((col, index) => (
@@ -223,24 +200,17 @@ function UploadForm({ token, onLogout }) {
             </table>
           </div>
         )}
-        
-        <button 
-          type="submit" 
+
+        <button
+          type="submit"
           disabled={!selectedFile || isLoading}
         >
           {isLoading ? 'Uploading...' : 'Upload and Update'}
         </button>
       </form>
-      
-      {/* Display messages (success or error) */}
+
       {message && (
-        <p 
-          style={{ 
-            color: message.startsWith('Error') ? 'red' : 'green', 
-            marginTop: '1rem',
-            whiteSpace: 'pre-wrap'
-          }}
-        >
+        <p className={`uf-msg ${message.startsWith('Error') ? 'uf-msg--error' : 'uf-msg--success'}`}>
           {message}
         </p>
       )}

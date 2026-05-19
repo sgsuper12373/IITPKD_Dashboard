@@ -25,7 +25,7 @@ function SectionSkeleton({ cards = 4, charts = 1 }) {
         <div key={i} className="sk-chart-box">
           <div className="sk-chart-header">
             <div className="sk-block sk-line sk-line-title" />
-            <div className="sk-block sk-line sk-line-md" style={{ width: '55%' }} />
+            <div className="sk-block sk-line sk-line-md sk-line-55" />
           </div>
           <div className="sk-bars">
             {BAR_HEIGHTS.map((h, j) => (

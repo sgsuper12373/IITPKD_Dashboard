@@ -7,6 +7,7 @@ import {
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import './Page.css';
 import './AcademicSection.css';
+import './UbaSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
@@ -48,7 +49,6 @@ function UbaSection({ user, isPublicView = false }) {
   }, []);
 
 
-  // Load summary data
   useEffect(() => {
     const loadSummary = async () => {
       try {
@@ -64,7 +64,6 @@ function UbaSection({ user, isPublicView = false }) {
     loadSummary();
   }, [token, uploadVersion]);
 
-  // Load projects
   useEffect(() => {
     const loadProjects = async () => {
       try {
@@ -77,7 +76,6 @@ function UbaSection({ user, isPublicView = false }) {
     loadProjects();
   }, [token, uploadVersion]);
 
-  // Load all events
   useEffect(() => {
     const loadEvents = async () => {
       try {
@@ -108,34 +106,29 @@ function UbaSection({ user, isPublicView = false }) {
     <>
       {!isReadOnlyView && (
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-          ← Back to Outreach Extension
+          &#8592; Back to Outreach Extension
         </button>
       )}
       {!isReadOnlyView && <h1>UBA (Unnat Bharat Abhiyan)</h1>}
 
       {!isReadOnlyView && isAdmin && (
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          marginBottom: '2rem',
-          flexWrap: 'wrap'
-        }}>
+        <div className="uba-upload-row">
           <button
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_projects'); setIsUploadModalOpen(true); }}
           >
-            <span>📤</span> Upload Projects
+            <span>&#128228;</span> Upload Projects
           </button>
           <button
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_events'); setIsUploadModalOpen(true); }}
           >
-            <span>📅</span> Upload Events
+            <span>&#128197;</span> Upload Events
           </button>
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+      <div className="uba-export-row">
         <ExportMenu
           elementId="uba-summary-cards-container"
           data={[summary]}
@@ -145,179 +138,48 @@ function UbaSection({ user, isPublicView = false }) {
           title="UBA Impact Summary"
         />
       </div>
-      {/* Impact Summary Cards */}
-      < div id="uba-summary-cards-container" className="grid-2" style={{
-        gap: '24px',
-        marginBottom: '40px'
-      }
-      }>
-        {/* Total Projects Card */}
-        < div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '20px',
-            padding: '28px',
-            boxShadow: '0 15px 35px rgba(102, 126, 234, 0.3)',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            cursor: 'pointer'
-          }}>
-            {/* Decorative elements */}
-            < div style={{
-              position: 'absolute',
-              top: '-30px',
-              right: '-30px',
-              width: '150px',
-              height: '150px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '50%'
-            }} />
-            < div style={{
-              position: 'absolute',
-              bottom: '-40px',
-              left: '-40px',
-              width: '180px',
-              height: '180px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '50%'
-            }} />
 
-            < div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '16px'
-              }}>
-                <span style={{
-                  fontSize: '32px',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '10px',
-                  borderRadius: '12px'
-                }}>📊</span>
-                <h3 style={{
-                  margin: 0,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: '18px',
-                  fontWeight: '500'
-                }}>Total Projects</h3>
-              </div>
-              <div style={{
-                fontSize: '48px',
-                fontWeight: 'bold',
-                color: 'white',
-                marginBottom: '8px',
-                lineHeight: '1.2'
-              }}>
-                {summary.total_projects === 0 ? "To Be Updated" : formatNumber(summary.total_projects)}
-              </div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '8px',
-                  background: '#4ade80',
-                  borderRadius: '50%'
-                }} />
-                <span style={{
-                  fontSize: '14px',
-                  color: 'rgba(255, 255, 255, 0.8)'
-                }}>
-                  Active UBA initiatives
-                </span>
-              </div>
-            </div >
-          </div >
-        
+      {/* Impact Summary Cards */}
+      <div id="uba-summary-cards-container" className="uba-cards-grid">
+        {/* Total Projects Card */}
+        <div className="uba-stat-card uba-stat-card--purple">
+          <div className="uba-stat-card-decor-top" />
+          <div className="uba-stat-card-decor-bottom" />
+          <div className="uba-stat-card-body">
+            <div className="uba-stat-card-header">
+              <span className="uba-stat-card-icon">&#128202;</span>
+              <h3 className="uba-stat-card-h3">Total Projects</h3>
+            </div>
+            <div className="uba-stat-card-value">
+              {summary.total_projects === 0 ? "To Be Updated" : formatNumber(summary.total_projects)}
+            </div>
+            <div className="uba-stat-card-status">
+              <span className="uba-stat-dot" />
+              <span className="uba-stat-subtext">Active UBA initiatives</span>
+            </div>
+          </div>
+        </div>
 
         {/* Total Events Card */}
-        < div style={{
-          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          borderRadius: '20px',
-          padding: '28px',
-          boxShadow: '0 15px 35px rgba(240, 147, 251, 0.3)',
-          position: 'relative',
-          overflow: 'hidden',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          cursor: 'pointer'
-        }}>
-          {/* Decorative elements */}
-          < div style={{
-            position: 'absolute',
-            top: '-30px',
-            right: '-30px',
-            width: '150px',
-            height: '150px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%'
-          }} />
-          < div style={{
-            position: 'absolute',
-            bottom: '-40px',
-            left: '-40px',
-            width: '180px',
-            height: '180px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '50%'
-          }} />
-
-          < div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px'
-            }}>
-              <span style={{
-                fontSize: '32px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                padding: '10px',
-                borderRadius: '12px'
-              }}>📅</span>
-              <h3 style={{
-                margin: 0,
-                color: 'rgba(255, 255, 255, 0.9)',
-                fontSize: '18px',
-                fontWeight: '500'
-              }}>Total Events</h3>
+        <div className="uba-stat-card uba-stat-card--pink">
+          <div className="uba-stat-card-decor-top" />
+          <div className="uba-stat-card-decor-bottom" />
+          <div className="uba-stat-card-body">
+            <div className="uba-stat-card-header">
+              <span className="uba-stat-card-icon">&#128197;</span>
+              <h3 className="uba-stat-card-h3">Total Events</h3>
             </div>
-            <div style={{
-              fontSize: '48px',
-              fontWeight: 'bold',
-              color: 'white',
-              marginBottom: '8px',
-              lineHeight: '1.2'
-            }}>
+            <div className="uba-stat-card-value">
               {summary.total_events === 0 ? "To Be Updated" : formatNumber(summary.total_events)}
             </div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                display: 'inline-block',
-                width: '8px',
-                height: '8px',
-                background: '#4ade80',
-                borderRadius: '50%'
-              }} />
-              <span style={{
-                fontSize: '14px',
-                color: 'rgba(255, 255, 255, 0.8)'
-              }}>
-                Community engagement activities
-              </span>
+            <div className="uba-stat-card-status">
+              <span className="uba-stat-dot" />
+              <span className="uba-stat-subtext">Community engagement activities</span>
             </div>
-          </div >
-        </div >
-      </div >
+          </div>
+        </div>
+      </div>
 
-      {/* Fullscreen Modal */}
       <ChartExpandModal
         isOpen={!!expandedChart}
         onClose={() => setExpandedChart(null)}
@@ -326,20 +188,13 @@ function UbaSection({ user, isPublicView = false }) {
         {expandedChart?.content}
       </ChartExpandModal>
 
-
       {/* Projects Section */}
       {projects.length > 0 && (
-        < div className="chart-section" style={{
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          padding: '24px',
-          boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
-          marginBottom: '30px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Projects</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ backgroundColor: '#667eea', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
+        <div className="uba-panel">
+          <div className="uba-panel-header">
+            <h2 className="uba-panel-h2">UBA Projects</h2>
+            <div className="uba-panel-header-right">
+              <span className="uba-count-badge uba-count-badge--purple">
                 {projects.length} Projects
               </span>
               <ExportMenu
@@ -353,34 +208,30 @@ function UbaSection({ user, isPublicView = false }) {
             </div>
           </div>
           <div id="uba-projects-container">
-
             {projects.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
-                <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📋</span>
-                <p style={{ fontSize: '16px' }}>No projects found</p>
+              <div className="uba-empty-state">
+                <span className="uba-empty-icon">&#128203;</span>
+                <p className="uba-empty-text">No projects found</p>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              <div className="uba-project-grid">
                 {projects.map((project) => (
-                  <div key={project.project_id} style={{
-                    backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e9ecef',
-                    overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-                  }}>
-                    <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', color: 'white' }}>
-                      <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', lineHeight: '1.4' }}>{project.project_title}</h3>
-                      <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '4px', fontSize: '12px' }}>
-                        {project.project_status}
-                      </span>
+                  <div key={project.project_id} className="uba-project-card">
+                    <div className="uba-project-card-header">
+                      <h3 className="uba-project-card-h3">{project.project_title}</h3>
+                      <span className="uba-project-status">{project.project_status}</span>
                     </div>
-                    <div style={{ padding: '16px' }}>
+                    <div className="uba-project-card-body">
                       {project.coordinator_name && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', fontSize: '14px', color: '#555' }}>
-                          <span>👤</span><span><strong>Coordinator:</strong> {project.coordinator_name}</span>
+                        <div className="uba-project-info-row">
+                          <span>&#128100;</span>
+                          <span><strong>Coordinator:</strong> {project.coordinator_name}</span>
                         </div>
                       )}
                       {project.collaboration_partners && (
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: '#666' }}>
-                          <span>🤝</span><span><strong>Partners:</strong> {project.collaboration_partners}</span>
+                        <div className="uba-project-info-row uba-project-info-row--sm">
+                          <span>&#129309;</span>
+                          <span><strong>Partners:</strong> {project.collaboration_partners}</span>
                         </div>
                       )}
                     </div>
@@ -389,21 +240,15 @@ function UbaSection({ user, isPublicView = false }) {
               </div>
             )}
           </div>
-        </div >
+        </div>
       )}
 
       {/* Events Section */}
-      < div className="chart-section" style={{
-        backgroundColor: '#fff',
-        borderRadius: '20px',
-        padding: '24px',
-        boxShadow: '0 5px 20px rgba(0,0,0,0.05)',
-        marginBottom: '30px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ margin: 0, color: '#333', fontSize: '24px' }}>UBA Events</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ backgroundColor: '#f093fb', color: 'white', padding: '6px 12px', borderRadius: '20px', fontSize: '14px', fontWeight: '500' }}>
+      <div className="uba-panel">
+        <div className="uba-panel-header">
+          <h2 className="uba-panel-h2">UBA Events</h2>
+          <div className="uba-panel-header-right">
+            <span className="uba-count-badge uba-count-badge--pink">
               {events.length} Events
             </span>
             <ExportMenu
@@ -416,32 +261,32 @@ function UbaSection({ user, isPublicView = false }) {
             />
           </div>
         </div>
-        <div 
+        <div
           id="uba-events-table-container"
           className="clickable-chart"
           onClick={() => !chartIsMobile && setExpandedChart({
             title: "UBA Events Directory",
             content: (
-              <div style={{ padding: '20px', overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', minWidth: '1000px' }}>
+              <div className="uba-expanded-panel">
+                <table className="uba-exp-table">
                   <thead>
-                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
+                    <tr className="uba-exp-thead-tr">
                       {['Year', 'Program Name', 'Type', 'Association', 'Dates', 'Audience', 'Attendees', 'Reach'].map(h => (
-                        <th key={h} style={{ padding: '12px 10px', textAlign: 'left', fontWeight: '600', color: '#555' }}>{h}</th>
+                        <th key={h} className="uba-exp-th">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {events.map((ev, idx) => (
-                      <tr key={ev.id} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
-                        <td style={{ padding: '10px', color: '#667eea', fontWeight: '500' }}>{ev.year || '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.program_name || '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.program_type || '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.association || '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.start_date ? new Date(ev.start_date).toLocaleDateString() : '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.targeted_audience || '—'}</td>
-                        <td style={{ padding: '10px', textAlign: 'center' }}>{ev.num_attendees ?? '—'}</td>
-                        <td style={{ padding: '10px' }}>{ev.geographic_reach || '—'}</td>
+                      <tr key={ev.id} className="uba-exp-tr" style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td className="uba-exp-td uba-exp-td--year">{ev.year || '—'}</td>
+                        <td className="uba-exp-td">{ev.program_name || '—'}</td>
+                        <td className="uba-exp-td">{ev.program_type || '—'}</td>
+                        <td className="uba-exp-td">{ev.association || '—'}</td>
+                        <td className="uba-exp-td">{ev.start_date ? new Date(ev.start_date).toLocaleDateString() : '—'}</td>
+                        <td className="uba-exp-td">{ev.targeted_audience || '—'}</td>
+                        <td className="uba-exp-td uba-exp-td--center">{ev.num_attendees ?? '—'}</td>
+                        <td className="uba-exp-td">{ev.geographic_reach || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -450,91 +295,65 @@ function UbaSection({ user, isPublicView = false }) {
             )
           })}
         >
-
           {events.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px', backgroundColor: '#f8f9fa', borderRadius: '12px', color: '#666' }}>
-              <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📅</span>
-              <p style={{ fontSize: '16px' }}>No events found</p>
+            <div className="uba-empty-state">
+              <span className="uba-empty-icon">&#128197;</span>
+              <p className="uba-empty-text">No events found</p>
             </div>
           ) : chartIsMobile ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="uba-mobile-list">
               {events.map((ev) => (
-                <div key={ev.id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: '700', color: '#667eea', fontSize: '14px' }}>{ev.year}</span>
-                    <span style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>{ev.program_type}</span>
+                <div key={ev.id} className="uba-mobile-card">
+                  <div className="uba-mobile-card-header">
+                    <span className="uba-mobile-card-year">{ev.year}</span>
+                    <span className="uba-mobile-card-type">{ev.program_type}</span>
                   </div>
-                  <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{ev.program_name}</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', color: '#666' }}>
+                  <h4 className="uba-mobile-card-h4">{ev.program_name}</h4>
+                  <div className="uba-mobile-card-fields">
                     <div><strong>Association:</strong> {ev.association || '—'}</div>
                     <div><strong>Attendees:</strong> {ev.num_attendees || '0'}</div>
-                    <div style={{ gridColumn: 'span 2' }}><strong>Reach:</strong> {ev.geographic_reach || '—'}</div>
+                    <div className="uba-span-full"><strong>Reach:</strong> {ev.geographic_reach || '—'}</div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div style={{
-              maxHeight: '450px',
-              overflowY: 'auto',
-              overflowX: 'auto',
-              border: '1px solid #e0e0e0',
-              borderRadius: '8px'
-            }}>
-
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-<table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                fontSize: '14px',
-                minWidth: '1200px'
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e9ecef' }}>
-                    {['Year', 'Program Name', 'Type', 'Association', 'Dates', 'Audience', 'Attendees', 'Schools', 'Colleges', 'Reach', 'Remarks'].map(h => (
-                      <th
-                        key={h}
-                        style={{
-                          padding: '12px 10px',
-                          textAlign: 'left',
-                          fontWeight: '600',
-                          color: '#555',
-                          whiteSpace: 'nowrap',
-                          position: 'sticky',
-                          top: 0,
-                          backgroundColor: '#f8f9fa',
-                          zIndex: 2
-                        }}
-                      >{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {events.map((ev, idx) => (
-                    <tr key={ev.id} style={{ borderBottom: '1px solid #f0f0f0', backgroundColor: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
-                      <td style={{ padding: '10px', whiteSpace: 'nowrap', color: '#667eea', fontWeight: '500' }}>{ev.year || '—'}</td>
-                      <td style={{ padding: '10px', maxWidth: '260px', lineHeight: '1.4' }}>{ev.program_name || '—'}</td>
-                      <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>{ev.program_type || '—'}</td>
-                      <td style={{ padding: '10px', maxWidth: '160px' }}>{ev.association || '—'}</td>
-                      <td style={{ padding: '10px', whiteSpace: 'nowrap', fontSize: '13px', color: '#666' }}>
-                        {ev.start_date ? new Date(ev.start_date).toLocaleDateString() : '—'}
-                        {ev.end_date && ev.end_date !== ev.start_date ? ` – ${new Date(ev.end_date).toLocaleDateString()}` : ''}
-                      </td>
-                      <td style={{ padding: '10px', maxWidth: '160px', fontSize: '13px' }}>{ev.targeted_audience || '—'}</td>
-                      <td style={{ padding: '10px', textAlign: 'center' }}>{ev.num_attendees ?? '—'}</td>
-                      <td style={{ padding: '10px', textAlign: 'center' }}>{ev.num_schools ?? '—'}</td>
-                      <td style={{ padding: '10px', textAlign: 'center' }}>{ev.num_colleges ?? '—'}</td>
-                      <td style={{ padding: '10px', maxWidth: '140px', fontSize: '13px' }}>{ev.geographic_reach || '—'}</td>
-                      <td style={{ padding: '10px', maxWidth: '160px', fontSize: '13px', color: '#888' }}>{ev.remarks || '—'}</td>
+            <div className="uba-table-wrapper">
+              {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                <table className="uba-table">
+                  <thead>
+                    <tr>
+                      {['Year', 'Program Name', 'Type', 'Association', 'Dates', 'Audience', 'Attendees', 'Schools', 'Colleges', 'Reach', 'Remarks'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-)}</>
+                  </thead>
+                  <tbody>
+                    {events.map((ev, idx) => (
+                      <tr key={ev.id} className="uba-exp-tr" style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td className="uba-td-year">{ev.year || '—'}</td>
+                        <td className="uba-td-wrap">{ev.program_name || '—'}</td>
+                        <td className="uba-td-nowrap">{ev.program_type || '—'}</td>
+                        <td className="uba-td-assoc">{ev.association || '—'}</td>
+                        <td className="uba-td-date">
+                          {ev.start_date ? new Date(ev.start_date).toLocaleDateString() : '—'}
+                          {ev.end_date && ev.end_date !== ev.start_date ? ` – ${new Date(ev.end_date).toLocaleDateString()}` : ''}
+                        </td>
+                        <td className="uba-td-audience">{ev.targeted_audience || '—'}</td>
+                        <td className="uba-td-center">{ev.num_attendees ?? '—'}</td>
+                        <td className="uba-td-center">{ev.num_schools ?? '—'}</td>
+                        <td className="uba-td-center">{ev.num_colleges ?? '—'}</td>
+                        <td className="uba-td-reach">{ev.geographic_reach || '—'}</td>
+                        <td className="uba-td-remarks">{ev.remarks || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
         </div>
-      </div >
+      </div>
 
       <DataUploadModal
         isOpen={isUploadModalOpen}
@@ -545,12 +364,10 @@ function UbaSection({ user, isPublicView = false }) {
     </>
   );
 
-  // If public view, return content without wrappers
   if (isPublicView) {
     return content;
   }
 
-  // If not public view, wrap in page-container and page-content
   return (
     <div className="page-container">
       <div className="page-content">

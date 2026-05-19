@@ -41,7 +41,7 @@ function HomePage({ user }) {
             <h1>Exploring the Vision that shapes Us</h1>
 
             {/* Image Slider - IIT Palakkad Images */}
-            <Suspense fallback={<div style={{ height: 320, background: '#f0f0f0', borderRadius: 8 }} />}>
+            <Suspense fallback={<div className="hp-slider-fallback" />}>
               <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
             </Suspense>
 

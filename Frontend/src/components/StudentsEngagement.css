@@ -77,18 +77,62 @@
 /* SECTION CARD GRID (NPTEL, PMC, PBD, Science Quest)  */
 /* ===================================================== */
 
-.students-section-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-}
+/* ── Section layout ── */
+.se-intro-wrap  { margin-top: 1rem; }
+.se-header-wrap { margin-bottom: 2rem; }
+.se-heading     { margin: 0 0 0.5rem 0; color: #111; text-shadow: 0 1px 4px rgba(255,255,255,0.8); }
 
-@media (max-width: 640px) {
-    .students-section-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
+/* ── Cards grid (flex, replaces grid) ── */
+.students-section-grid,
+.se-cards-grid   { display: flex; flex-wrap: wrap; gap: 30px; }
+.se-cards-grid > * { flex: 1 1 min(320px, 100%); }
+
+/* ── Card (background + boxShadow stay inline) ── */
+.se-card {
+  border-radius: 24px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
+.se-card:hover { transform: translateY(-5px); }
+
+/* ── Card decorative circles ── */
+.se-card-decor1 { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+.se-card-decor2 { position: absolute; bottom: -60px; left: -60px; width: 250px; height: 250px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+
+/* ── Card content wrapper ── */
+.se-card-content { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; }
+
+/* ── Card header ── */
+.se-card-header    { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px; }
+.se-card-icon-wrap { font-size: 64px; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 24px; margin-bottom: 16px; display: inline-block; }
+.se-card-h2        { margin: 0; color: white; font-size: 32px; font-weight: bold; letter-spacing: 1px; }
+.se-card-subtitle  { margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; }
+
+/* ── Card description ── */
+.se-card-desc { color: rgba(255,255,255,0.95); font-size: 15px; line-height: 1.6; margin-bottom: 30px; text-align: center; padding: 0 10px; }
+
+/* ── Card footer / view button ── */
+.se-card-footer { display: flex; justify-content: center; margin-top: auto; }
+.se-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(255,255,255,0.15);
+  padding: 12px 24px;
+  border-radius: 40px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.se-view-btn:hover { background-color: rgba(255,255,255,0.25); transform: scale(1.05); }
+.se-view-label { color: white; font-size: 16px; font-weight: 500; }
 
 /* ===================================================== */
 /* SUMMARY CARDS */

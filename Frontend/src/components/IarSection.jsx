@@ -43,14 +43,10 @@ function makePieTooltip(total) {
     const { name, value } = payload[0];
     const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
     return (
-      <div style={{
-        background: '#fff', border: '1px solid #e0e0e0',
-        borderRadius: '8px', padding: '10px 14px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)', fontSize: '13px'
-      }}>
-        <p style={{ margin: '0 0 4px', fontWeight: 700, color: '#333' }}>{name}</p>
-        <p style={{ margin: '0 0 2px', color: '#555' }}>Count: <strong>{value}</strong></p>
-        <p style={{ margin: 0, color: '#555' }}>Share: <strong>{pct}%</strong></p>
+      <div className="iar-pie-tooltip">
+        <p className="iar-pie-tooltip-name">{name}</p>
+        <p className="iar-pie-tooltip-row">Count: <strong>{value}</strong></p>
+        <p className="iar-pie-tooltip-row">Share: <strong>{pct}%</strong></p>
       </div>
     );
   };
@@ -60,19 +56,19 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
   if (!data?.length) return null;
   if (chartIsMobile) {
     return (
-      <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="iar-pie-dist-mobile">
         {data.map((entry, index) => {
           const fill = entry.fill || colors[index % colors.length];
           const pct = total > 0 ? ((entry.count / total) * 100).toFixed(1) : '0.0';
           return (
-            <div key={index} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '12px 16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ width: 12, height: 12, borderRadius: '50%', background: fill }} />
-                <span style={{ fontSize: '14px', fontWeight: '600', color: '#1e293b' }}>{entry[nameKey]}</span>
+            <div key={index} className="iar-pie-dist-item">
+              <div className="iar-pie-dist-name">
+                <span className="iar-pie-dist-dot" style={{ background: fill }} />
+                <span className="iar-pie-dist-name-text">{entry[nameKey]}</span>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#667eea' }}>{entry.count}</div>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>{pct}% of total</div>
+              <div className="iar-pie-dist-right">
+                <div className="iar-pie-dist-count">{entry.count}</div>
+                <div className="iar-pie-dist-pct">{pct}% of total</div>
               </div>
             </div>
           );
@@ -81,13 +77,13 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
     );
   }
   return (
-    <div style={{ marginTop: '16px', overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+    <div className="iar-pie-dist-table-wrap">
+      <table className="iar-pie-dist-table">
         <thead>
-          <tr style={{ backgroundColor: '#667eea', color: '#fff' }}>
-            <th style={{ padding: '8px 10px', textAlign: 'left', fontWeight: 600 }}>Name</th>
-            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>Count</th>
-            <th style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 600 }}>% of Total</th>
+          <tr>
+            <th>Name</th>
+            <th>Count</th>
+            <th>% of Total</th>
           </tr>
         </thead>
         <tbody>
@@ -96,14 +92,14 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
             const pct = total > 0 ? ((entry.count / total) * 100).toFixed(1) : '0.0';
             return (
               <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                <td style={{ padding: '7px 10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: fill, flexShrink: 0, display: 'inline-block' }} />
+                <td>
+                  <div className="iar-pie-dist-cell">
+                    <span className="iar-pie-dist-cell-dot" style={{ background: fill }} />
                     {entry[nameKey]}
                   </div>
                 </td>
-                <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 500 }}>{entry.count}</td>
-                <td style={{ padding: '7px 10px', textAlign: 'right', color: '#667eea', fontWeight: 600 }}>{pct}%</td>
+                <td>{entry.count}</td>
+                <td>{pct}%</td>
               </tr>
             );
           })}
@@ -113,19 +109,16 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
   );
 }
 
-const STATE_BAR_COLOR = '#67e8f9';
 const HIGHER_BAR_COLOR = '#43e97b';
 const CORPORATE_BAR_COLOR = '#fa709a';
 const TREND_TOTAL_COLOR = '#667eea';
 const TREND_HIGHER_COLOR = '#22d3ee';
 const TREND_CORPORATE_COLOR = '#f97316';
 
-// Custom label renderer that clips labels exceeding the chart top
 function ClippedLabel(props) {
   const { x, y, width, value, fill } = props;
   if (!value) return null;
   const labelY = y - 4;
-  // Only show if there's at least 6px space above the bar
   if (labelY < 6) return null;
   return (
     <text
@@ -166,7 +159,6 @@ function IarSection({ user, isPublicView = false }) {
   const [countryDistribution, setCountryDistribution] = useState([]);
   const [outcomeBreakdown, setOutcomeBreakdown] = useState([]);
 
-  // "Graph" or "Table" toggle for Department Outcome section
   const [outcomeDisplayMode, setOutcomeDisplayMode] = useState('Graph');
 
   const sortedOutcomeBreakdown = useMemo(() => {
@@ -293,9 +285,6 @@ function IarSection({ user, isPublicView = false }) {
 
   const trendData = useMemo(() => summary.trend || [], [summary.trend]);
 
-  // Fixed chart height shared between graph and table views
-  const OUTCOME_PANEL_HEIGHT = 450;
-
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
@@ -321,16 +310,13 @@ function IarSection({ user, isPublicView = false }) {
         )}
 
         {error && (
-          <div className="error-message" style={{
-            padding: '10px', backgroundColor: '#f8d7da', color: '#721c24',
-            borderRadius: '4px', marginBottom: '20px'
-          }}>{error}</div>
+          <div className="error-message">{error}</div>
         )}
 
-        <div style={{ position: 'relative', minHeight: '600px' }}>
+        <div className="iar-body">
 
           {/* Export + Summary Cards */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+          <div className="iar-export-row">
             <ExportMenu
               elementId="iar-summary-cards-container"
               data={[summary]}
@@ -341,106 +327,93 @@ function IarSection({ user, isPublicView = false }) {
             />
           </div>
 
-          <div id="iar-summary-cards-container" className="grid-3" style={{
-            gap: '20px', marginBottom: '30px'
-          }}>
+          <div id="iar-summary-cards-container" className="iar-stats-grid">
             {/* Total Alumni */}
-            <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>👥</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Alumni</span>
+            <div className="iar-stat-card iar-stat-card--alumni">
+              <div className="iar-stat-card-decor" />
+              <div className="iar-stat-card-body">
+                <div className="iar-stat-card-header">
+                  <span className="iar-stat-card-icon">👥</span>
+                  <span className="iar-stat-card-label">Total Alumni</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.total_alumni}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Alumni matched with filters</span>
+                <div className="metric-value iar-stat-card-value">{summary.total_alumni}</div>
+                <div className="iar-stat-card-status">
+                  <span className="iar-stat-card-dot" />
+                  <span className="iar-stat-card-subtext">Alumni matched with filters</span>
                 </div>
               </div>
             </div>
 
             {/* Higher Studies */}
-            <div style={{ background: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(34, 211, 238, 0.2)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>🎓</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Higher Studies</span>
+            <div className="iar-stat-card iar-stat-card--higher">
+              <div className="iar-stat-card-decor" />
+              <div className="iar-stat-card-body">
+                <div className="iar-stat-card-header">
+                  <span className="iar-stat-card-icon">🎓</span>
+                  <span className="iar-stat-card-label">Higher Studies</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.higher_studies}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Pursuing research/education</span>
+                <div className="metric-value iar-stat-card-value">{summary.higher_studies}</div>
+                <div className="iar-stat-card-status">
+                  <span className="iar-stat-card-dot" />
+                  <span className="iar-stat-card-subtext">Pursuing research/education</span>
                 </div>
               </div>
             </div>
 
             {/* Corporate */}
-            <div style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', borderRadius: '16px', padding: '24px', boxShadow: '0 10px 20px rgba(249, 115, 22, 0.2)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>💼</span>
-                  <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Corporate Careers</span>
+            <div className="iar-stat-card iar-stat-card--corporate">
+              <div className="iar-stat-card-decor" />
+              <div className="iar-stat-card-body">
+                <div className="iar-stat-card-header">
+                  <span className="iar-stat-card-icon">💼</span>
+                  <span className="iar-stat-card-label">Corporate Careers</span>
                 </div>
-                <div className="metric-value" style={{ color: 'white', marginBottom: '8px' }}>{summary.corporate}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                  <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Working in industry</span>
+                <div className="metric-value iar-stat-card-value">{summary.corporate}</div>
+                <div className="iar-stat-card-status">
+                  <span className="iar-stat-card-dot" />
+                  <span className="iar-stat-card-subtext">Working in industry</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* View Selector */}
-          <div style={{
-            display: 'flex', gap: '10px', marginBottom: '20px',
-            borderBottom: '2px solid #e0e0e0', paddingBottom: '10px', flexWrap: 'wrap'
-          }}>
+          <div className="iar-view-tabs">
             {[
               { id: 'trend', label: 'Outcome Trend', icon: '📈', activeColor: '#667eea', activeText: 'white' },
               { id: 'state', label: 'State Distribution', icon: '🗺️', activeColor: '#67e8f9', activeText: '#333' },
               { id: 'country', label: 'Country Distribution', icon: '🌍', activeColor: '#764ba2', activeText: 'white' },
               { id: 'outcome', label: 'Department Outcome', icon: '📊', activeColor: '#43e97b', activeText: 'white' },
             ].map(({ id, label, icon, activeColor, activeText }) => (
-              <button key={id} type="button" onClick={() => setActiveView(id)} style={{
-                padding: '10px 24px',
-                backgroundColor: activeView === id ? activeColor : '#f8f9fa',
-                color: activeView === id ? activeText : '#333',
-                border: 'none', borderRadius: '8px', cursor: 'pointer',
-                fontSize: '14px', fontWeight: activeView === id ? '600' : '500',
-                transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px'
+              <button key={id} type="button" onClick={() => setActiveView(id)} className="iar-view-tab" style={{
+                backgroundColor: activeView === id ? activeColor : undefined,
+                color: activeView === id ? activeText : undefined,
+                fontWeight: activeView === id ? '600' : undefined,
               }}>
                 <span>{icon}</span> {label}
               </button>
             ))}
           </div>
 
-          <div className="chart-section" style={{ marginBottom: '30px' }}>
+          <div className="chart-section iar-chart-section-mb">
             {/* Compact filter bar */}
-            <div style={{
-              background: '#f8f9fa', border: '1px solid #e0e0e0',
-              borderRadius: '10px', padding: '0.65rem 1rem', marginBottom: '20px'
-            }}>
-              <div className="filter-panel-header" style={{ marginBottom: '0.6rem', paddingBottom: '0.5rem', borderBottom: '1px solid #e0e0e0' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1a1a' }}>Filters</span>
-                <button className="clear-filters-btn" onClick={handleClearFilters}
-                  style={{ padding: '0.3rem 0.85rem', fontSize: '0.78rem', borderRadius: '6px', border: 'none', backgroundColor: '#dc3545', color: '#fff', cursor: 'pointer' }}>
+            <div className="iar-filter-bar">
+              <div className="iar-filter-header">
+                <span className="iar-filter-title">Filters</span>
+                <button className="clear-filters-btn" onClick={handleClearFilters}>
                   Clear All Filters
                 </button>
               </div>
-              <div className="filter-grid-2" style={{ gap: '0.6rem' }}>
+              <div className="iar-filter-grid">
                 {[
                   { id: 'iar-dept', label: 'Department', key: 'department', options: filterOptions.departments },
                   { id: 'iar-program', label: 'Course Type', key: 'course_type', options: filterOptions.course_types },
                 ].map(({ id, label, key, options }) => (
-                  <div key={id} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <label htmlFor={id} style={{ fontSize: '0.72rem', fontWeight: 600, color: '#1a1a1a' }}>{label}</label>
+                  <div key={id} className="iar-filter-field">
+                    <label htmlFor={id} className="iar-filter-label">{label}</label>
                     <select id={id} value={filters[key]}
                       onChange={(e) => handleFilterChange(key, e.target.value)}
-                      className="filter-select"
-                      style={{ padding: '0.3rem 0.5rem', fontSize: '0.78rem', borderRadius: '7px', border: '1px solid #ced4da' }}>
+                      className="iar-filter-select">
                       <option value="All">All</option>
                       {options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
@@ -451,19 +424,15 @@ function IarSection({ user, isPublicView = false }) {
 
             {/* ── Outcome Trend View ── */}
             <div style={{ display: activeView === 'trend' ? 'block' : 'none' }}>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+              <div className="chart-mode-toggle">
                 {['Bar', 'Trend'].map(type => (
-                  <button key={type} onClick={() => setChartType(type)} style={{
-                    padding: '7px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600,
-                    background: chartType === type ? '#667eea' : '#e9ecef',
-                    color: chartType === type ? '#fff' : '#555',
-                  }}>{type}</button>
+                  <button key={type} onClick={() => setChartType(type)} className={`chart-mode-btn${chartType === type ? ' chart-mode-btn--active' : ''}`}>{type}</button>
                 ))}
               </div>
               <div>
-                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '24px' }}>📈</span> Outcome Trend Over Years
+                <div className="iar-chart-header">
+                  <h2>
+                    <span className="iar-icon-span">📈</span> Outcome Trend Over Years
                   </h2>
                   <ExportMenu
                     elementId="iar-outcome-trend-container"
@@ -475,15 +444,15 @@ function IarSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                <div style={{ position: 'relative' }}>
+                <div className="iar-relative">
                   {trendData.length === 0 && (
-                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-                      <span style={{ fontSize: '40px', marginBottom: '10px' }}>📈</span>
-                      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No trend data available for the selected filters.</p>
+                    <div className="no-data-overlay">
+                      <span className="no-data-overlay-icon">📈</span>
+                      <p className="no-data-overlay-text">No trend data available for the selected filters.</p>
                     </div>
                   )}
                   <div id="iar-outcome-trend-container" className="chart-container">
-                    <div 
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Outcome Trend over Years",
@@ -528,7 +497,7 @@ function IarSection({ user, isPublicView = false }) {
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
-                    <div 
+                    <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
                         title: "Outcome Trend over Years",
@@ -568,11 +537,23 @@ function IarSection({ user, isPublicView = false }) {
                       </ResponsiveContainer>
                     </div>
 
-                    <div className="grid-4" style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', gap: '10px' }}>
-                      <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#667eea' }}>{trendData.reduce((sum, item) => sum + item.total, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div></div>
-                      <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#22d3ee' }}>{trendData.reduce((sum, item) => sum + item.higher, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div></div>
-                      <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#f97316' }}>{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div><div style={{ color: '#666', fontSize: '11px' }}>Corporate</div></div>
-                      <div style={{ textAlign: 'center' }}><div className="metric-value-sm" style={{ color: '#a855f7' }}>{trendData.length}</div><div style={{ color: '#666', fontSize: '11px' }}>Years Covered</div></div>
+                    <div className="iar-stats-bar">
+                      <div>
+                        <div className="iar-stat-metric iar-stat-metric--purple">{trendData.reduce((sum, item) => sum + item.total, 0)}</div>
+                        <div className="iar-stat-sub">Total Alumni</div>
+                      </div>
+                      <div>
+                        <div className="iar-stat-metric iar-stat-metric--cyan">{trendData.reduce((sum, item) => sum + item.higher, 0)}</div>
+                        <div className="iar-stat-sub">Higher Studies</div>
+                      </div>
+                      <div>
+                        <div className="iar-stat-metric iar-stat-metric--orange">{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div>
+                        <div className="iar-stat-sub">Corporate</div>
+                      </div>
+                      <div>
+                        <div className="iar-stat-metric iar-stat-metric--violet">{trendData.length}</div>
+                        <div className="iar-stat-sub">Years Covered</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -582,12 +563,12 @@ function IarSection({ user, isPublicView = false }) {
             {/* ── State Distribution View ── */}
             <div style={{ display: activeView === 'state' ? 'block' : 'none' }}>
               <div>
-                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="iar-chart-header">
                   <div>
-                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '24px' }}>🗺️</span> State-wise Alumni Distribution
+                    <h2>
+                      <span className="iar-icon-span">🗺️</span> State-wise Alumni Distribution
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>Top 5 states by alumni count</p>
+                    <p className="chart-description">Top 5 states by alumni count</p>
                   </div>
                   <ExportMenu
                     elementId="iar-state-dist-container"
@@ -598,15 +579,15 @@ function IarSection({ user, isPublicView = false }) {
                     title="State-wise Alumni Distribution"
                   />
                 </div>
-                <div style={{ position: 'relative' }}>
+                <div className="iar-relative">
                   {stateDistribution.length === 0 && (
-                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
-                      <span style={{ fontSize: '40px', marginBottom: '10px' }}>🗺️</span>
-                      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No state distribution data to display.</p>
+                    <div className="no-data-overlay">
+                      <span className="no-data-overlay-icon">🗺️</span>
+                      <p className="no-data-overlay-text">No state distribution data to display.</p>
                     </div>
                   )}
                   <div id="iar-state-dist-container" className="chart-container">
-                    <div 
+                    <div
                       className="clickable-chart"
                       onClick={() => setExpandedChart({
                         title: "State-wise Alumni Distribution",
@@ -639,9 +620,14 @@ function IarSection({ user, isPublicView = false }) {
                     {stateTop10.length > 0 && (
                       <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} chartIsMobile={chartIsMobile} />
                     )}
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
-                      <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
-                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span> settled in <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{stateDistribution.filter(s => s.state !== 'Not Found').length}</span> Indian States / Union Territories
+                    <div className="iar-info-box">
+                      <h2>
+                        Total Alumni : <span className="iar-info-highlight--purple">{summary?.total_alumni || 0}</span>{' '}
+                        out of which{' '}
+                        <span className="iar-info-highlight--green">{countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0)}</span>{' '}
+                        settled in{' '}
+                        <span className="iar-info-highlight--orange">{stateDistribution.filter(s => s.state !== 'Not Found').length}</span>{' '}
+                        Indian States / Union Territories
                       </h2>
                     </div>
                   </div>
@@ -652,12 +638,12 @@ function IarSection({ user, isPublicView = false }) {
             {/* ── Country Distribution View ── */}
             <div style={{ display: activeView === 'country' ? 'block' : 'none' }}>
               <div>
-                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="iar-chart-header">
                   <div>
-                    <h2 style={{ margin: '0 0 10px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '24px' }}>🌍</span> Global Alumni Reach
+                    <h2>
+                      <span className="iar-icon-span">🌍</span> Global Alumni Reach
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>Top 5 countries by alumni count</p>
+                    <p className="chart-description">Top 5 countries by alumni count</p>
                   </div>
                   <ExportMenu
                     elementId="iar-country-dist-container"
@@ -668,15 +654,15 @@ function IarSection({ user, isPublicView = false }) {
                     title="Global Alumni Reach"
                   />
                 </div>
-                <div style={{ position: 'relative' }}>
+                <div className="iar-relative">
                   {countryDistribution.length === 0 && (
-                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none', minHeight: '200px' }}>
-                      <span style={{ fontSize: '40px', marginBottom: '10px' }}>🌍</span>
-                      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No country distribution data to display.</p>
+                    <div className="no-data-overlay">
+                      <span className="no-data-overlay-icon">🌍</span>
+                      <p className="no-data-overlay-text">No country distribution data to display.</p>
                     </div>
                   )}
                   <div id="iar-country-dist-container" className="chart-container">
-                    <div 
+                    <div
                       className="clickable-chart"
                       onClick={() => setExpandedChart({
                         title: "Global Alumni Reach",
@@ -709,9 +695,14 @@ function IarSection({ user, isPublicView = false }) {
                     {countryTop10.length > 0 && (
                       <PieDistributionTable data={countryTop10} nameKey="country" total={countryTotal} colors={PIE_COLORS} chartIsMobile={chartIsMobile} />
                     )}
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e0e0e0', textAlign: 'center' }}>
-                      <h2 style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500', lineHeight: '1.5' }}>
-                        Total Alumni : <span style={{ fontWeight: 'bold', color: '#667eea', fontSize: '22px' }}>{summary?.total_alumni || 0}</span> out of which <span style={{ fontWeight: 'bold', color: '#22c55e', fontSize: '18px' }}>{(summary?.total_alumni || 0) - (countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0))}</span> settled across <span style={{ fontWeight: 'bold', color: '#f97316', fontSize: '18px' }}>{countryDistribution.length}</span> Countries
+                    <div className="iar-info-box">
+                      <h2>
+                        Total Alumni : <span className="iar-info-highlight--purple">{summary?.total_alumni || 0}</span>{' '}
+                        out of which{' '}
+                        <span className="iar-info-highlight--green">{(summary?.total_alumni || 0) - (countryDistribution.find(c => c.country?.toLowerCase() === 'india')?.count || stateDistribution.filter(s => s.state !== 'Not Found').reduce((sum, item) => sum + item.count, 0))}</span>{' '}
+                        settled across{' '}
+                        <span className="iar-info-highlight--orange">{countryDistribution.length}</span>{' '}
+                        Countries
                       </h2>
                     </div>
                   </div>
@@ -722,13 +713,12 @@ function IarSection({ user, isPublicView = false }) {
             {/* ── Outcome by Department View ── */}
             <div style={{ display: activeView === 'outcome' ? 'block' : 'none' }}>
               <div>
-                {/* Header row */}
-                <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div className="iar-chart-header">
                   <div>
-                    <h2 style={{ margin: '0 0 6px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '24px' }}>📊</span> Outcome by Department
+                    <h2>
+                      <span className="iar-icon-span">📊</span> Outcome by Department
                     </h2>
-                    <p className="chart-description" style={{ color: '#666', margin: '0' }}>
+                    <p className="chart-description">
                       Top 10 departments by alumni count — higher studies vs corporate career paths.
                     </p>
                   </div>
@@ -742,64 +732,47 @@ function IarSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                {/* ── Graph / Table toggle buttons ── */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                {/* Graph / Table toggle */}
+                <div className="iar-graph-table-toggle">
                   {['Graph', 'Table'].map(mode => (
                     <button
                       key={mode}
                       onClick={() => setOutcomeDisplayMode(mode)}
-                      style={{
-                        padding: '7px 22px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                        fontSize: '13px',
-                        background: outcomeDisplayMode === mode ? '#43e97b' : '#e9ecef',
-                        color: outcomeDisplayMode === mode ? '#fff' : '#555',
-                        transition: 'all 0.2s ease',
-                      }}
+                      className={`iar-toggle-btn${outcomeDisplayMode === mode ? ' iar-toggle-btn--active' : ''}`}
                     >
                       {mode === 'Graph' ? '📊 Graph' : '📋 Table'}
                     </button>
                   ))}
                 </div>
 
-                <div style={{ position: 'relative' }}>
+                <div className="iar-relative">
                   {outcomeBreakdown.length === 0 && (
-                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-                      <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-                      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No departmental breakdown to display.</p>
+                    <div className="no-data-overlay">
+                      <span className="no-data-overlay-icon">📊</span>
+                      <p className="no-data-overlay-text">No departmental breakdown to display.</p>
                     </div>
                   )}
 
-                  {/* Fixed-height panel — same height for both Graph and Table */}
-                  <div style={{ height: `${OUTCOME_PANEL_HEIGHT}px`, overflow: 'hidden' }}>
+                  {/* Fixed-height panel */}
+                  <div className="iar-fixed-panel">
 
-                    {/* ── GRAPH panel ── */}
-                    <div style={{ display: outcomeDisplayMode === 'Graph' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
-                      {/* Legend */}
-                      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', justifyContent: 'flex-end' }}>
+                    {/* GRAPH panel */}
+                    <div className="iar-graph-panel" style={{ display: outcomeDisplayMode === 'Graph' ? 'flex' : 'none' }}>
+                      <div className="iar-legend">
                         {[
                           { color: HIGHER_BAR_COLOR, label: 'Higher Studies' },
                           { color: CORPORATE_BAR_COLOR, label: 'Corporate' },
                         ].map(({ color, label }) => (
-                          <div key={label} style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            background: '#f8f9fa', border: '1px solid #e0e0e0',
-                            borderRadius: '20px', padding: '4px 12px',
-                          }}>
-                            <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#444' }}>{label}</span>
+                          <div key={label} className="iar-legend-pill">
+                            <span className="iar-legend-dot" style={{ background: color }} />
+                            <span className="iar-legend-label">{label}</span>
                           </div>
                         ))}
                       </div>
 
-                      {/* Bar chart — takes remaining space */}
-                      <div 
-                        id="iar-dept-outcome-container" 
-                        className="clickable-chart"
-                        style={{ flex: 1, minHeight: 0, maxHeight: '450px' }}
+                      <div
+                        id="iar-dept-outcome-container"
+                        className="clickable-chart iar-chart-area"
                         onClick={() => setExpandedChart({
                           title: "Outcome by Department",
                           content: (
@@ -842,9 +815,9 @@ function IarSection({ user, isPublicView = false }) {
                       </div>
                     </div>
 
-                    {/* ── TABLE panel ── */}
-                    <div style={{ display: outcomeDisplayMode === 'Table' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                    {/* TABLE panel */}
+                    <div className="iar-table-panel" style={{ display: outcomeDisplayMode === 'Table' ? 'flex' : 'none' }}>
+                      <div className="iar-table-export-row">
                         <ExportMenu
                           elementId="iar-dept-outcome-table"
                           data={sortedOutcomeBreakdown}
@@ -855,49 +828,46 @@ function IarSection({ user, isPublicView = false }) {
                           exportType="table"
                         />
                       </div>
-                      <div
-                        id="iar-dept-outcome-table"
-                        style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'auto', width: '100%', maxHeight: '450px' }}
-                      >
+                      <div id="iar-dept-outcome-table" className="iar-table-scroll">
                         {chartIsMobile ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <div className="iar-mobile-cards">
                             {sortedOutcomeBreakdown.map((row) => (
-                              <div key={row.department} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.department}</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                                  <div style={{ textAlign: 'center' }}>
-                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Total</div>
-                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{row.total}</div>
+                              <div key={row.department} className="iar-mobile-card">
+                                <div className="iar-mobile-card-dept">{row.department}</div>
+                                <div className="iar-mobile-card-stats">
+                                  <div className="iar-mobile-stat">
+                                    <div className="iar-mobile-stat-label">Total</div>
+                                    <div className="iar-mobile-stat-value iar-mobile-stat-value--total">{row.total}</div>
                                   </div>
-                                  <div style={{ textAlign: 'center' }}>
-                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Higher</div>
-                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#43e97b' }}>{row.higher}</div>
+                                  <div className="iar-mobile-stat">
+                                    <div className="iar-mobile-stat-label">Higher</div>
+                                    <div className="iar-mobile-stat-value iar-mobile-stat-value--higher">{row.higher}</div>
                                   </div>
-                                  <div style={{ textAlign: 'center' }}>
-                                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '2px' }}>Corp</div>
-                                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#fa709a' }}>{row.corporate}</div>
+                                  <div className="iar-mobile-stat">
+                                    <div className="iar-mobile-stat-label">Corp</div>
+                                    <div className="iar-mobile-stat-value iar-mobile-stat-value--corp">{row.corporate}</div>
                                   </div>
                                 </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead style={{ position: 'sticky', top: 0, backgroundColor: '#43e97b', color: 'white', zIndex: 1 }}>
+                          <table className="iar-outcome-table">
+                            <thead className="iar-outcome-thead">
                               <tr>
-                                <th style={{ padding: '10px', textAlign: 'left' }}>Department</th>
-                                <th style={{ padding: '10px', textAlign: 'left' }}>Total Alumni</th>
-                                <th style={{ padding: '10px', textAlign: 'left' }}>Higher Studies</th>
-                                <th style={{ padding: '10px', textAlign: 'left' }}>Corporate</th>
+                                <th>Department</th>
+                                <th>Total Alumni</th>
+                                <th>Higher Studies</th>
+                                <th>Corporate</th>
                               </tr>
                             </thead>
                             <tbody>
                               {sortedOutcomeBreakdown.map((row, index) => (
                                 <tr key={row.department} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                                  <td style={{ padding: '8px' }}>{row.department}</td>
-                                  <td style={{ padding: '8px' }}>{row.total}</td>
-                                  <td style={{ padding: '8px', color: '#43e97b', fontWeight: '500' }}>{row.higher}</td>
-                                  <td style={{ padding: '8px', color: '#fa709a', fontWeight: '500' }}>{row.corporate}</td>
+                                  <td>{row.department}</td>
+                                  <td>{row.total}</td>
+                                  <td>{row.higher}</td>
+                                  <td>{row.corporate}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -907,27 +877,23 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Stats row — always visible below the panel */}
-                  <div className="grid-4" style={{
-                    marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa',
-                    borderRadius: '8px', border: '1px solid #e0e0e0',
-                    gap: '10px'
-                  }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ color: '#667eea', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>
-                      <div style={{ color: '#666', fontSize: '11px' }}>Total Alumni</div>
+                  {/* Stats row */}
+                  <div className="iar-stats-bar">
+                    <div>
+                      <div className="iar-stat-metric iar-stat-metric--purple">{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>
+                      <div className="iar-stat-sub">Total Alumni</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ color: '#43e97b', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}</div>
-                      <div style={{ color: '#666', fontSize: '11px' }}>Higher Studies</div>
+                    <div>
+                      <div className="iar-stat-metric iar-stat-metric--green">{outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}</div>
+                      <div className="iar-stat-sub">Higher Studies</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ color: '#fa709a', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}</div>
-                      <div style={{ color: '#666', fontSize: '11px' }}>Corporate</div>
+                    <div>
+                      <div className="iar-stat-metric iar-stat-metric--pink">{outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}</div>
+                      <div className="iar-stat-sub">Corporate</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ color: '#f97316', fontWeight: 'bold', fontSize: '20px' }}>{outcomeBreakdown.length}</div>
-                      <div style={{ color: '#666', fontSize: '11px' }}>Departments</div>
+                    <div>
+                      <div className="iar-stat-metric iar-stat-metric--orange">{outcomeBreakdown.length}</div>
+                      <div className="iar-stat-sub">Departments</div>
                     </div>
                   </div>
                 </div>
@@ -936,20 +902,18 @@ function IarSection({ user, isPublicView = false }) {
           </div>
 
           {/* Alumni CTA Banner */}
-          <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="iar-cta-banner">
+            <div className="iar-cta-body">
               <div>
-                <h3 style={{ padding: '0 50px 0 0', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore About our Alumni</h3>
-                <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
+                <h3 className="iar-cta-title">Explore About our Alumni</h3>
+                <p className="iar-cta-desc">Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
               </div>
             </div>
             <a
               href="https://iar.iitpkd.ac.in/home"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+              className="iar-cta-link"
             >
               Visit iar.iitpkd.ac.in →
             </a>

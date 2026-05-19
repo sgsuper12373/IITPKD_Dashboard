@@ -22,6 +22,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
+import './HomeGroundStartup.css';
 import ExportMenu from './ExportMenu';
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
@@ -105,7 +106,6 @@ function HomeGroundStartup({ user, isPublicView = false }) {
   const [loadingStartups, setLoadingStartups] = useState(false);
   const [error, setError] = useState(null);
 
-  /* ── load summary + filter options ── */
   useEffect(() => {
     const load = async () => {
       try {
@@ -122,7 +122,6 @@ function HomeGroundStartup({ user, isPublicView = false }) {
     load();
   }, [token, uploadVersion]);
 
-  /* ── load trend data when filters change ── */
   useEffect(() => {
     let active = true;
     setLoadingStartups(true);
@@ -143,10 +142,10 @@ function HomeGroundStartup({ user, isPublicView = false }) {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>Year: {label}</p>
+        <div className="hg-tooltip">
+          <p className="hg-tooltip-label">Year: {label}</p>
           {payload.map((entry, i) => (
-            <p key={i} style={{ margin: '0', color: entry.color }}>{entry.name}: {formatNumber(entry.value)}</p>
+            <p key={i} className="hg-tooltip-entry" style={{ color: entry.color }}>{entry.name}: {formatNumber(entry.value)}</p>
           ))}
         </div>
       );
@@ -155,11 +154,11 @@ function HomeGroundStartup({ user, isPublicView = false }) {
   };
 
   const renderChart = (data) => (
-    <div style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}>
+    <div className="hg-chart-wrapper">
       {data.length === 0 && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-          <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-          <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
+        <div className="hg-no-data-overlay">
+          <span className="hg-no-data-icon">&#128202;</span>
+          <p className="hg-no-data-text">No data available for the selected filters.</p>
         </div>
       )}
       <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
@@ -190,45 +189,38 @@ function HomeGroundStartup({ user, isPublicView = false }) {
     </div>
   );
 
-  const TableShell = ({ children }) => (
-    <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ backgroundColor: CHART_COLOR, color: 'white', display: 'grid', gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', gap: '8px', padding: '12px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>
-        {children[0]}
-      </div>
-      <div style={{ overflowY: 'auto', flex: 1 }}>
-        {children[1]}
-      </div>
-    </div>
-  );
-
   const renderTable = () => {
     if (!startupsTable.length && !loadingStartups) {
       return (
-        <div style={{ height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-          <span style={{ fontSize: '36px', marginBottom: '10px' }}>🗂️</span>
-          <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
+        <div className="hg-table-empty">
+          <span className="hg-table-empty-icon">&#128193;</span>
+          <p className="hg-table-empty-text">No data available for the selected filters.</p>
         </div>
       );
     }
     return (
-      <TableShell>
-        {[
-          <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (₹)</div></>,
-          <>
-            {startupsTable.map((row, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
-                <div style={{ fontWeight: '500' }}>{row.startup_name}</div>
-                <div>{row.domain}</div>
-                <div>
-                  <span style={{ backgroundColor: row.status === 'Active' ? '#dcfce7' : '#fef3c7', color: row.status === 'Active' ? '#166534' : '#92400e', padding: '4px 8px', borderRadius: '12px', fontSize: '11px', display: 'inline-block' }}>{row.status}</span>
-                </div>
-                <div>{row.number_of_jobs || '0'}</div>
-                <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+      <div className="hg-table-shell">
+        <div className="hg-table-head">
+          <div className="hg-col-1">Startup Name</div>
+          <div className="hg-col-2">Domain</div>
+          <div className="hg-col-3">Status</div>
+          <div className="hg-col-4">Jobs</div>
+          <div className="hg-col-5">Revenue (₹)</div>
+        </div>
+        <div className="hg-table-body">
+          {startupsTable.map((row, idx) => (
+            <div key={idx} className="hg-table-row" style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+              <div className="hg-col-1 hg-td-name">{row.startup_name}</div>
+              <div className="hg-col-2">{row.domain}</div>
+              <div className="hg-col-3">
+                <span className={`hg-status-badge ${row.status === 'Active' ? 'hg-status--active' : 'hg-status--inactive'}`}>{row.status}</span>
               </div>
-            ))}
-          </>
-        ]}
-      </TableShell>
+              <div className="hg-col-4">{row.number_of_jobs || '0'}</div>
+              <div className="hg-col-5">{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   };
 
@@ -241,21 +233,19 @@ function HomeGroundStartup({ user, isPublicView = false }) {
 
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/innovation-entrepreneurship')}>
-            ← Back to Innovation &amp; Entrepreneurship
+            &#8592; Back to Innovation &amp; Entrepreneurship
           </button>
         )}
 
-        <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>Home Grown Startups</h1>
-        <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px' }}>
+        <h1 className="hg-page-h1">Home Grown Startups</h1>
+        <p className="hg-page-sub">
           Internal startups incubated through IPTIF and TechIn programs
         </p>
 
-        {error && (
-          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>
-        )}
+        {error && <div className="hg-error">{error}</div>}
 
-        {/* ── Summary Cards Row 1: Total Startups + Total Jobs ── */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+        {/* ── Summary Cards ── */}
+        <div className="hg-export-row">
           <ExportMenu
             elementId="hg-summary-cards-container"
             data={[summary]}
@@ -266,7 +256,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
           />
         </div>
 
-        <div id="hg-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '24px' }}>
+        <div id="hg-summary-cards-container" className="hg-cards-row">
           {[
             {
               bg: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
@@ -284,9 +274,9 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             },
           ].map(({ bg, shadow, label, value, sub }) => (
             <div key={label} className="hg-summary-card" style={{ background: bg, boxShadow: shadow }}>
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
+              <h3 className="hg-summary-card-h3">{label}</h3>
               <div className="metric-value">{value}</div>
-              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>{sub}</div>
+              <div className="hg-summary-card-sub">{sub}</div>
             </div>
           ))}
         </div>
@@ -294,8 +284,8 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         {/* ── Revenue Cards ── */}
         {(typeof user === 'undefined' || user?.role_id !== 0) && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Revenue Metrics</h3>
+            <div className="hg-revenue-header">
+              <h3 className="hg-revenue-h3">Revenue Metrics</h3>
               <ExportMenu
                 elementId="hg-revenue-container"
                 data={[summary]}
@@ -306,16 +296,16 @@ function HomeGroundStartup({ user, isPublicView = false }) {
               />
             </div>
 
-            <div id="hg-revenue-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+            <div id="hg-revenue-container" className="hg-revenue-cards">
               {[
                 { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_revenue },
                 { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
                 { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
               ].map(({ bg, shadow, label, value }) => (
-                <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                  <div style={{ position: 'relative', zIndex: 1 }}>
-                    <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
+                <div key={label} className="hg-revenue-card" style={{ background: bg, boxShadow: shadow }}>
+                  <div className="hg-revenue-card-decor" />
+                  <div className="hg-revenue-card-inner">
+                    <div className="hg-revenue-card-label">{label}</div>
                     <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
                   </div>
                 </div>
@@ -325,37 +315,33 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         )}
 
         {/* ══════════════ STARTUP GROWTH PANEL ══════════════ */}
-        <div style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <div className="hg-panel">
 
-          {/* Filters */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-            <h4 style={{ margin: 0, color: '#333', fontSize: '15px', fontWeight: 700 }}>Filters</h4>
-            <button
-              onClick={() => setFilters({ domain: 'All', status: 'All' })}
-              style={{ padding: '5px 12px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-            >
+          <div className="hg-filter-header">
+            <h4 className="hg-filter-h4">Filters</h4>
+            <button onClick={() => setFilters({ domain: 'All', status: 'All' })} className="hg-clear-btn">
               Clear Filters
             </button>
           </div>
 
-          <div className="filter-grid-2" style={{ gap: '12px', marginBottom: '16px' }}>
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Domain</label>
+          <div className="hg-filter-row">
+            <div className="hg-filter-item">
+              <label className="hg-filter-label">Domain</label>
               <select
                 value={filters.domain}
                 onChange={e => setFilters(prev => ({ ...prev, domain: e.target.value }))}
-                style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}
+                className="hg-filter-select"
               >
                 <option value="All">All Domains</option>
                 {filterOptions.domains.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Status</label>
+            <div className="hg-filter-item">
+              <label className="hg-filter-label">Status</label>
               <select
                 value={filters.status}
                 onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}
+                className="hg-filter-select"
               >
                 <option value="All">All Statuses</option>
                 {filterOptions.statuses.map(s => <option key={s} value={s}>{s}</option>)}
@@ -363,20 +349,19 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             </div>
           </div>
 
-          <div style={{ height: '1px', background: '#e9ecef', margin: '16px 0' }} />
+          <div className="hg-divider" />
 
-          {/* Chart header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+          <div className="hg-chart-header">
             <div>
-              <h2 style={{ margin: '0 0 4px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px' }}>
-                <span style={{ fontSize: '22px' }}>🏠</span>
+              <h2 className="hg-chart-h2">
+                <span className="hg-chart-icon">&#127968;</span>
                 Startup Growth
               </h2>
-              <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>
+              <p className="hg-chart-desc">
                 Yearly growth of internal-origin startups across IPTIF and TechIn
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="hg-chart-actions">
               {['bar', 'trend', 'table']
                 .filter(mode => !isRestricted || mode !== 'table')
                 .map(mode => {
@@ -385,13 +370,8 @@ function HomeGroundStartup({ user, isPublicView = false }) {
                   return (
                     <button
                       key={mode}
-                      className="hg-mode-btn"
+                      className={`hg-mode-btn${active ? ' hg-mode-btn--active' : ''}`}
                       onClick={() => switchMode(mode)}
-                      style={{
-                        backgroundColor: active ? CHART_COLOR : '#e9ecef',
-                        color: active ? '#fff' : '#333',
-                        boxShadow: active ? `0 4px 10px ${CHART_COLOR}40` : 'none',
-                      }}
                     >
                       {label}
                     </button>
@@ -412,7 +392,6 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Chart / Table */}
           <div key={animKey} className="hg-anim" id={exportId}>
             {(chartMode === 'table' && !isRestricted) ? renderTable() : renderChart(startupsTrend)}
           </div>

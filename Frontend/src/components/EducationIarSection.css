@@ -1,0 +1,162 @@
+/* ============================================================ */
+/* EDUCATION IAR SECTION — component-specific styles           */
+/* ============================================================ */
+
+/* ── Back button spacing ── */
+.eiar-back-btn { margin-bottom: 20px; }
+
+/* ── Section header spacing ── */
+.eiar-section-header { margin-bottom: 20px; }
+
+/* ── H1 title ── */
+.eiar-h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.public-view .eiar-h1 {
+  color: #000000;
+  text-shadow: none;
+}
+
+/* ── Icon wrapper ── */
+.eiar-icon-wrapper {
+  background: #14b8a6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* ── Error message ── */
+.eiar-error {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-radius: 8px;
+}
+
+/* ── Summary card wrapper ── */
+.eiar-card-wrap { margin-bottom: 30px; }
+
+/* ── Summary card ── */
+.eiar-summary-card {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.2);
+  position: relative;
+  overflow: hidden;
+  max-width: 400px;
+}
+
+/* ── Card decorative circle ── */
+.eiar-card-decor {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+/* ── Card inner ── */
+.eiar-card-inner { position: relative; z-index: 1; }
+
+/* ── Card header row ── */
+.eiar-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+
+/* ── Card icon ── */
+.eiar-card-icon { font-size: 28px; background: rgba(255, 255, 255, 0.2); padding: 5px; border-radius: 6px; }
+
+/* ── Card title ── */
+.eiar-card-title { color: rgba(255, 255, 255, 0.9); font-size: 21px; font-weight: 500; }
+
+/* ── Card value ── */
+.eiar-card-value { font-size: 34px; font-weight: bold; color: white; margin-bottom: 4px; }
+
+/* ── Card footer ── */
+.eiar-card-footer { display: flex; align-items: center; gap: 4px; }
+
+/* ── Card indicator dot ── */
+.eiar-card-dot { width: 5px; height: 5px; background: #bef264; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Card footer text ── */
+.eiar-card-footer-text { font-size: 9px; color: rgba(255, 255, 255, 0.7); }
+
+/* ── Chart section panel ── */
+.eiar-chart-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Export row ── */
+.eiar-export-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; }
+
+/* ── Filters header ── */
+.eiar-filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+/* ── Filters label ── */
+.eiar-filter-h4 { margin: 0; color: #333; font-size: 14px; }
+
+/* ── Clear/reset button ── */
+.eiar-clear-btn {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* ── View toggle row ── */
+.eiar-view-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* ── View buttons base ── */
+.eiar-view-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
+.eiar-view-btn--trend-active { border-color: #14b8a6; background-color: #ccfbf1; color: #0f766e; }
+.eiar-view-btn--dir-active   { border-color: #0ea5e9; background-color: #e0f2fe; color: #0369a1; }
+
+/* ── Chart mode row ── */
+.eiar-mode-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+/* ── Chart mode buttons ── */
+.eiar-mode-btn { padding: 6px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none; background-color: #f1f5f9; color: #555; }
+.eiar-mode-btn--active { background-color: #14b8a6; color: #fff; }
+
+/* ── Chart container ── */
+.eiar-chart-container { position: relative; padding: 10px; }
+
+/* ── Directory records count ── */
+.eiar-dir-count { font-size: 13px; color: #666; margin-bottom: 12px; }
+
+/* ── Directory table wrapper ── */
+.eiar-dir-table-wrap { max-height: 350px; height: 350px; overflow-y: auto; }
+
+/* ── Directory table ── */
+.eiar-dir-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.eiar-dir-table thead { position: sticky; top: 0; background-color: #0ea5e9; color: white; }
+.eiar-dir-table th { padding: 10px; }
+.eiar-dir-table td { padding: 8px; }
+.eiar-td-num   { font-weight: 600; }
+.eiar-td-empty { padding: 32px; text-align: center; color: #6c757d; font-weight: 500; }

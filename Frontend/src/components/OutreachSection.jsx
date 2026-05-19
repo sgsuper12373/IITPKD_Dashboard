@@ -7,6 +7,7 @@ import ExportMenu from './ExportMenu';
 import { OUTREACH_PROGRAM_ROLES } from '../utils/rolePermissions';
 import './Page.css';
 import './OutreachMinimal.css';
+import './OutreachSection.css';
 
 // ─── Field definitions ───────────────────────────────────────────────────────
 
@@ -128,46 +129,15 @@ function FieldRow({ label, value }) {
   const formatted = formatValue(value);
   if (!isNonNull(formatted)) return null;
   return (
-    <div style={{
-      display: 'flex',
-      gap: '0.75rem',
-      padding: '0.45rem 0',
-      borderBottom: '1px solid rgba(0,0,0,0.04)',
-      alignItems: 'flex-start',
-    }}>
-      <span style={{
-        minWidth: '180px',
-        fontSize: '0.78rem',
-        color: '#6e6e73',
-        fontWeight: '600',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        paddingTop: '1px',
-        flexShrink: 0,
-      }}>
-        {label}
-      </span>
-      <span style={{ fontSize: '0.9rem', color: '#1d1d1f', lineHeight: '1.5' }}>
-        {formatted}
-      </span>
+    <div className="ors-field-row">
+      <span className="ors-field-label">{label}</span>
+      <span className="ors-field-value">{formatted}</span>
     </div>
   );
 }
 
 function SectionHeading({ children }) {
-  return (
-    <div style={{
-      fontSize: '0.72rem',
-      fontWeight: '700',
-      textTransform: 'uppercase',
-      letterSpacing: '0.09em',
-      color: '#f7a600',
-      marginBottom: '0.6rem',
-      marginTop: '1.4rem',
-    }}>
-      {children}
-    </div>
-  );
+  return <div className="ors-section-heading">{children}</div>;
 }
 
 function ExtraDataSection({ data }) {
@@ -186,62 +156,22 @@ function ExtraDataSection({ data }) {
 
 function GridRecordCard({ record, slNo, onClick }) {
   return (
-    <div
-      onClick={onClick}
-      style={{
-        background: '#f5f5f7',
-        border: '1px solid rgba(0,0,0,0.05)',
-        borderRadius: '16px',
-        boxShadow: '0 8px 8px rgba(0,0,0,0.8)',
-        padding: '1.5rem',
-        cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-6px)';
-        e.currentTarget.style.background = '#ffffff';
-        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.8)';
-        e.currentTarget.style.borderColor = 'rgba(64, 61, 248, 0.73)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.background = '#f5f5f7';
-        e.currentTarget.style.boxShadow = '0 8px 8px rgba(0,0,0,0.8)';
-        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{
-          width: '36px', height: '36px', borderRadius: '10px',
-          background: 'rgba(247,166,0,0.12)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '0.85rem', fontWeight: '700', color: '#f7a600',
-        }}>
-          {slNo}
-        </div>
-        <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: '500', background: '#f5f5f7', padding: '0.2rem 0.6rem', borderRadius: '20px' }}>
-          {record.academic_year || 'N/A'}
-        </span>
+    <div className="ors-grid-card" onClick={onClick}>
+      <div className="ors-card-top">
+        <div className="ors-card-sl-badge">{slNo}</div>
+        <span className="ors-card-year">{record.academic_year || 'N/A'}</span>
       </div>
 
-      <div style={{ flexGrow: 1 }}>
-        <h3 style={{ fontSize: '1.15rem', fontWeight: '600', color: '#1d1d1f', margin: '0 0 0.5rem 0', lineHeight: '1.3' }}>
-          {record.program_name || 'Outreach Record'}
-        </h3>
-        <p style={{ fontSize: '0.85rem', color: '#6e6e73', margin: 0, lineHeight: '1.4' }}>
+      <div className="ors-card-body">
+        <h3 className="ors-card-h3">{record.program_name || 'Outreach Record'}</h3>
+        <p className="ors-card-type">
           {[record.engagement_type, record.program_type].filter(Boolean).join(' · ')}
         </p>
       </div>
 
       {(record.start_date || record.end_date) && (
-        <div style={{ fontSize: '0.85rem', color: '#555', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1rem' }}>📅</span>
+        <div className="ors-card-dates">
+          <span className="ors-card-date-icon">&#128197;</span>
           {record.start_date ? new Date(record.start_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
           {record.end_date && record.start_date !== record.end_date && ` - ${new Date(record.end_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`}
         </div>
@@ -257,45 +187,18 @@ function RecordExpandedView({ record, programConfig, onBack }) {
     NSS_FIELDS.some(({ key }) => isNonNull(record[key]));
 
   return (
-    <div style={{
-      background: '#fff',
-      borderRadius: '20px',
-      border: '1px solid rgba(0,0,0,0.08)',
-      overflow: 'hidden',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-      animation: 'cardFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-    }}>
-      <div style={{
-        padding: '1.2rem 2rem',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
-        display: 'flex',
-        alignItems: 'center',
-        background: '#fafafa',
-        gap: '1.5rem'
-      }}>
-        <button onClick={onBack} style={{
-          background: '#fff', border: '1px solid #e0e0e0', borderRadius: '100px',
-          padding: '0.5rem 1rem', cursor: 'pointer', fontSize: '0.9rem',
-          display: 'flex', alignItems: 'center', gap: '0.5rem',
-          fontWeight: '500', color: '#1d1d1f', transition: 'all 0.2s',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-        }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#f0f0f0'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; }}
-        >
-          <span style={{ fontSize: '1.1rem' }}>←</span> Back
+    <div className="ors-expanded">
+      <div className="ors-expanded-header">
+        <button className="ors-back-btn" onClick={onBack}>
+          <span className="ors-back-arrow">&#8592;</span> Back
         </button>
-        <div>
-          <h2 style={{ margin: '0 0 0.2rem 0', fontSize: '1.3rem', color: '#1d1d1f' }}>
-            {record.program_name || 'Record Details'}
-          </h2>
-          <p style={{ margin: 0, fontSize: '0.85rem', color: '#6e6e73' }}>
-            {record.academic_year} · {record.engagement_type}
-          </p>
+        <div className="ors-expanded-title">
+          <h2 className="ors-expanded-h2">{record.program_name || 'Record Details'}</h2>
+          <p className="ors-expanded-sub">{record.academic_year} · {record.engagement_type}</p>
         </div>
       </div>
 
-      <div style={{ padding: '2rem' }}>
+      <div className="ors-expanded-body">
         <SectionHeading>General Information</SectionHeading>
         {COMMON_FIELDS.map(({ key, label }) => (
           <FieldRow key={key} label={label} value={record[key]} />
@@ -333,7 +236,6 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
   const allowedRoles = OUTREACH_PROGRAM_ROLES[programConfig.key] ?? [3];
   const canModify = allowedRoles.includes(roleId);
 
-  // If a new program is selected from outside, reset selectedRecord
   useEffect(() => {
     setSelectedRecord(null);
   }, [programConfig]);
@@ -344,22 +246,11 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
         {/* Top bar */}
         <div className="outreach-top-bar">
           <div className="outreach-icon-header">{programConfig.icon}</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="ors-detail-flex">
             <p className="outreach-overview-text">{programConfig.title}</p>
-            <p style={{ margin: 0, fontSize: '0.8rem', color: '#6e6e73', marginTop: '0.1rem' }}>
-              {programConfig.description}
-            </p>
+            <p className="ors-detail-desc">{programConfig.description}</p>
           </div>
-          <span style={{
-            background: 'rgba(247,166,0,0.1)',
-            color: '#f7a600',
-            padding: '0.35rem 0.9rem',
-            borderRadius: '100px',
-            fontSize: '0.78rem',
-            fontWeight: '600',
-            flexShrink: 0,
-            marginRight: '12px'
-          }}>
+          <span className="ors-record-badge">
             {matching.length} {matching.length === 1 ? 'record' : 'records'}
           </span>
           <ExportMenu
@@ -372,27 +263,26 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
           />
           {canModify && (
             <button
-              className="page-upload-btn"
-              style={{ flexShrink: 0 }}
+              className="page-upload-btn ors-upload-shrink"
               onClick={() => setIsUploadOpen(true)}
             >
-              📤 Upload Data
+              &#128228; Upload Data
             </button>
           )}
         </div>
 
         {/* Records */}
-        <div style={{ padding: '1.5rem' }}>
+        <div className="ors-records-body">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#6e6e73' }}>
-              <p style={{ margin: 0 }}>Loading records...</p>
+            <div className="ors-loading-state">
+              <p className="ors-state-p">Loading records...</p>
             </div>
           ) : matching.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#6e6e73' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📭</div>
-              <p style={{ margin: 0 }}>No records found for <strong>{programConfig.title}</strong>.</p>
+            <div className="ors-empty-state">
+              <div className="ors-empty-icon">&#128237;</div>
+              <p className="ors-state-p">No records found for <strong>{programConfig.title}</strong>.</p>
               {canModify && (
-                <p style={{ marginTop: '0.4rem', fontSize: '0.85rem' }}>
+                <p className="ors-empty-note">
                   Use the <strong>Upload Data</strong> button above to add records.
                 </p>
               )}
@@ -404,26 +294,15 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
               onBack={() => setSelectedRecord(null)}
             />
           ) : (
-            <div style={{
-              /*display: 'grid',*/
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem'
-            }}>
-              <div id="outreach-program-records-container" style={{
-                display: 'grid',
-                gridTemplateColumns: 'inherit',
-                gap: 'inherit',
-                width: '100%'
-              }}>
-                {matching.map((record, idx) => (
-                  <GridRecordCard
-                    key={record.id ?? idx}
-                    record={record}
-                    slNo={idx + 1}
-                    onClick={() => setSelectedRecord(record)}
-                  />
-                ))}
-              </div>
+            <div id="outreach-program-records-container" className="ors-records-grid">
+              {matching.map((record, idx) => (
+                <GridRecordCard
+                  key={record.id ?? idx}
+                  record={record}
+                  slNo={idx + 1}
+                  onClick={() => setSelectedRecord(record)}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -482,7 +361,7 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
         <div className={isPublicView ? '' : 'page-content'}>
           {!isReadOnlyView && (
             <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-              ← Back to Outreach Extension
+              &#8592; Back to Outreach Extension
             </button>
           )}
           <ProgramDetailView
@@ -502,10 +381,10 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
       <div className={isPublicView ? '' : 'page-content'}>
         {!isPublicView && (
           <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-            ← Back to Outreach Extension
+            &#8592; Back to Outreach Extension
           </button>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="ors-header-row">
           <div className="outreach-page-header">
             <h1>Outreach Programs</h1>
             <p>
@@ -524,22 +403,11 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
         </div>
 
         {loading && (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6e6e73' }}>
-            Loading outreach data…
-          </div>
+          <div className="ors-loading">Loading outreach data&#8230;</div>
         )}
 
         {error && (
-          <div style={{
-            padding: '1.25rem 1.5rem',
-            background: '#fff5f5',
-            border: '1px solid #fed7d7',
-            borderRadius: '12px',
-            color: '#c53030',
-            fontSize: '0.9rem',
-          }}>
-            {error}
-          </div>
+          <div className="ors-error">{error}</div>
         )}
 
         {!loading && !error && (
@@ -558,10 +426,10 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
                   <div className="outreach-card-icon">{config.icon}</div>
                   <h3 className="outreach-card-title">{config.title}</h3>
                   <p className="outreach-card-subtitle">{config.description}</p>
-                  <div style={{ marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: '600', color: '#f7a600' }}>
+                  <div className="ors-card-count">
                     {count > 0 ? `${count} ${count === 1 ? 'record' : 'records'}` : 'To Be Updated'}
                   </div>
-                  <div className="outreach-card-arrow">→</div>
+                  <div className="outreach-card-arrow">&#8594;</div>
                 </div>
               );
             })}

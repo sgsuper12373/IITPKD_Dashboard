@@ -25,25 +25,21 @@ import DataUploadModal from './LazyDataUploadModal';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
+import './TechinSection.css';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
-import CustomTooltip from './CustomTooltip';
 
-
-/* ─── helpers ─────────────────────────────────────────────────────────────── */
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
 const formatCompactCurrency = (value) => {
-  if (value === undefined || value === null) return '₹0';
-  if (value >= 10000000) return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
-  if (value >= 100000) return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
-  return '₹' + formatNumber(value);
+  if (value === undefined || value === null) return '&#8377;0';
+  if (value >= 10000000) return '&#8377;' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  if (value >= 100000) return '&#8377;' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
+  return '&#8377;' + formatNumber(value);
 };
 
-/* ─── The ONE constant that controls height everywhere ─────────────────────── */
 const CONTENT_HEIGHT = 480;
 
-/* ─── CSS injected once ────────────────────────────────────────────────────── */
 const TRANSITION_STYLE = `
   @keyframes techin-fade-in {
     from { opacity: 0; transform: translateY(8px) scale(0.995); }
@@ -98,14 +94,12 @@ function injectStyle() {
   document.head.appendChild(s);
 }
 
-/* ─── view configs ─────────────────────────────────────────────────────────── */
 const VIEWS = [
-  { id: 'programs', label: 'Programs Trend', color: '#667eea', icon: '📊' },
-  { id: 'skillDev', label: 'Skill Dev Trend', color: '#f093fb', icon: '🎯' },
-  { id: 'startups', label: 'Startups Growth', color: '#43e97b', icon: '🚀' },
+  { id: 'programs',  label: 'Programs Trend',   color: '#667eea', icon: '&#128202;' },
+  { id: 'skillDev',  label: 'Skill Dev Trend',  color: '#f093fb', icon: '&#127919;' },
+  { id: 'startups',  label: 'Startups Growth',  color: '#43e97b', icon: '&#128640;' },
 ];
 
-/* ═══════════════════════════════════════════════════════════════════════════ */
 function TechinSection({ user, isPublicView = false }) {
   injectStyle();
 
@@ -118,15 +112,12 @@ function TechinSection({ user, isPublicView = false }) {
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 13;
 
-  /* modal */
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
 
-  /* view / mode */
   const [viewType, setViewType] = useState('programs');
   const [chartMode, setChartMode] = useState('bar');
 
-  /* ── data ── */
   const [summary, setSummary] = useState({
     total_programs: 0, total_skill_dev_programs: 0, total_startups: 0,
     total_startup_revenue: 0, highest_revenue: 0, lowest_revenue: 0, average_revenue: 0
@@ -162,12 +153,9 @@ function TechinSection({ user, isPublicView = false }) {
     return () => window.removeEventListener('resize', handle);
   }, []);
 
-
-  /* animation key */
   const [animKey, setAnimKey] = useState(0);
   const bump = useCallback(() => setAnimKey(k => k + 1), []);
 
-  /* ── load filter options (cross-filtered by active program filters) ── */
   const serializedProgramFilters = JSON.stringify(programFilters);
   useEffect(() => {
     const load = async () => {
@@ -214,7 +202,6 @@ function TechinSection({ user, isPublicView = false }) {
   }, [token, startupFilters, uploadVersion]);
 
   const handleFilterChange = (setter) => (field, value) => setter(prev => ({ ...prev, [field]: value }));
-
   const switchView = (id) => { setViewType(id); bump(); };
   const switchMode = (mode) => { setChartMode(mode); bump(); };
 
@@ -233,14 +220,13 @@ function TechinSection({ user, isPublicView = false }) {
     if (viewType === 'startups') setStartupFilters({ domain: 'All', status: 'All' });
   };
 
-  /* ── custom tooltip ── */
-  const CustomTooltip = ({ active, payload, label }) => {
+  const TechinTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-          <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#333' }}>Year: {label}</p>
+        <div className="techin-tooltip">
+          <p className="techin-tooltip-year">Year: {label}</p>
           {payload.map((entry, i) => (
-            <p key={i} style={{ margin: '0', color: entry.color }}>{entry.name}: {formatNumber(entry.value)}</p>
+            <p key={i} className="techin-tooltip-entry" style={{ color: entry.color }}>{entry.name}: {formatNumber(entry.value)}</p>
           ))}
         </div>
       );
@@ -248,11 +234,10 @@ function TechinSection({ user, isPublicView = false }) {
     return null;
   };
 
-  /* ── chart renderer — fixed pixel height so Recharts renders correctly ── */
   const renderChart = (data, color, name) => (
-    <div 
-      className="clickable-chart"
-      style={{ position: 'relative', height: `${CONTENT_HEIGHT}px` }}
+    <div
+      className="clickable-chart techin-chart-box"
+      style={{ height: `${CONTENT_HEIGHT}px` }}
       onClick={() => setExpandedChart({
         title: `${currentView?.label} Trend`,
         content: (
@@ -262,7 +247,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<TechinTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
                 <Bar dataKey="count" name={name} fill={color} radius={[6, 6, 0, 0]}>
                   <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
@@ -273,7 +258,7 @@ function TechinSection({ user, isPublicView = false }) {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                 <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<TechinTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
                 <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
                   <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
@@ -285,9 +270,9 @@ function TechinSection({ user, isPublicView = false }) {
       })}
     >
       {data.length === 0 && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(4px)', borderRadius: '8px', pointerEvents: 'none' }}>
-          <span style={{ fontSize: '40px', marginBottom: '10px' }}>📊</span>
-          <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>No data available for the selected filters.</p>
+        <div className="techin-no-data-overlay">
+          <span className="techin-no-data-icon">&#128202;</span>
+          <p className="techin-no-data-text">No data available for the selected filters.</p>
         </div>
       )}
       <ResponsiveContainer width="100%" height={CONTENT_HEIGHT} minWidth={0}>
@@ -296,7 +281,7 @@ function TechinSection({ user, isPublicView = false }) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="year" stroke="#666" interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} tick={{ fontSize: 11 }} />
             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<TechinTooltip />} />
             <Legend />
             <Bar dataKey="count" name={name} fill={color} radius={[4, 4, 0, 0]} barSize={28}>
               <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
@@ -307,7 +292,7 @@ function TechinSection({ user, isPublicView = false }) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="year" stroke="#666" interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} tick={{ fontSize: 11 }} />
             <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<TechinTooltip />} />
             <Legend />
             <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 5, fill: color, strokeWidth: 0 }} activeDot={{ r: 7 }}>
               <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
@@ -318,25 +303,22 @@ function TechinSection({ user, isPublicView = false }) {
     </div>
   );
 
-
-  /* ── current view config ── */
   const currentView = VIEWS.find(v => v.id === viewType);
   const color = currentView?.color || '#667eea';
 
-  /* ── filter dropdowns per view ── */
   const renderFilters = () => {
     if (viewType === 'programs') return (
-      <div className="filter-grid-2" style={{ gap: '12px' }}>
+      <div className="techin-filter-grid">
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Type</label>
-          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Type</label>
+          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} className="techin-filter-select">
             <option value="All">All Types</option>
             {filterOptions.programs.types.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Association</label>
-          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Association</label>
+          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} className="techin-filter-select">
             <option value="All">All Associations</option>
             {filterOptions.programs.associations.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
@@ -344,17 +326,17 @@ function TechinSection({ user, isPublicView = false }) {
       </div>
     );
     if (viewType === 'skillDev') return (
-      <div className="filter-grid-2" style={{ gap: '12px' }}>
+      <div className="techin-filter-grid">
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Category</label>
-          <select value={skillDevFilters.category} onChange={e => handleFilterChange(setSkillDevFilters)('category', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Category</label>
+          <select value={skillDevFilters.category} onChange={e => handleFilterChange(setSkillDevFilters)('category', e.target.value)} className="techin-filter-select">
             <option value="All">All Categories</option>
             {filterOptions.skill_dev.categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Association</label>
-          <select value={skillDevFilters.association} onChange={e => handleFilterChange(setSkillDevFilters)('association', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Association</label>
+          <select value={skillDevFilters.association} onChange={e => handleFilterChange(setSkillDevFilters)('association', e.target.value)} className="techin-filter-select">
             <option value="All">All Associations</option>
             {filterOptions.skill_dev.associations.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
@@ -362,17 +344,17 @@ function TechinSection({ user, isPublicView = false }) {
       </div>
     );
     if (viewType === 'startups') return (
-      <div className="filter-grid-2" style={{ gap: '12px' }}>
+      <div className="techin-filter-grid">
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Domain</label>
-          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Domain</label>
+          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} className="techin-filter-select">
             <option value="All">All Domains</option>
             {filterOptions.startups.domains.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
         <div>
-          <label style={{ fontSize: '12px', fontWeight: '600', color: '#555', display: 'block', marginBottom: '4px' }}>Status</label>
-          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} style={{ padding: '6px', fontSize: '13px', width: '100%', borderRadius: '6px', border: '1px solid #ddd' }}>
+          <label className="techin-filter-label">Status</label>
+          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} className="techin-filter-select">
             <option value="All">All Statuses</option>
             {filterOptions.startups.statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -381,33 +363,31 @@ function TechinSection({ user, isPublicView = false }) {
     );
   };
 
-  /* ── shared table shell — fixed height, header pinned, body scrolls ── */
   const TableShell = ({ headerBg, columns, children }) => (
-    <div style={{ border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ backgroundColor: headerBg, color: 'white', display: 'grid', gridTemplateColumns: columns, gap: '8px', padding: '12px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>
+    <div className="techin-table-shell" style={{ height: `${CONTENT_HEIGHT}px` }}>
+      <div className="techin-table-header" style={{ backgroundColor: headerBg, gridTemplateColumns: columns }}>
         {children[0]}
       </div>
-      <div style={{ overflowY: 'auto', flex: 1 }}>
+      <div className="techin-table-body">
         {children[1]}
       </div>
     </div>
   );
 
-  /* ── table renderers ── */
   const renderTable = () => {
     if (viewType === 'programs') {
       if (!programsTable.length && !loadingPrograms) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div className="techin-mobile-list" style={{ maxHeight: `${CONTENT_HEIGHT}px` }}>
             {programsTable.map((row, idx) => (
-              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.program_name}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Type:</span><br/>{row.type}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Association:</span><br/>{row.association}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Date:</span><br/>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Attendees:</span><br/>{row.no_of_attendess || '0'}</div>
+              <div key={idx} className="techin-mobile-card">
+                <div className="techin-mobile-card-title">{row.program_name}</div>
+                <div className="techin-mobile-card-fields">
+                  <div><span className="techin-field-label">Type:</span><br />{row.type}</div>
+                  <div><span className="techin-field-label">Association:</span><br />{row.association}</div>
+                  <div><span className="techin-field-label">Date:</span><br />{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
+                  <div><span className="techin-field-label">Attendees:</span><br />{row.no_of_attendess || '0'}</div>
                 </div>
               </div>
             ))}
@@ -420,8 +400,8 @@ function TechinSection({ user, isPublicView = false }) {
             <><div>Program Name</div><div>Type</div><div>Association</div><div>Date</div><div>Attendees</div></>,
             <>
               {programsTable.map((row, idx) => (
-                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
-                   <div style={{ fontWeight: '500' }}>{row.program_name}</div>
+                <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                  <div className="techin-table-row-name">{row.program_name}</div>
                   <div>{row.type}</div>
                   <div>{row.association}</div>
                   <div>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
@@ -437,15 +417,15 @@ function TechinSection({ user, isPublicView = false }) {
       if (!skillDevTable.length && !loadingSkillDev) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div className="techin-mobile-list" style={{ maxHeight: `${CONTENT_HEIGHT}px` }}>
             {skillDevTable.map((row, idx) => (
-              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.program_name}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Category:</span><br/>{row.category}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Association:</span><br/>{row.association}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Date:</span><br/>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Attendees:</span><br/>{row.no_of_attendess || '0'}</div>
+              <div key={idx} className="techin-mobile-card">
+                <div className="techin-mobile-card-title">{row.program_name}</div>
+                <div className="techin-mobile-card-fields">
+                  <div><span className="techin-field-label">Category:</span><br />{row.category}</div>
+                  <div><span className="techin-field-label">Association:</span><br />{row.association}</div>
+                  <div><span className="techin-field-label">Date:</span><br />{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
+                  <div><span className="techin-field-label">Attendees:</span><br />{row.no_of_attendess || '0'}</div>
                 </div>
               </div>
             ))}
@@ -458,8 +438,8 @@ function TechinSection({ user, isPublicView = false }) {
             <><div>Program Name</div><div>Category</div><div>Association</div><div>Date</div><div>Attendees</div></>,
             <>
               {skillDevTable.map((row, idx) => (
-                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
-                  <div style={{ fontWeight: '500' }}>{row.program_name}</div>
+                <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: '2fr 1.2fr 1.2fr 1fr 1fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                  <div className="techin-table-row-name">{row.program_name}</div>
                   <div>{row.category}</div>
                   <div>{row.association}</div>
                   <div>{row.event_date || row.start_end ? new Date(row.event_date || row.start_end).toLocaleDateString() : 'N/A'}</div>
@@ -475,15 +455,15 @@ function TechinSection({ user, isPublicView = false }) {
       if (!startupsTable.length && !loadingStartups) return <EmptyState />;
       if (chartIsMobile) {
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: `${CONTENT_HEIGHT}px`, overflowY: 'auto', padding: '4px' }}>
+          <div className="techin-mobile-list" style={{ maxHeight: `${CONTENT_HEIGHT}px` }}>
             {startupsTable.map((row, idx) => (
-              <div key={idx} style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>{row.startup_name}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Domain:</span><br/>{row.domain}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Status:</span><br/><span style={{ backgroundColor: row.status === 'Active' ? '#dcfce7' : '#fef3c7', color: row.status === 'Active' ? '#166534' : '#92400e', padding: '2px 8px', borderRadius: '10px', fontSize: '11px' }}>{row.status}</span></div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Jobs:</span><br/>{row.number_of_jobs || '0'}</div>
-                  <div><span style={{ color: '#64748b', fontWeight: '600' }}>Revenue:</span><br/>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+              <div key={idx} className="techin-mobile-card">
+                <div className="techin-mobile-card-title">{row.startup_name}</div>
+                <div className="techin-mobile-card-fields">
+                  <div><span className="techin-field-label">Domain:</span><br />{row.domain}</div>
+                  <div><span className="techin-field-label">Status:</span><br /><span className={`techin-status-badge techin-status-badge--sm${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span></div>
+                  <div><span className="techin-field-label">Jobs:</span><br />{row.number_of_jobs || '0'}</div>
+                  <div><span className="techin-field-label">Revenue:</span><br />{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               </div>
             ))}
@@ -493,17 +473,17 @@ function TechinSection({ user, isPublicView = false }) {
       return (
         <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
           {[
-            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (₹)</div></>,
+            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (&#8377;)</div></>,
             <>
               {startupsTable.map((row, idx) => (
-                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', gap: '8px', padding: '12px', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0', fontSize: '13px', alignItems: 'center' }}>
-                  <div style={{ fontWeight: '500' }}>{row.startup_name}</div>
+                <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                  <div className="techin-table-row-name">{row.startup_name}</div>
                   <div>{row.domain}</div>
                   <div>
-                    <span style={{ backgroundColor: row.status === 'Active' ? '#dcfce7' : '#fef3c7', color: row.status === 'Active' ? '#166534' : '#92400e', padding: '4px 8px', borderRadius: '12px', fontSize: '11px', display: 'inline-block' }}>{row.status}</span>
+                    <span className={`techin-status-badge techin-status-badge--md${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span>
                   </div>
                   <div>{row.number_of_jobs || '0'}</div>
-                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                  <div>{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               ))}
             </>
@@ -513,7 +493,6 @@ function TechinSection({ user, isPublicView = false }) {
     }
   };
 
-  /* trend data & label for current view */
   const trendData = viewType === 'programs' ? programsTrend : viewType === 'skillDev' ? skillDevTrend : startupsTrend;
   const trendLabel = viewType === 'programs' ? 'Programs Count' : viewType === 'skillDev' ? 'Skill Dev Count' : 'Startups Count';
   const exportId = `techin-${viewType}-chart-container`;
@@ -521,42 +500,35 @@ function TechinSection({ user, isPublicView = false }) {
     ? (viewType === 'programs' ? programsTable : viewType === 'skillDev' ? skillDevTable : startupsTable)
     : trendData;
 
-  /* ─────────────────────────── RENDER ───────────────────────────────────── */
   return (
     <div className={isPublicView ? '' : 'page-container'}>
       <div className={isPublicView ? '' : 'page-content'}>
 
         {!isReadOnlyView && (
           <button className="page-back-btn" onClick={() => navigate('/innovation-entrepreneurship')}>
-            ← Back to Innovation &amp; Entrepreneurship
+            &#8592; Back to Innovation &amp; Entrepreneurship
           </button>
         )}
 
+        <h1 className="techin-h1">TechIn</h1>
 
-        <h1 style={{ marginTop: '20px', marginBottom: '10px' }}>TechIn</h1>
-
-        {/* Upload Buttons */}
         {!isReadOnlyView && isAdmin && (
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div className="techin-upload-row">
             {[
-              { label: 'Upload Programs', table: 'techin_program_table' },
+              { label: 'Upload Programs',  table: 'techin_program_table' },
               { label: 'Upload Skill Dev', table: 'techin_skill_development_program' },
-              { label: 'Upload Startups', table: 'techin_startup_table' },
+              { label: 'Upload Startups',  table: 'techin_startup_table' },
             ].map(({ label, table }) => (
               <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
-                📤 {label}
+                &#128228; {label}
               </button>
             ))}
           </div>
         )}
 
-        {error && (
-          <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
-        {/* Summary header + export */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
-
+        <div className="techin-export-row">
           <ExportMenu
             elementId="techin-summary-cards-container"
             data={[summary]}
@@ -567,12 +539,11 @@ function TechinSection({ user, isPublicView = false }) {
           />
         </div>
 
-        {/* ── Summary Cards ── */}
-        <div id="techin-summary-cards-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '15px' }}>
+        <div id="techin-summary-cards-container" className="techin-cards-grid">
           {[
-            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs', value: summary.total_programs },
+            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs',     value: summary.total_programs },
             { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
-            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)', label: 'Total Startups', value: summary.total_startups },
+            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)',  label: 'Total Startups',     value: summary.total_startups },
           ].map(({ view, bg, shadow, label, value }) => (
             <div
               key={view}
@@ -580,57 +551,50 @@ function TechinSection({ user, isPublicView = false }) {
               onClick={() => handleSummaryCard(view)}
               style={{ background: bg, boxShadow: shadow }}
             >
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', opacity: 0.9 }}>{label}</h3>
+              <h3>{label}</h3>
               <div className="metric-value">{formatNumber(value)}</div>
-              <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '6px' }}>Click to view directory →</div>
+              <div className="techin-summary-card-footer">Click to view directory &#8594;</div>
             </div>
           ))}
         </div>
 
-        {/* ── Revenue Metrics ── */}
         {(typeof user === 'undefined' || user?.role_id !== 0) && (
           <>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>Startup Revenue Metrics</h3>
-          <ExportMenu
-            elementId="techin-revenue-metrics-container"
-            data={[summary]}
-            headers={['Total Revenue', 'Highest Revenue', 'Average Revenue']}
-            keys={['total_startup_revenue', 'highest_revenue', 'average_revenue']}
-            filename="techin_revenue_metrics"
-            title="Startup Revenue Metrics"
-          />
-        </div>
-          <div id="techin-revenue-metrics-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-            {[
-              { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_startup_revenue },
-              { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
-              { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
-            ].map(({ bg, shadow, label, value }) => (
-              <div key={label} style={{ background: bg, borderRadius: '16px', padding: '24px 16px', boxShadow: shadow, color: 'white', textAlign: 'center', position: 'relative', overflow: 'hidden', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '8px', fontWeight: '500' }}>{label}</div>
-                  <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+            <div className="techin-revenue-header">
+              <h3 className="techin-revenue-h3">Startup Revenue Metrics</h3>
+              <ExportMenu
+                elementId="techin-revenue-metrics-container"
+                data={[summary]}
+                headers={['Total Revenue', 'Highest Revenue', 'Average Revenue']}
+                keys={['total_startup_revenue', 'highest_revenue', 'average_revenue']}
+                filename="techin_revenue_metrics"
+                title="Startup Revenue Metrics"
+              />
+            </div>
+            <div id="techin-revenue-metrics-container" className="techin-revenue-grid">
+              {[
+                { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)',  label: 'Total Revenue',   value: summary.total_startup_revenue },
+                { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)',  label: 'Highest Revenue', value: summary.highest_revenue },
+                { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)',  label: 'Average Revenue', value: summary.average_revenue }
+              ].map(({ bg, shadow, label, value }) => (
+                <div key={label} className="techin-revenue-card" style={{ background: bg, boxShadow: shadow }}>
+                  <div className="techin-revenue-card-decor" />
+                  <div className="techin-revenue-card-body">
+                    <div className="techin-revenue-card-label">{label}</div>
+                    <div className="metric-value-sm" title={`&#8377;${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           </>
         )}
 
-        {/* ══════════════ UNIFIED CONTROL PANEL ══════════════ */}
-        <div
-          id="techin-content-region"
-          style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
-        >
-          {/* Filter heading */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h4 style={{ margin: 0, color: '#333', fontSize: '15px', fontWeight: 700, letterSpacing: '0.02em', marginBottom: '10px' }}>Filters</h4>
+        <div id="techin-content-region" className="techin-content-panel">
+          <div className="techin-filter-heading-row">
+            <h4 className="techin-filter-h4">Filters</h4>
           </div>
 
-          {/* View-tab buttons */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div className="techin-tabs-row">
             {VIEWS.map(({ id, label, color: c, icon }) => {
               const active = viewType === id;
               return (
@@ -646,62 +610,54 @@ function TechinSection({ user, isPublicView = false }) {
                     fontWeight: active ? 600 : 500,
                   }}
                 >
-                  <span style={{ fontSize: '16px' }}>{icon}</span>{label}
+                  <span className="techin-tab-icon" dangerouslySetInnerHTML={{ __html: icon }} />{label}
                 </button>
               );
             })}
           </div>
 
-          {/* Filter dropdowns + clear */}
-          <div style={{ padding: '0 6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                onClick={clearFilters}
-                style={{ padding: '5px 12px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-              >
-                Clear Filters
-              </button>
+          <div className="techin-filter-wrap">
+            <div className="techin-filter-end-row">
+              <button onClick={clearFilters} className="techin-clear-btn">Clear Filters</button>
             </div>
             {renderFilters()}
           </div>
 
-          {/* Divider */}
-          <div style={{ height: '1px', background: '#e9ecef', margin: '16px 0' }} />
+          <div className="techin-divider" />
 
-          {/* Chart header: title + mode buttons + export */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+          <div className="techin-chart-header-row">
             <div>
-              <h2 style={{ margin: '0 0 4px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px' }}>
-                <span style={{ fontSize: '22px' }}>{currentView?.icon}</span>
-                `                {currentView?.label}
+              <h2 className="techin-chart-h2">
+                <span className="techin-chart-icon" dangerouslySetInnerHTML={{ __html: currentView?.icon }} />
+                {currentView?.label}
               </h2>
-              <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>
+              <p className="techin-chart-desc">
                 {viewType === 'programs' && 'Yearly trend of programs by type and association'}
                 {viewType === 'skillDev' && 'Yearly trend of skill development programs'}
                 {viewType === 'startups' && 'Yearly growth of startups by domain and status'}
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="techin-mode-row">
               {['bar', 'trend', 'table']
                 .filter(mode => !isRestricted || mode !== 'table')
                 .map(mode => {
-                const modeActive = chartMode === mode;
-                const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
-                return (
-                  <button
-                    key={mode}
-                    className="techin-mode-btn"
-                    onClick={() => switchMode(mode)}
-                    style={{
-                      backgroundColor: modeActive ? color : '#e9ecef',
-                      color: modeActive ? '#fff' : '#333',
-                      boxShadow: modeActive ? `0 4px 10px ${color}40` : 'none',
-                    }}
-                  >
-                    {modeLabel}
-                  </button>
-                );
-              })}
+                  const modeActive = chartMode === mode;
+                  const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
+                  return (
+                    <button
+                      key={mode}
+                      className="techin-mode-btn"
+                      onClick={() => switchMode(mode)}
+                      style={{
+                        backgroundColor: modeActive ? color : '#e9ecef',
+                        color: modeActive ? '#fff' : '#333',
+                        boxShadow: modeActive ? `0 4px 10px ${color}40` : 'none',
+                      }}
+                    >
+                      {modeLabel}
+                    </button>
+                  );
+                })}
               <ExportMenu
                 elementId={exportId}
                 data={exportData}
@@ -721,7 +677,6 @@ function TechinSection({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Animated content region */}
           <div key={animKey} className="techin-anim" id={exportId}>
             {chartMode === 'table' && !isRestricted
               ? renderTable()
@@ -729,28 +684,23 @@ function TechinSection({ user, isPublicView = false }) {
             }
           </div>
         </div>
-        {/* end unified panel */}
 
-        <div style={{ marginTop: '32px', background: 'linear-gradient(135deg, #ffffffff 0%, #ffffffff 100%)', borderRadius: '16px', padding: '28px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', boxShadow: '0 10px 30px rgba(253, 221, 161, 1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="techin-cta-banner">
+          <div className="techin-cta-left">
             <div>
-              <span style={{ width: '100px', height: '100px' }}></span>
-              <h3 style={{ padding: '0 50px 0 0 ', margin: '0 40px 4px 0', color: '#000000ff', fontSize: '18px', fontWeight: 700 }}>Explore More on TechIn</h3>
-              <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.85)', fontSize: '13px' }}>Visit our website to explore our services and solutions.</p>
+              <h3 className="techin-cta-h3">Explore More on TechIn</h3>
+              <p className="techin-cta-p">Visit our website to explore our services and solutions.</p>
             </div>
           </div>
           <a
             href="https://techin-iitpkd.org/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#fff', color: '#000000ff', padding: '10px 22px', borderRadius: '50px', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', transition: 'transform 0.2s, box-shadow 0.2s', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; }}
+            className="techin-cta-link"
           >
-            Visit Techin.com →
+            Visit Techin.com &#8594;
           </a>
         </div>
-
       </div>
 
       <DataUploadModal
@@ -760,7 +710,6 @@ function TechinSection({ user, isPublicView = false }) {
         token={token}
       />
 
-      {/* Fullscreen Chart Modal */}
       <ChartExpandModal
         isOpen={!!expandedChart}
         onClose={() => setExpandedChart(null)}
@@ -768,18 +717,15 @@ function TechinSection({ user, isPublicView = false }) {
       >
         {expandedChart?.content}
       </ChartExpandModal>
-
     </div>
   );
 }
 
-
-/* ── small helper ── */
 function EmptyState({ msg }) {
   return (
-    <div style={{ height: `${CONTENT_HEIGHT}px`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.82)', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
-      <span style={{ fontSize: '36px', marginBottom: '10px' }}>🗂️</span>
-      <p style={{ color: '#888', fontSize: '15px', fontWeight: 500, margin: 0 }}>{msg || 'No data available for the selected filters.'}</p>
+    <div className="techin-empty-state" style={{ height: `${CONTENT_HEIGHT}px` }}>
+      <span className="techin-empty-icon">&#128193;</span>
+      <p className="techin-empty-text">{msg || 'No data available for the selected filters.'}</p>
     </div>
   );
 }

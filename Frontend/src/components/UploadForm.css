@@ -1,0 +1,20 @@
+/* ── UploadForm component ── */
+.uf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.uf-logout-btn { height: fit-content; }
+
+.uf-form { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.uf-label { margin-right: 1rem; }
+
+.uf-select { padding: 0.5em; font-size: 1em; }
+
+.uf-preview-table { width: 100%; table-layout: auto; }
+
+.uf-msg { margin-top: 1rem; white-space: pre-wrap; }
+.uf-msg--error   { color: red; }
+.uf-msg--success { color: green; }

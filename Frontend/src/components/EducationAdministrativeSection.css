@@ -1,0 +1,60 @@
+/* ============================================================ */
+/* EDUCATION ADMINISTRATIVE SECTION — component-specific styles */
+/* ============================================================ */
+
+/* ── Toggle row centering ── */
+.edu-adm-toggle-row {
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+/* ── Radio label base (inactive) ── */
+.edu-adm-radio {
+  background-color: transparent;
+  color: #333;
+  border: 2px solid #e0e0e0;
+  box-shadow: none;
+}
+/* ── Radio label active states per view ── */
+.edu-adm-radio.active { color: white; }
+.edu-adm-radio--summary.active  { background-color: #667eea; border-color: #667eea; box-shadow: 0 3px 10px #667eea40; }
+.edu-adm-radio--dept.active     { background-color: #22c55e; border-color: #22c55e; box-shadow: 0 3px 10px #22c55e40; }
+.edu-adm-radio--trend.active    { background-color: #f97316; border-color: #f97316; box-shadow: 0 3px 10px #f9731640; }
+.edu-adm-radio--dist.active     { background-color: #a855f7; border-color: #a855f7; box-shadow: 0 3px 10px #a855f740; }
+.edu-adm-radio--details.active  { background-color: #0ea5e9; border-color: #0ea5e9; box-shadow: 0 3px 10px #0ea5e940; }
+
+/* ── Radio inputs ── */
+.edu-adm-radio input { width: 16px; height: 16px; cursor: pointer; }
+.edu-adm-radio--summary input { accent-color: #667eea; }
+.edu-adm-radio--dept input    { accent-color: #22c55e; }
+.edu-adm-radio--trend input   { accent-color: #f97316; }
+.edu-adm-radio--dist input    { accent-color: #a855f7; }
+.edu-adm-radio--details input { accent-color: #0ea5e9; }
+
+/* ── Radio label text ── */
+.edu-adm-radio span { font-weight: 500; font-size: 14px; }
+.edu-adm-radio.active span { font-weight: 600; }
+
+/* ── View panels wrapper ── */
+.edu-adm-panels { position: relative; min-height: 400px; }
+.edu-adm-hidden { display: none; }
+
+/* ── Chart containers ── */
+.edu-adm-chart-lg { position: relative; min-height: 400px; padding: 10px; }
+
+/* ── Drilldown panel helpers ── */
+.edu-adm-drilldown-h3 { margin: 0; display: flex; align-items: center; gap: 10px; }
+.edu-adm-year-label { font-size: 0.9rem; color: #666; font-weight: normal; margin-left: 10px; }
+.edu-adm-drilldown-actions { display: flex; gap: 12px; align-items: center; }
+
+/* ── Mobile card top row ── */
+.edu-adm-mobile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+/* ── Sticky thead ── */
+.edu-adm-sticky-thead { position: sticky; top: 0; z-index: 10; }

@@ -1,0 +1,325 @@
+/* ============================================================ */
+/* IPTIF SECTION — component-specific styles                    */
+/* ============================================================ */
+
+.iptif-h1 { margin-bottom: 5px; }
+
+/* ── Upload row ── */
+.iptif-upload-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ── Export row ── */
+.iptif-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ── Summary cards grid ── */
+.iptif-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.iptif-cards-grid > * {
+  flex: 1 1 min(250px, 100%);
+}
+.iptif-summary-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  opacity: 0.9;
+}
+.iptif-summary-card-footer {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+/* ── Content panel ── */
+.iptif-content-panel {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Filter heading row ── */
+.iptif-filter-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.iptif-filter-h4 {
+  margin: 0;
+  color: #333;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ── Tabs row ── */
+.iptif-tabs-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.iptif-tab-icon { font-size: 16px; }
+
+/* ── Filter inner wrapper ── */
+.iptif-filter-inner { padding: 0 6px; }
+.iptif-filter-end-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Clear filters button ── */
+.iptif-clear-btn {
+  padding: 5px 12px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: opacity 0.2s;
+}
+.iptif-clear-btn:hover { opacity: 0.85; }
+
+/* ── Filter label & select ── */
+.iptif-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
+}
+.iptif-filter-select {
+  padding: 6px;
+  font-size: 13px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-family: inherit;
+}
+.iptif-filter-select--narrow { max-width: 300px; }
+
+/* ── Filter flex grid ── */
+.iptif-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.iptif-filter-grid > * {
+  flex: 1 1 min(160px, 100%);
+}
+
+/* ── Divider ── */
+.iptif-divider {
+  height: 1px;
+  background: #e9ecef;
+  margin: 16px 0;
+}
+
+/* ── Chart header row ── */
+.iptif-chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.iptif-chart-h2 {
+  margin: 0 0 4px 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+.iptif-chart-icon { font-size: 22px; }
+.iptif-chart-desc { color: #666; margin: 0; font-size: 13px; }
+
+/* ── Mode buttons row ── */
+.iptif-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Chart box (height stays inline) ── */
+.iptif-chart-box { position: relative; }
+
+/* ── No-data overlay ── */
+.iptif-no-data-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.iptif-no-data-icon { font-size: 40px; margin-bottom: 10px; }
+.iptif-no-data-text { color: #888; font-size: 15px; font-weight: 500; margin: 0; }
+
+/* ── Mobile list (maxHeight stays inline) ── */
+.iptif-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+/* ── Mobile cards ── */
+.iptif-mobile-card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.iptif-mobile-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+.iptif-mobile-card-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+.iptif-mobile-card-fields > * { flex: 1 1 calc(50% - 6px); }
+.iptif-mobile-card-fields > .span-full { flex: 0 0 100%; }
+.iptif-field-label { color: #64748b; font-weight: 600; }
+
+/* ── Table shell (height stays inline) ── */
+.iptif-table-shell {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.iptif-table-header {
+  display: grid;
+  color: white;
+  gap: 8px;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 13px;
+  flex-shrink: 0;
+  /* backgroundColor and gridTemplateColumns stay inline */
+}
+.iptif-table-body { overflow-y: auto; flex: 1; }
+.iptif-table-row {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
+  align-items: center;
+  /* gridTemplateColumns and backgroundColor stay inline */
+}
+.iptif-table-row-name { font-weight: 500; }
+
+/* ── Status badge ── */
+.iptif-status-badge         { font-size: 11px; font-weight: 500; }
+.iptif-status-badge--sm     { padding: 2px 8px; border-radius: 10px; }
+.iptif-status-badge--md     { padding: 4px 8px; border-radius: 12px; display: inline-block; }
+.iptif-status-badge--ongoing { background-color: #e0f2fe; color: #0284c7; }
+.iptif-status-badge--other   { background-color: #f1f5f9; color: #475569; }
+
+/* ── Tooltip ── */
+.iptif-tooltip {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.iptif-tooltip-year { margin: 0 0 5px 0; font-weight: bold; color: #333; }
+.iptif-tooltip-entry { margin: 0; /* color stays inline */ }
+
+/* ── CTA banner ── */
+.iptif-cta-banner {
+  margin-top: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(241, 229, 196, 1);
+}
+.iptif-cta-left { display: flex; align-items: center; gap: 16px; }
+.iptif-cta-h3 {
+  padding: 0 50px 0 0;
+  margin: 0 40px 4px 0;
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+}
+.iptif-cta-p { margin: 0; color: rgba(0, 0, 0, 0.85); font-size: 13px; }
+.iptif-cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  color: #000;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.iptif-cta-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Empty state (height stays inline) ── */
+.iptif-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+.iptif-empty-icon { font-size: 36px; margin-bottom: 10px; }
+.iptif-empty-text { color: #888; font-size: 15px; font-weight: 500; margin: 0; }
+
+/* ============================================================ */
+/* RESPONSIVE                                                   */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+  .iptif-chart-header-row { flex-direction: column; align-items: flex-start; }
+  .iptif-cta-banner { flex-direction: column; align-items: flex-start; }
+  .iptif-cta-h3 { padding: 0; margin: 0 0 4px 0; }
+}
+
+@media (max-width: 480px) {
+  .iptif-mobile-card-fields > * { flex: 0 0 100%; }
+}

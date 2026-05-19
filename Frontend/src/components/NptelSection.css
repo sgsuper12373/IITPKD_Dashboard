@@ -1,0 +1,45 @@
+/* ============================================================ */
+/* NPTEL SECTION — component-specific styles                    */
+/* ============================================================ */
+
+/* ── Page header row ── */
+.nptel-header    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px; }
+.nptel-header-h1 { margin: 0; }
+
+/* ── Summary cards ── */
+.nptel-cards        { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
+.nptel-card         { flex: 1 1 min(280px, 100%); border-radius: 20px; padding: 28px; color: white; }
+.nptel-card--purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2); }
+.nptel-card--pink   { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 10px 20px rgba(240, 147, 251, 0.2); }
+.nptel-card-header  { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.nptel-card-icon    { font-size: 32px; background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 12px; }
+.nptel-card-h3      { margin: 0; opacity: 0.9; }
+.nptel-card-value   { font-size: 48px; font-weight: bold; }
+
+/* ── Content panels ── */
+.nptel-panel        { padding: 24px; background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+.nptel-panel--mb    { margin-bottom: 40px; }
+.nptel-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
+.nptel-panel-h3     { margin: 0; }
+.nptel-chart-empty  { text-align: center; padding: 40px; color: #666; }
+
+/* ── Mobile card list ── */
+.nptel-mobile-list    { display: flex; flex-direction: column; gap: 16px; }
+.nptel-mobile-empty   { text-align: center; padding: 20px; color: #666; }
+.nptel-mobile-card    { background-color: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+.nptel-mobile-top     { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.nptel-mobile-year    { font-weight: 700; color: #667eea; font-size: 14px; }
+.nptel-mobile-dept    { background-color: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.nptel-mobile-h4      { margin: 0 0 10px 0; font-size: 15px; color: #111; line-height: 1.4; }
+.nptel-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+
+/* ── Course directory table ── */
+.nptel-table           { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; }
+.nptel-table thead tr  { background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
+.nptel-table th        { padding: 16px; text-align: left; color: #555; font-size: 14px; font-weight: 600; }
+.nptel-table td        { padding: 16px; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
+.nptel-td-year         { color: #667eea; font-weight: 600; }
+.nptel-td-name         { color: #333; font-weight: 500; }
+.nptel-td-text         { color: #555; }
+.nptel-td-bold         { color: #333; font-weight: 500; }
+.nptel-td-empty        { text-align: center; padding: 40px; color: #666; }

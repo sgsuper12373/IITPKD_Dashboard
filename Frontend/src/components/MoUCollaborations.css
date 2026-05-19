@@ -1,0 +1,298 @@
+/* ============================================================ */
+/* MOU COLLABORATIONS — component-specific styles               */
+/* ============================================================ */
+
+/* ── Summary cards grid ── */
+.mou-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.mou-cards-grid > * { flex: 1 1 min(220px, 100%); }
+
+/* ── Summary stat cards (fixed-colour gradient variants) ── */
+.mou-stat-card {
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+.mou-stat-card--purple {
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.2);
+}
+.mou-stat-card--teal {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  box-shadow: 0 10px 25px rgba(20, 184, 166, 0.2);
+}
+.mou-stat-card--blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+}
+.mou-stat-card-body {
+  position: relative;
+  z-index: 1;
+}
+.mou-stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.mou-stat-card-icon {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 10px;
+}
+.mou-stat-card-h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: 500;
+}
+.mou-stat-card-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.mou-stat-dot {
+  width: 6px;
+  height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mou-stat-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Active tab toggle wrapper ── */
+.mou-tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+.mou-tab-btn {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* active bg/color/shadow stay inline — data-driven ICSR_COLOR/IAR_COLOR */
+}
+
+/* ── Section panel ── */
+.mou-section-panel {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* ── Filter bar ── */
+.mou-filter-bar {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+.mou-filter-bar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.mou-filter-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mou-filter-h4 {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+}
+.mou-view-btns-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── View type buttons (base; active states stay inline) ── */
+.mou-view-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  background-color: #fff;
+  color: #333;
+}
+/* Directory active state uses fixed blue — can be CSS */
+.mou-view-btn--directory-active {
+  border: 2px solid #0ea5e9;
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+/* ── Clear button ── */
+.mou-clear-btn {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: opacity 0.2s;
+}
+.mou-clear-btn:hover { opacity: 0.85; }
+
+/* ── Year filter ── */
+.mou-year-filter {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 200px;
+}
+.mou-year-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+}
+.mou-year-select {
+  padding: 8px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-family: inherit;
+}
+
+/* ── Body ── */
+.mou-body { padding: 20px; }
+.mou-body-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.mou-body-h2 {
+  margin: 0;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+}
+
+/* ── Chart mode buttons (active stays inline) ── */
+.mou-mode-btns-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.mou-mode-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  /* backgroundColor/color stay inline — data-driven color prop */
+}
+
+/* ── Chart container ── */
+.mou-chart-container {
+  position: relative;
+  padding: 10px;
+}
+
+/* ── Directory records count ── */
+.mou-records-count {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* ── Mobile directory list ── */
+.mou-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mou-mobile-empty {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+.mou-mobile-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.mou-mobile-card-h4 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #111;
+  line-height: 1.4;
+}
+.mou-mobile-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* ── Desktop directory table wrapper ── */
+.mou-table-wrapper {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+/* ── Desktop directory table ── */
+.mou-table {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+.mou-table thead {
+  position: sticky;
+  top: 0;
+  /* backgroundColor set inline — data-driven color prop */
+  color: white;
+}
+.mou-th { padding: 10px; }
+.mou-td { padding: 8px; }
+.mou-td--strong { font-weight: 600; }
+.mou-td--empty {
+  padding: 32px;
+  text-align: center;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .mou-filter-bar-row { flex-direction: column; }
+  .mou-body-header-row { flex-direction: column; align-items: flex-start; }
+}

@@ -1,0 +1,67 @@
+/* ============================================================ */
+/* NIRF RANKING SECTION — component-specific styles             */
+/* ============================================================ */
+
+/* ── Loading states ── */
+.nirf-spinner-center { margin: 2rem auto; }
+.nirf-loading-text   { text-align: center; }
+
+/* ── Empty state (no data) ── */
+.nirf-empty      { text-align: center; padding: 3rem; }
+.nirf-empty-h2   { margin-bottom: 1rem; color: #1a237e; }
+.nirf-empty-p    { color: #666; margin-bottom: 2rem; }
+.nirf-empty-btn  { padding: 10px 20px; background-color: #1a237e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+
+/* ── Page header row ── */
+.nirf-header    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.nirf-header-h2 { margin: 0; color: #1a237e; }
+
+/* ── Header controls row ── */
+.nirf-controls     { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.nirf-mode-row     { display: flex; gap: 8px; }
+.nirf-mode-btn     { padding: 6px 16px; border-radius: 6px; border: none; cursor: pointer; background-color: #e9ecef; color: #333; font-weight: 400; font-size: 14px; transition: all 0.2s; }
+.nirf-mode-btn--active { background-color: #1a237e; color: #fff; font-weight: 600; }
+
+/* ── Overall rank summary ── */
+.nirf-rank-wrap { margin-bottom: 32px; }
+.nirf-rank-card {
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(30, 35, 130, 0.08);
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.nirf-rank-stat      { min-width: 160px; }
+.nirf-rank-label     { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 4px; }
+.nirf-rank-years     { font-size: 11px; color: #888; margin-bottom: 12px; }
+.nirf-rank-value     { font-size: 48px; font-weight: bold; color: #1a237e; line-height: 1; }
+.nirf-rank-delta     { font-size: 12px; margin-top: 8px; font-weight: 600; }
+.nirf-rank-improved  { color: #22c55e; }
+.nirf-rank-dropped   { color: #ef4444; }
+.nirf-rank-unchanged { color: #888; }
+.nirf-rank-badges    { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.nirf-rank-badge         { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: #f1f5f9; color: #334155; }
+.nirf-rank-badge--active { background-color: #1a237e; color: #fff; }
+.nirf-rank-chart     { flex: 1; min-width: 220px; height: 160px; }
+
+/* ── Per-metric value ── */
+.nirf-metric-value { font-size: 26px; font-weight: bold; }
+
+/* ── Per-metric section heading ── */
+.nirf-metric-h3 { font-size: 1rem; color: #555; margin-bottom: 16px; font-weight: 600; }
+
+/* ── Per-metric card grid ── */
+.nirf-metric-cards { display: flex; flex-wrap: wrap; gap: 20px; }
+.nirf-metric-card  { flex: 1 1 min(280px, 100%); background: #fff; border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); overflow: hidden; }
+
+/* ── Per-metric card inner layout ── */
+.nirf-metric-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.nirf-metric-label    { font-size: 13px; font-weight: 700; color: #555; }
+.nirf-metric-fullname { font-size: 11px; color: #888; }
+.nirf-metric-right    { text-align: right; }
+.nirf-metric-delta    { font-size: 11px; font-weight: 600; }
+.nirf-metric-chart    { height: 130px; }

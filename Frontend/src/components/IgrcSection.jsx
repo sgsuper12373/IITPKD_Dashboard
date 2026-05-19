@@ -14,6 +14,7 @@ import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
 import '../DesignSystem.css';
+import './IgrcSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
@@ -78,8 +79,6 @@ function IgrcSection({ user, isPublicView = false }) {
           pending: row.grievances_pending,
           resolved: row.grievances_resolved,
         }));
-
-        // Sort by year ascending for consistent dropdown order
         formattedYearly.sort((a, b) => a.year - b.year);
         setYearlyData(formattedYearly);
 
@@ -106,11 +105,8 @@ function IgrcSection({ user, isPublicView = false }) {
         <div className={isPublicView ? "" : "page-container"}>
           <div className={isPublicView ? "" : "page-content"}>
             {!isReadOnlyView && (
-              <button
-                className="page-back-btn"
-                onClick={() => navigate('/people-campus')}
-              >
-                ← Back to People & Campus
+              <button className="page-back-btn" onClick={() => navigate('/people-campus')}>
+                &#8592; Back to People &amp; Campus
               </button>
             )}
 
@@ -121,10 +117,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 </h1>
 
                 {!isReadOnlyView && isAdmin && (
-                  <button
-                    className="page-upload-btn"
-                    onClick={() => setIsUploadModalOpen(true)}
-                  >
+                  <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
                     Upload Data
                   </button>
                 )}
@@ -137,7 +130,7 @@ function IgrcSection({ user, isPublicView = false }) {
               <SectionSkeleton cards={4} charts={1} />
             ) : (
               <div className="performance-render-auto">
-                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+                <div className="igrc-export-row">
                   <ExportMenu
                     elementId="igrc-summary-cards-container"
                     data={[summary]}
@@ -147,208 +140,123 @@ function IgrcSection({ user, isPublicView = false }) {
                     title="IGRC Summary"
                   />
                 </div>
-                {/* Modern Gradient Summary Cards */}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <div id="igrc-summary-cards-container" className="grid-4" style={{
-                    gap: '20px',
-                    marginBottom: '30px'
-                  }}>
-                    {/* Total Grievances Card - Purple Gradient */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Grievances</span>
+
+                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                  <div id="igrc-summary-cards-container" className="grid-4 igrc-cards-gap">
+                    {/* Total Grievances — purple */}
+                    <div className="igrc-stat-card igrc-stat-card--purple">
+                      <div className="igrc-stat-card-decor" />
+                      <div className="igrc-stat-card-body">
+                        <div className="igrc-stat-card-header">
+                          <span className="igrc-stat-card-icon">&#128203;</span>
+                          <span className="igrc-stat-card-label">Total Grievances</span>
                         </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.total}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>All grievances filed</span>
+                        <div className="igrc-stat-card-value">{summary.total}</div>
+                        <div className="igrc-stat-card-status">
+                          <span className="igrc-stat-dot" />
+                          <span className="igrc-stat-subtext">All grievances filed</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Resolved Card - Green Gradient */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Resolved</span>
+                    {/* Resolved — green */}
+                    <div className="igrc-stat-card igrc-stat-card--green">
+                      <div className="igrc-stat-card-decor" />
+                      <div className="igrc-stat-card-body">
+                        <div className="igrc-stat-card-header">
+                          <span className="igrc-stat-card-icon">&#9989;</span>
+                          <span className="igrc-stat-card-label">Resolved</span>
                         </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.resolved}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Successfully closed</span>
+                        <div className="igrc-stat-card-value">{summary.resolved}</div>
+                        <div className="igrc-stat-card-status">
+                          <span className="igrc-stat-dot" />
+                          <span className="igrc-stat-subtext">Successfully closed</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Pending Card - Pink Gradient */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Pending</span>
+                    {/* Pending — pink */}
+                    <div className="igrc-stat-card igrc-stat-card--pink">
+                      <div className="igrc-stat-card-decor" />
+                      <div className="igrc-stat-card-body">
+                        <div className="igrc-stat-card-header">
+                          <span className="igrc-stat-card-icon">&#9203;</span>
+                          <span className="igrc-stat-card-label">Pending</span>
                         </div>
-                        <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                          {summary.pending}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Currently in process</span>
+                        <div className="igrc-stat-card-value">{summary.pending}</div>
+                        <div className="igrc-stat-card-status">
+                          <span className="igrc-stat-dot" />
+                          <span className="igrc-stat-subtext">Currently in process</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Filter by Year Card - Purple Gradient */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      boxShadow: '0 10px 20px rgba(168, 85, 247, 0.2)',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%'
-                      }} />
-                      <div style={{ position: 'relative', zIndex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                          <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📅</span>
-                          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Filter by Year</span>
+                    {/* Filter by Year — violet */}
+                    <div className="igrc-stat-card igrc-stat-card--violet">
+                      <div className="igrc-stat-card-decor" />
+                      <div className="igrc-stat-card-body">
+                        <div className="igrc-stat-card-header">
+                          <span className="igrc-stat-card-icon">&#128197;</span>
+                          <span className="igrc-stat-card-label">Filter by Year</span>
                         </div>
-                        <div style={{ marginBottom: '12px' }}>
-                          <select
-                            value={selectedYear}
-                            onChange={(e) => setSelectedYear(e.target.value)}
-                            style={{
-                              width: '100%',
-                              padding: '10px',
-                              fontSize: '14px',
-                              borderRadius: '8px',
-                              border: '1px solid rgba(255,255,255,0.3)',
-                              backgroundColor: 'rgba(255,255,255,0.2)',
-                              color: 'white',
-                              fontWeight: '500',
-                              cursor: 'pointer',
-                              outline: 'none'
-                            }}
-                          >
-                            <option value="All" style={{ color: '#333' }}>All Years</option>
-                            {yearlyData.map((row) => (
-                              <option key={row.year} value={row.year} style={{ color: '#333' }}>
-                                {row.year}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ width: '8px', height: '8px', background: '#4ade80', borderRadius: '50%' }} />
-                          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>Focus on a specific year</span>
+                        <select
+                          value={selectedYear}
+                          onChange={(e) => setSelectedYear(e.target.value)}
+                          className="igrc-year-select"
+                        >
+                          <option value="All" style={{ color: '#333' }}>All Years</option>
+                          {yearlyData.map((row) => (
+                            <option key={row.year} value={row.year} style={{ color: '#333' }}>
+                              {row.year}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="igrc-stat-card-status">
+                          <span className="igrc-stat-dot" />
+                          <span className="igrc-stat-subtext">Focus on a specific year</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                )}</>
+                )}
 
                 <div className="chart-section">
-                  <h2 style={{ margin: '0 0 10px 0', color: '#333', fontSize: '20px' }}>
+                  <h2 className="igrc-chart-h2">
                     Internal Grievance Resolution Cell (IGRC)
                   </h2>
                   <div className="chart-header">
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <p className="chart-description" style={{ margin: 0 }}>
-                          Visual comparison of total grievances filed against resolutions and pending cases.
-                        </p>
-                      </div>
+                      <p className="chart-description igrc-chart-desc-p">
+                        Visual comparison of total grievances filed against resolutions and pending cases.
+                      </p>
                     </div>
-                    <div className="metric-toggle-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Active:</span>
+                    <div className="igrc-metric-toggle-group">
+                      <div className="igrc-metric-row">
+                        <span className="igrc-metric-row-label igrc-metric-row-label--active">Active:</span>
                         {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
                           <button
                             key={key}
                             type="button"
-                            className="metric-toggle active"
-                            style={{ minWidth: '90px', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', backgroundColor: BAR_COLORS[key] }}
+                            className="metric-toggle active igrc-metric-btn"
+                            style={{ backgroundColor: BAR_COLORS[key] }}
                             onClick={() => setVisibleMetrics(prev => {
                               const next = { ...prev, [key]: false };
                               if (Object.values(next).every(v => !v)) return prev;
                               return next;
                             })}
                           >
-                            {key.charAt(0).toUpperCase() + key.slice(1)} ✕
+                            {key.charAt(0).toUpperCase() + key.slice(1)} &#10005;
                           </button>
                         ))}
                       </div>
                       {Object.values(visibleMetrics).some(v => !v) && (
-                        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px', alignItems: 'center', animation: 'fadeIn 0.3s ease' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hidden:</span>
+                        <div className="igrc-metric-row igrc-metric-row--animated">
+                          <span className="igrc-metric-row-label igrc-metric-row-label--hidden">Hidden:</span>
                           {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
                             <button
                               key={key}
                               type="button"
-                              className="metric-toggle"
-                              style={{ minWidth: '90px', opacity: 0.6, borderStyle: 'dashed' }}
+                              className="metric-toggle igrc-metric-btn igrc-metric-btn--hidden"
                               onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
                             >
                               + {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -360,40 +268,20 @@ function IgrcSection({ user, isPublicView = false }) {
                   </div>
 
                   {/* Bar / Trend toggle */}
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '8px',
-                    margin: '12px 0'
-                  }}>
-                    {/* Left side → Bar / Trend toggle */}
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="igrc-toggle-toolbar">
+                    <div className="igrc-toggle-left">
                       {['Bar', 'Trend'].map(mode => (
                         <button
                           key={mode}
                           type="button"
                           onClick={() => setChartType(mode)}
-                          style={{
-                            padding: '7px 20px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            backgroundColor: chartType === mode ? '#667eea' : '#e9ecef',
-                            color: chartType === mode ? '#fff' : '#333',
-                            fontWeight: chartType === mode ? '600' : '400',
-                            fontSize: '13px',
-                            transition: 'all 0.2s'
-                          }}
+                          className={`igrc-mode-btn${chartType === mode ? ' igrc-mode-btn--active' : ''}`}
                         >
-                          {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                          {mode === 'Bar' ? '&#128202; Bar' : '&#128200; Trend'}
                         </button>
                       ))}
                     </div>
-
-                    {/* Right side → Export Menu */}
-                    <div style={{ position: 'relative', zIndex: 9999 }}>
+                    <div className="igrc-export-wrapper">
                       <ExportMenu
                         elementId="igrc-yearly-chart-container"
                         data={
@@ -423,9 +311,9 @@ function IgrcSection({ user, isPublicView = false }) {
                       grid: <CartesianGrid strokeDasharray="3 3" stroke="#444" />,
                     };
                     return (
-                      <div id="igrc-yearly-chart-container" className="chart-container" style={{ padding: '10px' }}>
+                      <div id="igrc-yearly-chart-container" className="chart-container igrc-chart-container">
                         {/* Bar chart */}
-                        <div 
+                        <div
                           className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                           onClick={() => setExpandedChart({
                             title: "IGRC Grievance Distribution",
@@ -451,7 +339,7 @@ function IgrcSection({ user, isPublicView = false }) {
                             )
                           })}
                         >
-                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                          {(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
                               <BarChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
@@ -470,11 +358,11 @@ function IgrcSection({ user, isPublicView = false }) {
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
-                          )}</>
+                          )}
                         </div>
 
-                        {/* Trend (Line) chart — complaints filed only */}
-                        <div 
+                        {/* Trend (Line) chart */}
+                        <div
                           className={`chart-wrapper clickable-chart ${chartType === 'Trend' ? 'active' : 'inactive'}`}
                           onClick={() => setExpandedChart({
                             title: "IGRC Grievance Trends",
@@ -494,7 +382,7 @@ function IgrcSection({ user, isPublicView = false }) {
                             )
                           })}
                         >
-                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                          {(typeof user === 'undefined' || user?.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
                               <LineChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
@@ -507,7 +395,7 @@ function IgrcSection({ user, isPublicView = false }) {
                                 </Line>
                               </LineChart>
                             </ResponsiveContainer>
-                          )}</>
+                          )}
                         </div>
                       </div>
                     );
@@ -517,7 +405,6 @@ function IgrcSection({ user, isPublicView = false }) {
             )}
           </div>
 
-          {/* Upload Modal */}
           <DataUploadModal
             isOpen={isUploadModalOpen}
             onClose={() => setIsUploadModalOpen(false)}
@@ -525,7 +412,6 @@ function IgrcSection({ user, isPublicView = false }) {
             token={token}
           />
 
-          {/* Fullscreen Chart Modal */}
           <ChartExpandModal
             isOpen={!!expandedChart}
             onClose={() => setExpandedChart(null)}
@@ -533,7 +419,7 @@ function IgrcSection({ user, isPublicView = false }) {
           >
             {expandedChart?.content}
           </ChartExpandModal>
-        </div >
+        </div>
       )}
     </>
   );

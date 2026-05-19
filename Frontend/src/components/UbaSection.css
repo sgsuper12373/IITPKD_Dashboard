@@ -1,0 +1,334 @@
+/* ============================================================ */
+/* UBA SECTION — component-specific styles                      */
+/* ============================================================ */
+
+/* ── Upload buttons row ── */
+.uba-upload-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+/* ── Export row ── */
+.uba-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ── Summary cards grid ── */
+.uba-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.uba-cards-grid > * { flex: 1 1 min(280px, 100%); }
+
+/* ── Stat cards (fixed-colour gradient variants) ── */
+.uba-stat-card {
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.uba-stat-card--purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+}
+.uba-stat-card--pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 15px 35px rgba(240, 147, 251, 0.3);
+}
+.uba-stat-card-decor-top {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+.uba-stat-card-decor-bottom {
+  position: absolute;
+  bottom: -40px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+.uba-stat-card-body {
+  position: relative;
+  z-index: 1;
+}
+.uba-stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.uba-stat-card-icon {
+  font-size: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+}
+.uba-stat-card-h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  font-weight: 500;
+}
+.uba-stat-card-value {
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.uba-stat-card-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.uba-stat-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.uba-stat-subtext {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Section panels (projects / events) ── */
+.uba-panel {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+/* ── Panel header row ── */
+.uba-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.uba-panel-h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+.uba-panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Count badges ── */
+.uba-count-badge {
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.uba-count-badge--purple { background-color: #667eea; }
+.uba-count-badge--pink   { background-color: #f093fb; }
+
+/* ── Empty state ── */
+.uba-empty-state {
+  text-align: center;
+  padding: 60px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  color: #666;
+}
+.uba-empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+.uba-empty-text { font-size: 16px; }
+
+/* ── Project cards grid (flex, replaces CSS grid) ── */
+.uba-project-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.uba-project-grid > * { flex: 1 1 min(320px, 100%); }
+
+/* ── Project card ── */
+.uba-project-card {
+  background-color: #fff;
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.uba-project-card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  color: white;
+}
+.uba-project-card-h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.uba-project-status {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.uba-project-card-body { padding: 16px; }
+.uba-project-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+.uba-project-info-row--sm { font-size: 13px; color: #666; }
+
+/* ── Expanded modal ── */
+.uba-expanded-panel {
+  padding: 20px;
+  overflow-x: auto;
+}
+.uba-exp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 1000px;
+}
+.uba-exp-thead-tr {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+.uba-exp-th {
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+}
+.uba-exp-td { padding: 10px; }
+.uba-exp-td--year  { color: #667eea; font-weight: 500; }
+.uba-exp-td--center { text-align: center; }
+.uba-exp-tr { border-bottom: 1px solid #f0f0f0; }
+
+/* ── Mobile events list ── */
+.uba-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.uba-mobile-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.uba-mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.uba-mobile-card-year {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 14px;
+}
+.uba-mobile-card-type {
+  background-color: #f3f4f6;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.uba-mobile-card-h4 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #111;
+  line-height: 1.4;
+}
+.uba-mobile-card-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+.uba-mobile-card-fields > * { flex: 1 1 calc(50% - 4px); }
+.uba-mobile-card-fields > .uba-span-full { flex: 0 0 100%; }
+
+/* ── Desktop events table wrapper ── */
+.uba-table-wrapper {
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+/* ── Desktop events table ── */
+.uba-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 1200px;
+}
+.uba-table thead tr {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+.uba-table th {
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 2;
+}
+.uba-table td { padding: 10px; }
+.uba-table td.uba-td-year    { color: #667eea; font-weight: 500; white-space: nowrap; }
+.uba-table td.uba-td-wrap    { max-width: 260px; line-height: 1.4; }
+.uba-table td.uba-td-nowrap  { white-space: nowrap; }
+.uba-table td.uba-td-date    { white-space: nowrap; font-size: 13px; color: #666; }
+.uba-table td.uba-td-assoc   { max-width: 160px; }
+.uba-table td.uba-td-audience{ max-width: 160px; font-size: 13px; }
+.uba-table td.uba-td-center  { text-align: center; }
+.uba-table td.uba-td-reach   { max-width: 140px; font-size: 13px; }
+.uba-table td.uba-td-remarks { max-width: 160px; font-size: 13px; color: #888; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .uba-panel-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .uba-mobile-card-fields > * { flex: 0 0 100%; }
+}

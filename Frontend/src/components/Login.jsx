@@ -92,7 +92,7 @@ function Login({ onLoginSuccess }) {
 
         <h2>{isLoginView ? 'Sign in to Dashboard' : 'Create an Account'}</h2>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} className="login-form">
           <input
             type="email"
             placeholder="Email"
@@ -134,11 +134,9 @@ function Login({ onLoginSuccess }) {
           {error && <p className="login-error">{error}</p>}
         </form>
 
-        <div style={{ textAlign: 'center', margin: '0.75rem 0 0.25rem', color: '#888', fontSize: '0.85rem' }}>
-          or
-        </div>
+        <div className="login-divider">or</div>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="login-google-wrap">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => setError('Google sign-in was cancelled or failed.')}

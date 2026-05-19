@@ -20,6 +20,7 @@ import {
 } from '../services/outreachExtensionStats';
 import './Page.css';
 import './AcademicSection.css';
+import './OpenHouseSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -98,7 +99,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
     return (
       <div className="page-container">
         <div className="page-content">
-          <h1>Open House & Campus Events</h1>
+          <h1>Open House &amp; Campus Events</h1>
           <p className="error-message">{error}</p>
         </div>
       </div>
@@ -109,18 +110,15 @@ function OpenHouseSection({ user, isPublicView = false }) {
     <>
       {!isPublicView && (
         <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
-          ← Back to Outreach Extension
+          &#8592; Back to Outreach Extension
         </button>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '15px' }}>
-        <h1 style={{ margin: 0 }}>Open House & Campus Events</h1>
+      <div className="oh-header">
+        <h1 className="oh-header-h1">Open House &amp; Campus Events</h1>
         {!isReadOnlyView && isAdmin && (
-          <button
-            className="page-upload-btn"
-            onClick={() => setIsUploadModalOpen(true)}
-          >
-            <span>📤</span> Upload Event Data
+          <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+            <span>&#128228;</span> Upload Event Data
           </button>
         )}
       </div>
@@ -133,24 +131,24 @@ function OpenHouseSection({ user, isPublicView = false }) {
         {expandedChart?.content}
       </ChartExpandModal>
 
-      <div id="openhouse-summary-cards-container" className="grid-3" style={{ gap: '24px', marginBottom: '40px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '20px', padding: '28px', color: 'white', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
-          <h3 style={{ margin: '0 0 10px 0', opacity: 0.9 }}>Total Events</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.total_events)}</div>
+      <div id="openhouse-summary-cards-container" className="oh-cards">
+        <div className="oh-card oh-card--purple">
+          <h3 className="oh-card-h3">Total Events</h3>
+          <div className="oh-card-value">{formatNumber(summary.total_events)}</div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '20px', padding: '28px', color: 'white', boxShadow: '0 10px 20px rgba(240, 147, 251, 0.2)' }}>
-          <h3 style={{ margin: '0 0 10px 0', opacity: 0.9 }}>Total Visitors</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.total_visitors)}</div>
+        <div className="oh-card oh-card--pink">
+          <h3 className="oh-card-h3">Total Visitors</h3>
+          <div className="oh-card-value">{formatNumber(summary.total_visitors)}</div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', borderRadius: '20px', padding: '28px', color: 'white', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)' }}>
-          <h3 style={{ margin: '0 0 10px 0', opacity: 0.9 }}>Departments</h3>
-          <div style={{ fontSize: '48px', fontWeight: 'bold' }}>{formatNumber(summary.departments_participated)}</div>
+        <div className="oh-card oh-card--green">
+          <h3 className="oh-card-h3">Departments</h3>
+          <div className="oh-card-value">{formatNumber(summary.departments_participated)}</div>
         </div>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', marginBottom: '40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h3 style={{ margin: 0 }}>Participation Trends</h3>
+      <div className="oh-panel oh-panel--mb">
+        <div className="oh-panel-header">
+          <h3 className="oh-panel-h3">Participation Trends</h3>
           <ExportMenu
             elementId="openhouse-chart-container"
             data={timeline}
@@ -163,7 +161,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
 
         <div id="openhouse-chart-container">
           {timeline.length > 0 ? (
-            <div 
+            <div
               className="clickable-chart"
               onClick={() => setExpandedChart({
                 title: "Participation Overview",
@@ -194,21 +192,21 @@ function OpenHouseSection({ user, isPublicView = false }) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>No data available</div>
+            <div className="oh-chart-empty">No data available</div>
           )}
         </div>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #e0e0e0', marginBottom: '30px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
-          <h2 style={{ margin: 0, fontSize: '24px' }}>Event Directory</h2>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div className="oh-panel oh-panel--mb2">
+        <div className="oh-panel-header">
+          <h2 className="oh-panel-h2">Event Directory</h2>
+          <div className="oh-dir-controls">
             <input
               type="text"
               placeholder="Search theme..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+              className="oh-search-input"
             />
             <ExportMenu
               elementId="openhouse-events-list-container"
@@ -222,14 +220,14 @@ function OpenHouseSection({ user, isPublicView = false }) {
         </div>
 
         {chartIsMobile ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="oh-mobile-list">
             {eventsList.map((event) => (
-              <div key={event.event_id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '16px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: '700', color: '#667eea', fontSize: '14px' }}>{event.event_year}</span>
+              <div key={event.event_id} className="oh-mobile-card">
+                <div className="oh-mobile-top">
+                  <span className="oh-mobile-year">{event.event_year}</span>
                 </div>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#111', lineHeight: '1.4' }}>{event.theme || 'Open House'}</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: '#666' }}>
+                <h4 className="oh-mobile-h4">{event.theme || 'Open House'}</h4>
+                <div className="oh-mobile-details">
                   <div><strong>Date:</strong> {new Date(event.event_date).toLocaleDateString()}</div>
                   <div><strong>Visitors:</strong> {formatNumber(event.total_visitors)}</div>
                 </div>
@@ -238,26 +236,26 @@ function OpenHouseSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <div className="table-responsive">
-            <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#fff', borderRadius: '12px', overflow: 'hidden' }}>
+            <table className="oh-table">
               <thead>
-                <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555' }}>Year</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555' }}>Date</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555' }}>Theme</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555' }}>Visitors</th>
-                  <th style={{ padding: '16px', textAlign: 'left', color: '#555' }}>Action</th>
+                <tr>
+                  <th>Year</th>
+                  <th>Date</th>
+                  <th>Theme</th>
+                  <th>Visitors</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {eventsList.map((event, index) => (
-                  <tr key={event.event_id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa', borderBottom: '1px solid #e0e0e0' }}>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#667eea', fontWeight: '600' }}>{event.event_year}</td>
-                    <td style={{ padding: '16px', fontSize: '14px' }}>{new Date(event.event_date).toLocaleDateString()}</td>
-                    <td style={{ padding: '16px', fontSize: '14px' }}>{event.theme || '-'}</td>
-                    <td style={{ padding: '16px', fontSize: '14px', fontWeight: '500' }}>{formatNumber(event.total_visitors)}</td>
-                    <td style={{ padding: '16px' }}>
+                  <tr key={event.event_id} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                    <td className="oh-td-year">{event.event_year}</td>
+                    <td>{new Date(event.event_date).toLocaleDateString()}</td>
+                    <td>{event.theme || '-'}</td>
+                    <td className="oh-td-bold">{formatNumber(event.total_visitors)}</td>
+                    <td>
                       {event.photos_url && (
-                        <a href={event.photos_url} target="_blank" rel="noreferrer" style={{ color: '#667eea', textDecoration: 'none', fontSize: '13px' }}>📸 View</a>
+                        <a href={event.photos_url} target="_blank" rel="noreferrer" className="oh-td-link">&#128248; View</a>
                       )}
                     </td>
                   </tr>
@@ -268,9 +266,9 @@ function OpenHouseSection({ user, isPublicView = false }) {
         )}
 
         {pagination.pages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+          <div className="oh-pagination">
             <button onClick={() => handlePageChange(pagination.page - 1)} disabled={pagination.page === 1} className="page-pagination-btn">Previous</button>
-            <span style={{ alignSelf: 'center' }}>{pagination.page} / {pagination.pages}</span>
+            <span className="oh-pagination-info">{pagination.page} / {pagination.pages}</span>
             <button onClick={() => handlePageChange(pagination.page + 1)} disabled={pagination.page === pagination.pages} className="page-pagination-btn">Next</button>
           </div>
         )}

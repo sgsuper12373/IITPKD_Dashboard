@@ -29,7 +29,8 @@ function OutreachPublicView() {
             <Link
               key={section.id}
               to={section.to}
-              style={{ textDecoration: 'none', animationDelay: `${index * 0.1}s` }}
+              className="outreach-section-link"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="outreach-section-card">
                 <div className="outreach-card-icon">{section.icon}</div>

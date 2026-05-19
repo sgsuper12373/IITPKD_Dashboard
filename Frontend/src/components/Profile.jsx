@@ -14,10 +14,8 @@ function Profile({ user }) {
 
   const isAdmin = user && user.role_id === 3;
 
-  // Active Panel State
   const [activePanel, setActivePanel] = useState(null);
 
-  // --- Roles State ---
   const [roles, setRoles] = useState([]);
   const [rolesLoading, setRolesLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -27,7 +25,6 @@ function Profile({ user }) {
   const [savingId, setSavingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
-  // --- Users State ---
   const [usersList, setUsersList] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState(null);
@@ -35,17 +32,14 @@ function Profile({ user }) {
   const [editUserPassword, setEditUserPassword] = useState('');
   const [editUserConfirmPassword, setEditUserConfirmPassword] = useState('');
 
-  // --- Export State ---
   const [tables, setTables] = useState([]);
   const [selectedTables, setSelectedTables] = useState([]);
   const [exportLoading, setExportLoading] = useState(false);
 
-  // --- Truncate State ---
   const [truncateModalOpen, setTruncateModalOpen] = useState(false);
   const [truncatingTable, setTruncatingTable] = useState(null);
 
-  // --- Toast ---
-  const [toast, setToast] = useState(null); // { message, type: 'success'|'error' }
+  const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
 
   const showToast = (message, type = 'success') => {
@@ -55,7 +49,6 @@ function Profile({ user }) {
   };
 
   useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
-
 
   const handleCreateUserClick = () => {
     navigate('/create-user');
@@ -73,7 +66,6 @@ function Profile({ user }) {
     }
   };
 
-  // --- Roles Methods ---
   const fetchRoles = async () => {
     setRolesLoading(true);
     try {
@@ -162,7 +154,6 @@ function Profile({ user }) {
     }
   };
 
-  // --- Users Methods ---
   const fetchUsers = async () => {
     setUsersLoading(true);
     try {
@@ -213,7 +204,6 @@ function Profile({ user }) {
     }
   };
 
-  // --- Export Methods ---
   const fetchTables = async () => {
     setExportLoading(true);
     try {
@@ -299,38 +289,33 @@ function Profile({ user }) {
               )}
             </div>
 
-            {/* Admin Actions */}
             {isAdmin && (
               <div className="profile-actions">
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <div className="profile-btn-row">
                   <button className="page-upload-btn" onClick={handleCreateUserClick}>
                     👤 Create User
                   </button>
                   <button
-                    className="page-upload-btn"
+                    className={`page-upload-btn${activePanel === 'users' ? ' page-upload-btn--active' : ''}`}
                     onClick={() => togglePanel('users')}
-                    style={{ backgroundColor: activePanel === 'users' ? '#f7a600' : undefined, color: activePanel === 'users' ? '#fff' : undefined }}
                   >
                     👥 Users
                   </button>
                   <button
-                    className="page-upload-btn"
+                    className={`page-upload-btn${activePanel === 'roles' ? ' page-upload-btn--active' : ''}`}
                     onClick={() => togglePanel('roles')}
-                    style={{ backgroundColor: activePanel === 'roles' ? '#f7a600' : undefined, color: activePanel === 'roles' ? '#fff' : undefined }}
                   >
                     🔑 Roles
                   </button>
                   <button
-                    className="page-upload-btn"
+                    className={`page-upload-btn${activePanel === 'export' ? ' page-upload-btn--active' : ''}`}
                     onClick={() => togglePanel('export')}
-                    style={{ backgroundColor: activePanel === 'export' ? '#f7a600' : undefined, color: activePanel === 'export' ? '#fff' : undefined }}
                   >
                     📥 Export Data
                   </button>
                   <button
-                    className="page-upload-btn"
+                    className={`page-upload-btn${activePanel === 'truncate' ? ' page-upload-btn--active-danger' : ''}`}
                     onClick={() => togglePanel('truncate')}
-                    style={{ backgroundColor: activePanel === 'truncate' ? '#ef4444' : undefined, color: activePanel === 'truncate' ? '#fff' : undefined, borderColor: activePanel === 'truncate' ? '#ef4444' : undefined }}
                   >
                     ⚠ Truncate Tables
                   </button>
@@ -341,10 +326,10 @@ function Profile({ user }) {
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Manage Users</h3>
                     {usersLoading ? (
-                      <p style={{ color: '#666', padding: '1rem 0' }}>Loading users…</p>
+                      <p className="profile-loading-text">Loading users…</p>
                     ) : (
-                      <div style={{ overflowX: 'auto' }}>
-                        <table className="roles-table" style={{ minWidth: '600px' }}>
+                      <div className="profile-table-scroll">
+                        <table className="roles-table profile-users-table">
                           <thead>
                             <tr>
                               <th>ID</th>
@@ -352,7 +337,7 @@ function Profile({ user }) {
                               <th>Username</th>
                               <th>Role ID</th>
                               <th>Password</th>
-                              <th style={{ width: '160px' }}>Actions</th>
+                              <th className="profile-actions-col">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -366,37 +351,34 @@ function Profile({ user }) {
                                     <select
                                       value={editUserRole}
                                       onChange={(e) => setEditUserRole(e.target.value)}
-                                      className="roles-edit-input"
-                                      style={{ width: 'auto' }}
+                                      className="roles-edit-input profile-role-select"
                                     >
                                       {roles.map(r => <option key={r.id} value={r.id}>{r.id} - {r.name}</option>)}
                                     </select>
                                   ) : (
-                                    <span style={{ fontWeight: 600, color: '#333' }}>{u.role_id}</span>
+                                    <span className="profile-role-id">{u.role_id}</span>
                                   )}
                                 </td>
                                 <td>
                                   {editingUserId === u.id ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <div className="profile-pw-col">
                                       <input
                                         type="password"
                                         placeholder="New password"
                                         value={editUserPassword}
                                         onChange={(e) => setEditUserPassword(e.target.value)}
-                                        className="roles-edit-input"
-                                        style={{ width: '100%', minWidth: '140px' }}
+                                        className="roles-edit-input profile-pw-input"
                                       />
                                       <input
                                         type="password"
                                         placeholder="Confirm password"
                                         value={editUserConfirmPassword}
                                         onChange={(e) => setEditUserConfirmPassword(e.target.value)}
-                                        className="roles-edit-input"
-                                        style={{ width: '100%', minWidth: '140px' }}
+                                        className="roles-edit-input profile-pw-input"
                                       />
                                     </div>
                                   ) : (
-                                    <span style={{ color: '#999', fontSize: '12px' }}>••••••</span>
+                                    <span className="profile-pw-dots">••••••</span>
                                   )}
                                 </td>
                                 <td>
@@ -423,15 +405,15 @@ function Profile({ user }) {
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Manage Roles</h3>
                     {rolesLoading ? (
-                      <p style={{ color: '#666', padding: '1rem 0' }}>Loading roles…</p>
+                      <p className="profile-loading-text">Loading roles…</p>
                     ) : (
                       <>
                         <table className="roles-table">
                           <thead>
                             <tr>
-                              <th style={{ width: '80px' }}>ID</th>
+                              <th className="profile-id-col">ID</th>
                               <th>Name</th>
-                              <th style={{ width: '160px' }}>Actions</th>
+                              <th className="profile-actions-col">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -496,25 +478,24 @@ function Profile({ user }) {
                   <div className="roles-panel">
                     <h3 className="roles-panel-title">Export Database Tables</h3>
                     {exportLoading ? (
-                      <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
+                      <p className="profile-loading-text">Loading tables…</p>
                     ) : (
                       <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+                        <div className="profile-export-grid">
                           {tables.map(t => (
-                            <label key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                            <label key={t} className="profile-export-label">
                               <input
                                 type="checkbox"
                                 checked={selectedTables.includes(t)}
                                 onChange={() => toggleTableSelection(t)}
                               />
-                              <span style={{ fontSize: '14px', color: '#333' }}>{t}</span>
+                              <span className="profile-table-name">{t}</span>
                             </label>
                           ))}
                         </div>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <div className="profile-export-actions">
                           <button
-                            className="roles-btn roles-btn-save"
-                            style={{ padding: '8px 16px', fontSize: '14px' }}
+                            className="roles-btn roles-btn-save profile-export-download-btn"
                             onClick={handleExportSelected}
                             disabled={selectedTables.length === 0}
                           >
@@ -541,12 +522,12 @@ function Profile({ user }) {
                 {/* Truncate Tables Panel */}
                 {activePanel === 'truncate' && (
                   <div className="roles-panel">
-                    <h3 className="roles-panel-title" style={{ color: '#991b1b' }}>⚠ Truncate Tables</h3>
-                    <p style={{ color: '#666', fontSize: '0.875rem', margin: '0 0 1rem 0' }}>
+                    <h3 className="roles-panel-title roles-panel-title--danger">⚠ Truncate Tables</h3>
+                    <p className="profile-truncate-desc">
                       Permanently delete all rows from a table. Export the data first to keep a backup.
                     </p>
                     {exportLoading ? (
-                      <p style={{ color: '#666', padding: '1rem 0' }}>Loading tables…</p>
+                      <p className="profile-loading-text">Loading tables…</p>
                     ) : (
                       <div className="truncate-list-wrap">
                         <table className="roles-table truncate-list-table">
@@ -590,7 +571,6 @@ function Profile({ user }) {
         ) : (
           <p>Loading user information...</p>
         )}
-        {/* {!canUploadData && <p className="coming-soon">Full profile page implementation coming soon...</p>} */}
       </div>
 
       {toast && createPortal(

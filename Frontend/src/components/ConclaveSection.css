@@ -1,0 +1,299 @@
+/* ============================================================ */
+/* CONCLAVE SECTION — component-specific styles                 */
+/* ============================================================ */
+
+/* ── Export rows ── */
+.cncl-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ── Summary cards grid ── */
+.cncl-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.cncl-cards-grid > * { flex: 1 1 min(280px, 100%); }
+
+/* ── Stat cards (fixed-colour gradient variants) ── */
+.cncl-stat-card {
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cncl-stat-card--purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+}
+.cncl-stat-card--pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 15px 35px rgba(240, 147, 251, 0.3);
+}
+.cncl-stat-card-decor-top {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+.cncl-stat-card-decor-bottom {
+  position: absolute;
+  bottom: -40px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+.cncl-stat-card-body { position: relative; z-index: 1; }
+.cncl-stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.cncl-stat-card-icon {
+  font-size: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+}
+.cncl-stat-card-h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  font-weight: 500;
+}
+.cncl-stat-card-value {
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.cncl-stat-card-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cncl-stat-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cncl-stat-subtext {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Loading state ── */
+.cncl-loading {
+  text-align: center;
+  padding: 40px;
+}
+.cncl-loading-text {
+  color: #666;
+  margin-top: 10px;
+}
+
+/* ── Conclaves grid (flex replaces CSS grid) ── */
+.cncl-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 20px;
+}
+.cncl-grid > * { flex: 1 1 min(380px, 100%); }
+
+/* ── Conclave card ── */
+.cncl-card {
+  background-color: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cncl-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(79, 70, 229, 0.15);
+}
+
+/* ── Card header (purple gradient) ── */
+.cncl-card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 24px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cncl-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cncl-card-year-icon {
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 12px;
+}
+.cncl-card-year {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+.cncl-card-count-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Card body ── */
+.cncl-card-body { padding: 24px; }
+
+/* ── Theme block ── */
+.cncl-theme-block {
+  background-color: #f0f4ff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e7ff;
+}
+.cncl-theme-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cncl-theme-icon { font-size: 20px; }
+.cncl-theme-h3 {
+  margin: 0;
+  color: #4f46e5;
+  font-size: 16px;
+  font-weight: 600;
+}
+.cncl-theme-text {
+  margin: 0;
+  color: #333;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* ── Info blocks (focus area, description, sessions, speakers) ── */
+.cncl-info-block {
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+.cncl-info-block--row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.cncl-info-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.cncl-info-icon { font-size: 16px; }
+.cncl-info-icon--lg { font-size: 20px; flex-shrink: 0; }
+.cncl-info-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  display: block;
+  margin-bottom: 4px;
+}
+.cncl-info-text {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.cncl-desc-text {
+  margin: 0 0 16px 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+/* ── Action buttons ── */
+.cncl-action-btns {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px dashed #e9ecef;
+}
+.cncl-action-link {
+  flex: 1;
+  padding: 12px;
+  background-color: #f0f4ff;
+  color: #4f46e5;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid #e0e7ff;
+}
+.cncl-action-link:hover {
+  background-color: #4f46e5;
+  color: white;
+}
+
+/* ── Empty state ── */
+.cncl-empty-state {
+  text-align: center;
+  padding: 60px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+.cncl-empty-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+.cncl-empty-text { color: #666; font-size: 16px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .cncl-card-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .cncl-action-btns { flex-direction: column; }
+}

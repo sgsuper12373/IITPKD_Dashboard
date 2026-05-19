@@ -1,0 +1,249 @@
+/* ============================================================ */
+/* PATENTS — component-specific styles                         */
+/* ============================================================ */
+
+/* ── Upload button row ── */
+.pat-upload-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* ── Summary cards ── */
+.pat-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.pat-summary-card {
+  flex: 1 1 min(220px, 100%);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.pat-summary-card--indigo {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+}
+.pat-summary-card--green {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2);
+}
+.pat-card-inner {
+  position: relative;
+  z-index: 1;
+}
+.pat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.pat-card-icon {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 10px;
+}
+.pat-card-h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: 500;
+}
+.pat-card-value {
+  color: white;
+  font-size: 36px;
+}
+
+/* ── Main panel ── */
+.pat-panel {
+  background-color: #fff;
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+.pat-panel-header {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+.pat-panel-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pat-view-tabs { display: flex; gap: 8px; }
+.pat-view-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.pat-view-btn--trend-active {
+  background-color: #6366f1;
+  color: #fff;
+}
+.pat-view-btn--dir-active {
+  background-color: #ec4899;
+  color: #fff;
+}
+.pat-reset-btn {
+  padding: 8px 16px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pat-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+.pat-filter-item { flex: 1 1 min(200px, 100%); }
+.pat-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  display: block;
+  margin-bottom: 6px;
+}
+.pat-filter-select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  outline: none;
+}
+
+/* ── Panel body ── */
+.pat-panel-body { padding: 24px; }
+
+/* ── Trend section header ── */
+.pat-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.pat-section-h3 { margin: 0; }
+
+/* ── Chart mode toggle ── */
+.pat-chart-mode-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.pat-mode-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  background-color: #f1f5f9;
+  color: #555;
+}
+.pat-mode-btn--active {
+  background-color: #6366f1;
+  color: #fff;
+}
+.pat-chart-container { padding: 10px; }
+
+/* ── Mobile patent list ── */
+.pat-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pat-mobile-empty {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+.pat-mobile-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.pat-mobile-card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pat-mobile-card-h4 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #111;
+  line-height: 1.4;
+}
+.pat-mobile-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+.pat-mobile-dates { display: flex; gap: 15px; }
+
+/* ── Status badges ── */
+.pat-status-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pat-status-pill {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pat-status--granted { background-color: #dcfce7; color: #15803d; }
+.pat-status--filed   { background-color: #ede9fe; color: #6d28d9; }
+
+/* ── Desktop directory table ── */
+.pat-table-wrap { overflow-x: auto; }
+.pat-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pat-table thead tr {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+}
+.pat-table th {
+  padding: 16px;
+  text-align: left;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+}
+.pat-table td { padding: 16px; }
+.pat-td-title { font-size: 14px; color: #333; font-weight: 500; }
+.pat-td-text  { font-size: 14px; color: #555; }
+.pat-td-empty { text-align: center; padding: 40px; color: #666; }
+.pat-tr { border-bottom: 1px solid #e0e0e0; }

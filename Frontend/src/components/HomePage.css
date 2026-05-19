@@ -1,93 +1,102 @@
-/* ================= WELCOME SECTION ================= */
+/* HomePage.css — home page specific styles only.
+   All :root tokens live in src/styles/global.css (loaded via index.css). */
+
+/* ================================================================
+   WELCOME SECTION
+   ================================================================ */
 .welcome-section {
   width: 100%;
-  animation: fadeIn 0.6s ease-in;
+  animation: ds-fade-in-up 0.55s var(--ease-spring) both;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================= MAIN HEADING ================= */
-.welcome-section>h1 {
+/* ── Main heading ── */
+.welcome-section > h1 {
   font-size: clamp(1.2rem, 5vw, 2.5rem);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   color: #ffffff;
-
-  text-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.5),
-    0 0 1px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6);
   text-align: center;
-  margin: 0 0 2rem 0;
-  padding-bottom: 1.25rem;
-  border-bottom: 3px solid rgba(247, 166, 0, 0.3);
-  letter-spacing: -0.5px;
+  margin: 0 0 var(--space-8) 0;
+  padding-bottom: var(--space-5);
+  border-bottom: 3px solid rgba(247,166,0,0.3);
+  letter-spacing: -0.02em;
 }
 
-/* ================= IMAGE SLIDER SPACING ================= */
+/* ── Image slider spacing ── */
 .welcome-section .image-slider-container {
-  margin: 2.5rem 0 3.5rem 0;
+  margin: var(--space-10) 0 clamp(2rem, 5vw, 3.5rem) 0;
 }
 
-/* ================= SECTION CARDS ================= */
-.welcome-section>h2 {
-  font-size: 1.75rem;
+/* ── Suspense fallback placeholder ── */
+.hp-slider-fallback {
+  height: 320px;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+/* ── Section sub-headings ── */
+.welcome-section > h2 {
+  font-size: clamp(1.1rem, 4vw, 1.75rem);
   font-weight: 700;
-  color: #f7a600;
-  margin: 2.5rem 0 1rem 0;
-  padding: 0.75rem 0;
+  color: var(--color-primary);
+  margin: var(--space-10) 0 var(--space-4) 0;
+  padding: 0.75rem var(--space-4);
   position: relative;
-  padding-left: 1rem;
-  border-left: 4px solid #f7a600;
-  background: linear-gradient(90deg, rgba(247, 166, 0, 0.08), transparent);
-  padding-right: 1rem;
+  padding-left: var(--space-4);
+  border-left: 4px solid var(--color-primary);
+  background: linear-gradient(90deg, rgba(247,166,0,0.08), transparent);
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: background var(--dur-mid) var(--ease-std),
+              transform var(--dur-mid) var(--ease-spring);
 }
 
-.welcome-section>h2:hover {
-  background: linear-gradient(90deg, rgba(247, 166, 0, 0.15), transparent);
-  transform: translateX(5px);
+.welcome-section > h2:hover {
+  background: linear-gradient(90deg, rgba(247,166,0,0.15), transparent);
+  transform: translateX(4px);
 }
 
-.welcome-section>h2:first-of-type {
-  margin-top: 0;
-}
+.welcome-section > h2:first-of-type { margin-top: 0; }
 
-/* ================= PARAGRAPHS ================= */
-.welcome-section>p {
-  font-size: 1.1rem;
+/* ── Body paragraphs ── */
+.welcome-section > p {
+  font-size: var(--text-base);
   line-height: 1.8;
-  color: #2d2d2d;
-  margin-bottom: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
   text-align: justify;
-  padding: 0 0.5rem;
+  padding: 0 var(--space-2);
 }
 
-/* ================= CONTENT CARDS ================= */
+/* CTA paragraph */
+.welcome-section > p:last-of-type {
+  text-align: center;
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--color-text);
+  margin-top: var(--space-10);
+  padding: var(--space-5);
+  background: linear-gradient(135deg, rgba(247,166,0,0.10), rgba(247,166,0,0.05));
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(247,166,0,0.20);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── Content card (translucent) ── */
 .content-card {
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(247, 166, 0, 0.2);
-  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.60);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 2.5vw, 2rem);
+  margin: var(--space-6) 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(247,166,0,0.20);
+  transition: var(--transition);
 }
 
 .content-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
-  border-color: rgba(247, 166, 0, 0.4);
+  border-color: rgba(247,166,0,0.40);
 }
 
 .content-card h2 {
@@ -95,77 +104,62 @@
   border-left: none;
   background: none;
   padding-left: 0;
-  padding-right: 0;
-  color: #111111;
-
-  text-shadow:
-    0 1px 4px rgba(255, 255, 255, 0.8),
-    0 0 1px rgba(255, 255, 255, 0.9);
-
+  color: var(--color-text);
 }
 
-.content-card p {
-  margin-bottom: 1rem;
-  padding: 0;
-}
+.content-card p { margin-bottom: var(--space-4); padding: 0; }
+.content-card p:last-child { margin-bottom: 0; }
 
-.content-card p:last-child {
-  margin-bottom: 0;
-}
-
-/* ================= CALL TO ACTION ================= */
-.welcome-section>p:last-of-type {
-  text-align: center;
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin-top: 3rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(247, 166, 0, 0.1), rgba(247, 166, 0, 0.05));
-  border-radius: 10px;
-  border: 2px solid rgba(247, 166, 0, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* ================= VISION PILLARS ================= */
+/* ================================================================
+   VISION PILLARS SECTION
+   ================================================================ */
 .vision-pillars-section {
-  margin: 2.5rem 0;
+  margin: var(--space-10) 0;
 }
 
+/* ── Flex row replaces CSS grid ── */
 .vision-pillars-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 1.5vw, 0.875rem);
+  margin: var(--space-3) 0;
 }
 
+.vision-pillars-grid > * {
+  flex: 1 1 calc(33.33% - 1rem);
+  min-width: min(260px, 100%);
+}
+
+/* ── Pillar card ── */
 .vision-pillar-card {
-  background: #fff;
-  border: 1px solid #c5cdd8;
-  border-radius: 6px;
-  padding: 16px 14px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: clamp(0.875rem, 2vw, 1rem);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  /* Prevent any child from spilling outside the card */
   overflow: hidden;
-  min-width: 0;               /* allows flex/grid children to shrink */
-  transition: box-shadow 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
+  min-width: 0;
+  transition: box-shadow var(--dur-mid) var(--ease-spring),
+              transform var(--dur-fast) var(--ease-spring),
+              border-color var(--dur-mid) var(--ease-spring);
 }
 
 .vision-pillar-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-3px);
-  border-color: #8b6914;
+  border-color: var(--color-primary-dark);
+  color: inherit;
 }
 
 .vision-pillar-title {
   display: flex;
-  align-items: flex-start;    /* allow multi-line title to grow down */
-  gap: 6px;
-  margin: 0 0 10px 0;
-  font-size: 1rem;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-base);
   font-weight: 700;
   color: #1a2744;
   line-height: 1.3;
@@ -174,9 +168,9 @@
 }
 
 .vision-pillar-icon {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   flex-shrink: 0;
-  margin-top: 2px;            /* align icon with first line of text */
+  margin-top: 2px;
 }
 
 .vision-pillar-title-text {
@@ -187,128 +181,78 @@
 }
 
 .vision-pillar-title-text u {
-  text-decoration-color: #8b6914;
+  text-decoration-color: var(--color-primary-dark);
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
 }
 
 .vision-pillar-list {
   list-style: disc;
-  padding-left: 18px;
+  padding-left: 1.1rem;
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   line-height: 1.6;
   color: #333;
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
-.vision-pillar-list li {
-  margin-bottom: 4px;
-}
+.vision-pillar-list li { margin-bottom: var(--space-1); }
+.vision-pillar-list li:last-child { margin-bottom: 0; }
 
-.vision-pillar-list li:last-child {
-  margin-bottom: 0;
-}
-
-/* Dark Banner */
+/* ── Dark banner ── */
 .vision-banner {
   background: #1a2744;
   color: #c4a35a;
   text-align: center;
-  padding: 14px 20px;
+  padding: clamp(10px, 2vw, 14px) clamp(12px, 3vw, 20px);
   margin: 0;
-  font-size: 0.95rem;
+  font-size: clamp(0.6rem, 2vw, 0.95rem);
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   user-select: none;
+  overflow: hidden;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 @media (max-width: 1024px) {
-  .vision-pillars-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
+  .vision-pillars-grid > * { flex: 1 1 calc(50% - 0.75rem); }
 }
 
 @media (max-width: 768px) {
-  /* Keep 2-column grid on tablets / large phones */
-  .vision-pillars-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .vision-banner {
-    font-size: 0.8rem;
-    padding: 12px 16px;
-    letter-spacing: 0.1em;
-  }
-
-  .welcome-section .image-slider-container {
-    margin: 1.5rem 0 2rem 0;
-  }
-
-  .content-card {
-    padding: 1.25rem;
-  }
+  .vision-pillars-grid > * { flex: 1 1 calc(50% - 0.5rem); }
+  .vision-banner { letter-spacing: 0.07em; }
+  .welcome-section .image-slider-container { margin: var(--space-6) 0 var(--space-8) 0; }
+  .content-card { padding: clamp(0.875rem, 2vw, 1.25rem); }
 }
 
 @media (max-width: 480px) {
-  .welcome-section>h1 {
-    font-size: 1.25rem;
+  .welcome-section > h1 {
+    font-size: clamp(1.1rem, 5vw, 1.4rem);
     line-height: 1.3;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
   }
-
-  .welcome-section>h2 {
-    font-size: 1.2rem;
-    padding-left: 0.75rem;
+  .welcome-section > h2 {
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    padding-left: var(--space-3);
     border-left-width: 3px;
   }
+  .welcome-section > p { font-size: var(--text-sm); }
+  .content-card { padding: var(--space-4); }
+  .vision-pillars-section { margin: var(--space-5) 0; }
+  .vision-pillar-title { font-size: var(--text-sm); }
+  .vision-pillar-list { font-size: 0.74rem; line-height: 1.55; }
+  .vision-banner { font-size: 0.6rem; letter-spacing: 0.03em; padding: 9px 8px; }
+}
 
-  .welcome-section>p {
-    font-size: 0.9rem;
-  }
-
-  .content-card {
-    padding: 1rem;
-  }
-
-  .vision-pillars-section {
-    margin: 1.5rem 0;
-  }
-
-  .vision-pillar-card {
-    padding: 16px 14px;
-  }
-
-  .vision-pillar-title {
-    font-size: 0.9rem;
-  }
-
-  .vision-pillar-list {
-    font-size: 0.76rem;
-    line-height: 1.55;
-  }
-
-  .vision-banner {
-    /* Prevent the spaced-letter text from causing horizontal scroll */
-    font-size: 0.62rem;
-    letter-spacing: 0.03em;
-    padding: 10px 8px;
-    overflow: hidden;
-  }
+@media (max-width: 400px) {
+  .vision-pillars-grid > * { flex: 1 1 100%; }
 }
 
 @media (max-width: 360px) {
-  .welcome-section>h1 {
-    font-size: 1.1rem;
-  }
-
-  .vision-banner {
-    font-size: 0.52rem;
-    letter-spacing: 0.01em;
-  }
+  .welcome-section > h1 { font-size: clamp(1rem, 5vw, 1.2rem); }
+  .vision-banner { font-size: 0.5rem; letter-spacing: 0.01em; }
 }

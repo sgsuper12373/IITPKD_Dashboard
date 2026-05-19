@@ -1,0 +1,167 @@
+/* ============================================================ */
+/* IGRC SECTION — component-specific styles                     */
+/* ============================================================ */
+
+/* ── Export row ── */
+.igrc-export-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ── Summary cards grid gap (overrides grid-4) ── */
+.igrc-cards-gap { gap: 20px; margin-bottom: 30px; }
+
+/* ── Stat cards (fixed-colour gradient variants) ── */
+.igrc-stat-card {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+.igrc-stat-card--purple  { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2); }
+.igrc-stat-card--green   { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 10px 20px rgba(67, 233, 123, 0.2); }
+.igrc-stat-card--pink    { background: linear-gradient(135deg, #fa709a 0%, #feca57 100%); box-shadow: 0 10px 20px rgba(250, 112, 154, 0.2); }
+.igrc-stat-card--violet  { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2); }
+
+.igrc-stat-card-decor {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+.igrc-stat-card-body { position: relative; z-index: 1; }
+.igrc-stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.igrc-stat-card-icon {
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+}
+.igrc-stat-card-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+}
+.igrc-stat-card-value {
+  font-size: 42px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8px;
+}
+.igrc-stat-card-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.igrc-stat-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.igrc-stat-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Year filter select (inside violet card) ── */
+.igrc-year-select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 12px;
+  font-family: inherit;
+}
+.igrc-year-select option { color: #333; }
+
+/* ── Chart section h2 ── */
+.igrc-chart-h2 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+/* ── Metric toggle group ── */
+.igrc-metric-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.igrc-metric-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+}
+.igrc-metric-row-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.igrc-metric-row-label--active { color: #64748b; }
+.igrc-metric-row-label--hidden { color: #94a3b8; }
+
+/* ── Bar/Trend toggle toolbar ── */
+.igrc-toggle-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.igrc-toggle-left { display: flex; gap: 8px; }
+
+/* ── Chart type mode buttons (active = fixed #667eea) ── */
+.igrc-mode-btn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  background-color: #e9ecef;
+  color: #333;
+  transition: all 0.2s;
+}
+.igrc-mode-btn--active {
+  background-color: #667eea;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Export menu z-index wrapper ── */
+.igrc-export-wrapper { position: relative; z-index: 9999; }
+
+/* ── Chart container ── */
+.igrc-chart-container { padding: 10px; }
+
+/* ── Chart description paragraph (zero margin) ── */
+.igrc-chart-desc-p { margin: 0; }
+
+/* ── Metric toggle buttons ── */
+.igrc-metric-btn { min-width: 90px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.igrc-metric-btn--hidden { opacity: 0.6; border-style: dashed; }
+
+/* ── Hidden metrics row entrance animation ── */
+.igrc-metric-row--animated { animation: fadeIn 0.3s ease; }

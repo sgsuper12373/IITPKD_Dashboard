@@ -3,7 +3,6 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
   BarChart, Bar,
-  LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList
 } from 'recharts';
 
@@ -13,6 +12,7 @@ import ChartExpandModal from './ChartExpandModal';
 import './Page.css';
 import './AcademicSection.css';
 import './GrievanceSection.css';
+import './IccSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
@@ -117,7 +117,7 @@ function IccSection({ user, isPublicView = false }) {
                 className="page-back-btn"
                 onClick={() => navigate('/people-campus')}
               >
-                ← Back to People & Campus
+                &#8592; Back to People &amp; Campus
               </button>
             )}
 
@@ -133,26 +133,20 @@ function IccSection({ user, isPublicView = false }) {
                       className="page-upload-btn"
                       onClick={() => setIsUploadModalOpen(true)}
                     >
-                      <span>📤</span> Upload Data
+                      <span>&#128228;</span> Upload Data
                     </button>
                   )}
                 </div>
               </div>
             )}
 
-            {error && <div className="error-message" style={{
-              padding: '10px',
-              backgroundColor: '#f8d7da',
-              color: '#721c24',
-              borderRadius: '4px',
-              marginBottom: '20px'
-            }}>{error}</div>}
+            {error && <div className="error-message">{error}</div>}
 
             {loading ? (
               <SectionSkeleton cards={3} charts={1} />
             ) : (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '10px' }}>
+                <div className="icc-export-row">
                   <ExportMenu
                     elementId="icc-summary-cards-container"
                     data={[summary]}
@@ -163,126 +157,58 @@ function IccSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                <div id="icc-summary-cards-container" className="grid-3" style={{
-                  gap: '20px',
-                  marginBottom: '30px'
-                }}>
-                  <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>📋</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Total Complaints</span>
+                <div id="icc-summary-cards-container" className="grid-3 icc-cards-gap">
+                  <div className="icc-stat-card icc-stat-card--purple">
+                    <div className="icc-stat-card-body">
+                      <div className="icc-stat-card-header">
+                        <span className="icc-stat-card-icon">&#128203;</span>
+                        <span className="icc-stat-card-label">Total Complaints</span>
                       </div>
-                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                        {summary.total}
-                      </div>
+                      <div className="icc-stat-card-value">{summary.total}</div>
                     </div>
                   </div>
 
-                  <div style={{
-                    background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>✅</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Resolved</span>
+                  <div className="icc-stat-card icc-stat-card--green">
+                    <div className="icc-stat-card-body">
+                      <div className="icc-stat-card-header">
+                        <span className="icc-stat-card-icon">&#9989;</span>
+                        <span className="icc-stat-card-label">Resolved</span>
                       </div>
-                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                        {summary.resolved}
-                      </div>
+                      <div className="icc-stat-card-value">{summary.resolved}</div>
                     </div>
                   </div>
 
-                  <div style={{
-                    background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '24px', background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px' }}>⏳</span>
-                        <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: '500' }}>Pending</span>
+                  <div className="icc-stat-card icc-stat-card--pink">
+                    <div className="icc-stat-card-body">
+                      <div className="icc-stat-card-header">
+                        <span className="icc-stat-card-icon">&#9203;</span>
+                        <span className="icc-stat-card-label">Pending</span>
                       </div>
-                      <div style={{ fontSize: '42px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                        {summary.pending}
-                      </div>
+                      <div className="icc-stat-card-value">{summary.pending}</div>
                     </div>
                   </div>
                 </div>
 
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                  marginBottom: '20px',
-                  borderBottom: '2px solid #e0e0e0',
-                  paddingBottom: '10px'
-                }}>
+                <div className="icc-view-tabs">
                   <button
                     type="button"
                     onClick={() => setActiveView('chart')}
-                    style={{
-                      padding: '10px 24px',
-                      backgroundColor: activeView === 'chart' ? '#667eea' : '#f8f9fa',
-                      color: activeView === 'chart' ? 'white' : '#333',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: activeView === 'chart' ? '600' : '500',
-                      transition: 'all 0.3s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
+                    className={`icc-view-btn${activeView === 'chart' ? ' icc-view-btn--active' : ''}`}
                   >
-                    <span>📈</span> Trend View
+                    <span>&#128200;</span> Trend View
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveView('table')}
-                    style={{
-                      padding: '10px 24px',
-                      backgroundColor: activeView === 'table' ? '#667eea' : '#f8f9fa',
-                      color: activeView === 'table' ? 'white' : '#333',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: activeView === 'table' ? '600' : '500',
-                      transition: 'all 0.3s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
+                    className={`icc-view-btn${activeView === 'table' ? ' icc-view-btn--active' : ''}`}
                   >
-                    <span>📊</span> Yearly Statistics
+                    <span>&#128202;</span> Yearly Statistics
                   </button>
                 </div>
 
                 {activeView === 'chart' && (
-                  <div className="chart-section" style={{
-                    backgroundColor: '#fff',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
-                  }}>
-                    <div className="chart-container" style={{ padding: '10px' }}>
+                  <div className="icc-panel">
+                    <div className="icc-chart-container">
                       <div id="icc-grievance-chart-container">
                         {summary.grievance_status && summary.grievance_status.length > 0 && (
                           <div
@@ -369,48 +295,37 @@ function IccSection({ user, isPublicView = false }) {
                 )}
 
                 {activeView === 'table' && (
-                  <div className="chart-section" style={{
-                    backgroundColor: '#fff',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
-                  }}>
-                    <div style={{ marginBottom: '20px' }}>
-                      <h2 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '20px' }}>Yearly Statistics</h2>
+                  <div className="icc-panel">
+                    <div className="icc-table-h2-wrap">
+                      <h2 className="icc-table-h2">Yearly Statistics</h2>
                     </div>
 
                     {chartIsMobile ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div className="icc-mobile-list">
                         {displayStats.length === 0 ? (
-                          <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No records found</div>
+                          <div className="icc-mobile-empty">No records found</div>
                         ) : (
                           displayStats.map((stat) => (
-                            <div key={stat.stat_year} style={{
-                              backgroundColor: '#fff',
-                              borderRadius: '12px',
-                              padding: '16px',
-                              border: '1px solid #e0e0e0',
-                              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                            }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid #f0f0f0', paddingBottom: '8px' }}>
-                                <span style={{ fontWeight: '700', color: '#667eea', fontSize: '16px' }}>FY {stat.stat_year}</span>
+                            <div key={stat.stat_year} className="icc-mobile-card">
+                              <div className="icc-mobile-card-header">
+                                <span className="icc-mobile-card-year">FY {stat.stat_year}</span>
                               </div>
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                              <div className="icc-mobile-card-fields">
                                 <div>
-                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Complaints</div>
-                                  <div style={{ fontWeight: '600', fontSize: '14px' }}>{stat.complaints_received}</div>
+                                  <div className="icc-field-label">Complaints</div>
+                                  <div className="icc-field-value">{stat.complaints_received}</div>
                                 </div>
                                 <div>
-                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Disposed</div>
-                                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#22c55e' }}>{stat.complaints_disposed}</div>
+                                  <div className="icc-field-label">Disposed</div>
+                                  <div className="icc-field-value icc-field-value--green">{stat.complaints_disposed}</div>
                                 </div>
                                 <div>
-                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Pending</div>
-                                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#ef4444' }}>{stat.complaints_pending}</div>
+                                  <div className="icc-field-label">Pending</div>
+                                  <div className="icc-field-value icc-field-value--red">{stat.complaints_pending}</div>
                                 </div>
                                 <div>
-                                  <div style={{ fontSize: '11px', color: '#999', textTransform: 'uppercase', marginBottom: '2px' }}>Training/Workshops</div>
-                                  <div style={{ fontWeight: '600', fontSize: '14px' }}>{stat.training_workshops}</div>
+                                  <div className="icc-field-label">Training/Workshops</div>
+                                  <div className="icc-field-value">{stat.training_workshops}</div>
                                 </div>
                               </div>
                             </div>
@@ -418,50 +333,34 @@ function IccSection({ user, isPublicView = false }) {
                         )}
                       </div>
                     ) : (
-                      <div id="icc-yearly-stats-table-container" className="table-responsive" style={{ overflowX: 'auto' }}>
-                        <table style={{
-                          width: '100%',
-                          borderCollapse: 'collapse',
-                          backgroundColor: '#fff',
-                          borderRadius: '12px',
-                          overflow: 'hidden'
-                        }}>
+                      <div id="icc-yearly-stats-table-container" className="icc-table-wrapper">
+                        <table className="icc-table">
                           <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #e0e0e0' }}>
-                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Year</th>
-                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Received</th>
-                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Disposed</th>
-                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Complaints Pending</th>
-                              <th style={{ padding: '16px', textAlign: 'left', color: '#555', fontSize: '14px', fontWeight: '600' }}>Training/Workshops</th>
+                            <tr>
+                              <th className="icc-table-th">Year</th>
+                              <th className="icc-table-th">Complaints Received</th>
+                              <th className="icc-table-th">Complaints Disposed</th>
+                              <th className="icc-table-th">Complaints Pending</th>
+                              <th className="icc-table-th">Training/Workshops</th>
                             </tr>
                           </thead>
                           <tbody>
                             {displayStats.length === 0 ? (
                               <tr>
-                                <td colSpan="5" style={{
-                                  textAlign: 'center',
-                                  padding: '40px',
-                                  color: '#666',
-                                  fontSize: '14px'
-                                }}>
-                                  <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>📋</span>
+                                <td colSpan="5" className="icc-td-empty">
+                                  <span className="icc-empty-icon">&#128203;</span>
                                   No statistics found
                                 </td>
                               </tr>
-                            ) : displayStats.map((row, index) => {
-                                return (
-                                  <tr key={row.stat_year || index} style={{
-                                    backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                                    borderBottom: '1px solid #e0e0e0'
-                                  }}>
-                                    <td style={{ padding: '16px', fontWeight: '500' }}>{row.stat_year}</td>
-                                    <td style={{ padding: '16px' }}>{row.complaints_received}</td>
-                                    <td style={{ padding: '16px' }}>{row.complaints_disposed}</td>
-                                    <td style={{ padding: '16px', color: '#ef4444', fontWeight: '500' }}>{row.complaints_pending}</td>
-                                    <td style={{ padding: '16px' }}>{row.training_workshops}</td>
-                                  </tr>
-                                );
-                              })}
+                            ) : displayStats.map((row, index) => (
+                              <tr key={row.stat_year || index} className="icc-tr" style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                                <td className="icc-td-strong">{row.stat_year}</td>
+                                <td>{row.complaints_received}</td>
+                                <td>{row.complaints_disposed}</td>
+                                <td className="icc-td-pending">{row.complaints_pending}</td>
+                                <td>{row.training_workshops}</td>
+                              </tr>
+                            ))}
                           </tbody>
                         </table>
                       </div>
