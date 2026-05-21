@@ -43,6 +43,26 @@ function Login({ onLoginSuccess }) {
     }
   };
 
+  const handleGuestLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/guest`
+      );
+      onLoginSuccess(response.data.token, response.data.user);
+      navigate('/');
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Guest login failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
@@ -147,11 +167,11 @@ function Login({ onLoginSuccess }) {
           />
         </div>
 
-        {/* <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+         <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
           <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
-        </div> */}
+        </div>
 
-        {/* <button
+        <button
           type="button"
           onClick={handleGuestLogin}
           disabled={isLoading}
@@ -168,7 +188,7 @@ function Login({ onLoginSuccess }) {
           }}
         >
           Continue as Guest
-        </button> */}
+        </button>
       </div>
     </div>
   );

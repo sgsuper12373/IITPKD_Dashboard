@@ -99,6 +99,9 @@ const NirfRankingSection = ({ user }) => {
     const rankDelta = (latestRank != null && firstRank != null) ? latestRank - firstRank : null;
 
     return (
+        <>
+        {(!isGuest) && (
+        <>
         <div className="content-card">
             <div className="nirf-header">
                 <h2 className="nirf-header-h2">NIRF Ranking Overview</h2>
@@ -155,7 +158,7 @@ const NirfRankingSection = ({ user }) => {
                         <div
                             className={`nirf-rank-chart compact-chart clickable-chart${chartIsMobile ? ' mobile-compact' : ''}`}
                             onClick={() => setExpandedChart({
-                                title: "NIRF Overall Rank Trend",
+                                title: "NIRF Engineering Rank Trend",
                                 content: (
                                     <ResponsiveContainer width="100%" height={400}>
                                         {chartType === 'bar' ? (
@@ -277,6 +280,8 @@ const NirfRankingSection = ({ user }) => {
                 {expandedChart?.content}
             </ChartExpandModal>
         </div>
+        </>)}
+        </>
     );
 };
 

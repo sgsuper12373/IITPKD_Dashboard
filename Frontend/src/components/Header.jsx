@@ -180,7 +180,7 @@ function Header({ user, onLogout, isGuest }) {
                                     ) : (
                                         <>
                                             <button className="dropdown-item" onClick={handleProfileClick}>
-                                                Profile &amp; Admin Actions
+                                                {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
                                             </button>
                                             <button className="dropdown-item" onClick={onLogout}>
                                                 Logout

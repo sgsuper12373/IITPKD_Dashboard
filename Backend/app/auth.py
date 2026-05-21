@@ -1,5 +1,6 @@
 """Authentication: JWT helpers, decorator, and user management routes."""
 import datetime
+import os
 import secrets
 from datetime import timezone
 from functools import wraps
@@ -178,22 +179,12 @@ def login():
 # Google OAuth route
 # ---------------------------------------------------------------------------
 
-_ALLOWED_HD = 'iitpkd.ac.in'
 _GOOGLE_ISSUERS = {'accounts.google.com', 'https://accounts.google.com'}
 
 
 @auth_bp.route('/google', methods=['POST'])
 def google_login():
-    """Verifies a Google ID token and returns a JWT for @iitpkd.ac.in accounts only.
-
-    Verification steps (all server-side via google-auth library):
-      1. Token signature using Google's public keys
-      2. Audience matches GOOGLE_CLIENT_ID
-      3. Issuer is accounts.google.com
-      4. Token is not expired
-      5. email_verified is True
-      6. hd (hosted domain) claim == 'iitpkd.ac.in'
-    """
+    """Verifies a Google ID token and returns a JWT. Any verified Google account is accepted."""
     data = request.get_json()
     if not data or not data.get('credential'):
         return jsonify({'message': 'Google credential is required.'}), 400
@@ -212,20 +203,11 @@ def google_login():
     except ValueError as e:
         return jsonify({'message': f'Invalid Google token: {e}'}), 401
 
-    # Defense-in-depth: explicit issuer check (also validated internally above)
     if idinfo.get('iss') not in _GOOGLE_ISSUERS:
         return jsonify({'message': 'Invalid token issuer.'}), 401
 
-    # Reject unverified emails
     if not idinfo.get('email_verified'):
         return jsonify({'message': 'Google account email is not verified.'}), 401
-
-    # Enforce @iitpkd.ac.in Google Workspace domain via the hd claim
-    # The hd claim is set by Google only for Workspace accounts and cannot be
-    # forged. An email suffix check alone is insufficient — a non-Workspace
-    # account with an @iitpkd.ac.in-looking address would lack this claim.
-    if idinfo.get('hd') != _ALLOWED_HD:
-        return jsonify({'message': 'Access restricted to @iitpkd.ac.in Google Workspace accounts.'}), 403
 
     email = idinfo['email']
     display_name = idinfo.get('name', email.split('@')[0])
@@ -234,10 +216,6 @@ def google_login():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-
-        cur.execute("SELECT 1 FROM allowed_users WHERE email = %s;", (email,))
-        if cur.fetchone() is None:
-            return jsonify({'message': 'Your account is not authorized to access this system.'}), 403
 
         cur.execute("SELECT id, email, display_name, role_id, status, password_hash, created_at FROM users WHERE email = %s;", (email,))
         user = cur.fetchone()
@@ -273,6 +251,50 @@ def google_login():
             'user': user,
         }), 200
 
+    finally:
+        if conn:
+            cur.close()
+            release_db_connection(conn)
+
+
+# ---------------------------------------------------------------------------
+# Guest login route
+# ---------------------------------------------------------------------------
+
+@auth_bp.route('/guest', methods=['POST'])
+def guest_login():
+    """Logs in the pre-configured guest account whose credentials live in .env."""
+    guest_email = os.environ.get('GUEST_USER_NAME', '')
+    guest_password = os.environ.get('GUEST_USER_PASSWORD', '')
+    if not guest_email or not guest_password:
+        return jsonify({'message': 'Guest login is not configured on this server.'}), 500
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, email, display_name, role_id, status, password_hash, created_at FROM users WHERE email = %s;",
+            (guest_email,)
+        )
+        user = cur.fetchone()
+
+        if not user:
+            return jsonify({'message': 'Guest account not found.'}), 404
+
+        if not bcrypt.check_password_hash(user['password_hash'], guest_password):
+            return jsonify({'message': 'Guest login configuration error.'}), 500
+
+        cur.execute("UPDATE users SET last_login_at = NOW() WHERE id = %s;", (user['id'],))
+        conn.commit()
+
+        user = dict(user)
+        user.pop('password_hash', None)
+        return jsonify({
+            'message': 'Login successful!',
+            'token': encode_auth_token(user['id'], user['role_id']),
+            'user': user,
+        }), 200
     finally:
         if conn:
             cur.close()

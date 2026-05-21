@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 import './Page.css';
 import './Profile.css';
 import TruncateConfirmModal from './TruncateConfirmModal';
@@ -9,7 +8,6 @@ const API_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/auth`;
 const API_EXPORT_URL = `${import.meta.env.VITE_API_BASE_URL}/api/export`;
 
 function Profile({ user }) {
-  const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
 
   const isAdmin = user && user.role_id === 3;
@@ -36,6 +34,9 @@ function Profile({ user }) {
   const [selectedTables, setSelectedTables] = useState([]);
   const [exportLoading, setExportLoading] = useState(false);
 
+  const [createUserForm, setCreateUserForm] = useState({ email: '', username: '', display_name: '', password: '', role_id: '' });
+  const [createUserSaving, setCreateUserSaving] = useState(false);
+
   const [truncateModalOpen, setTruncateModalOpen] = useState(false);
   const [truncatingTable, setTruncatingTable] = useState(null);
 
@@ -50,8 +51,29 @@ function Profile({ user }) {
 
   useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
 
-  const handleCreateUserClick = () => {
-    navigate('/create-user');
+  const handleCreateUserClick = () => togglePanel('create-user');
+
+  const handleCreateUser = async () => {
+    if (!createUserForm.email || !createUserForm.password || !createUserForm.role_id) {
+      showToast('Email, password, and role are required.', 'error');
+      return;
+    }
+    setCreateUserSaving(true);
+    try {
+      const res = await fetch(`${API_AUTH_URL}/create-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(createUserForm),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to create user');
+      showToast(`User "${createUserForm.email}" created successfully.`);
+      setCreateUserForm({ email: '', username: '', display_name: '', password: '', role_id: '' });
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setCreateUserSaving(false);
+    }
   };
 
   const togglePanel = (panel) => {
@@ -61,6 +83,7 @@ function Profile({ user }) {
       setActivePanel(panel);
       if (panel === 'roles') fetchRoles();
       if (panel === 'users') { fetchUsers(); fetchRoles(); }
+      if (panel === 'create-user') fetchRoles();
       if (panel === 'export') fetchTables();
       if (panel === 'truncate') fetchTables();
     }
@@ -274,25 +297,18 @@ function Profile({ user }) {
                 <span>{user.display_name || 'N/A'}</span>
               </div>
               <div className="profile-field">
-                <label>Username:</label>
-                <span>{user.username || 'N/A'}</span>
-              </div>
-              <div className="profile-field">
                 <label>Status:</label>
                 <span>{user.status || 'N/A'}</span>
               </div>
-              {user.role_id && (
-                <div className="profile-field">
-                  <label>Role ID:</label>
-                  <span>{user.role_id}</span>
-                </div>
-              )}
             </div>
 
             {isAdmin && (
               <div className="profile-actions">
                 <div className="profile-btn-row">
-                  <button className="page-upload-btn" onClick={handleCreateUserClick}>
+                  <button
+                    className={`page-upload-btn${activePanel === 'create-user' ? ' page-upload-btn--active' : ''}`}
+                    onClick={handleCreateUserClick}
+                  >
                     👤 Create User
                   </button>
                   <button
@@ -320,6 +336,58 @@ function Profile({ user }) {
                     ⚠ Truncate Tables
                   </button>
                 </div>
+
+                {/* Create User Panel */}
+                {activePanel === 'create-user' && (
+                  <div className="roles-panel">
+                    <h3 className="roles-panel-title">Create New User</h3>
+                    <div className="roles-new-row">
+                      <input
+                        type="email"
+                        placeholder="Email *"
+                        value={createUserForm.email}
+                        onChange={(e) => setCreateUserForm(f => ({ ...f, email: e.target.value }))}
+                        className="roles-edit-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Username *"
+                        value={createUserForm.username}
+                        onChange={(e) => setCreateUserForm(f => ({ ...f, username: e.target.value }))}
+                        className="roles-edit-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Display Name"
+                        value={createUserForm.display_name}
+                        onChange={(e) => setCreateUserForm(f => ({ ...f, display_name: e.target.value }))}
+                        className="roles-edit-input"
+                      />
+                      <input
+                        type="password"
+                        placeholder="Password *"
+                        value={createUserForm.password}
+                        onChange={(e) => setCreateUserForm(f => ({ ...f, password: e.target.value }))}
+                        className="roles-edit-input"
+                      />
+                      <select
+                        value={createUserForm.role_id}
+                        onChange={(e) => setCreateUserForm(f => ({ ...f, role_id: e.target.value }))}
+                        className="roles-edit-input profile-role-select"
+                      >
+                        <option value="">Select Role *</option>
+                        {roles.map(r => <option key={r.id} value={r.id}>{r.id} - {r.name}</option>)}
+                      </select>
+                      <button
+                        className="roles-btn roles-btn-add"
+                        onClick={handleCreateUser}
+                        disabled={createUserSaving || !createUserForm.email || !createUserForm.password || !createUserForm.role_id}
+                      >
+                        {createUserSaving ? 'Creating…' : '+ Create'}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Users Management Panel */}
                 {activePanel === 'users' && (
