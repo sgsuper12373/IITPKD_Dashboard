@@ -48,7 +48,7 @@ ALTER TABLE public.users                         ADD COLUMN IF NOT EXISTS last_u
 
 -- mou_partner_logos: only present after running add_mou_partner_logos.sql first
 -- Uncomment once that migration has been applied:
--- ALTER TABLE public.mou_partner_logos ADD COLUMN IF NOT EXISTS last_updated timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.mou_partner_logos ADD COLUMN IF NOT EXISTS last_updated timestamptz NOT NULL DEFAULT now();
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 2. Shared trigger function
