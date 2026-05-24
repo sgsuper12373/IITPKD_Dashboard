@@ -27,6 +27,7 @@ import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
+import LastUpdated from './LastUpdated';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -329,6 +330,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       ? 'Industry Collaboration'
                       : 'Industrial Consultancy & Sponsored Research'}
                   </h1>
+                  <LastUpdated tables={['icsr_consultancy_projects', 'icsr_sponsered_projects', 'icsr_csr', 'research_patents', 'research_mous']} />
                 </div>
 
                 {!isReadOnlyView && isAdmin && (

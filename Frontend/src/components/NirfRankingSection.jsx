@@ -8,6 +8,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
+import LastUpdated from './LastUpdated';
 
 const NirfRankingSection = ({ user }) => {
     const uploadVersion = useUploadRefresh();
@@ -105,6 +106,7 @@ const NirfRankingSection = ({ user }) => {
         <div className="content-card">
             <div className="nirf-header">
                 <h2 className="nirf-header-h2">NIRF Ranking Overview</h2>
+                <LastUpdated tables={['nirf_ranking']} />
                 <div className="nirf-controls">
                     <div className="nirf-mode-row">
                         <button

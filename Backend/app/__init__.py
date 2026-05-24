@@ -1,7 +1,7 @@
 """Flask application factory."""
 import os
 import secrets
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
@@ -33,13 +33,21 @@ def create_app():
     })
     bcrypt.init_app(app)
 
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'logos')
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+    @app.route('/uploads/logos/<path:filename>')
+    def serve_logo(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
     from . import (
         auth, dashboard, upload,
         academic_stats, administrative_stats, grievance_stats,
         ewd_stats, iar_stats, education_stats, placement_stats,
         academic_module, research_module, innovation_module,
         industry_connect_module, outreach_extension_module, nirf_stats, export_db,
-
+        mou_partners, last_updated,
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
@@ -59,6 +67,8 @@ def create_app():
     app.register_blueprint(innovation_module.innovation_bp,            url_prefix='/api/innovation')
     app.register_blueprint(industry_connect_module.industry_connect_bp, url_prefix='/api/industry-connect')
     app.register_blueprint(outreach_extension_module.outreach_extension_bp, url_prefix='/api/outreach-extension')
+    app.register_blueprint(mou_partners.mou_partners_bp,                   url_prefix='/api/mou-partners')
+    app.register_blueprint(last_updated.last_updated_bp,                   url_prefix='/api/last-updated')
 
     @app.route('/health')
     def health_check():

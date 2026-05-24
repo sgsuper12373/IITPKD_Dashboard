@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import { getOrderedLegend } from '../utils/chartUtils';
+import LastUpdated from './LastUpdated';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
@@ -583,7 +584,10 @@ function AcademicSection({ user, isPublicView = false }) {
 
         {showUploadBtn && (
           <div className="section-header">
-            <h1>Student Overview</h1>
+            <div className="section-header-left">
+              <h1>Student Overview</h1>
+              <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
+            </div>
             <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
               Upload Data
             </button>

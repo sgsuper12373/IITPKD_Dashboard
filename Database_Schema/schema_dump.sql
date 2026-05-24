@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict sfF0tP7d1jLJegznDq0XcrGFFbudjtPJUZR5e1HTYfJE9MX74pcLWjN6jOtd4eL
+\restrict wsGdTFqSifmhz1unfonGCsbkogNLvjYwxRtoLgaLebxKsnv6e90AfP8AlVmcLHX
 
--- Dumped from database version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
--- Dumped by pg_dump version 18.3 (Ubuntu 18.3-1.pgdg24.04+1)
+-- Dumped from database version 18.4 (Ubuntu 18.4-1.pgdg24.04+1)
+-- Dumped by pg_dump version 18.4 (Ubuntu 18.4-1.pgdg24.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1105,7 +1105,7 @@ CREATE TABLE public.placement_summary (
     gender public.gender_type NOT NULL,
     registered integer NOT NULL,
     placed integer NOT NULL,
-    branch character varying(50),
+    branch character varying(50) NOT NULL,
     CONSTRAINT placement_summary_check CHECK ((placed <= registered)),
     CONSTRAINT placement_summary_placed_check CHECK ((placed >= 0)),
     CONSTRAINT placement_summary_registered_check CHECK ((registered >= 0))
@@ -1161,7 +1161,7 @@ CREATE TABLE public.research_patents (
     patent_title character varying(250) NOT NULL,
     patent_status public.patent_status_type NOT NULL,
     filing_date date,
-    grant_date character varying(50),
+    grant_date date,
     remarks text,
     inventor1 character varying(200),
     inventor1_category character varying(200),
@@ -1513,6 +1513,39 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: v_faculty_engagement_standardized; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.v_faculty_engagement_standardized AS
+ SELECT engagement_code,
+    faculty_name,
+    engagement_type,
+    department,
+    startdate,
+    enddate,
+    duration_months,
+    year,
+    remarks,
+    created_at,
+    fc_bg_type,
+        CASE
+            WHEN ((engagement_type)::text ~~* '%Adjunct%'::text) THEN 'Adjunct'::text
+            WHEN ((engagement_type)::text ~~* '%Honorary%'::text) THEN 'Honorary'::text
+            WHEN ((engagement_type)::text ~~* '%Visiting%'::text) THEN 'Visiting'::text
+            WHEN (((engagement_type)::text ~~* '%Faculty Fellow%'::text) OR ((engagement_type)::text ~~* '%FacultyFellow%'::text)) THEN 'FacultyFellow'::text
+            WHEN (((engagement_type)::text ~~* '%PoP%'::text) OR ((engagement_type)::text ~~* '%Professor of Practice%'::text) OR ((engagement_type)::text ~~* '%Practice%'::text)) THEN 'PoP'::text
+            ELSE 'Other'::text
+        END AS std_type,
+        CASE
+            WHEN ((enddate IS NULL) OR (enddate > CURRENT_DATE)) THEN 'Active'::text
+            ELSE 'Inactive'::text
+        END AS current_status
+   FROM public.faculty_engagement;
+
+
+ALTER VIEW public.v_faculty_engagement_standardized OWNER TO postgres;
+
+--
 -- Name: externship_info externid; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1840,7 +1873,7 @@ ALTER TABLE ONLY public.placement_packages
 --
 
 ALTER TABLE ONLY public.placement_summary
-    ADD CONSTRAINT placement_summary_pkey PRIMARY KEY (placement_year, program, gender);
+    ADD CONSTRAINT placement_summary_pkey PRIMARY KEY (placement_year, program, gender, branch);
 
 
 --
@@ -1956,6 +1989,111 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: idx_employees_appointed_category; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_appointed_category ON public.employees USING btree (appointed_category);
+
+
+--
+-- Name: idx_employees_department; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_department ON public.employees USING btree (department);
+
+
+--
+-- Name: idx_employees_designation; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_designation ON public.employees USING btree (designation);
+
+
+--
+-- Name: idx_employees_doj; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_doj ON public.employees USING btree (doj);
+
+
+--
+-- Name: idx_employees_emp_type; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_emp_type ON public.employees USING btree (emp_type);
+
+
+--
+-- Name: idx_employees_empstatus; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_empstatus ON public.employees USING btree (empstatus);
+
+
+--
+-- Name: idx_employees_gender; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_gender ON public.employees USING btree (gender);
+
+
+--
+-- Name: idx_employees_group_name; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_employees_group_name ON public.employees USING btree (group_name);
+
+
+--
+-- Name: idx_faculty_engagement_dept; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_faculty_engagement_dept ON public.faculty_engagement USING btree (department);
+
+
+--
+-- Name: idx_faculty_engagement_startdate; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_faculty_engagement_startdate ON public.faculty_engagement USING btree (startdate);
+
+
+--
+-- Name: idx_faculty_engagement_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_faculty_engagement_year ON public.faculty_engagement USING btree (year);
+
+
+--
+-- Name: idx_icsr_consultancy_department; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_icsr_consultancy_department ON public.icsr_consultancy_projects USING btree (department);
+
+
+--
+-- Name: idx_icsr_consultancy_start_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_icsr_consultancy_start_date ON public.icsr_consultancy_projects USING btree (start_date);
+
+
+--
+-- Name: idx_icsr_sponsored_department; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_icsr_sponsored_department ON public.icsr_sponsered_projects USING btree (principal_investigator_department);
+
+
+--
+-- Name: idx_icsr_sponsored_start_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_icsr_sponsored_start_date ON public.icsr_sponsered_projects USING btree (start_date);
+
+
+--
 -- Name: idx_innovation_projects_sector; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1981,6 +2119,125 @@ CREATE INDEX idx_open_house_date ON public.open_house USING btree (event_date);
 --
 
 CREATE INDEX idx_open_house_year ON public.open_house USING btree (event_year);
+
+
+--
+-- Name: idx_placement_companies_sector; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_companies_sector ON public.placement_companies USING btree (sector);
+
+
+--
+-- Name: idx_placement_companies_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_companies_year ON public.placement_companies USING btree (placement_year);
+
+
+--
+-- Name: idx_placement_packages_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_packages_year ON public.placement_packages USING btree (placement_year);
+
+
+--
+-- Name: idx_placement_summary_branch; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_summary_branch ON public.placement_summary USING btree (branch);
+
+
+--
+-- Name: idx_placement_summary_gender; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_summary_gender ON public.placement_summary USING btree (gender);
+
+
+--
+-- Name: idx_placement_summary_program; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_summary_program ON public.placement_summary USING btree (program);
+
+
+--
+-- Name: idx_placement_summary_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_placement_summary_year ON public.placement_summary USING btree (placement_year);
+
+
+--
+-- Name: idx_student_admission_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_admission_year ON public.student_table USING btree (admission_year);
+
+
+--
+-- Name: idx_student_batch; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_batch ON public.student_table USING btree (admission_batch);
+
+
+--
+-- Name: idx_student_category; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_category ON public.student_table USING btree (original_category);
+
+
+--
+-- Name: idx_student_department; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_department ON public.student_table USING btree (department_current);
+
+
+--
+-- Name: idx_student_gender; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_gender ON public.student_table USING btree (gender);
+
+
+--
+-- Name: idx_student_program_type; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_program_type ON public.student_table USING btree (academic_program_type);
+
+
+--
+-- Name: idx_student_programme; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_programme ON public.student_table USING btree (programme_current);
+
+
+--
+-- Name: idx_student_state; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_state ON public.student_table USING btree (state);
+
+
+--
+-- Name: idx_student_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_status ON public.student_table USING btree (student_status);
+
+
+--
+-- Name: idx_student_stream; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_student_stream ON public.student_table USING btree (stream_current);
 
 
 --
@@ -2010,5 +2267,5 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict sfF0tP7d1jLJegznDq0XcrGFFbudjtPJUZR5e1HTYfJE9MX74pcLWjN6jOtd4eL
+\unrestrict wsGdTFqSifmhz1unfonGCsbkogNLvjYwxRtoLgaLebxKsnv6e90AfP8AlVmcLHX
 
