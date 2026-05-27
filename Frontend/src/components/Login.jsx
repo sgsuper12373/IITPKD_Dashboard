@@ -167,10 +167,11 @@ function Login({ onLoginSuccess }) {
           />
         </div>
 
-         <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+        {/* Continue as Guest — commented out because visitors are automatically
+            logged in as guest on site entry; this button is no longer needed.
+        <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
           <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
         </div>
-
         <button
           type="button"
           onClick={handleGuestLogin}
@@ -189,6 +190,7 @@ function Login({ onLoginSuccess }) {
         >
           Continue as Guest
         </button>
+        */}
       </div>
     </div>
   );

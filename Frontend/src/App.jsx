@@ -115,7 +115,7 @@ function App() {
     !!import.meta.env.VITE_GUEST_EMAIL &&
     user.email === import.meta.env.VITE_GUEST_EMAIL;
 
-  // Rehydrate auth state on initial load
+  // Rehydrate auth state on initial load.
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('authUser');
@@ -183,8 +183,9 @@ function App() {
     return () => { axios.interceptors.response.eject(responseInterceptor); };
   }, [token]);
 
-  const ProtectedRoute = ({ children }) =>
-    (token || isGuestMode) ? children : <Navigate to="/login" replace />;
+  // Everyone can view the dashboard — unauthenticated users get guest-level access.
+  // AuthRoute/AdminRoute still guard pages that require a real login.
+  const ProtectedRoute = ({ children }) => children;
 
   const AuthRoute = ({ children }) =>
     token ? children : <Navigate to="/login" replace />;
@@ -214,7 +215,7 @@ function App() {
           <Route
             path="/login"
             element={
-              (token || isGuestMode) ? <Navigate to="/" replace /> :
+              token ? <Navigate to="/" replace /> :
                 <Login onLoginSuccess={handleLoginSuccess} />
             }
           />
@@ -222,7 +223,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Home user={user} onLogout={handleLogout} isGuest={isGuestMode} />
+                <Home user={user} onLogout={handleLogout} isGuest={isGuestMode || !token} />
               </ProtectedRoute>
             }
           >
