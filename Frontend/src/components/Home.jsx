@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
+import Footer from './Footer';
 import './Home.css';
 
 function Home({ user, onLogout, isGuest }) {
@@ -12,6 +13,8 @@ function Home({ user, onLogout, isGuest }) {
         <Breadcrumb />
         <Outlet />
       </main>
+
+      {/* <Footer /> */}
     </div>
   );
 }

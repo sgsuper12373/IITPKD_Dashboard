@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
+import FeedbackModal from './FeedbackModal';
 
 // All top-level nav entries with their page-key for role filtering
 const ALL_NAV_LINKS = [
@@ -33,6 +34,7 @@ const QUICK_NAV_ITEMS = [
 
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [showFeedback, setShowFeedback] = useState(false);
     const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
@@ -144,6 +146,13 @@ function Header({ user, onLogout, isGuest }) {
                     </Link>
 
                     <div className="header-right">
+                        <button
+                            className="feedback-btn"
+                            onClick={() => setShowFeedback(true)}
+                            aria-label="Open feedback form"
+                        >
+                            Feedback
+                        </button>
                         <div ref={dropdownRef} className="user-profile-container">
                             <div
                                 className="user-avatar"
@@ -281,6 +290,15 @@ function Header({ user, onLogout, isGuest }) {
                     </div>
                 </aside>
             )}
+            {/* Feedback Modal */}
+            {showFeedback && (
+                <FeedbackModal
+                    onClose={() => setShowFeedback(false)}
+                    defaultName={isGuest ? '' : (user?.display_name || '')}
+                    defaultEmail={isGuest ? '' : (user?.email || '')}
+                />
+            )}
+
             {/* Bottom Tab Bar — mobile only (≤768px) */}
             <nav className="mobile-tab-bar" aria-label="Primary navigation" role="navigation">
               <div className="mobile-tab-bar__inner">

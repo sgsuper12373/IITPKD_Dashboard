@@ -180,6 +180,41 @@ body {
   position: relative;
   flex-shrink: 0;
   overflow: visible; /* keep dropdown from being clipped */
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* ── Feedback button ── */
+.feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.38rem 0.9rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.feedback-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .feedback-btn {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.72rem;
+  }
 }
 
 .user-profile-container {
