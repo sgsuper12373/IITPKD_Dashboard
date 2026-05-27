@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import './FeedbackModal.css';
 
 const SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbyCyLF4v2BCnFn1AVmyusLZ4pYHZ8ISAiM9Im53N1VmVc-J8yr8TIz8D8Ab0oKcDhXA5Q/exec';
+  'https://script.google.com/macros/s/AKfycbyYb_yIDlyh9JoK2c3aXIm0wxmQGyifMib8k4d_vemjKEPbjhvUZNO1VqqaNAXKl6Psxw/exec'
 
 function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
   const [form, setForm] = useState({

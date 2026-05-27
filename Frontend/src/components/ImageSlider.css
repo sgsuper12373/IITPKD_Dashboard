@@ -3,33 +3,24 @@
   width: 100%;
   max-width: 2200px;
   margin: 2rem auto;
-  position: relative;
+}
+
+/* Flex row: [arrow] [image box] [arrow] */
+.image-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .image-slider-wrapper {
-  position: relative;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   /* fluid height: 220px on tiny phones, 45vw scales with screen, 600px max on desktop */
   height: clamp(200px, 45vw, 600px);
   overflow: hidden;
   border-radius: 18px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-  background: #000;
-}
-
-/* Subtle cinematic overlay */
-.image-slider-wrapper::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.45),
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.45)
-  );
-  pointer-events: none;
-  z-index: 2;
+  background: #faf9f7; /* warm off-white — visible only for contain slides */
 }
 
 /* ================= SLIDER TRACK ================= */
@@ -39,7 +30,7 @@
   height: 100%;
 }
 
-/* ================= SLIDE ANIMATION (FLUID & FAST) ================= */
+/* ================= SLIDE ANIMATION ================= */
 .slider-slide {
   position: absolute;
   inset: 0;
@@ -54,37 +45,20 @@
   opacity: 1;
   transform: scale(1);
   z-index: 1;
-  /* Only promote the visible slide; applying will-change to all slides
-     would create a GPU compositor layer for every image simultaneously. */
   will-change: opacity, transform;
 }
 
 .slider-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* object-fit is set per-slide via inline style */
   display: block;
 }
 
-/* Remove default focus halo */
-.slider-button:focus,
-.slider-button:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
+/* ================= NAVIGATION BUTTONS (outside the image box) ================= */
 .slider-button {
-  -webkit-tap-highlight-color: transparent;
-}
+  flex-shrink: 0;
 
-/* ================= NAVIGATION BUTTONS ================= */
-.slider-button {
-  position: absolute;
-  overflow: hidden;   /* IMPORTANT */
-  top: 50%;
-  transform: translateY(-50%);
-
-  /* Force perfect square */
   width: 44px;
   height: 44px;
   min-width: 44px;
@@ -94,81 +68,43 @@
   border-radius: 50%;
   padding: 0;
   line-height: 0;
+  overflow: hidden;
 
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: 400;
-
+  color: #444;
   cursor: pointer;
-  z-index: 15;
 
   display: flex;
   align-items: center;
   justify-content: center;
-
   box-sizing: border-box;
-  transition: all 0.3s ease;
-  box-shadow:
-  inset 0 2px 6px rgba(255,255,255,0.4),
-  inset 0 -3px 6px rgba(0,0,0,0.2),
-  0 8px 20px rgba(0,0,0,0.3);
+
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  -webkit-tap-highlight-color: transparent;
 }
 
-.slider-button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.7) 0%,
-    rgba(255,255,255,0.25) 30%,
-    rgba(255,255,255,0.05) 60%,
-    rgba(255,255,255,0.6) 100%
-  );
-
-  opacity: 0;
-  transition: opacity 0.35s ease;
+.slider-button:focus,
+.slider-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(247, 166, 0, 0.35);
 }
+
 .slider-button:hover {
-  transform: translateY(-50%) scale(1.1);
-
-  /* Stronger glass tint */
-  background: rgba(255, 255, 255, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-
-  box-shadow:
-    0 0 28px rgba(247, 166, 0, 0.75),
-    0 8px 28px rgba(0, 0, 0, 0.4);
-
-  color: #ffffff;
-}
-
-.slider-button:hover::before {
-  opacity: 1;
+  background: #f7a600;
+  border-color: #f7a600;
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(247, 166, 0, 0.4);
 }
 
 .slider-button:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.slider-button-prev {
-  left: 25px;
-}
-
-.slider-button-next {
-  right: 25px;
-}
-
-.slider-button:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: scale(0.95);
 }
 
 /* ================= DOTS INDICATOR ================= */
@@ -228,37 +164,32 @@
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
+  .image-slider-row {
+    gap: 0.5rem;
+  }
+
   .slider-button {
     width: 36px;
     height: 36px;
     min-width: 36px;
     min-height: 36px;
-    font-size: 1.2rem;
   }
-  .slider-button-prev { left: 12px; }
-  .slider-button-next { right: 12px; }
 }
 
 @media (max-width: 768px) {
-  /* height is now fluid via clamp() — no need to override here */
   .image-slider-wrapper {
     border-radius: 12px;
   }
 
+  .image-slider-row {
+    gap: 0.4rem;
+  }
+
   .slider-button {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
-    font-size: 1rem;
-  }
-
-  .slider-button-prev {
-    left: 8px;
-  }
-
-  .slider-button-next {
-    right: 8px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
 
   .slider-dot {
@@ -277,12 +208,15 @@
     border-radius: 8px;
   }
 
+  .image-slider-row {
+    gap: 0.3rem;
+  }
+
   .slider-button {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    min-height: 24px;
-    font-size: 0.8rem;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
   }
 
   .slider-dot {
@@ -295,4 +229,3 @@
     height: 6px;
   }
 }
-

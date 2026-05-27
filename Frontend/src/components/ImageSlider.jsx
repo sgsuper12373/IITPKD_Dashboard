@@ -1,51 +1,38 @@
 import { useState, useEffect } from 'react';
 import './ImageSlider.css';
 
-/**
- * ImageSlider Component
- * 
- * USAGE:
- * Place your IIT Palakkad images in: Frontend/src/assets/images/iit-palakkad/
- * 
- * Then import them and pass as props:
- * 
- * import img1 from '../assets/images/iit-palakkad/image1.jpg';
- * import img2 from '../assets/images/iit-palakkad/image2.jpg';
- * 
- * <ImageSlider images={[img1, img2, img3]} />
- * 
- * Or use a folder structure and import dynamically (see example below)
- */
-
 function ImageSlider({ images = [], autoSlideInterval = 4000 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-slide functionality
+  // Normalize: plain strings → cover + autoSlideInterval; objects use their own props.
+  const slides = images.map((img) =>
+    typeof img === 'string'
+      ? { src: img, duration: autoSlideInterval, objectFit: 'cover' }
+      : {
+          src: img.src,
+          duration: img.duration ?? autoSlideInterval,
+          objectFit: img.objectFit ?? 'cover',
+        }
+  );
+
+  // Per-slide auto-advance via setTimeout so each slide can have its own duration.
   useEffect(() => {
-    if (images.length <= 1) return;
+    if (slides.length <= 1) return;
+    const duration = slides[currentIndex]?.duration ?? autoSlideInterval;
+    const timer = setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, duration);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, slides.length, autoSlideInterval]);
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, autoSlideInterval);
+  const goToSlide = (index) => setCurrentIndex(index);
 
-    return () => clearInterval(interval);
-  }, [images.length, autoSlideInterval]);
+  const goToPrevious = () =>
+    setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
 
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
-  };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+  const goToNext = () =>
+    setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
 
   if (!images || images.length === 0) {
     return (
@@ -64,73 +51,59 @@ function ImageSlider({ images = [], autoSlideInterval = 4000 }) {
 
   return (
     <div className="image-slider-container">
-      <div className="image-slider-wrapper">
-        {/* Previous Button */}
-        {images.length > 1 && (
-          <button 
-            className="slider-button slider-button-prev" 
+      {/* Row: [prev arrow] [image box] [next arrow] — arrows are flex siblings, NOT inside the image box */}
+      <div className="image-slider-row">
+        {slides.length > 1 && (
+          <button
+            className="slider-button slider-button-prev"
             onClick={goToPrevious}
             aria-label="Previous image"
           >
-          <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 6 L8 12 L14 18" />
             </svg>
           </button>
         )}
 
-        {/* Image Container */}
-        <div className="image-slider-track">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
-            >
-              <img
-                src={image}
-                alt={`IIT Palakkad ${index + 1}`}
-                className="slider-image"
-                decoding="async"
-              />
-            </div>
-          ))}
+        {/* Image box — overflow:hidden stays here; arrows are outside so they won't be clipped */}
+        <div className="image-slider-wrapper">
+          <div className="image-slider-track">
+            {slides.map((slide, index) => (
+              <div
+                key={index}
+                className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
+              >
+                <img
+                  src={slide.src}
+                  alt={`IIT Palakkad ${index + 1}`}
+                  className="slider-image"
+                  style={{ objectFit: slide.objectFit }}
+                  decoding="async"
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Next Button */}
-        {images.length > 1 && (
-          <button 
-            className="slider-button slider-button-next" 
+        {slides.length > 1 && (
+          <button
+            className="slider-button slider-button-next"
             onClick={goToNext}
             aria-label="Next image"
           >
-          <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 6 L16 12 L10 18" />
             </svg>
           </button>
         )}
       </div>
 
-      {/* Dots Indicator */}
-      {images.length > 1 && (
+      {/* Dots below the image row */}
+      {slides.length > 1 && (
         <div className="slider-dots">
-          {images.map((_, index) => (
+          {slides.map((_, index) => (
             <button
               key={index}
               className={`slider-dot ${index === currentIndex ? 'active' : ''}`}
@@ -145,4 +118,3 @@ function ImageSlider({ images = [], autoSlideInterval = 4000 }) {
 }
 
 export default ImageSlider;
-

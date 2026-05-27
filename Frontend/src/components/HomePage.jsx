@@ -9,15 +9,23 @@ import NirfRankingSection from './NirfRankingSection';
 // block the initial paint of the welcome text and splash screen.
 const ImageSlider = lazy(() => import('./ImageSlider'));
 
+import dashboardBanner from '../assets/iit_palakkad_dashboard_banner.png';
+
 // Auto-imports every image from iit-palakkad/ at build time.
 // Drop images into that folder — they appear in the slider automatically, sorted alphabetically.
 const _imageModules = import.meta.glob(
   '../assets/images/iit-palakkad/*',
   { eager: true }
 );
-const iitPalakkadImages = Object.keys(_imageModules)
+const _baseImages = Object.keys(_imageModules)
   .sort()
   .map((key) => _imageModules[key].default);
+
+// Dashboard banner: 2× screen time, no cropping (contain keeps full image visible).
+const iitPalakkadImages = [
+  { src: dashboardBanner, duration: 10000, objectFit: 'contain' },
+  ..._baseImages.map((src) => ({ src, duration: 4000, objectFit: 'cover' })),
+];
 
 function HomePage({ user }) {
   const [showSplash, setShowSplash] = useState(
