@@ -46,7 +46,7 @@ function Research({ user }) {
             ← Back to Admin View
           </button>
 
-          <ResearchPublicView user={user} />
+          <ResearchPublicView user={user} embedded />
         </div>
       </div>
     );

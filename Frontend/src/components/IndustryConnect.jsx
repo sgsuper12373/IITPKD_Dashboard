@@ -52,7 +52,7 @@ function IndustryConnect({ user }) {
             ← Back to Admin View
           </button>
 
-          <IndustryConnectPublicView user={user} />
+          <IndustryConnectPublicView user={user} embedded />
         </div>
       </div>
     );

@@ -137,6 +137,10 @@
   /* ── Touch Target ── */
   --min-touch: 44px;
 
+  /* ── Container ── */
+  --container-max:       1600px;
+  --container-padding-x: clamp(1rem, 2vw, 2rem);
+
   /* ── Global Font Scale ──────────────────────────────────────────
      Change this ONE value to scale all text across every page.
      1    = default (16px base)
@@ -236,6 +240,24 @@ a,
   input {
     min-height: var(--min-touch);
   }
+}
+
+/* ── Universal keyboard focus ring ──────────────────────────────────────────
+   Shown only when navigating by keyboard (:focus-visible).
+   Elements that already provide custom indication via box-shadow suppress it.
+   ────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* These already render a custom ring via border-color + box-shadow */
+.input-field:focus-visible,
+.select-field:focus-visible,
+.chart-type-select:focus-visible,
+.filter-select:focus-visible {
+  outline: none;
 }
 
 /* ── Scrollbar ── */
@@ -1008,11 +1030,6 @@ strong { font-weight: 700; }
   border-radius: var(--radius-md);
 }
 
-/* Focus ring */
-.btn:focus-visible {
-  outline: 3px solid var(--color-primary-glow);
-  outline-offset: 2px;
-}
 
 /* Tab button (chart tabs) */
 .tab-btn {

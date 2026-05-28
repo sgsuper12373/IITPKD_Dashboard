@@ -1,7 +1,6 @@
-/* Page.css — page-level layout tokens and shared patterns
+/* Page.css — page-level layout tokens and shared patterns.
    All :root tokens are defined in src/styles/global.css.
    This file contains only page-specific overrides and shared layout patterns. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ── Page entrance animation ── */
 @keyframes pageSlideIn {
@@ -10,59 +9,37 @@
 }
 
 /* ================================================================
-   PAGE CONTAINER — frosted glass panel
+   PAGE CONTAINER — clean white card
    ================================================================ */
 .page-content {
   position: relative;
   width: 100%;
-  max-width: 1500px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: clamp(1rem, 3vw, 2.5rem) clamp(0.75rem, 3vw, 3rem);
-  background: linear-gradient(135deg,
-    rgba(255, 165, 0, 0.18),
-    rgba(255, 140, 0, 0.10));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  padding: clamp(1rem, 3vw, 2.5rem) var(--container-padding-x);
+  background: linear-gradient(150deg, #fdf8f2 0%, #f5e9d4 100%);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 200, 120, 0.35);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 140, 0, 0.20);
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  border: 1px solid rgba(247, 166, 0, 0.18);
+  box-shadow: var(--shadow-sm);
   color: var(--color-text);
   line-height: 1.6;
   overflow: visible;
   animation: pageSlideIn 0.28s var(--ease-spring) both;
 }
 
-/* Header contrast gradient */
-.page-content::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  height: 140px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0));
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Headings ── */
+/* ── Page headings ── */
 .page-content h1 {
   font-size: clamp(1.1rem, 5vw, 2rem);
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.3px;
-  color: #ffffff;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6);
+  color: var(--color-text);
   margin: 0 0 var(--space-3) 0;
-  position: relative;
-  z-index: 1;
 }
 
 .page-content > p {
-  color: rgba(255,255,255,0.85);
+  color: var(--color-text-muted);
   margin-bottom: var(--space-4);
-  position: relative;
-  z-index: 1;
   font-size: var(--text-base);
 }
 
@@ -96,19 +73,19 @@
   flex-wrap: wrap;
 }
 
-/* ── Spacing utilities (used by page-container components) ── */
+/* ── Spacing utilities ── */
 .mb-space-4 { margin-bottom: var(--space-4); }
 .mb-space-8 { margin-bottom: var(--space-8); }
 .mt-space-8 { margin-top: var(--space-8); }
 
 /* ================================================================
-   PAGE NAV BUTTONS (Back / Upload) — alias for .page-action-btn
+   PAGE ACTION BUTTONS (Back / Upload)
    ================================================================ */
 .page-back-btn,
 .page-upload-btn {
-  background: rgba(255, 248, 236, 0.65);
+  background: var(--color-bg);
   color: var(--color-text);
-  border: 1.5px solid rgba(244, 247, 251, 0.8);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: clamp(0.35rem, 1vw, 0.5rem) clamp(0.625rem, 2vw, 0.9rem);
   font-size: var(--text-xs);
@@ -118,8 +95,6 @@
   gap: var(--space-1);
   cursor: pointer;
   white-space: nowrap;
-  backdrop-filter: blur(10px) saturate(1.6);
-  -webkit-backdrop-filter: blur(10px) saturate(1.6);
   font-family: inherit;
   transition: var(--transition);
   min-height: 36px;
@@ -129,8 +104,8 @@
 
 .page-back-btn:hover,
 .page-upload-btn:hover {
-  background: rgba(255, 248, 236, 0.82);
-  transform: translateY(-1px);
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
   color: var(--color-text);
 }
 
@@ -157,7 +132,6 @@
   margin-bottom: var(--space-4);
 }
 
-/* Filter grid — flex-based, replaces CSS grid */
 .filter-grid {
   display: flex;
   flex-wrap: wrap;
@@ -194,7 +168,7 @@
    SUMMARY / STAT CARDS
    ================================================================ */
 .summary-card {
-  background: #fffaf0;
+  background: var(--color-bg-hover);
   border-radius: var(--radius-lg);
   padding: clamp(0.875rem, 2vw, 1.25rem);
   box-shadow: var(--shadow-md);
@@ -205,7 +179,7 @@
 .summary-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
 .summary-card-label {
-  color: #92400e;
+  color: var(--color-primary-dark);
   font-size: var(--text-sm);
   font-weight: 600;
   margin-bottom: var(--space-2);
@@ -217,7 +191,7 @@
   color: var(--color-text);
 }
 
-/* Stat card grid — flex replaces CSS grid */
+/* Stat card grid */
 .stat-card-grid {
   display: flex;
   flex-wrap: wrap;
@@ -240,7 +214,7 @@
 
 .stat-card-value {
   font-weight: 800;
-  color: #ffffff;
+  color: var(--color-text-inverted);
   line-height: 1.1;
   font-size: clamp(1.5rem, 5vw, 2.4rem);
 }
@@ -251,7 +225,7 @@
 .view-type-bar {
   display: flex;
   gap: 3px;
-  background: #e9ecef;
+  background: var(--color-bg-2);
   padding: 3px;
   border-radius: var(--radius-sm);
   flex-wrap: wrap;
@@ -274,13 +248,13 @@
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   background: transparent;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .view-type-btn.active {
   background: var(--color-bg-card);
   color: var(--color-indigo);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+  box-shadow: var(--shadow-xs);
 }
 
 /* ================================================================
@@ -296,7 +270,7 @@
   font-family: inherit;
   transition: var(--transition);
   background: transparent;
-  color: #555;
+  color: var(--color-text-muted);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -304,11 +278,11 @@
 .chart-toggle-btn.active {
   background: var(--color-bg-card);
   color: var(--color-indigo);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.10);
+  box-shadow: var(--shadow-xs);
 }
 
 /* ================================================================
-   FLEX UTILITY CLASSES (replaces .grid-2/3/4 which used CSS grid)
+   FLEX UTILITY CLASSES
    ================================================================ */
 .flex-row-2 {
   display: flex;
@@ -331,7 +305,6 @@
 }
 .flex-row-4 > * { flex: 1 1 calc(25% - var(--space-4)); min-width: min(180px, 100%); }
 
-/* shared-filter-grid — flex auto fill */
 .shared-filter-grid {
   display: flex;
   flex-wrap: wrap;
@@ -362,7 +335,6 @@
   white-space: nowrap !important;
 }
 
-/* Horizontal scroll wrapper for tables */
 .table-responsive {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -370,10 +342,10 @@
 }
 
 /* ================================================================
-   GRIEVANCE TABLE (section-specific)
+   GRIEVANCE TABLE
    ================================================================ */
 .grievance-table-wrapper {
-  background: #fffaf0;
+  background: var(--color-bg-hover);
   border-radius: var(--radius-lg);
   padding: clamp(0.875rem, 2vw, 1.5rem);
 }
@@ -384,7 +356,7 @@
 }
 
 .grievance-table-wrapper th {
-  background: #fff7ed;
+  background: var(--color-bg);
   padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.5rem, 2vw, 0.85rem);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -415,7 +387,7 @@
   .section-header-actions { justify-content: flex-start; }
 
   .page-back-btn,
-  .page-upload-btn { font-size: 0.74rem; padding: 5px 11px; min-height: 32px; }
+  .page-upload-btn { font-size: var(--text-xs); padding: 5px 11px; min-height: 32px; }
 
   .stat-card-label { font-size: var(--text-xs); }
   .stat-card-value { font-size: clamp(1.3rem, 4vw, 2rem); }
@@ -444,7 +416,7 @@
   .page-content { padding: clamp(0.875rem, 2vw, 1rem) clamp(0.625rem, 2vw, 0.75rem); border-radius: var(--radius-sm); }
 
   .page-back-btn,
-  .page-upload-btn { font-size: 0.7rem; padding: 4px 8px; gap: 3px; min-height: 30px; }
+  .page-upload-btn { font-size: var(--text-xs); padding: 4px 8px; gap: 3px; min-height: 30px; }
 
   .section-title { font-size: var(--text-lg); }
 

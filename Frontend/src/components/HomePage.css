@@ -14,12 +14,11 @@
   font-size: clamp(1.2rem, 5vw, 2.5rem);
   font-weight: 800;
   line-height: 1.25;
-  color: #ffffff;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 1px rgba(0,0,0,0.6);
+  color: var(--color-text);
   text-align: center;
   margin: 0 0 var(--space-8) 0;
   padding-bottom: var(--space-5);
-  border-bottom: 3px solid rgba(247,166,0,0.3);
+  border-bottom: 3px solid var(--color-primary-light);
   letter-spacing: -0.02em;
 }
 
@@ -31,8 +30,8 @@
 /* ── Suspense fallback placeholder ── */
 .hp-slider-fallback {
   height: 320px;
-  background: #f0f0f0;
-  border-radius: 8px;
+  background: var(--color-bg-2);
+  border-radius: var(--radius-sm);
 }
 
 /* ── Section sub-headings ── */
@@ -42,18 +41,15 @@
   color: var(--color-primary);
   margin: var(--space-10) 0 var(--space-4) 0;
   padding: 0.75rem var(--space-4);
-  position: relative;
   padding-left: var(--space-4);
   border-left: 4px solid var(--color-primary);
   background: linear-gradient(90deg, rgba(247,166,0,0.08), transparent);
   border-radius: 4px;
-  transition: background var(--dur-mid) var(--ease-std),
-              transform var(--dur-mid) var(--ease-spring);
+  transition: background var(--dur-mid) var(--ease-std);
 }
 
 .welcome-section > h2:hover {
   background: linear-gradient(90deg, rgba(247,166,0,0.15), transparent);
-  transform: translateX(4px);
 }
 
 .welcome-section > h2:first-of-type { margin-top: 0; }
@@ -82,21 +78,21 @@
   box-shadow: var(--shadow-xs);
 }
 
-/* ── Content card (translucent) ── */
+/* ── Content card ── */
 .content-card {
-  background: rgba(255,255,255,0.60);
+  background: var(--color-bg);
   border-radius: var(--radius-lg);
   padding: clamp(1rem, 2.5vw, 2rem);
   margin: var(--space-6) 0;
-  box-shadow: var(--shadow-md);
-  border: 1px solid rgba(247,166,0,0.20);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
   transition: var(--transition);
 }
 
 .content-card:hover {
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-  border-color: rgba(247,166,0,0.40);
+  border-color: var(--color-primary);
 }
 
 .content-card h2 {
@@ -192,7 +188,7 @@
   margin: 0;
   font-size: var(--text-xs);
   line-height: 1.6;
-  color: #333;
+  color: var(--color-text);
   word-break: break-word;
   overflow-wrap: break-word;
 }

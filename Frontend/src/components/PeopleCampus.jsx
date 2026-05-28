@@ -69,7 +69,7 @@ function PeopleCampus({ user }) {
             ← Back to Admin View
           </button>
 
-          <PeopleCampusPublicView user={user} />
+          <PeopleCampusPublicView user={user} embedded />
         </div>
       </div>
     );

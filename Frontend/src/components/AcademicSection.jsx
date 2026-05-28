@@ -816,7 +816,7 @@ function AcademicSection({ user, isPublicView = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
-                          <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.fill || '#667eea'} radius={[6, 6, 0, 0]}>
+                          <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.stroke || '#667eea'} radius={[6, 6, 0, 0]}>
                             <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#1a2744' }} />
                           </Bar>
                         ))}

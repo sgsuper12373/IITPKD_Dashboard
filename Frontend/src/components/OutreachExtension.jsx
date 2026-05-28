@@ -83,7 +83,7 @@ function OutreachExtension({ user }) {
           >
             ← Back to Admin View
           </button>
-          <OutreachPublicView user={user} />
+          <OutreachPublicView user={user} embedded />
         </div>
       </div>
     );

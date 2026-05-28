@@ -7,9 +7,10 @@ import './Home.css';
 function Home({ user, onLogout, isGuest }) {
   return (
     <div className="home-container">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <Header user={user} onLogout={onLogout} isGuest={isGuest} />
 
-      <main className="main-content">
+      <main id="main-content" className="main-content">
         <Breadcrumb />
         <Outlet />
       </main>

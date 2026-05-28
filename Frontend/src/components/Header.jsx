@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import {
+  House, Users, FlaskConical, GraduationCap, Menu,
+  FileText, Handshake, Building2, Factory, Lightbulb, Sprout, X,
+} from 'lucide-react';
 import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
@@ -17,28 +21,37 @@ const ALL_NAV_LINKS = [
 
 // All potential mobile bottom tabs (excluding More which is always present)
 const ALL_BOTTOM_TABS = [
-  { icon: '🏠', label: 'Home',     path: '/',               pageKey: null, match: (p) => p === '/' },
-  { icon: '👥', label: 'People',   path: '/people-campus',  pageKey: 'people-campus', match: (p) => p.startsWith('/people-campus') },
-  { icon: '🔬', label: 'Research', path: '/research',       pageKey: 'research', match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
-  { icon: '🎓', label: 'Education', path: '/education',     pageKey: 'education', match: (p) => p.startsWith('/education') },
+  { Icon: House,          label: 'Home',      path: '/',               pageKey: null,             match: (p) => p === '/' },
+  { Icon: Users,          label: 'People',    path: '/people-campus',  pageKey: 'people-campus',  match: (p) => p.startsWith('/people-campus') },
+  { Icon: FlaskConical,   label: 'Research',  path: '/research',       pageKey: 'research',       match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
+  { Icon: GraduationCap,  label: 'Education', path: '/education',      pageKey: 'education',      match: (p) => p.startsWith('/education') },
 ];
 
-const MORE_TAB = { icon: '☰', label: 'More', path: null, match: () => false };
+const MORE_TAB = { Icon: Menu, label: 'More', path: null, match: () => false };
 
 // Sidebar "Quick Navigation" items that are always shown regardless of role
 const QUICK_NAV_ITEMS = [
-  { icon: '🏠', label: 'Home', path: '/' },
-  { icon: '📝', label: 'Patents', path: '/patents' },
-  { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
+  { Icon: House,     label: 'Home',           path: '/' },
+  { Icon: FileText,  label: 'Patents',         path: '/patents' },
+  { Icon: Handshake, label: 'Collaborations',  path: '/mou-collaborations' },
 ];
 
-const HINT_KEY = 'fbHintDismissedAt';
-const HINT_REDISPLAY_DAYS = 30;
+// Icons for main section items in the sidebar drawer
+const SECTION_ICONS = {
+  'people-campus':              Building2,
+  'research':                   FlaskConical,
+  'education':                  GraduationCap,
+  'industry-connect':           Factory,
+  'innovation-entrepreneurship': Lightbulb,
+  'outreach-extension':         Sprout,
+};
+
 
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [showFeedbackHint, setShowFeedbackHint] = useState(false);
+    const dismissedPaths = useRef(new Set());
     const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
@@ -103,18 +116,16 @@ function Header({ user, onLogout, isGuest }) {
         return () => { document.body.style.overflow = ''; };
     }, [sidebarOpen]);
 
+    // Show hint once per unique path per session; dismissed paths are remembered until page reload.
     useEffect(() => {
-        const dismissed = localStorage.getItem(HINT_KEY);
-        if (dismissed) {
-            const daysSince = (Date.now() - Number(dismissed)) / 86400000;
-            if (daysSince < HINT_REDISPLAY_DAYS) return;
-        }
-        const timer = setTimeout(() => setShowFeedbackHint(true), 60000);
+        setShowFeedbackHint(false);
+        if (dismissedPaths.current.has(location.pathname)) return;
+        const timer = setTimeout(() => setShowFeedbackHint(true), 4000);
         return () => clearTimeout(timer);
-    }, []);
+    }, [location.pathname]);
 
     const dismissHint = () => {
-        localStorage.setItem(HINT_KEY, String(Date.now()));
+        dismissedPaths.current.add(location.pathname);
         setShowFeedbackHint(false);
     };
 
@@ -180,9 +191,9 @@ function Header({ user, onLogout, isGuest }) {
                                         onClick={dismissHint}
                                         aria-label="Dismiss hint"
                                     >
-                                        ✕
+                                        <X size={12} strokeWidth={2.5} />
                                     </button>
-                                    <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions — click this button to submit anytime!</p>
+                                    <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions. click this button to submit it anytime!</p>
                                 </div>
                             )}
                         </div>
@@ -268,7 +279,7 @@ function Header({ user, onLogout, isGuest }) {
                             onClick={() => setSidebarOpen(false)}
                             aria-label="Close navigation menu"
                         >
-                            ✕
+                            <X size={16} strokeWidth={2} />
                         </button>
                     </div>
 
@@ -283,11 +294,7 @@ function Header({ user, onLogout, isGuest }) {
                                     onClick={() => { navigate(link.path); setSidebarOpen(false); }}
                                 >
                                     <span className="sidebar-nav-icon">
-                                        {link.pageKey === 'people-campus' ? '🏛️' :
-                                         link.pageKey === 'research' ? '🔬' :
-                                         link.pageKey === 'education' ? '🎓' :
-                                         link.pageKey === 'industry-connect' ? '🏭' :
-                                         link.pageKey === 'innovation-entrepreneurship' ? '💡' : '🌱'}
+                                        {(() => { const SIcon = SECTION_ICONS[link.pageKey]; return SIcon ? <SIcon size={16} strokeWidth={1.75} /> : null; })()}
                                     </span>
                                     <span>{link.label}</span>
                                 </button>
@@ -304,7 +311,7 @@ function Header({ user, onLogout, isGuest }) {
                                 className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
                                 onClick={() => { navigate(item.path); setSidebarOpen(false); }}
                             >
-                                <span className="sidebar-nav-icon">{item.icon}</span>
+                                <span className="sidebar-nav-icon"><item.Icon size={16} strokeWidth={1.75} /></span>
                                 <span>{item.label}</span>
                             </button>
                         ))}
@@ -345,7 +352,7 @@ function Header({ user, onLogout, isGuest }) {
                         onClick={() => setSidebarOpen(true)}
                         aria-label="Open navigation menu"
                       >
-                        <span className="mobile-tab-bar__icon">☰</span>
+                        <span className="mobile-tab-bar__icon"><tab.Icon size={22} strokeWidth={1.75} /></span>
                         <span className="mobile-tab-bar__label">More</span>
                       </button>
                     );
@@ -358,7 +365,7 @@ function Header({ user, onLogout, isGuest }) {
                       aria-label={tab.label}
                       aria-current={isActive ? 'page' : undefined}
                     >
-                      <span className="mobile-tab-bar__icon">{tab.icon}</span>
+                      <span className="mobile-tab-bar__icon"><tab.Icon size={22} strokeWidth={1.75} /></span>
                       <span className="mobile-tab-bar__label">{tab.label}</span>
                       {isActive && <span className="mobile-tab-bar__indicator" />}
                     </button>

@@ -44,7 +44,7 @@ function InnovationEntrepreneurship({ user }) {
           >
             ← Back to Admin View
           </button>
-          <InnovationPublicView user={user} />
+          <InnovationPublicView user={user} embedded />
         </div>
       </div>
     );

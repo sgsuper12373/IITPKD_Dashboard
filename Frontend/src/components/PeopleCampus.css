@@ -20,21 +20,21 @@
   padding: 2rem;
   min-height: 180px;
 
-  background-color: #ffffff;
-  border: 1px solid var(--border-light);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 14px;
 
   text-decoration: none;
-  color: var(--text-main);
+  color: var(--color-text);
   cursor: pointer;
 
   will-change: transform, box-shadow;
 
   transition:
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.45s ease,
-    background-color 0.45s ease;
+    transform var(--dur-mid) var(--ease-spring),
+    box-shadow var(--dur-mid) var(--ease-spring),
+    border-color var(--dur-mid) var(--ease-std),
+    background var(--dur-mid) var(--ease-std);
 }
 
 /* ===================================================== */
@@ -46,11 +46,12 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 4px;
-  background: var(--accent);
+  border-radius: 14px 14px 0 0;
+  background: var(--color-primary);
   transform: scaleX(0);
   transform-origin: left;
 
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--dur-mid) var(--ease-spring);
 }
 
 /* ===================================================== */
@@ -58,14 +59,23 @@
 /* ===================================================== */
 
 .people-campus-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  border-color: var(--accent);
-  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.15);
-  background-color: #fafafa;
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(247, 166, 0, 0.45);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(140deg, #fffdf9 0%, #fef5d6 100%);
 }
 
 .people-campus-card:hover::before {
   transform: scaleX(1);
+}
+
+/* Desktop press feedback */
+@media (hover: hover) {
+  .people-campus-card:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: var(--shadow-md);
+    transition-duration: 80ms;
+  }
 }
 
 /* ===================================================== */
@@ -77,8 +87,8 @@
   height: 56px;
   border-radius: 12px;
 
-  background: rgba(247, 166, 0, 0.15);
-  color: var(--accent);
+  background: rgba(247, 166, 0, 0.12);
+  color: var(--color-primary);
 
   display: flex;
   align-items: center;
@@ -88,11 +98,14 @@
   font-weight: 700;
   margin-bottom: 1rem;
 
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform var(--dur-mid) var(--ease-spring),
+    background var(--dur-fast) var(--ease-std);
 }
 
 .people-campus-card:hover .card-icon {
-  transform: scale(1.15);
+  transform: scale(1.12);
+  background: rgba(247, 166, 0, 0.22);
 }
 
 /* ===================================================== */
@@ -103,29 +116,29 @@
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.3;
-  overflow-wrap: break-word;   /* only break if a word is truly too long */
+  overflow-wrap: break-word;
   hyphens: auto;
-  transition: color 0.3s ease;
+  transition: color var(--dur-fast) var(--ease-std);
 }
 
 .card-description {
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
   flex-grow: 1;
   overflow-wrap: break-word;
-  transition: color 0.3s ease;
+  transition: color var(--dur-fast) var(--ease-std);
 }
 
 .people-campus-card:hover .card-title {
-  color: var(--accent);
+  color: var(--color-primary-dark);
 }
 
 .people-campus-card:hover .card-description {
-  color: #374151;
+  color: var(--color-text);
 }
 
 /* ===================================================== */
@@ -144,14 +157,14 @@
   right: 1.5rem;
 
   font-size: 1.4rem;
-  color: var(--accent);
+  color: var(--color-primary);
 
   opacity: 0;
   transform: translateX(-12px);
 
   transition:
-    opacity 0.3s ease,
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity var(--dur-fast) var(--ease-std),
+    transform var(--dur-mid) var(--ease-spring);
 }
 
 .people-campus-card:hover::after {
@@ -164,7 +177,6 @@
 /* ===================================================== */
 
 @media (hover: none) {
-  /* Arrow is useless and overlapping on touch — hide it completely */
   .people-campus-card::after {
     display: none;
   }
@@ -172,13 +184,15 @@
   .people-campus-card:hover {
     transform: none;
     box-shadow: none;
-    background-color: #ffffff;
-    border-color: var(--border-light);
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
   }
 
   .people-campus-card:active {
     transform: scale(0.97);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(140deg, #fffdf9 0%, #fef5d6 100%);
+    border-color: rgba(247, 166, 0, 0.45);
   }
 }
 
@@ -188,6 +202,7 @@
 
 @media (max-width: 768px) {
   .people-campus-grid {
+    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
@@ -229,3 +244,4 @@
     font-size: 0.82rem;
   }
 }
+

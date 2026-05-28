@@ -47,7 +47,7 @@ function Education({ user }) {
           >
             ← Back to Education Modules
           </button>
-          <EducationPublicView user={user} />
+          <EducationPublicView user={user} embedded />
         </div>
       </div>
     );
