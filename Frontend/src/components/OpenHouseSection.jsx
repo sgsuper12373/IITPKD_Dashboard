@@ -287,7 +287,17 @@ function OpenHouseSection({ user, isPublicView = false }) {
     <div className={isPublicView ? "" : "page-container performance-render-auto"}>
       <div className={isPublicView ? "" : "page-content"}>
         {loading ? (
-          <div className="loading-container"><div className="loading-spinner" /></div>
+          <div className="chart-skeleton-wrap">
+            <div className="chart-skeleton-heading" />
+            <div className="chart-skeleton" aria-label="Loading chart data…">
+              {[55,80,65,90,45,70,60,75].map((h,i) => (
+                <div key={i} className="chart-skeleton-bar" style={{ height: `${h}%` }} />
+              ))}
+            </div>
+            <div className="chart-skeleton-labels">
+              {[1,2,3,4,5,6,7,8].map(i => <div key={i} className="chart-skeleton-label" />)}
+            </div>
+          </div>
         ) : content}
       </div>
     </div>

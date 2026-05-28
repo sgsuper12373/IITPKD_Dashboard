@@ -232,8 +232,8 @@ const NirfRankingSection = ({ user }) => {
                                         </div>
                                         <div className="nirf-metric-right">
                                             <div className="nirf-metric-value" style={{ color }}>{latest}</div>
-                                            <div className="nirf-metric-delta" style={{ color: delta >= 0 ? '#22c55e' : '#ef4444' }}>
-                                                {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)} since {recentFirst?.year}
+                                            <div className={`nirf-metric-delta metric-delta ${delta === 0 ? 'flat' : delta > 0 ? 'up' : 'down'}`}>
+                                                {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} {delta !== 0 && Math.abs(delta).toFixed(1)} since {recentFirst?.year}
                                             </div>
                                         </div>
                                     </div>
