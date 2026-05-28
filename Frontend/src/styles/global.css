@@ -137,6 +137,14 @@
   /* ── Touch Target ── */
   --min-touch: 44px;
 
+  /* ── Global Font Scale ──────────────────────────────────────────
+     Change this ONE value to scale all text across every page.
+     1    = default (16px base)
+     1.06 = ~+6%  (17px base)
+     1.12 = ~+12% (18px base)
+  ──────────────────────────────────────────────────────────────── */
+  --font-scale: 1.20;
+
   /* ── Z-Index Scale ── */
   --z-dropdown: 100;
   --z-sticky:   200;
@@ -157,6 +165,7 @@
 }
 
 html {
+  font-size: calc(100% * var(--font-scale));
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -810,7 +819,7 @@ strong { font-weight: 700; }
 .filter-panel {
   background: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  padding: clamp(0.875rem, 2.5vw, 1.5rem);
+  padding: wclamp(0.875rem, 2.5vw, 1.5rem);
   margin-bottom: var(--space-6);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
@@ -1249,6 +1258,7 @@ strong { font-weight: 700; }
               visibility 0ms linear var(--dur-slow);
   will-change: transform, opacity;
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .chart-wrapper.active {

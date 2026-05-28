@@ -32,9 +32,13 @@ const QUICK_NAV_ITEMS = [
   { icon: '🤝', label: 'Collaborations', path: '/mou-collaborations' },
 ];
 
+const HINT_KEY = 'fbHintDismissedAt';
+const HINT_REDISPLAY_DAYS = 30;
+
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showFeedbackHint, setShowFeedbackHint] = useState(false);
     const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
@@ -99,6 +103,21 @@ function Header({ user, onLogout, isGuest }) {
         return () => { document.body.style.overflow = ''; };
     }, [sidebarOpen]);
 
+    useEffect(() => {
+        const dismissed = localStorage.getItem(HINT_KEY);
+        if (dismissed) {
+            const daysSince = (Date.now() - Number(dismissed)) / 86400000;
+            if (daysSince < HINT_REDISPLAY_DAYS) return;
+        }
+        const timer = setTimeout(() => setShowFeedbackHint(true), 60000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const dismissHint = () => {
+        localStorage.setItem(HINT_KEY, String(Date.now()));
+        setShowFeedbackHint(false);
+    };
+
     const toggleDropdown = () => setShowProfileDropdown((prev) => !prev);
 
     const handleProfileClick = () => {
@@ -146,13 +165,27 @@ function Header({ user, onLogout, isGuest }) {
                     </Link>
 
                     <div className="header-right">
-                        <button
-                            className="feedback-btn"
-                            onClick={() => setShowFeedback(true)}
-                            aria-label="Open feedback form"
-                        >
-                            Feedback
-                        </button>
+                        <div className="feedback-btn-wrapper">
+                            <button
+                                className="feedback-btn"
+                                onClick={() => { setShowFeedback(true); dismissHint(); }}
+                                aria-label="Open feedback form"
+                            >
+                                Feedback
+                            </button>
+                            {showFeedbackHint && (
+                                <div className="feedback-hint-bubble" role="tooltip">
+                                    <button
+                                        className="feedback-hint-close"
+                                        onClick={dismissHint}
+                                        aria-label="Dismiss hint"
+                                    >
+                                        ✕
+                                    </button>
+                                    <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions — click this button to submit anytime!</p>
+                                </div>
+                            )}
+                        </div>
                         <div ref={dropdownRef} className="user-profile-container">
                             <div
                                 className="user-avatar"
