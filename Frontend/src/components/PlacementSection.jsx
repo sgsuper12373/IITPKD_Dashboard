@@ -39,6 +39,7 @@ import './PlacementSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
 import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const GENDER_COLORS = ['#6366f1', '#ec4899', '#f97316'];
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
@@ -601,7 +602,10 @@ function PlacementSection({ user, isPublicView = false }) {
           <div className="section-header">
             <div className="section-header-left">
               <h1>Placements &amp; Career Outcomes</h1>
-              <LastUpdated tables={['placement_summary', 'placement_companies', 'placement_packages']} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LastUpdated tables={['placement_summary', 'placement_companies', 'placement_packages']} />
+                <ShareButton />
+              </div>
             </div>
 
             {!isReadOnlyView && isAdmin && (

@@ -166,10 +166,12 @@ function IcsrSection({ user, isPublicView = false }) {
           <h3 className="icsr-card-h3">Total Events</h3>
           <div className="icsr-card-value">{formatNumber(summary.total_events)}</div>
         </div>
-        <div className="icsr-card icsr-card--green">
-          <h3 className="icsr-card-h3">Total Funding</h3>
-          <div className="icsr-card-value">{formatCompactCurrency(summary.total_funding)}</div>
-        </div>
+        {(!isGuestUser || summary.total_funding > 0) && (
+          <div className="icsr-card icsr-card--green">
+            <h3 className="icsr-card-h3">Total Funding</h3>
+            <div className="icsr-card-value">{formatCompactCurrency(summary.total_funding)}</div>
+          </div>
+        )}
       </div>
 
       <div className="icsr-panel">

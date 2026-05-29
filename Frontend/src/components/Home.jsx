@@ -14,8 +14,9 @@ function Home({ user, onLogout, isGuest }) {
         <Breadcrumb />
         <Outlet />
       </main>
-
-      {/* <Footer /> */}
+      <br></br> <br></br> <br></br> <br></br> <br></br> 
+      
+      <Footer />
     </div>
   );
 }

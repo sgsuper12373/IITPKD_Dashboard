@@ -24,6 +24,7 @@ import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
 import MouPartnerLogos from './MouPartnerLogos';
 import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -425,7 +426,10 @@ function MoUCollaborations({ user, isPublicView = false }) {
           <div className="section-header">
             <div className="section-header-left">
               <h1>MoU and Collaborations</h1>
-              <LastUpdated tables={['research_mous', 'iar_mous']} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LastUpdated tables={['research_mous', 'iar_mous']} />
+                <ShareButton />
+              </div>
             </div>
             {isAdmin && (
               <div className="section-header-actions">

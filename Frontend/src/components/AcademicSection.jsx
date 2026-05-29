@@ -20,6 +20,7 @@ import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import { getOrderedLegend } from '../utils/chartUtils';
 import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const COLORS = ['#667eea', '#764ba2', '#f093fb'];
 
@@ -586,7 +587,10 @@ function AcademicSection({ user, isPublicView = false }) {
           <div className="section-header">
             <div className="section-header-left">
               <h1>Student Overview</h1>
-              <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
+                <ShareButton />
+              </div>
             </div>
             <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
               Upload Data
@@ -1029,20 +1033,22 @@ function AcademicSection({ user, isPublicView = false }) {
                   {stateTop10.length > 0 && (
                     <PieDistributionTable data={stateTop10} nameKey="state" total={stateTotal} colors={PIE_COLORS} />
                   )}
-
-                  <div className="state-summary-box">
-                    <h2>
-                      Total Students in India:{' '}
-                      <span className="state-summary-total">{stateTotal}</span>
-                      {' '}settled in{' '}
-                      <span className="state-summary-states">
-                        {stateDistribution.filter(s => s.state && s.state !== 'Not Found' && s.state.toLowerCase() !== 'unknown').length}
-                      </span>
-                      {' '}Indian States and Union Territories.
-                    </h2>
-                  </div>
                 </div>
               </div>
+
+              {stateTop10.length > 0 && (
+                <div className="state-summary-box">
+                  <h2>
+                    Total Students in India:{' '}
+                    <span className="state-summary-total">{stateTotal}</span>
+                    {' '}settled in{' '}
+                    <span className="state-summary-states">
+                      {stateDistribution.filter(s => s.state && s.state !== 'Not Found' && s.state.toLowerCase() !== 'unknown').length}
+                    </span>
+                    {' '}Indian States and Union Territories.
+                  </h2>
+                </div>
+              )}
             </div>
           )}
         </div>
