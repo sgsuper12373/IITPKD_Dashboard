@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Page.css';
+import './PeopleCampus.css';
 import './EducationMinimal.css';
 
 import PlacementSection from './PlacementSection';
@@ -49,18 +50,17 @@ function EducationPublicView({ user, embedded }) {
       <div className={`education-page-header ${activeSection ? 'header-minimized' : ''}`} />
 
       {/* Card Grid View */}
-      <div className={`education-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
+      <div className={`people-campus-grid ${activeSection ? 'grid-hidden' : ''}`}>
         {sections.map((section, index) => (
           <div
             key={section.id}
-            className="education-section-card"
+            className="people-campus-card"
             onClick={() => handleCardClick(section.id)}
             style={{ animationDelay: `${index * 0.08}s` }}
           >
-            <div className="education-card-icon">{section.icon}</div>
-            <h3 className="education-card-title">{section.title}</h3>
-            <p className="education-card-subtitle">{section.subtitle}</p>
-            <div className="education-card-arrow">→</div>
+            <div className="card-icon">{section.icon}</div>
+            <h3 className="card-title">{section.title}</h3>
+            <p className="card-description">{section.subtitle}</p>
           </div>
         ))}
       </div>

@@ -1,20 +1,21 @@
 import { Link } from 'react-router-dom';
 import './Page.css';
+import './PeopleCampus.css';
 import './OutreachMinimal.css';
 
 const sections = [
   {
     id: 'social-engagement',
     title: 'Social Engagements',
-    subtitle: '',
-    icon: 'S',
+    subtitle: 'Community outreach and extension activities',
+    icon: '🤝',
     to: '/outreach-extension/social-engagement',
   },
   {
     id: 'students-engagement',
     title: 'Students Engagement',
-    subtitle: '',
-    icon: 'S',
+    subtitle: 'Student-led initiatives and programmes',
+    icon: '🎓',
     to: '/outreach-extension/students-engagement',
   },
 ];
@@ -23,20 +24,17 @@ function OutreachPublicView({ embedded }) {
   const inner = (
     <>
       <div className="outreach-page-header" />
-      <div className="outreach-sections-grid">
+      <div className="people-campus-grid">
         {sections.map((section, index) => (
           <Link
             key={section.id}
             to={section.to}
-            className="outreach-section-link"
+            className="people-campus-card"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className="outreach-section-card">
-              <div className="outreach-card-icon">{section.icon}</div>
-              <h3 className="outreach-card-title">{section.title}</h3>
-              <p className="outreach-card-subtitle">{section.subtitle}</p>
-              <div className="outreach-card-arrow">→</div>
-            </div>
+            <div className="card-icon">{section.icon}</div>
+            <h3 className="card-title">{section.title}</h3>
+            <p className="card-description">{section.subtitle}</p>
           </Link>
         ))}
       </div>

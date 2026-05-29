@@ -12,14 +12,14 @@ const DASHBOARD_LINKS = [
 ];
 
 const QUICK_LINKS = [
-  { label: 'NIRF', href: 'https://www.iitpkd.ac.in/nirf' },
-  { label: 'NIRF – Innovation 2022', href: 'https://www.iitpkd.ac.in/nirf-innovation' },
-  { label: 'Policies', href: 'https://www.iitpkd.ac.in/policies' },
-  { label: 'RTI', href: 'https://www.iitpkd.ac.in/rti' },
-  { label: 'Downloads', href: 'https://www.iitpkd.ac.in/downloads' },
-  { label: 'Notifications & Circulars', href: 'https://www.iitpkd.ac.in/notifications' },
-  { label: 'Anti-Ragging', href: 'https://www.iitpkd.ac.in/anti-ragging' },
-  { label: 'Support', href: 'mailto:netadmin@iitpkd.ac.in' },
+  { label: 'NIRF', href: 'https://iitpkd.ac.in/nirf' },
+  { label: 'NIRF – Innovation 2022', href: 'https://iitpkd.ac.in/sites/default/files/2023-06/ARIIA-FinalApplicationReport2022.pdf' },
+  { label: 'Policies', href: 'https://iitpkd.ac.in/institute-policies' },
+  { label: 'RTI', href: 'https://rti.iitpkd.ac.in/' },
+  { label: 'Downloads', href: 'https://iitpkd.ac.in/downloads-employees' },
+  { label: 'Notifications & Circulars', href: 'https://iitpkd.ac.in/notification-and-circulars' },
+  { label: 'Anti-Ragging', href: 'https://iitpkd.ac.in/anti-ragging' },
+  { label: 'Support', href: 'https://support.iitpkd.ac.in/' },
 ];
 
 const SOCIAL_LINKS = [

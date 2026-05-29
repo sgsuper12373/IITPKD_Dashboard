@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Page.css';
+import './PeopleCampus.css';
 import './ResearchMinimal.css';
 
 import ResearchIcsrSection from './ResearchIcsrSection';
@@ -62,18 +63,17 @@ function ResearchPublicView({ user, embedded }) {
     <>
       <div className={`research-page-header ${activeSection ? 'header-minimized' : ''}`} />
 
-      <div className={`research-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
+      <div className={`people-campus-grid ${activeSection ? 'grid-hidden' : ''}`}>
         {sections.map((section, index) => (
           <div
             key={section.id}
-            className="research-section-card"
+            className="people-campus-card"
             onClick={() => handleCardClick(section.id)}
             style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <div className="research-card-icon">{section.icon}</div>
-            <h3 className="research-card-title">{section.title}</h3>
-            <p className="research-card-subtitle">{section.subtitle}</p>
-            <div className="research-card-arrow">→</div>
+            <div className="card-icon">{section.icon}</div>
+            <h3 className="card-title">{section.title}</h3>
+            <p className="card-description">{section.subtitle}</p>
           </div>
         ))}
       </div>

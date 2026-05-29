@@ -200,10 +200,19 @@
 /* RESPONSIVE */
 /* ===================================================== */
 
+/* Grid hidden state (for public view accordion animation) */
+.people-campus-grid.grid-hidden {
+  opacity: 0;
+  transform: scale(0.95) translateY(20px);
+  pointer-events: none;
+  position: absolute;
+}
+
 @media (max-width: 768px) {
   .people-campus-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
+    margin-top: 1.5rem;
   }
 
   .people-campus-card {
@@ -227,7 +236,7 @@
   .card-description {
     font-size: 0.78rem;
     line-height: 1.35;
-    display: none; /* hide description on mobile — too cramped */
+    display: none;
   }
 }
 

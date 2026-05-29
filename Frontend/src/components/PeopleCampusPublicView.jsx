@@ -72,18 +72,17 @@ function PeopleCampusPublicView({ user, embedded }) {
   const inner = (
     <>
       {/* Card Grid View */}
-      <div className={`minimal-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
+      <div className={`people-campus-grid ${activeSection ? 'grid-hidden' : ''}`}>
         {visibleSections.map((section, index) => (
           <div
             key={section.id}
-            className="minimal-section-card"
+            className="people-campus-card"
             onClick={() => handleCardClick(section.id)}
             style={{ animationDelay: `${index * 0.08}s` }}
           >
-            <div className="card-icon-minimal">{section.icon}</div>
-            <h3 className="card-title-minimal">{section.title}</h3>
-            <p className="card-subtitle-minimal">{section.subtitle}</p>
-            <div className="card-arrow">→</div>
+            <div className="card-icon">{section.icon}</div>
+            <h3 className="card-title">{section.title}</h3>
+            <p className="card-description">{section.subtitle}</p>
           </div>
         ))}
       </div>

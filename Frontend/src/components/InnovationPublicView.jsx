@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Page.css';
+import './PeopleCampus.css';
 import './InnovationMinimal.css';
 
 import IptifSection from './IptifSection';
@@ -53,18 +54,17 @@ function InnovationPublicView({ user, embedded }) {
 
       {/* Card Grid View */}
       {!activeSection && (
-        <div className="innovation-sections-grid">
+        <div className="people-campus-grid">
           {sections.map((section, index) => (
             <div
               key={section.id}
-              className="innovation-section-card"
+              className="people-campus-card"
               onClick={() => handleCardClick(section.id)}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="innovation-card-icon">{section.icon}</div>
-              <h3 className="innovation-card-title">{section.title}</h3>
-              <p className="innovation-card-subtitle">{section.subtitle}</p>
-              <div className="innovation-card-arrow">→</div>
+              <div className="card-icon">{section.icon}</div>
+              <h3 className="card-title">{section.title}</h3>
+              <p className="card-description">{section.subtitle}</p>
             </div>
           ))}
         </div>

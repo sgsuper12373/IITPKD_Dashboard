@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Page.css';
+import './PeopleCampus.css';
 import './IndustryConnectMinimal.css';
 
 import IcsrSection from './IcsrSection';
@@ -49,18 +50,17 @@ function IndustryConnectPublicView({ user, embedded }) {
       <div className={`industry-page-header ${activeSection ? 'header-minimized' : ''}`} />
 
       {/* Card Grid View */}
-      <div className={`industry-sections-grid ${activeSection ? 'grid-hidden' : ''}`}>
+      <div className={`people-campus-grid ${activeSection ? 'grid-hidden' : ''}`}>
         {sections.map((section, index) => (
           <div
             key={section.id}
-            className="industry-section-card"
+            className="people-campus-card"
             onClick={() => handleCardClick(section.id)}
             style={{ animationDelay: `${index * 0.08}s` }}
           >
-            <div className="industry-card-icon">{section.icon}</div>
-            <h3 className="industry-card-title">{section.title}</h3>
-            <p className="industry-card-subtitle">{section.subtitle}</p>
-            <div className="industry-card-arrow">→</div>
+            <div className="card-icon">{section.icon}</div>
+            <h3 className="card-title">{section.title}</h3>
+            <p className="card-description">{section.subtitle}</p>
           </div>
         ))}
       </div>
