@@ -32,10 +32,10 @@ import ChartExpandModal from './ChartExpandModal';
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
 const formatCompactCurrency = (value) => {
-  if (value === undefined || value === null) return '&#8377;0';
-  if (value >= 10000000) return '&#8377;' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
-  if (value >= 100000) return '&#8377;' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
-  return '&#8377;' + formatNumber(value);
+  if (value === undefined || value === null) return '₹0';
+  if (value >= 10000000) return '₹' + (value / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' Cr';
+  if (value >= 100000) return '₹' + (value / 100000).toLocaleString('en-IN', { maximumFractionDigits: 2 }) + ' L';
+  return '₹' + formatNumber(value);
 };
 
 const CONTENT_HEIGHT = 480;
@@ -463,7 +463,7 @@ function TechinSection({ user, isPublicView = false }) {
                   <div><span className="techin-field-label">Domain:</span><br />{row.domain}</div>
                   <div><span className="techin-field-label">Status:</span><br /><span className={`techin-status-badge techin-status-badge--sm${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span></div>
                   <div><span className="techin-field-label">Jobs:</span><br />{row.number_of_jobs || '0'}</div>
-                  <div><span className="techin-field-label">Revenue:</span><br />{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
+                  <div><span className="techin-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               </div>
             ))}
@@ -473,7 +473,7 @@ function TechinSection({ user, isPublicView = false }) {
       return (
         <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
           {[
-            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (&#8377;)</div></>,
+            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (₹)</div></>,
             <>
               {startupsTable.map((row, idx) => (
                 <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
@@ -483,7 +483,7 @@ function TechinSection({ user, isPublicView = false }) {
                     <span className={`techin-status-badge techin-status-badge--md${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span>
                   </div>
                   <div>{row.number_of_jobs || '0'}</div>
-                  <div>{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
+                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               ))}
             </>
@@ -581,7 +581,7 @@ function TechinSection({ user, isPublicView = false }) {
                   <div className="techin-revenue-card-decor" />
                   <div className="techin-revenue-card-body">
                     <div className="techin-revenue-card-label">{label}</div>
-                    <div className="metric-value-sm" title={`&#8377;${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
+                    <div className="metric-value-sm" title={`₹${formatNumber(value)}`}>{formatCompactCurrency(value)}</div>
                   </div>
                 </div>
               ))}

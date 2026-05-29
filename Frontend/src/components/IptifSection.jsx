@@ -491,7 +491,7 @@ function IptifSection({ user, isPublicView = false }) {
                   <div><span className="iptif-field-label">Domain:</span><br />{row.domain}</div>
                   <div><span className="iptif-field-label">Status:</span><br />{row.status}</div>
                   <div><span className="iptif-field-label">Jobs Created:</span><br />{row.number_of_jobs}</div>
-                  <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
+                  <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               </div>
             ))}
@@ -507,7 +507,7 @@ function IptifSection({ user, isPublicView = false }) {
                 <div key={idx} className="iptif-table-row" style={{ gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
                   <div className="iptif-table-row-name">{row.startup_name}</div>
                   <div>{row.domain}</div><div>{row.status}</div><div>{row.number_of_jobs}</div>
-                  <div>{row.revenue ? `&#8377;${formatNumber(row.revenue)}` : '-'}</div>
+                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
                 </div>
               ))}
             </>
@@ -527,7 +527,7 @@ function IptifSection({ user, isPublicView = false }) {
                   <div><span className="iptif-field-label">Type:</span><br />{row.facility_type}</div>
                   <div><span className="iptif-field-label">Availability:</span><br />{row.availability_status}</div>
                   <div><span className="iptif-field-label">Financial Year:</span><br />{row.financial_year}</div>
-                  <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue_made ? `&#8377;${formatNumber(row.revenue_made)}` : '0'}</div>
+                  <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue_made ? `₹${formatNumber(row.revenue_made)}` : '0'}</div>
                 </div>
               </div>
             ))}
@@ -554,7 +554,7 @@ function IptifSection({ user, isPublicView = false }) {
   };
 
   const trendData = viewType === 'projects' ? projectsTrend : viewType === 'programs' ? programsTrend : viewType === 'startups' ? startupsTrend : facilitiesTrend;
-  const trendLabel = viewType === 'projects' ? 'Projects Count' : viewType === 'programs' ? 'Programs Count' : viewType === 'startups' ? 'Startups Count' : 'Revenue (&#8377;)';
+  const trendLabel = viewType === 'projects' ? 'Projects Count' : viewType === 'programs' ? 'Programs Count' : viewType === 'startups' ? 'Startups Count' : 'Revenue (₹)';
   const exportId = `iptif-${viewType}-chart-container`;
   const exportData = chartMode === 'table' ? (viewType === 'projects' ? projectsTable : viewType === 'programs' ? programsTable : viewType === 'startups' ? startupsTable : facilitiesTable) : trendData;
 
