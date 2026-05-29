@@ -9,7 +9,7 @@ import NirfRankingSection from './NirfRankingSection';
 // block the initial paint of the welcome text and splash screen.
 const ImageSlider = lazy(() => import('./ImageSlider'));
 
-import dashboardBanner from '../assets/iit_palakkad_dashboard_banner.png';
+import dashboardBanner from '../assets/iit_palakkad_dashboard_banner.avif';
 
 // Auto-imports every image from iit-palakkad/ at build time.
 // Drop images into that folder — they appear in the slider automatically, sorted alphabetically.
