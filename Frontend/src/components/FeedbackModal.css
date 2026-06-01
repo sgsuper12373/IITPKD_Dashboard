@@ -122,6 +122,97 @@
   margin: 0.25rem 0 0.75rem;
 }
 
+/* ── Screenshot field ── */
+.fb-optional {
+  font-weight: 400;
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.fb-file-input {
+  width: 100%;
+  font-size: 0.8rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #444;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+
+.fb-file-input::file-selector-button {
+  border: 1.5px solid #e3e1dc;
+  background: #faf9f7;
+  color: #2b2b2b;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  margin-right: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.fb-file-input::file-selector-button:hover {
+  border-color: #f7a600;
+  background: #fff;
+}
+
+.fb-file-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: #b0aeab;
+  margin-top: 0.3rem;
+}
+
+.fb-screenshot-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1.5px solid #e3e1dc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #faf9f7;
+}
+
+.fb-screenshot-preview img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e3e1dc;
+  flex-shrink: 0;
+}
+
+.fb-screenshot-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.fb-screenshot-name {
+  font-size: 0.8rem;
+  color: #2b2b2b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+.fb-screenshot-remove {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  color: #ef4444;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fb-screenshot-remove:hover {
+  text-decoration: underline;
+}
+
 /* ── Footer / Submit ── */
 .fb-form-footer {
   display: flex;

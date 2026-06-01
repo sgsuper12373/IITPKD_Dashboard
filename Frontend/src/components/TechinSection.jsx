@@ -111,6 +111,8 @@ function TechinSection({ user, isPublicView = false }) {
   const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 13;
+  // Startup revenue metrics (total / highest / average) are hidden from guests only.
+  const hideRevenue = isGuestUser || user?.role_id === 0;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
@@ -463,27 +465,28 @@ function TechinSection({ user, isPublicView = false }) {
                   <div><span className="techin-field-label">Domain:</span><br />{row.domain}</div>
                   <div><span className="techin-field-label">Status:</span><br /><span className={`techin-status-badge techin-status-badge--sm${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span></div>
                   <div><span className="techin-field-label">Jobs:</span><br />{row.number_of_jobs || '0'}</div>
-                  <div><span className="techin-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                  {!hideRevenue && <div><span className="techin-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>}
                 </div>
               </div>
             ))}
           </div>
         );
       }
+      const startupCols = hideRevenue ? '1.8fr 1.5fr 1fr 1fr' : '1.8fr 1.5fr 1fr 1fr 1.2fr';
       return (
-        <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
+        <TableShell headerBg="#43e97b" columns={startupCols}>
           {[
-            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div><div>Revenue (₹)</div></>,
+            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div>{!hideRevenue && <div>Revenue (₹)</div>}</>,
             <>
               {startupsTable.map((row, idx) => (
-                <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                <div key={idx} className="techin-table-row" style={{ gridTemplateColumns: startupCols, backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
                   <div className="techin-table-row-name">{row.startup_name}</div>
                   <div>{row.domain}</div>
                   <div>
                     <span className={`techin-status-badge techin-status-badge--md${row.status === 'Active' ? ' techin-status-badge--active' : ' techin-status-badge--other'}`}>{row.status}</span>
                   </div>
                   <div>{row.number_of_jobs || '0'}</div>
-                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                  {!hideRevenue && <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>}
                 </div>
               ))}
             </>
@@ -558,7 +561,7 @@ function TechinSection({ user, isPublicView = false }) {
           ))}
         </div>
 
-        {(typeof user === 'undefined' || user?.role_id !== 0) && (
+        {!hideRevenue && (
           <>
             <div className="techin-revenue-header">
               <h3 className="techin-revenue-h3">Startup Revenue Metrics</h3>
@@ -663,12 +666,12 @@ function TechinSection({ user, isPublicView = false }) {
                 data={exportData}
                 headers={chartMode === 'table'
                   ? (viewType === 'startups'
-                    ? ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue']
+                    ? (hideRevenue ? ['Startup Name', 'Domain', 'Status', 'Jobs'] : ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue'])
                     : ['Program Name', viewType === 'skillDev' ? 'Category' : 'Type', 'Association', 'Date', 'Attendees'])
                   : ['Year', 'Count']}
                 keys={chartMode === 'table'
                   ? (viewType === 'startups'
-                    ? ['startup_name', 'domain', 'status', 'number_of_jobs', 'revenue']
+                    ? (hideRevenue ? ['startup_name', 'domain', 'status', 'number_of_jobs'] : ['startup_name', 'domain', 'status', 'number_of_jobs', 'revenue'])
                     : ['program_name', viewType === 'skillDev' ? 'category' : 'type', 'association', 'event_date', 'no_of_attendess'])
                   : ['year', 'count']}
                 filename={`techin_${viewType}_${chartMode}`}

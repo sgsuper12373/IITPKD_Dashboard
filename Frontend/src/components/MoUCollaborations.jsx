@@ -218,7 +218,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
       <div className="mou-body">
         <div className="mou-body-header-row">
           <h2 className="mou-body-h2">
-            <span>{viewType === 'trend' ? '&#129309;' : '&#128203;'}</span>
+            <span>{viewType === 'trend' ? '🤝' : '📋'}</span>
             {viewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
           </h2>
           <ExportMenu

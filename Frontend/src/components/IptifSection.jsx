@@ -114,6 +114,11 @@ function IptifSection({ user, isPublicView = false }) {
   const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 14;
+  // Facilities Revenue is internal data — hide it from guests / public viewers.
+  const hideFacilities = isRestricted || isReadOnlyView;
+  // Startup revenue column is hidden from guests only (unauthenticated or the role-0 guest account);
+  // every authenticated role — including admins — still sees it.
+  const hideRevenue = isGuestUser || user?.role_id === 0;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');
@@ -208,6 +213,7 @@ function IptifSection({ user, isPublicView = false }) {
   }, [token, startupFilters, uploadVersion]);
 
   useEffect(() => {
+    if (hideFacilities) return; // don't fetch revenue data for guests / public viewers
     let m = true;
     setLoadingFacilities(true);
     fetchIptifFacilities(facilityFilters, token)
@@ -215,7 +221,7 @@ function IptifSection({ user, isPublicView = false }) {
       .catch(err => { if (m) setError(err.message); })
       .finally(() => { if (m) setLoadingFacilities(false); });
     return () => { m = false; };
-  }, [token, facilityFilters, uploadVersion]);
+  }, [token, facilityFilters, uploadVersion, hideFacilities]);
 
   const handleFilterChange = (setter) => (field, value) => setter(prev => ({ ...prev, [field]: value }));
   const switchView = (id) => { setViewType(id); bump(); };
@@ -491,23 +497,24 @@ function IptifSection({ user, isPublicView = false }) {
                   <div><span className="iptif-field-label">Domain:</span><br />{row.domain}</div>
                   <div><span className="iptif-field-label">Status:</span><br />{row.status}</div>
                   <div><span className="iptif-field-label">Jobs Created:</span><br />{row.number_of_jobs}</div>
-                  <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                  {!hideRevenue && <div><span className="iptif-field-label">Revenue:</span><br />{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>}
                 </div>
               </div>
             ))}
           </div>
         );
       }
+      const startupCols = hideRevenue ? '1.8fr 1.5fr 1fr 1fr' : '1.8fr 1.5fr 1fr 1fr 1.2fr';
       return (
-        <TableShell headerBg="#43e97b" columns="1.8fr 1.5fr 1fr 1fr 1.2fr">
+        <TableShell headerBg="#43e97b" columns={startupCols}>
           {[
-            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs Created</div><div>Revenue (&#8377;)</div></>,
+            <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs Created</div>{!hideRevenue && <div>Revenue (&#8377;)</div>}</>,
             <>
               {startupsTable.map((row, idx) => (
-                <div key={idx} className="iptif-table-row" style={{ gridTemplateColumns: '1.8fr 1.5fr 1fr 1fr 1.2fr', backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
+                <div key={idx} className="iptif-table-row" style={{ gridTemplateColumns: startupCols, backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9fa' }}>
                   <div className="iptif-table-row-name">{row.startup_name}</div>
                   <div>{row.domain}</div><div>{row.status}</div><div>{row.number_of_jobs}</div>
-                  <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>
+                  {!hideRevenue && <div>{row.revenue ? `₹${formatNumber(row.revenue)}` : '-'}</div>}
                 </div>
               ))}
             </>
@@ -623,7 +630,7 @@ function IptifSection({ user, isPublicView = false }) {
           </div>
 
           <div className="iptif-tabs-row">
-            {VIEWS.filter(v => !isRestricted || v.id !== 'facilities').map(({ id, label, color: c, icon }) => {
+            {VIEWS.filter(v => !hideFacilities || v.id !== 'facilities').map(({ id, label, color: c, icon }) => {
               const active = viewType === id;
               return (
                 <button
@@ -695,13 +702,13 @@ function IptifSection({ user, isPublicView = false }) {
                 headers={chartMode === 'table'
                   ? (viewType === 'projects'   ? ['Project Name', 'Scheme', 'Status', 'Start Date']
                     : viewType === 'programs'  ? ['Program Name', 'Type', 'Association', 'Target Audience', 'Attendees']
-                    : viewType === 'startups'  ? ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue']
+                    : viewType === 'startups'  ? (hideRevenue ? ['Startup Name', 'Domain', 'Status', 'Jobs'] : ['Startup Name', 'Domain', 'Status', 'Jobs', 'Revenue'])
                     : ['Facility Name', 'Type', 'Availability', 'Financial Year', 'Revenue'])
                   : ['Year', 'Count']}
                 keys={chartMode === 'table'
                   ? (viewType === 'projects'   ? ['project_name', 'scheme', 'status', 'start_date']
                     : viewType === 'programs'  ? ['program_name', 'type', 'association', 'targetted_audi', 'no_of_attendees']
-                    : viewType === 'startups'  ? ['startup_name', 'domain', 'status', 'number_of_jobs', 'revenue']
+                    : viewType === 'startups'  ? (hideRevenue ? ['startup_name', 'domain', 'status', 'number_of_jobs'] : ['startup_name', 'domain', 'status', 'number_of_jobs', 'revenue'])
                     : ['facility_name', 'facility_type', 'availability_status', 'financial_year', 'revenue_made'])
                   : ['year', 'count']}
                 filename={`iptif_${viewType}_${chartMode}`}

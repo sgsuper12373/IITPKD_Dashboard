@@ -30,6 +30,36 @@ export const SECTION_PERMISSIONS = {
   'outreach/nss':                          { modifyRoles: [3, 22] },
 };
 
+/** roleId → human-readable role name (mirrors the `roles` table). Used for debugging/profile display. */
+export const ROLE_NAMES = {
+  0: 'Guest',
+  1: 'Management View',
+  2: 'Administration Section',
+  3: 'Master Admin',
+  4: 'Academic Section',
+  5: 'IAR',
+  6: 'EWD',
+  7: 'IGRC',
+  8: 'ICC',
+  9: 'ICSR',
+  10: 'Library',
+  11: 'CDC',
+  12: 'IAC',
+  13: 'TechIn',
+  14: 'IPTIF',
+  15: 'Open House',
+  16: 'CCE',
+  17: 'UBA',
+  18: 'Science Quest',
+  19: 'PMC',
+  20: 'PBD',
+  21: 'Institute Visits',
+  22: 'NSS',
+};
+
+/** Returns the role name for a roleId, or 'Unknown' if unmapped. */
+export const getRoleName = (roleId) => ROLE_NAMES[roleId] ?? 'Unknown';
+
 /** Mapping from OutreachSection programKey → roles that can modify it */
 export const OUTREACH_PROGRAM_ROLES = {
   science_quest:        [3, 18],

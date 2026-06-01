@@ -8,6 +8,7 @@ import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 import FeedbackModal from './FeedbackModal';
+import { getRoleName } from '../utils/rolePermissions';
 
 // All top-level nav entries with their page-key for role filtering
 const ALL_NAV_LINKS = [
@@ -222,6 +223,9 @@ function Header({ user, onLogout, isGuest }) {
                                             <div className="dropdown-user-details">
                                                 <div className="dropdown-name">{isGuest ? 'Guest' : (user?.display_name || 'User')}</div>
                                                 <div className="dropdown-email">{isGuest ? 'Viewing as Guest' : (user?.email || '')}</div>
+                                                <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+                                                    Role ID: {user?.role_id ?? 0} — {getRoleName(user?.role_id ?? 0)}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -2,7 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import './FeedbackModal.css';
 
 const SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbyYb_yIDlyh9JoK2c3aXIm0wxmQGyifMib8k4d_vemjKEPbjhvUZNO1VqqaNAXKl6Psxw/exec'
+  'https://script.google.com/macros/s/AKfycbzDsrADgiedRvQ4N0qN9UBfB5FYPJrxNUvaiVG0fc0LeujplN0km05NrGGBK41YDSn9Yg/exec'
+
+// Max screenshot size (the image is base64-encoded into the JSON payload, which
+// inflates it by ~33%, so keep the raw file comfortably small).
+const MAX_SCREENSHOT_MB = 5;
 
 function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
   const [form, setForm] = useState({
@@ -11,7 +15,11 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
     feedback: '',
   });
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  // Screenshot: { dataUrl, name, type } once a valid image is selected, else null.
+  const [screenshot, setScreenshot] = useState(null);
+  const [screenshotError, setScreenshotError] = useState('');
   const firstInputRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Close on ESC
   useEffect(() => {
@@ -30,6 +38,36 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleScreenshotChange = (e) => {
+    setScreenshotError('');
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setScreenshotError('Please select an image file.');
+      setScreenshot(null);
+      return;
+    }
+    if (file.size > MAX_SCREENSHOT_MB * 1024 * 1024) {
+      setScreenshotError(`Image must be smaller than ${MAX_SCREENSHOT_MB} MB.`);
+      setScreenshot(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setScreenshot({ dataUrl: reader.result, name: file.name, type: file.type });
+    };
+    reader.onerror = () => setScreenshotError('Could not read the image. Try another file.');
+    reader.readAsDataURL(file);
+  };
+
+  const removeScreenshot = () => {
+    setScreenshot(null);
+    setScreenshotError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -38,6 +76,11 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
     e.preventDefault();
     setStatus('submitting');
     try {
+      // Strip the "data:image/png;base64," prefix — Apps Script only needs the raw base64.
+      const screenshotBase64 = screenshot
+        ? String(screenshot.dataUrl).split(',')[1]
+        : '';
+
       // Google Apps Script requires no-cors mode; response body is opaque but data is stored.
       await fetch(SCRIPT_URL, {
         method: 'POST',
@@ -47,6 +90,9 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
           name: form.name.trim(),
           email: form.email.trim(),
           feedback: form.feedback.trim(),
+          screenshot: screenshotBase64,
+          screenshotName: screenshot?.name || '',
+          screenshotType: screenshot?.type || '',
         }),
       });
       setStatus('success');
@@ -117,6 +163,37 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
                 required
                 rows={5}
               />
+            </div>
+
+            <div className="fb-field">
+              <label htmlFor="fb-screenshot">Screenshot <span className="fb-optional">(optional)</span></label>
+              {!screenshot ? (
+                <>
+                  <input
+                    id="fb-screenshot"
+                    ref={fileInputRef}
+                    type="file"
+                    name="screenshot"
+                    accept="image/*"
+                    onChange={handleScreenshotChange}
+                    className="fb-file-input"
+                  />
+                  <span className="fb-file-hint">PNG, JPG or GIF up to {MAX_SCREENSHOT_MB} MB.</span>
+                </>
+              ) : (
+                <div className="fb-screenshot-preview">
+                  <img src={screenshot.dataUrl} alt="Selected screenshot preview" />
+                  <div className="fb-screenshot-meta">
+                    <span className="fb-screenshot-name" title={screenshot.name}>{screenshot.name}</span>
+                    <button type="button" className="fb-screenshot-remove" onClick={removeScreenshot}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+              {screenshotError && (
+                <span className="fb-error-msg" role="alert">{screenshotError}</span>
+              )}
             </div>
 
             {status === 'error' && (

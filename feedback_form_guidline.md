@@ -103,6 +103,87 @@ For the frontend React application to communicate with your Google Sheet, you mu
 
 ---
 
+## 📸 Adding Screenshot Upload Support
+
+The feedback form can also let users attach a screenshot. The image is sent (base64-encoded) inside the same JSON payload; the Apps Script decodes it, saves it to a Google Drive folder, makes it link-viewable, and writes the Drive link into a new **Screenshot** column of the sheet.
+
+> The **frontend** part (file picker, preview, 5 MB validation, base64 conversion, payload field) is already implemented in `Frontend/src/components/FeedbackModal.jsx`. You only need to update the Apps Script and re-deploy.
+
+### Step A: Replace the Apps Script with the screenshot-aware version
+In the Apps Script editor, replace the `doPost` function with this:
+
+```javascript
+function doPost(e) {
+  try {
+    var doc = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = doc.getActiveSheet();
+
+    // Parse the incoming JSON payload from the frontend request
+    var data = JSON.parse(e.postData.contents);
+
+    // Initialize headers if the spreadsheet is completely empty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Timestamp", "Name", "Email", "Feedback", "Screenshot"]);
+    }
+
+    // If a screenshot was attached, decode it and store it in Drive
+    var screenshotUrl = "";
+    if (data.screenshot) {
+      var folderName = "IITPKD Dashboard Feedback Screenshots";
+      var folders = DriveApp.getFoldersByName(folderName);
+      var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+
+      var contentType = data.screenshotType || "image/png";
+      var fileName = data.screenshotName || ("feedback_" + new Date().getTime() + ".png");
+      var blob = Utilities.newBlob(Utilities.base64Decode(data.screenshot), contentType, fileName);
+      var file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      screenshotUrl = file.getUrl();
+    }
+
+    // Append the feedback row (with the Drive link, if any)
+    sheet.appendRow([
+      new Date(),
+      data.name || "Anonymous",
+      data.email,
+      data.feedback,
+      screenshotUrl
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
+                         .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    Logger.log("Error inserting feedback: " + error.toString());
+    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": error.toString() }))
+                         .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+```
+
+### Step B: Re-deploy (keep the same URL)
+Because the script now touches Google Drive, it needs a new authorization **and** a new version published to the *existing* deployment so your `SCRIPT_URL` does not change:
+
+1. Save the script (`Ctrl/Cmd + S`).
+2. Click **Deploy** > **Manage deployments**.
+3. Click the ✏️ (pencil/edit) icon on your existing deployment.
+4. Under **Version**, choose **New version**, then click **Deploy**.
+5. When prompted, **Authorize Access** again and accept the new Drive permission (`See, edit, create, and delete … Google Drive files`).
+6. The Web app URL stays the same — no frontend change needed.
+
+> If you instead create a *brand-new* deployment, the URL changes; in that case update `SCRIPT_URL` in `FeedbackModal.jsx` (Step 5 above).
+
+### Step C: Verify
+1. Open the feedback form, attach an image (≤ 5 MB), and submit.
+2. In the sheet, the new row should have a **Screenshot** link.
+3. Open the link — it should show the uploaded image (stored in the *IITPKD Dashboard Feedback Screenshots* Drive folder).
+
+### Notes specific to screenshots
+- **Size**: the frontend rejects images larger than 5 MB. base64 inflates the payload by ~33%; keep images modest so requests stay fast and within Apps Script payload limits.
+- **Drive storage**: every screenshot consumes Drive quota of the account that owns the script. Periodically clean the folder if volume is high.
+- **Privacy**: screenshots are set to *Anyone with the link can view*. Anyone holding the Drive link can see the image — acceptable for dashboard screenshots, but don't encourage users to attach sensitive content.
+
+---
+
 ## ⚠️ Notes & Security Considerations
 
 - **CORS handling (`no-cors`)**: The `fetch` function in the frontend operates in `no-cors` mode to bypass strict cross-origin checks. Consequently, the browser cannot read the Google response body (it is treated as an "opaque" response). Even if the promise resolves successfully, the status is handled based on the HTTP request success. The provided Apps Script is specifically structured to process the `no-cors` request body.
