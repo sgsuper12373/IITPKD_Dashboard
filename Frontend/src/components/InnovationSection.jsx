@@ -28,6 +28,8 @@ import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 
 const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
@@ -265,6 +267,11 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   return (
     <div className={wrapClass}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <LastUpdated tables={['innovation_startups']} />
+        <ShareButton />
+      </div>
+
       {error && <div className="error-message">{error}</div>}
 
       {/* Summary Cards */}

@@ -13,6 +13,8 @@ import './GrievanceSection.css';
 import './EducationAcademicSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -129,6 +131,11 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             )}
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['courses_table']} />
+          <ShareButton />
+        </div>
 
         {error && <div className="eas-error">{error}</div>}
 

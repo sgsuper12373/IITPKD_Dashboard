@@ -17,6 +17,8 @@ import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 import './Page.css';
 import './AcademicSection.css';
 import './ResearchSection.css';
@@ -135,6 +137,11 @@ function Patents({ user, isPublicView = false }) {
               <span>&#128228;</span> Upload Patent Data
             </button>
           )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['research_patents']} />
+          <ShareButton />
         </div>
 
         <ChartExpandModal

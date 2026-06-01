@@ -331,6 +331,11 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               </button>
             )}
 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <LastUpdated tables={['icsr_consultancy_projects', 'icsr_sponsered_projects', 'icsr_csr', 'research_patents', 'research_mous']} />
+              <ShareButton />
+            </div>
+
             {!isReadOnlyView && (
               <div className="section-header">
                 <div className="section-header-left">
@@ -339,10 +344,6 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       ? 'Industry Collaboration'
                       : 'Industrial Consultancy & Sponsored Research'}
                   </h1>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <LastUpdated tables={['icsr_consultancy_projects', 'icsr_sponsered_projects', 'icsr_csr', 'research_patents', 'research_mous']} />
-                    <ShareButton />
-                  </div>
                 </div>
 
                 {!isReadOnlyView && isAdmin && (

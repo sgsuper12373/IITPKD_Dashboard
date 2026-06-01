@@ -33,6 +33,8 @@ import './IarSection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const PIE_COLORS = ['#667eea', '#764ba2', '#f093fb', '#43e97b', '#fa709a', '#00f2fe', '#f59e0b', '#a78bfa'];
 const OTHERS_PIE_COLOR = '#94a3b8';
@@ -308,6 +310,11 @@ function IarSection({ user, isPublicView = false }) {
             </div>
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['alumni']} />
+          <ShareButton />
+        </div>
 
         {error && (
           <div className="error-message">{error}</div>

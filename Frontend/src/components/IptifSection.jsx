@@ -23,6 +23,8 @@ import {
 } from '../services/iptifStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 import './Page.css';
 import './PeopleCampus.css';
 import './IptifSection.css';
@@ -593,6 +595,11 @@ function IptifSection({ user, isPublicView = false }) {
         )}
 
         {error && <div className="error-message">{error}</div>}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['iptif_projects_table', 'iptif_program_table', 'iptif_startup_table', 'iptif_facilities_table']} />
+          <ShareButton />
+        </div>
 
         <div className="iptif-export-row">
           <ExportMenu

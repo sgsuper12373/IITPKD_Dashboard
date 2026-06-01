@@ -12,6 +12,8 @@ import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -127,6 +129,11 @@ function UbaSection({ user, isPublicView = false }) {
           </button>
         </div>
       )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <LastUpdated tables={['uba_projects', 'uba_events']} />
+        <ShareButton />
+      </div>
 
       <div className="uba-export-row">
         <ExportMenu

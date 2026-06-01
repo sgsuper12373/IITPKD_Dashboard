@@ -21,6 +21,8 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -136,6 +138,11 @@ function EducationIarSection({ user, isPublicView = false }) {
               </button>
             </div>
           )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['iar_mous']} />
+          <ShareButton />
         </div>
 
         {error && (

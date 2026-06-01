@@ -26,6 +26,8 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import SectionSkeleton from './SectionSkeleton';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const ENERGY_BAR_COLOR = '#667eea';
 const ELECTRICITY_LINE_COLOR = '#f59e0b';
@@ -195,6 +197,11 @@ function EwdSection({ user, isPublicView = false }) {
             </div>
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['ewd_yearwise']} />
+          <ShareButton />
+        </div>
 
         {error && <div className="error-message">{error}</div>}
 

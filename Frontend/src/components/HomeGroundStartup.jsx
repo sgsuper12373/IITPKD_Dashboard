@@ -24,6 +24,8 @@ import './PeopleCampus.css';
 import '../DesignSystem.css';
 import './HomeGroundStartup.css';
 import ExportMenu from './ExportMenu';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -243,6 +245,11 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         </p>
 
         {error && <div className="hg-error">{error}</div>}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['iptif_startup_table', 'techin_startup_table']} />
+          <ShareButton />
+        </div>
 
         {/* ── Summary Cards ── */}
         <div className="hg-export-row">

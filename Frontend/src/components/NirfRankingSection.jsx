@@ -102,15 +102,15 @@ const NirfRankingSection = ({ user }) => {
 
     return (
         <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['nirf_ranking']} />
+          <ShareButton />
+        </div>
         {(!isGuest) && (
         <>
         <div className="content-card">
             <div className="nirf-header">
                 <h2 className="nirf-header-h2">NIRF Ranking Overview</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <LastUpdated tables={['nirf_ranking']} />
-                  <ShareButton />
-                </div>
                 <div className="nirf-controls">
                     <div className="nirf-mode-row">
                         <button

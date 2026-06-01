@@ -30,6 +30,8 @@ import './IndustryAdministrativeSection.css';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const TYPE_COLORS = ['#6366f1', '#22c55e', '#f97316', '#a855f7', '#14b8a6', '#0ea5e9', '#facc15'];
 
@@ -285,6 +287,11 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             )}
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['externship_info']} />
+          <ShareButton />
+        </div>
 
         {error && <div className="error-message">{error}</div>}
 

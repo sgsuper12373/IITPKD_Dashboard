@@ -27,6 +27,8 @@ import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -151,6 +153,11 @@ function IcsrSection({ user, isPublicView = false }) {
             <span>&#128228;</span> Upload Events
           </button>
         )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <LastUpdated tables={['industry_events']} />
+        <ShareButton />
       </div>
 
       <ChartExpandModal

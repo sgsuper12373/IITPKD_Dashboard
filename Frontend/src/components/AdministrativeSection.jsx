@@ -22,7 +22,8 @@ import { getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 import './AdministrativeSection.css';
-
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 // ── Constants ──────────────────────────────────────────────────────────────
 
 const BAR_ANIMATION = {
@@ -975,6 +976,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
             </div>
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['employees']} />
+          <ShareButton />
+        </div>
 
         {(regError || eduError) && (
           <div className="error-message">{regError || eduError}</div>

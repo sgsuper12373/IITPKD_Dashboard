@@ -598,14 +598,15 @@ function PlacementSection({ user, isPublicView = false }) {
           </button>
         )}
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['placement_summary', 'placement_companies', 'placement_packages']} />
+          <ShareButton />
+        </div>
+
         {!isReadOnlyView && (
           <div className="section-header">
             <div className="section-header-left">
               <h1>Placements &amp; Career Outcomes</h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <LastUpdated tables={['placement_summary', 'placement_companies', 'placement_packages']} />
-                <ShareButton />
-              </div>
             </div>
 
             {!isReadOnlyView && isAdmin && (

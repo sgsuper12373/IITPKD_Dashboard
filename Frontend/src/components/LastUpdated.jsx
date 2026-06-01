@@ -20,7 +20,7 @@ function LastUpdated({ tables }) {
 
   return (
     <span className="last-updated" title={`Data last modified: ${new Date(ts).toLocaleString('en-IN')}`}>
-      Updated {label}
+      Last Updated on {label}
     </span>
   );
 }

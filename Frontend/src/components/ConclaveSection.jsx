@@ -10,6 +10,8 @@ import './AcademicSection.css';
 import './ConclaveSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -83,6 +85,11 @@ function ConclaveSection({ user, isPublicView = false }) {
         )}
 
         {error && <div className="error-message">{error}</div>}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['industry_conclave']} />
+          <ShareButton />
+        </div>
 
         <div className="cncl-export-row">
           <ExportMenu

@@ -23,6 +23,8 @@ import { useNavigate } from 'react-router-dom';
 import CustomTooltip from './CustomTooltip';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -102,6 +104,11 @@ function NptelSection({ user, isPublicView = false }) {
             <span>&#128214;</span> Upload NPTEL Data
           </button>
         )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <LastUpdated tables={['nptel_courses']} />
+        <ShareButton />
       </div>
 
       <ChartExpandModal

@@ -22,6 +22,8 @@ import {
 } from '../services/techinStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
@@ -530,6 +532,11 @@ function TechinSection({ user, isPublicView = false }) {
         )}
 
         {error && <div className="error-message">{error}</div>}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['techin_program_table', 'techin_skill_development_program', 'techin_startup_table']} />
+          <ShareButton />
+        </div>
 
         <div className="techin-export-row">
           <ExportMenu

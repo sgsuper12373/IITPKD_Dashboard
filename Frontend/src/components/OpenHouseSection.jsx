@@ -23,6 +23,8 @@ import './AcademicSection.css';
 import './OpenHouseSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -121,6 +123,11 @@ function OpenHouseSection({ user, isPublicView = false }) {
             <span>&#128228;</span> Upload Event Data
           </button>
         )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <LastUpdated tables={['open_house']} />
+        <ShareButton />
       </div>
 
       <ChartExpandModal

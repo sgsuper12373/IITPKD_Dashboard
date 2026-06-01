@@ -587,10 +587,6 @@ function AcademicSection({ user, isPublicView = false }) {
           <div className="section-header">
             <div className="section-header-left">
               <h1>Student Overview</h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
-                <ShareButton />
-              </div>
             </div>
             <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
               Upload Data
@@ -601,6 +597,10 @@ function AcademicSection({ user, isPublicView = false }) {
         {error && <div className="error-message">{error}</div>}
 
         {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
+              <ShareButton />
+          </div>
         <div className="export-row">
           <ExportMenu
             elementId="academic-onroll-cards-container"

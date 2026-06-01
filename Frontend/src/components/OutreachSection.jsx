@@ -5,6 +5,8 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import { OUTREACH_PROGRAM_ROLES } from '../utils/rolePermissions';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 import './Page.css';
 import './OutreachMinimal.css';
 import './OutreachSection.css';
@@ -405,6 +407,11 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
         {loading && (
           <div className="ors-loading">Loading outreach data&#8230;</div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['outreach_science_quest', 'outreach_math_circle', 'outreach_pale_blue_dot', 'outreach_institute_visits', 'outreach_nss_activities']} />
+          <ShareButton />
+        </div>
 
         {error && (
           <div className="ors-error">{error}</div>

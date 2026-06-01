@@ -31,6 +31,8 @@ import { useNavigate } from 'react-router-dom';
 import ChartExpandModal from './ChartExpandModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const ENGAGEMENT_COLORS = {
   Adjunct: '#667eea',
@@ -509,6 +511,11 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
             )}
           </div>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['faculty_engagement']} />
+          <ShareButton />
+        </div>
 
         {error && (
           <div className="error-message">

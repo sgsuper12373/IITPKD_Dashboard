@@ -18,7 +18,7 @@ function IndustryConnect({ user }) {
   const sections = [
     {
       title: 'Administrative Section',
-      route: '/research/administrative-section',
+      route: '/industry-connect/administrative-section',
       description: 'Faculty industry externships and collaborations',
       allowedRoles: [3, 2]
     },

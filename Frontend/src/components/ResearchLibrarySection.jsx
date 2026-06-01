@@ -18,6 +18,8 @@ import './ResearchLibrarySection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
+import LastUpdated from './LastUpdated';
+import ShareButton from './ShareButton';
 
 const TYPE_COLORS = ['#6366f1', '#22d3ee', '#f97316', '#a855f7', '#14b8a6', '#facc15'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
@@ -270,6 +272,11 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
         {!isReadOnlyView && <h1>Library &amp; Scholarly Outputs</h1>}
 
         {error && <div className="error-message">{error}</div>}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LastUpdated tables={['research_publications']} />
+          <ShareButton />
+        </div>
 
         <div className="rls-export-row">
           <ExportMenu

@@ -11,7 +11,6 @@ import lazyWithRetry from './utils/lazyWithRetry';
 import NavigationLoader from './components/NavigationLoader';
 import AccessDenied from './components/AccessDenied';
 import { canViewSection } from './utils/rolePermissions';
-
 // ── Lazy route chunks ──────────────────────────────────────────────────────
 // Each import() becomes its own JS chunk; the browser only fetches a chunk
 // when the user first navigates to that route. lazyWithRetry handles transient
@@ -239,7 +238,7 @@ function App() {
             <Route path="research/icsr" element={<AdminRoute sectionKey="research/icsr"><ResearchIcsrSection user={user} /></AdminRoute>} />
             <Route path="patents" element={<AdminRoute><Patents user={user} /></AdminRoute>} />
             <Route path="mou-collaborations" element={<AdminRoute><MoUCollaborations user={user} /></AdminRoute>} />
-            <Route path="research/administrative-section" element={<AdminRoute sectionKey="industry-connect/administrative"><IndustryAdministrativeSection user={user} /></AdminRoute>} />
+            <Route path="industry-connect/administrative-section" element={<AdminRoute sectionKey="industry-connect/administrative"><IndustryAdministrativeSection user={user} /></AdminRoute>} />
             <Route path="research/library" element={<AdminRoute sectionKey="research/library"><ResearchLibrarySection user={user} /></AdminRoute>} />
             <Route path="education" element={<Education user={user} />} />
             <Route path="education/placements" element={<AdminRoute sectionKey="education/placements"><PlacementSection user={user} /></AdminRoute>} />

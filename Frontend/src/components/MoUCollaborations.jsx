@@ -426,10 +426,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
           <div className="section-header">
             <div className="section-header-left">
               <h1>MoU and Collaborations</h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <LastUpdated tables={['research_mous', 'iar_mous']} />
-                <ShareButton />
-              </div>
             </div>
             {isAdmin && (
               <div className="section-header-actions">
@@ -445,6 +441,10 @@ function MoUCollaborations({ user, isPublicView = false }) {
         )}
 
         {/* Summary Cards */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LastUpdated tables={['research_mous', 'iar_mous']} />
+                <ShareButton />
+              </div>
         <div className="mou-cards-grid">
           <div className="mou-stat-card mou-stat-card--purple">
             <div className="mou-stat-card-body">
