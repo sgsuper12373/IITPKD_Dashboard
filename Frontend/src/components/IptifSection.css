@@ -296,6 +296,16 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+/* Primary (internal navigation) CTA — e.g. the Facilities showcase link */
+.iptif-cta-link--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.iptif-cta-link--primary:hover { background-color: var(--color-primary-hover); }
+.iptif-cta-banner--facilities { margin-top: 24px; }
 
 /* ── Empty state (height stays inline) ── */
 .iptif-empty-state {

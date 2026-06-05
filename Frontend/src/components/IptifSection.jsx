@@ -732,6 +732,22 @@ function IptifSection({ user, isPublicView = false }) {
           </div>
         </div>
 
+        <div className="iptif-cta-banner iptif-cta-banner--facilities">
+          <div className="iptif-cta-left">
+            <div>
+              <h3 className="iptif-cta-h3">Explore Our Facilities</h3>
+              <p className="iptif-cta-p">Browse the labs, equipment, and spaces IPTIF offers — with details on availability and how to avail each one.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/innovation-entrepreneurship/iptif/facilities')}
+            className="iptif-cta-link iptif-cta-link--primary"
+          >
+            View Facilities &#8594;
+          </button>
+        </div>
+
         <div className="iptif-cta-banner">
           <div className="iptif-cta-left">
             <div>

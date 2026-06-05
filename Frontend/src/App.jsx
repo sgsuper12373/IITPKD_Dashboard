@@ -51,6 +51,7 @@ const ConclaveSection = lazyWithRetry(() => import('./components/ConclaveSection
 const InnovationEntrepreneurship = lazyWithRetry(() => import('./components/InnovationEntrepreneurship'));
 const InnovationSection = lazyWithRetry(() => import('./components/InnovationSection'));
 const IptifSection = lazyWithRetry(() => import('./components/IptifSection'));
+const IptifFacilities = lazyWithRetry(() => import('./components/IptifFacilities'));
 const TechinSection = lazyWithRetry(() => import('./components/TechinSection'));
 const HomeGroundStartup = lazyWithRetry(() => import('./components/HomeGroundStartup'));
 
@@ -247,6 +248,7 @@ function App() {
             <Route path="industry-connect" element={<IndustryConnect user={user} />} />
             <Route path="innovation-entrepreneurship" element={<InnovationEntrepreneurship user={user} />} />
             <Route path="innovation-entrepreneurship/iptif" element={<AdminRoute sectionKey="innovation/iptif"><IptifSection user={user} /></AdminRoute>} />
+            <Route path="innovation-entrepreneurship/iptif/facilities" element={<IptifFacilities user={user} />} />
             <Route path="innovation-entrepreneurship/techin" element={<AdminRoute sectionKey="innovation/techin"><TechinSection user={user} /></AdminRoute>} />
             <Route path="innovation-entrepreneurship/home-ground-startup" element={<HomeGroundStartup user={user} />} />
             <Route path="industry-connect/icsr" element={<AdminRoute sectionKey="industry-connect/icsr"><IcsrSection user={user} /></AdminRoute>} />
