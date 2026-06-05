@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -101,6 +101,19 @@ function IgrcSection({ user, isPublicView = false }) {
     loadData();
   }, [token, uploadVersion]);
 
+  // Summary card values reflect the selected year ('All' shows cumulative totals)
+  const displaySummary = useMemo(() => {
+    if (selectedYear === 'All') {
+      return { total: summary.total, resolved: summary.resolved, pending: summary.pending };
+    }
+    const row = yearlyData.find((r) => String(r.year) === String(selectedYear));
+    return {
+      total: row?.filed || 0,
+      resolved: row?.resolved || 0,
+      pending: row?.pending || 0
+    };
+  }, [selectedYear, summary, yearlyData]);
+
   return (
     <>
       {(typeof user === 'undefined' || user?.role_id !== 0) && (
@@ -140,7 +153,7 @@ function IgrcSection({ user, isPublicView = false }) {
                 <div className="igrc-export-row">
                   <ExportMenu
                     elementId="igrc-summary-cards-container"
-                    data={[summary]}
+                    data={[displaySummary]}
                     headers={['Total Grievances', 'Pending', 'Resolved']}
                     keys={['total', 'pending', 'resolved']}
                     filename="igrc_summary"
@@ -158,10 +171,12 @@ function IgrcSection({ user, isPublicView = false }) {
                           <span className="metric-card-icon">&#128203;</span>
                           <span className="metric-card-label">Total Grievances</span>
                         </div>
-                        <div className="metric-card-value">{summary.total}</div>
+                        <div className="metric-card-value">{displaySummary.total}</div>
                         <div className="metric-card-footer">
                           <span className="metric-card-dot" />
-                          <span className="metric-card-subtitle">All grievances filed</span>
+                          <span className="metric-card-subtitle">
+                            {selectedYear === 'All' ? 'All grievances filed' : `Filed in ${selectedYear}`}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -174,7 +189,7 @@ function IgrcSection({ user, isPublicView = false }) {
                           <span className="metric-card-icon">&#9989;</span>
                           <span className="metric-card-label">Resolved</span>
                         </div>
-                        <div className="metric-card-value">{summary.resolved}</div>
+                        <div className="metric-card-value">{displaySummary.resolved}</div>
                         <div className="metric-card-footer">
                           <span className="metric-card-dot" />
                           <span className="metric-card-subtitle">Successfully closed</span>
@@ -190,7 +205,7 @@ function IgrcSection({ user, isPublicView = false }) {
                           <span className="metric-card-icon">&#9203;</span>
                           <span className="metric-card-label">Pending</span>
                         </div>
-                        <div className="metric-card-value">{summary.pending}</div>
+                        <div className="metric-card-value">{displaySummary.pending}</div>
                         <div className="metric-card-footer">
                           <span className="metric-card-dot" />
                           <span className="metric-card-subtitle">Currently in process</span>
@@ -284,7 +299,7 @@ function IgrcSection({ user, isPublicView = false }) {
                           onClick={() => setChartType(mode)}
                           className={`igrc-mode-btn${chartType === mode ? ' igrc-mode-btn--active' : ''}`}
                         >
-                          {mode === 'Bar' ? '&#128202; Bar' : '&#128200; Trend'}
+                          {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
                         </button>
                       ))}
                     </div>

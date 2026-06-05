@@ -239,7 +239,7 @@ function Patents({ user, isPublicView = false }) {
                   {['bar', 'trend'].map((mode) => (
                     <button key={mode} onClick={() => setChartMode(mode)}
                       className={`pat-mode-btn${chartMode === mode ? ' pat-mode-btn--active' : ''}`}>
-                      {mode === 'bar' ? '&#128202; Bar' : '&#128200; Trend'}
+                      {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
                     </button>
                   ))}
                 </div>

@@ -522,7 +522,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         onClick={() => setDeptChartType(mode)}
                         className={`ias-mode-btn${deptChartType === mode ? ' ias-mode-btn--active' : ''}`}
                       >
-                        {mode === 'bar' ? '&#128202; Bar' : '&#128200; Trend'}
+                        {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
                       </button>
                     ))}
                   </div>

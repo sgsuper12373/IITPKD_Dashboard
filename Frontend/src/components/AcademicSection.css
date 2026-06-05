@@ -576,6 +576,19 @@
    SUMMARY CARD GRIDS — flex replaces CSS grid
    ================================================================ */
 
+/* 3-column flex row */
+.summary-cards-grid-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  margin-bottom: var(--space-6);
+}
+
+.summary-cards-grid-3 > * {
+  flex: 1 1 calc(33.333% - 1.25rem);
+  min-width: min(200px, 100%);
+}
+
 /* 4-column flex row */
 .summary-cards-grid-4 {
   display: flex;
@@ -1437,6 +1450,7 @@
 }
 
 @media (max-width: 640px) {
+  .summary-cards-grid-3 > *,
   .summary-cards-grid-4 > *,
   .summary-cards-grid-5 > * { flex: 1 1 calc(50% - var(--space-2)); }
   .shared-filter-grid > * { flex: 1 1 calc(50% - var(--space-1)); }
@@ -1463,6 +1477,7 @@
 }
 
 @media (max-width: 400px) {
+  .summary-cards-grid-3 > *,
   .summary-cards-grid-4 > *,
   .summary-cards-grid-5 > * { flex: 1 1 100%; }
   .shared-filter-grid > * { flex: 1 1 100%; }

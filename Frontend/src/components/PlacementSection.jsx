@@ -47,9 +47,9 @@ const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
 const formatCurrency = (value) => {
-  if (value === null || value === undefined) return '&#8211;';
+  if (value === null || value === undefined) return '–';
   const numeric = Number(value);
-  if (Number.isNaN(numeric) || numeric === 0) return '&#8211;';
+  if (Number.isNaN(numeric) || numeric === 0) return '–';
   return `${numeric.toFixed(2)} LPA`;
 };
 

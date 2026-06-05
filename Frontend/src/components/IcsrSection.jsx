@@ -60,6 +60,9 @@ function IcsrSection({ user, isPublicView = false }) {
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 9;
+  // Funding figures (Total Funding card + per-event Budget) are fully hidden from
+  // guests — both the not-logged-in case and the role-0 public/guest account.
+  const hideFunding = isGuestUser || user?.role_id === 0;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [summary, setSummary] = useState({ total_events: 0, total_funding: 0 });
@@ -173,7 +176,7 @@ function IcsrSection({ user, isPublicView = false }) {
           <h3 className="icsr-card-h3">Total Events</h3>
           <div className="icsr-card-value">{formatNumber(summary.total_events)}</div>
         </div>
-        {(!isGuestUser || summary.total_funding > 0) && (
+        {!hideFunding && (
           <div className="icsr-card icsr-card--green">
             <h3 className="icsr-card-h3">Total Funding</h3>
             <div className="icsr-card-value">{formatCompactCurrency(summary.total_funding)}</div>
@@ -197,8 +200,8 @@ function IcsrSection({ user, isPublicView = false }) {
           <ExportMenu
             elementId={viewType === 'yearly' ? 'icsr-yearly-chart' : viewType === 'eventTypes' ? 'icsr-types-chart' : 'icsr-directory-table'}
             data={viewType === 'yearly' ? yearlyChartData : viewType === 'eventTypes' ? eventTypesPieData : eventsList}
-            headers={viewType === 'yearly' ? ['Year', 'Events'] : viewType === 'eventTypes' ? ['Type', 'Count'] : ['Year', 'Event Name', 'Organization', 'Type', 'Budget']}
-            keys={viewType === 'yearly' ? ['year', 'events'] : viewType === 'eventTypes' ? ['name', 'value'] : ['event_year', 'event_name', 'organization_name', 'event_type', 'budget']}
+            headers={viewType === 'yearly' ? ['Year', 'Events'] : viewType === 'eventTypes' ? ['Type', 'Count'] : (hideFunding ? ['Year', 'Event Name', 'Organization', 'Type'] : ['Year', 'Event Name', 'Organization', 'Type', 'Budget'])}
+            keys={viewType === 'yearly' ? ['year', 'events'] : viewType === 'eventTypes' ? ['name', 'value'] : (hideFunding ? ['event_year', 'event_name', 'organization_name', 'event_type'] : ['event_year', 'event_name', 'organization_name', 'event_type', 'budget'])}
             filename={`icsr_${viewType}`}
             title={`ICSR ${viewType === 'yearly' ? 'Trend' : viewType === 'eventTypes' ? 'Types' : 'Directory'}`}
           />
@@ -277,9 +280,11 @@ function IcsrSection({ user, isPublicView = false }) {
                     <span className="icsr-mobile-badge">{event.event_type}</span>
                   </div>
                   <h4 className="icsr-mobile-h4">{event.event_name}</h4>
-                  <div className="icsr-mobile-details">
-                    <div><strong>Budget:</strong> &#8377;{formatNumber(event.budget)}</div>
-                  </div>
+                  {!hideFunding && (
+                    <div className="icsr-mobile-details">
+                      <div><strong>Budget:</strong> &#8377;{formatNumber(event.budget)}</div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -292,7 +297,7 @@ function IcsrSection({ user, isPublicView = false }) {
                     <th>Event Name</th>
                     <th>Organization</th>
                     <th>Type</th>
-                    <th>Budget</th>
+                    {!hideFunding && <th>Budget</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -302,7 +307,7 @@ function IcsrSection({ user, isPublicView = false }) {
                       <td className="icsr-td-name">{event.event_name}</td>
                       <td>{event.organization_name}</td>
                       <td><span className="icsr-td-type">{event.event_type}</span></td>
-                      <td>&#8377;{formatNumber(event.budget)}</td>
+                      {!hideFunding && <td>&#8377;{formatNumber(event.budget)}</td>}
                     </tr>
                   ))}
                 </tbody>

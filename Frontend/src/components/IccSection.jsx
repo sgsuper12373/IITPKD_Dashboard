@@ -38,6 +38,7 @@ function IccSection({ user, isPublicView = false }) {
     pending: true
   });
   const [activeView, setActiveView] = useState('chart'); // 'chart' | 'table'
+  const [selectedYear, setSelectedYear] = useState('All');
   const [summary, setSummary] = useState({
     total: 0,
     resolved: 0,
@@ -101,13 +102,37 @@ function IccSection({ user, isPublicView = false }) {
     loadData();
   }, [token, uploadVersion]);
 
+  // Summary card values reflect the selected year ('All' shows cumulative totals)
+  const displaySummary = useMemo(() => {
+    if (selectedYear === 'All') {
+      return { total: summary.total, resolved: summary.resolved, pending: summary.pending };
+    }
+    const row = yearlyData.find((r) => String(r.year) === String(selectedYear));
+    return {
+      total: row?.total || 0,
+      resolved: row?.resolved || 0,
+      pending: row?.pending || 0
+    };
+  }, [selectedYear, summary, yearlyData]);
+
+  // Yearly chart data filtered by the selected year
+  const filteredYearlyData = useMemo(() => {
+    return selectedYear === 'All'
+      ? yearlyData
+      : yearlyData.filter((r) => String(r.year) === String(selectedYear));
+  }, [yearlyData, selectedYear]);
+
   const displayYearlyData = useMemo(() => {
+    if (selectedYear !== 'All') return filteredYearlyData;
     return chartIsMobile && yearlyData.length > 3 ? yearlyData.slice(-3) : yearlyData;
-  }, [yearlyData, chartIsMobile]);
+  }, [filteredYearlyData, yearlyData, chartIsMobile, selectedYear]);
 
   const displayStats = useMemo(() => {
+    if (selectedYear !== 'All') {
+      return summary.yearly_stats.filter((s) => String(s.stat_year) === String(selectedYear));
+    }
     return chartIsMobile && summary.yearly_stats.length > 3 ? summary.yearly_stats.slice(-3) : summary.yearly_stats;
-  }, [summary.yearly_stats, chartIsMobile]);
+  }, [summary.yearly_stats, chartIsMobile, selectedYear]);
 
   return (
     <>
@@ -156,7 +181,7 @@ function IccSection({ user, isPublicView = false }) {
                 <div className="icc-export-row">
                   <ExportMenu
                     elementId="icc-summary-cards-container"
-                    data={[summary]}
+                    data={[displaySummary]}
                     headers={['Total Complaints', 'Resolved', 'Pending']}
                     keys={['total', 'resolved', 'pending']}
                     filename="icc_summary"
@@ -164,34 +189,81 @@ function IccSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                <div id="icc-summary-cards-container" className="grid-3 icc-cards-gap">
-                  <div className="icc-stat-card icc-stat-card--purple">
-                    <div className="icc-stat-card-body">
-                      <div className="icc-stat-card-header">
-                        <span className="icc-stat-card-icon">&#128203;</span>
-                        <span className="icc-stat-card-label">Total Complaints</span>
+                <div id="icc-summary-cards-container" className="summary-cards-grid-4">
+                  {/* Total Complaints — purple */}
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
+                    <div className="metric-card-glow" />
+                    <div className="metric-card-inner">
+                      <div className="metric-card-icon-row">
+                        <span className="metric-card-icon">&#128203;</span>
+                        <span className="metric-card-label">Total Complaints</span>
                       </div>
-                      <div className="icc-stat-card-value">{summary.total}</div>
+                      <div className="metric-card-value">{displaySummary.total}</div>
+                      <div className="metric-card-footer">
+                        <span className="metric-card-dot" />
+                        <span className="metric-card-subtitle">
+                          {selectedYear === 'All' ? 'All complaints filed' : `Filed in ${selectedYear}`}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="icc-stat-card icc-stat-card--green">
-                    <div className="icc-stat-card-body">
-                      <div className="icc-stat-card-header">
-                        <span className="icc-stat-card-icon">&#9989;</span>
-                        <span className="icc-stat-card-label">Resolved</span>
+                  {/* Resolved — green */}
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)' }}>
+                    <div className="metric-card-glow" />
+                    <div className="metric-card-inner">
+                      <div className="metric-card-icon-row">
+                        <span className="metric-card-icon">&#9989;</span>
+                        <span className="metric-card-label">Resolved</span>
                       </div>
-                      <div className="icc-stat-card-value">{summary.resolved}</div>
+                      <div className="metric-card-value">{displaySummary.resolved}</div>
+                      <div className="metric-card-footer">
+                        <span className="metric-card-dot" />
+                        <span className="metric-card-subtitle">Successfully closed</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="icc-stat-card icc-stat-card--pink">
-                    <div className="icc-stat-card-body">
-                      <div className="icc-stat-card-header">
-                        <span className="icc-stat-card-icon">&#9203;</span>
-                        <span className="icc-stat-card-label">Pending</span>
+                  {/* Pending — pink */}
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)', boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)' }}>
+                    <div className="metric-card-glow" />
+                    <div className="metric-card-inner">
+                      <div className="metric-card-icon-row">
+                        <span className="metric-card-icon">&#9203;</span>
+                        <span className="metric-card-label">Pending</span>
                       </div>
-                      <div className="icc-stat-card-value">{summary.pending}</div>
+                      <div className="metric-card-value">{displaySummary.pending}</div>
+                      <div className="metric-card-footer">
+                        <span className="metric-card-dot" />
+                        <span className="metric-card-subtitle">Currently in process</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Filter by Year — violet */}
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', boxShadow: '0 10px 20px rgba(168, 85, 247, 0.2)' }}>
+                    <div className="metric-card-glow" />
+                    <div className="metric-card-inner">
+                      <div className="metric-card-icon-row">
+                        <span className="metric-card-icon">&#128197;</span>
+                        <span className="metric-card-label">Filter by Year</span>
+                      </div>
+                      <select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                        className="metric-card-filter-select"
+                      >
+                        <option value="All" style={{ color: '#333', background: '#fff' }}>All Years</option>
+                        {yearlyData.map((row) => (
+                          <option key={row.year} value={row.year} style={{ color: '#333', background: '#fff' }}>
+                            {row.year}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="metric-card-footer" style={{ marginTop: '12px' }}>
+                        <span className="metric-card-dot" />
+                        <span className="metric-card-subtitle">Focus on a specific year</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -258,7 +330,7 @@ function IccSection({ user, isPublicView = false }) {
                           title: "ICC Complaint Distribution",
                           content: (
                             <ResponsiveContainer width="100%" height={500}>
-                              <BarChart data={yearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }} barCategoryGap="20%">
+                              <BarChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }} barCategoryGap="20%">
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} interval={0} angle={-40} textAnchor="end" height={60} />
                                 <YAxis stroke="#666" tick={{ fontSize: 12 }} allowDecimals={false} label={{ value: 'Complaints', angle: -90, position: 'insideLeft' }} />

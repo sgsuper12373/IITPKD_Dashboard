@@ -348,7 +348,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   onClick={() => setTrendChartMode(mode)}
                   className={`rls-mode-btn${trendChartMode === mode ? ' rls-mode-btn--active' : ''}`}
                 >
-                  {mode === 'bar' ? '&#128202; Bar' : '&#128200; Trend'}
+                  {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
                 </button>
               ))}
             </div>
