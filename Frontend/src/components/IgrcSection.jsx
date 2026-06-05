@@ -149,78 +149,78 @@ function IgrcSection({ user, isPublicView = false }) {
                 </div>
 
                 {(typeof user === 'undefined' || user?.role_id !== 0) && (
-                  <div id="igrc-summary-cards-container" className="grid-4 igrc-cards-gap">
+                  <div id="igrc-summary-cards-container" className="summary-cards-grid-4">
                     {/* Total Grievances — purple */}
-                    <div className="igrc-stat-card igrc-stat-card--purple">
-                      <div className="igrc-stat-card-decor" />
-                      <div className="igrc-stat-card-body">
-                        <div className="igrc-stat-card-header">
-                          <span className="igrc-stat-card-icon">&#128203;</span>
-                          <span className="igrc-stat-card-label">Total Grievances</span>
+                    <div className="metric-card" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
+                      <div className="metric-card-glow" />
+                      <div className="metric-card-inner">
+                        <div className="metric-card-icon-row">
+                          <span className="metric-card-icon">&#128203;</span>
+                          <span className="metric-card-label">Total Grievances</span>
                         </div>
-                        <div className="igrc-stat-card-value">{summary.total}</div>
-                        <div className="igrc-stat-card-status">
-                          <span className="igrc-stat-dot" />
-                          <span className="igrc-stat-subtext">All grievances filed</span>
+                        <div className="metric-card-value">{summary.total}</div>
+                        <div className="metric-card-footer">
+                          <span className="metric-card-dot" />
+                          <span className="metric-card-subtitle">All grievances filed</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Resolved — green */}
-                    <div className="igrc-stat-card igrc-stat-card--green">
-                      <div className="igrc-stat-card-decor" />
-                      <div className="igrc-stat-card-body">
-                        <div className="igrc-stat-card-header">
-                          <span className="igrc-stat-card-icon">&#9989;</span>
-                          <span className="igrc-stat-card-label">Resolved</span>
+                    <div className="metric-card" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)' }}>
+                      <div className="metric-card-glow" />
+                      <div className="metric-card-inner">
+                        <div className="metric-card-icon-row">
+                          <span className="metric-card-icon">&#9989;</span>
+                          <span className="metric-card-label">Resolved</span>
                         </div>
-                        <div className="igrc-stat-card-value">{summary.resolved}</div>
-                        <div className="igrc-stat-card-status">
-                          <span className="igrc-stat-dot" />
-                          <span className="igrc-stat-subtext">Successfully closed</span>
+                        <div className="metric-card-value">{summary.resolved}</div>
+                        <div className="metric-card-footer">
+                          <span className="metric-card-dot" />
+                          <span className="metric-card-subtitle">Successfully closed</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Pending — pink */}
-                    <div className="igrc-stat-card igrc-stat-card--pink">
-                      <div className="igrc-stat-card-decor" />
-                      <div className="igrc-stat-card-body">
-                        <div className="igrc-stat-card-header">
-                          <span className="igrc-stat-card-icon">&#9203;</span>
-                          <span className="igrc-stat-card-label">Pending</span>
+                    <div className="metric-card" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)', boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)' }}>
+                      <div className="metric-card-glow" />
+                      <div className="metric-card-inner">
+                        <div className="metric-card-icon-row">
+                          <span className="metric-card-icon">&#9203;</span>
+                          <span className="metric-card-label">Pending</span>
                         </div>
-                        <div className="igrc-stat-card-value">{summary.pending}</div>
-                        <div className="igrc-stat-card-status">
-                          <span className="igrc-stat-dot" />
-                          <span className="igrc-stat-subtext">Currently in process</span>
+                        <div className="metric-card-value">{summary.pending}</div>
+                        <div className="metric-card-footer">
+                          <span className="metric-card-dot" />
+                          <span className="metric-card-subtitle">Currently in process</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Filter by Year — violet */}
-                    <div className="igrc-stat-card igrc-stat-card--violet">
-                      <div className="igrc-stat-card-decor" />
-                      <div className="igrc-stat-card-body">
-                        <div className="igrc-stat-card-header">
-                          <span className="igrc-stat-card-icon">&#128197;</span>
-                          <span className="igrc-stat-card-label">Filter by Year</span>
+                    <div className="metric-card" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', boxShadow: '0 10px 20px rgba(168, 85, 247, 0.2)' }}>
+                      <div className="metric-card-glow" />
+                      <div className="metric-card-inner">
+                        <div className="metric-card-icon-row">
+                          <span className="metric-card-icon">&#128197;</span>
+                          <span className="metric-card-label">Filter by Year</span>
                         </div>
                         <select
                           value={selectedYear}
                           onChange={(e) => setSelectedYear(e.target.value)}
-                          className="igrc-year-select"
+                          className="metric-card-filter-select"
                         >
-                          <option value="All" style={{ color: '#333' }}>All Years</option>
+                          <option value="All" style={{ color: '#333', background: '#fff' }}>All Years</option>
                           {yearlyData.map((row) => (
-                            <option key={row.year} value={row.year} style={{ color: '#333' }}>
+                            <option key={row.year} value={row.year} style={{ color: '#333', background: '#fff' }}>
                               {row.year}
                             </option>
                           ))}
                         </select>
-                        <div className="igrc-stat-card-status">
-                          <span className="igrc-stat-dot" />
-                          <span className="igrc-stat-subtext">Focus on a specific year</span>
+                        <div className="metric-card-footer" style={{ marginTop: '12px' }}>
+                          <span className="metric-card-dot" />
+                          <span className="metric-card-subtitle">Focus on a specific year</span>
                         </div>
                       </div>
                     </div>
