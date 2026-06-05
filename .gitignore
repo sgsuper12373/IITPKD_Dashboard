@@ -33,5 +33,9 @@ Backend/app/__pycache__/
 Backend/.env
 
 
+
 #cluade files 
 .claude 
+
+# Backend uploads
+Backend/uploads/
