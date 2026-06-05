@@ -201,7 +201,7 @@ function IcsrSection({ user, isPublicView = false }) {
             elementId={viewType === 'yearly' ? 'icsr-yearly-chart' : viewType === 'eventTypes' ? 'icsr-types-chart' : 'icsr-directory-table'}
             data={viewType === 'yearly' ? yearlyChartData : viewType === 'eventTypes' ? eventTypesPieData : eventsList}
             headers={viewType === 'yearly' ? ['Year', 'Events'] : viewType === 'eventTypes' ? ['Type', 'Count'] : (hideFunding ? ['Year', 'Event Name', 'Organization', 'Type'] : ['Year', 'Event Name', 'Organization', 'Type', 'Budget'])}
-            keys={viewType === 'yearly' ? ['year', 'events'] : viewType === 'eventTypes' ? ['name', 'value'] : (hideFunding ? ['event_year', 'event_name', 'organization_name', 'event_type'] : ['event_year', 'event_name', 'organization_name', 'event_type', 'budget'])}
+            keys={viewType === 'yearly' ? ['year', 'events'] : viewType === 'eventTypes' ? ['name', 'value'] : (hideFunding ? ['year', 'event_name', 'hosted_by', 'event_type'] : ['year', 'event_name', 'hosted_by', 'event_type', 'amount'])}
             filename={`icsr_${viewType}`}
             title={`ICSR ${viewType === 'yearly' ? 'Trend' : viewType === 'eventTypes' ? 'Types' : 'Directory'}`}
           />
@@ -276,15 +276,14 @@ function IcsrSection({ user, isPublicView = false }) {
               {eventsList.map((event, i) => (
                 <div key={i} className="icsr-mobile-card">
                   <div className="icsr-mobile-top">
-                    <span className="icsr-mobile-year">{event.event_year}</span>
+                    <span className="icsr-mobile-year">{event.year}</span>
                     <span className="icsr-mobile-badge">{event.event_type}</span>
                   </div>
                   <h4 className="icsr-mobile-h4">{event.event_name}</h4>
-                  {!hideFunding && (
-                    <div className="icsr-mobile-details">
-                      <div><strong>Budget:</strong> &#8377;{formatNumber(event.budget)}</div>
-                    </div>
-                  )}
+                  <div className="icsr-mobile-details">
+                    {event.hosted_by && <div><strong>Organization:</strong> {event.hosted_by}</div>}
+                    {!hideFunding && <div><strong>Budget:</strong> &#8377;{formatNumber(event.amount)}</div>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -303,11 +302,11 @@ function IcsrSection({ user, isPublicView = false }) {
                 <tbody>
                   {eventsList.map((event, i) => (
                     <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                      <td>{event.event_year}</td>
+                      <td>{event.year}</td>
                       <td className="icsr-td-name">{event.event_name}</td>
-                      <td>{event.organization_name}</td>
+                      <td>{event.hosted_by}</td>
                       <td><span className="icsr-td-type">{event.event_type}</span></td>
-                      {!hideFunding && <td>&#8377;{formatNumber(event.budget)}</td>}
+                      {!hideFunding && <td>&#8377;{formatNumber(event.amount)}</td>}
                     </tr>
                   ))}
                 </tbody>
