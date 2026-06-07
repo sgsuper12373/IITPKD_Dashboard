@@ -82,7 +82,7 @@ const CHART_COLOR = '#f97316';
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 function HomeGroundStartup({ user, isPublicView = false }) {
-  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestricted = !user || user?.role_id === 0;
   injectStyle();
 
   const uploadVersion = useUploadRefresh();
@@ -289,7 +289,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         </div>
 
         {/* ── Revenue Cards ── */}
-        {(typeof user === 'undefined' || user?.role_id !== 0) && (
+        { !isRestricted && (
           <>
             <div className="hg-revenue-header">
               <h3 className="hg-revenue-h3">Revenue Metrics</h3>
