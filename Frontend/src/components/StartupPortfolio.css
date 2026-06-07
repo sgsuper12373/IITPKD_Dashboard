@@ -29,6 +29,13 @@
   flex-shrink: 0;
 }
 
+.sp-upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
 .sp-empty {
   color: var(--color-text-light);
   font-size: 0.95rem;

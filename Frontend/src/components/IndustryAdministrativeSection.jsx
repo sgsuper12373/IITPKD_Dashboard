@@ -272,7 +272,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
         {!isReadOnlyView && (
           <div className="section-header">
             <div className="section-header-left">
-              <h1>Administrative Section (Industry Faculty Industry Stints)</h1>
+              <h1>Administrative Section (Industry Faculty Industry Stint)</h1>
             </div>
 
             {!isReadOnlyView && isAdmin && (
@@ -304,7 +304,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               active_years: activeYears,
               top_type: topType
             }]}
-            headers={['Total Faculty Industry Stints', 'Participating Departments', 'Timeline Coverage']}
+            headers={['Total Faculty Industry Stint', 'Participating Departments', 'Timeline Coverage']}
             keys={['total', 'participating_departments', 'active_years', 'top_type']}
             filename="externship_summary"
             title="Faculty Industry Stint Summary"
@@ -317,7 +317,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             <div className="ias-stat-card-body">
               <div className="ias-stat-card-header">
                 <span className="ias-stat-card-icon">&#128188;</span>
-                <span className="ias-stat-card-label">Total Faculty Industry Stints</span>
+                <span className="ias-stat-card-label">Total Faculty Industry Stint</span>
               </div>
               <div className="stat-card-value ias-stat-card-value">
                 {formatNumber(summary.total)}
@@ -442,7 +442,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               <div className="ias-chart-header-row">
                 <div>
                   <h2 className="ias-chart-h2">
-                    <span className="ias-chart-icon">&#128202;</span> Year-wise Faculty Industry Stints
+                    <span className="ias-chart-icon">&#128202;</span> Year-wise Faculty Industry Stint
                   </h2>
                   <p className="chart-description">
                     Distribution by externship type across the chosen timeframe
@@ -454,7 +454,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   headers={['Year', ...externshipTypeKeys]}
                   keys={['year', ...externshipTypeKeys]}
                   filename="externships_yearly_trend"
-                  title="Year-wise Faculty Industry Stints"
+                  title="Year-wise Faculty Industry Stint"
                 />
               </div>
               <div
@@ -462,7 +462,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 className="bar-chart-container clickable-chart ias-chart-container"
                 style={{ height: chartIsMobile ? '240px' : '400px' }}
                 onClick={() => setExpandedChart({
-                  title: "Year-wise Faculty Industry Stints",
+                  title: "Year-wise Faculty Industry Stint",
                   content: (
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={yearlyChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>

@@ -10,12 +10,14 @@ import {
 } from '../services/startupPortfolio';
 import { canModifySection } from '../utils/rolePermissions';
 import LastUpdated from './LastUpdated';
+import DataUploadModal from './LazyDataUploadModal';
 
 import './StartupPortfolio.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ORIGIN_LABELS = { iptif: 'IPTIF', techin: 'TechIN' };
+const ORIGIN_TABLES = { iptif: 'iptif_startup_table', techin: 'techin_startup_table' };
 
 // Logos can be an external URL (http…) or a server path (/uploads/startups/…).
 const logoSrc = (startup) => {
@@ -370,6 +372,8 @@ function StartupPortfolio({ user, isPublicView = false }) {
   const [openStartup, setOpenStartup] = useState(null);
   const [editing, setEditing] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [activeUploadTable, setActiveUploadTable] = useState('');
   const [originFilter, setOriginFilter] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -452,6 +456,21 @@ function StartupPortfolio({ user, isPublicView = false }) {
           )}
         </div>
 
+        {/* CSV upload — one button per incubator the admin may edit (role 14 → IPTIF, 13 → TechIN, 3 → both) */}
+        {isAdmin && (
+          <div className="sp-upload-row">
+            {editableOrigins.map((o) => (
+              <button
+                key={o}
+                className="page-upload-btn"
+                onClick={() => { setActiveUploadTable(ORIGIN_TABLES[o]); setIsUploadModalOpen(true); }}
+              >
+                &#128228; Upload {ORIGIN_LABELS[o]} Startups
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Filters */}
         <div className="sp-filters">
           <div className="sp-origin-toggle">
@@ -515,6 +534,17 @@ function StartupPortfolio({ user, isPublicView = false }) {
           onCancel={() => setShowAddForm(false)}
         />
       )}
+
+      <DataUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => {
+          setIsUploadModalOpen(false);
+          loadPortfolio();
+          if (isEditMode) loadManage();
+        }}
+        tableName={activeUploadTable}
+        token={token}
+      />
     </div>
   );
 }
