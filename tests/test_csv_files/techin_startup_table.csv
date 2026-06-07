@@ -1,17 +1,7 @@
-id,startup_name,domain,startup_origin,incubated_date,status,revenue,number_of_jobs,remarks
-2366,Alice Davis,Smp24,Smp69,2021-09-20,Active,61.26,27,Smp95
-2367,Alice Doe,Smp79,Smp42,2022-12-22,Ongoing,118.66,33,Smp71
-2368,Jane Doe,Smp78,Smp98,2024-11-23,Done,977.87,89,Smp24
-2369,Jane Smith,Smp89,Smp54,2022-10-12,Done,775.2,31,Smp39
-2370,John Doe,Smp88,Smp38,2024-08-19,Ongoing,129.12,76,Smp7
-2371,Alice Smith,Smp1,Smp46,2022-06-26,Done,20.9,100,Smp99
-2372,Jane Davis,Smp15,Smp76,2020-08-03,Ongoing,329.88,41,Smp75
-2373,Alice Doe,Smp34,Smp40,2022-06-25,Active,697.86,64,Smp66
-2374,Alice Smith,Smp6,Smp20,2022-03-28,Ongoing,883.4,86,Smp93
-2375,Jane Davis,Smp76,Smp49,2024-01-31,Ongoing,917.42,72,Smp85
-2376,John Doe,Smp39,Smp80,2021-03-09,Done,728.52,43,Smp80
-2377,John Doe,Smp85,Smp29,2024-10-01,Done,856.23,31,Smp15
-2378,John Smith,Smp40,Smp19,2020-09-26,Done,978.75,34,Smp84
-2379,John Davis,Smp3,Smp13,2022-10-18,Done,842.24,48,Smp74
-2380,Jane Doe,Smp2,Smp52,2021-01-22,Done,743.99,35,Smp69
-2381,Jane Smith,Smp51,Smp51,2024-06-27,Done,255.15,20,Smp95
+id,startup_name,domain,startup_origin,incubated_date,status,revenue,number_of_jobs,remarks,startup_logo,startup_website_link,startup_founder_name,startup_founder_profile_line,startup_summary,startup_tagline,is_published
+9001,VoltX Mobility,EV,IIT Palakkad,2021-04-08,Active,610.00,28,upload test row,https://ui-avatars.com/api/?name=Volt+X&size=256&background=4f46e5&color=fff,https://voltx.example.com,Aditya Rao,https://www.linkedin.com/in/aditya-rao,"VoltX builds swappable battery packs for electric three-wheelers.",Swap and go,true
+9002,DeepScan Imaging,AI/ML,IIT Palakkad,2022-09-17,Active,455.30,19,upload test row,https://ui-avatars.com/api/?name=Deep+Scan&size=256&background=0f766e&color=fff,https://deepscan.example.com,Neha Gupta,https://www.linkedin.com/in/neha-gupta,"DeepScan applies computer vision to detect defects on factory lines.",Vision that never blinks,true
+9003,AquaBot Marine,Robotics,IIT Palakkad,2020-12-05,Pilot,0,5,early stage draft row,,https://aquabot.example.com,Imran Sheikh,https://www.linkedin.com/in/imran-sheikh,"AquaBot makes underwater drones for port and dam inspection.",Robots for the deep,false
+9004,GridSense Energy,CleanTech,IIT Palakkad,2023-02-21,Active,275.60,13,upload test row,https://ui-avatars.com/api/?name=Grid+Sense&size=256&background=059669&color=fff,https://gridsense.example.com,Pooja Menon,https://www.linkedin.com/in/pooja-menon,"GridSense forecasts demand to balance rooftop solar on local grids.",Smarter grids start here,true
+9005,ByteForge Security,CyberSec,IIT Palakkad,2022-05-30,Active,512.00,24,upload test row,https://ui-avatars.com/api/?name=Byte+Forge&size=256&background=7c3aed&color=fff,https://byteforge.example.com,Sanjay Kumar,https://www.linkedin.com/in/sanjay-kumar,"ByteForge runs continuous penetration testing for fintech APIs.",Security that never sleeps,false
+9006,FarmLink Logistics,AgriTech,IIT Palakkad,2021-10-11,Active,142.90,16,draft row without logo,,https://farmlink.example.com,Ritu Singh,https://www.linkedin.com/in/ritu-singh,"FarmLink connects farmers directly to urban retailers and cuts out middlemen.",From farm to shelf faster,true

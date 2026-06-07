@@ -36,6 +36,17 @@ export const fetchManageList = async (token) => {
   }
 };
 
+// Inline-create a brand-new startup in the given incubator's table.
+export const createStartup = async (origin, formData, token) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/${origin}`, formData, authHeaders(token));
+    axios.clearByPrefix(API_BASE_URL);
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to add startup.');
+  }
+};
+
 // Enrich a single startup's showcase fields / logo / publish state.
 export const updateStartupShowcase = async (origin, id, formData, token) => {
   try {

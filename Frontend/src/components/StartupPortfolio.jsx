@@ -5,6 +5,7 @@ import { Rocket, Globe, ExternalLink, User } from 'lucide-react';
 import {
   fetchPortfolio,
   fetchManageList,
+  createStartup,
   updateStartupShowcase,
 } from '../services/startupPortfolio';
 import { canModifySection } from '../utils/rolePermissions';
@@ -179,11 +180,20 @@ function DetailModal({ startup, onClose }) {
 
 // ── Edit form ───────────────────────────────────────────────────────────────────
 
-function StartupForm({ initial, onSave, onCancel }) {
+const SHOWCASE_KEYS = [
+  'startup_tagline', 'startup_founder_name', 'startup_founder_profile_line',
+  'startup_website_link', 'startup_summary', 'startup_logo',
+];
+
+function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, onCancel }) {
   const externalLogo =
     initial?.startup_logo && initial.startup_logo.startsWith('http') ? initial.startup_logo : '';
 
   const [form, setForm] = useState({
+    startup_name: initial?.startup_name ?? '',
+    domain: initial?.domain ?? '',
+    status: initial?.status ?? '',
+    incubated_date: '',
     startup_tagline: initial?.startup_tagline ?? '',
     startup_founder_name: initial?.startup_founder_name ?? '',
     startup_founder_profile_line: initial?.startup_founder_profile_line ?? '',
@@ -191,6 +201,7 @@ function StartupForm({ initial, onSave, onCancel }) {
     startup_summary: initial?.startup_summary ?? '',
     startup_logo: externalLogo,
   });
+  const [origin, setOrigin] = useState(editableOrigins[0] ?? 'iptif');
   const [file, setFile] = useState(null);
   const [isPublished, setIsPublished] = useState(!!initial?.is_published);
   const [saving, setSaving] = useState(false);
@@ -200,14 +211,18 @@ function StartupForm({ initial, onSave, onCancel }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isCreate && !form.startup_name.trim()) { setError('Startup name is required.'); return; }
     setSaving(true);
     setError('');
     try {
       const fd = new FormData();
-      Object.entries(form).forEach(([key, value]) => fd.append(key, value.trim()));
+      if (isCreate) {
+        ['startup_name', 'domain', 'status', 'incubated_date'].forEach((k) => fd.append(k, form[k].trim()));
+      }
+      SHOWCASE_KEYS.forEach((k) => fd.append(k, form[k].trim()));
       fd.append('is_published', isPublished ? 'true' : 'false');
       if (file) fd.append('image', file);
-      await onSave(fd);
+      await onSave(fd, isCreate ? origin : undefined);
     } catch (err) {
       setError(err.message || 'Save failed.');
     } finally {
@@ -226,13 +241,55 @@ function StartupForm({ initial, onSave, onCancel }) {
     >
       <div className="sp-form-panel">
         <h3 className="sp-form-title">
-          Edit “{initial?.startup_name}” <OriginBadge origin={initial?.origin} />
+          {isCreate
+            ? 'Add Startup'
+            : <>Edit “{initial?.startup_name}” <OriginBadge origin={initial?.origin} /></>}
         </h3>
         <form onSubmit={handleSubmit} className="sp-form">
+          {isCreate && (
+            <>
+              <label className="sp-form-label">
+                Startup name<span className="sp-req">*</span>
+                <input className="sp-form-input" value={form.startup_name}
+                  onChange={setField('startup_name')} placeholder="e.g. AgroNova Solutions" autoFocus />
+              </label>
+
+              {editableOrigins.length > 1 ? (
+                <label className="sp-form-label">
+                  Incubator
+                  <select className="sp-form-input" value={origin} onChange={(e) => setOrigin(e.target.value)}>
+                    {editableOrigins.map((o) => <option key={o} value={o}>{ORIGIN_LABELS[o]}</option>)}
+                  </select>
+                </label>
+              ) : (
+                <p className="sp-form-hint">Incubator: <strong>{ORIGIN_LABELS[origin]}</strong></p>
+              )}
+
+              <div className="sp-form-grid">
+                <label className="sp-form-label">
+                  Domain / sector
+                  <input className="sp-form-input" value={form.domain}
+                    onChange={setField('domain')} placeholder="e.g. AgriTech" />
+                </label>
+                <label className="sp-form-label">
+                  Status
+                  <input className="sp-form-input" value={form.status}
+                    onChange={setField('status')} placeholder="e.g. Active" />
+                </label>
+              </div>
+
+              <label className="sp-form-label">
+                Incubated date
+                <input type="date" className="sp-form-input" value={form.incubated_date}
+                  onChange={setField('incubated_date')} />
+              </label>
+            </>
+          )}
+
           <label className="sp-form-label">
             Tagline / slogan
             <input className="sp-form-input" value={form.startup_tagline}
-              onChange={setField('startup_tagline')} placeholder="e.g. Drones for precision agriculture" autoFocus />
+              onChange={setField('startup_tagline')} placeholder="e.g. Drones for precision agriculture" autoFocus={!isCreate} />
           </label>
 
           <div className="sp-form-grid">
@@ -300,9 +357,11 @@ function StartupForm({ initial, onSave, onCancel }) {
 
 function StartupPortfolio({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
-  const isAdmin =
-    canModifySection(user?.role_id, 'innovation/iptif') ||
-    canModifySection(user?.role_id, 'innovation/techin');
+  const editableOrigins = useMemo(
+    () => ['iptif', 'techin'].filter((o) => canModifySection(user?.role_id, `innovation/${o}`)),
+    [user?.role_id],
+  );
+  const isAdmin = editableOrigins.length > 0;
 
   const [portfolio, setPortfolio] = useState([]);
   const [manageList, setManageList] = useState([]);
@@ -310,6 +369,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [openStartup, setOpenStartup] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [originFilter, setOriginFilter] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -345,6 +405,12 @@ function StartupPortfolio({ user, isPublicView = false }) {
     await Promise.all([loadManage(), loadPortfolio()]);
   };
 
+  const handleAdd = async (formData, origin) => {
+    await createStartup(origin, formData, token);
+    setShowAddForm(false);
+    await Promise.all([loadManage(), loadPortfolio()]);
+  };
+
   const source = isEditMode ? manageList : portfolio;
 
   const visible = useMemo(() => {
@@ -373,7 +439,12 @@ function StartupPortfolio({ user, isPublicView = false }) {
           {isAdmin && (
             <div className="sp-admin-controls">
               {isEditMode ? (
-                <button className="sp-btn" onClick={() => setIsEditMode(false)}>Done</button>
+                <>
+                  <button className="sp-btn sp-btn--primary" onClick={() => setShowAddForm(true)}>
+                    + Add Startup
+                  </button>
+                  <button className="sp-btn" onClick={() => setIsEditMode(false)}>Done</button>
+                </>
               ) : (
                 <button className="sp-btn" onClick={enterEditMode}>Manage Startups</button>
               )}
@@ -434,6 +505,14 @@ function StartupPortfolio({ user, isPublicView = false }) {
           initial={editing}
           onSave={handleEdit}
           onCancel={() => setEditing(null)}
+        />
+      )}
+      {showAddForm && (
+        <StartupForm
+          isCreate
+          editableOrigins={editableOrigins}
+          onSave={handleAdd}
+          onCancel={() => setShowAddForm(false)}
         />
       )}
     </div>

@@ -1,17 +1,7 @@
-id,startup_name,domain,startup_origin,incubated_date,status,revenue,number_of_jobs,remarks
-2572,John Davis,Smp31,Smp64,2020-04-21,Ongoing,996.12,16,Smp84
-2573,John Davis,Smp48,Smp69,2020-09-19,Active,517.06,26,Smp21
-2574,Jane Smith,Smp44,Smp62,2022-07-01,Ongoing,358.22,88,Smp12
-2575,John Davis,Smp51,Smp23,2022-11-27,Done,401.11,68,Smp72
-2576,Alice Davis,Smp88,Smp13,2022-07-03,Active,843.44,55,Smp2
-2577,John Smith,Smp11,Smp67,2022-12-10,Ongoing,685.97,52,Smp90
-2578,John Doe,Smp76,Smp15,2021-02-13,Done,638.32,46,Smp39
-2579,Alice Smith,Smp54,Smp75,2021-04-04,Active,18.75,49,Smp51
-2580,John Doe,Smp77,Smp56,2021-09-29,Done,188.2,92,Smp40
-2581,John Smith,Smp61,Smp47,2020-01-13,Ongoing,922.78,30,Smp73
-2582,Jane Doe,Smp1,Smp58,2023-08-26,Active,586.71,17,Smp93
-2583,John Doe,Smp58,Smp48,2021-09-27,Active,13.79,98,Smp68
-2584,Jane Doe,Smp61,Smp7,2021-11-25,Done,122.21,78,Smp94
-2585,John Davis,Smp64,Smp86,2020-06-20,Done,122.89,3,Smp36
-2586,Alice Doe,Smp40,Smp13,2024-07-12,Done,893.7,56,Smp73
-2587,Jane Doe,Smp31,Smp14,2020-03-04,Done,791.76,57,Smp27
+id,startup_name,domain,startup_origin,incubated_date,status,revenue,number_of_jobs,remarks,startup_logo,startup_website_link,startup_founder_name,startup_founder_profile_line,startup_summary,startup_tagline,is_published
+TEST-IPTIF-01,Solara Renewables,CleanTech,IIT Palakkad,2021-05-12,Active,250.00,15,upload test row,https://ui-avatars.com/api/?name=Solara&size=256&background=16a34a&color=fff,https://solara.example.com,Lakshmi Nair,https://www.linkedin.com/in/lakshmi-nair,"Solara builds rooftop solar microgrids for rural cooperatives.",Solar power for every rooftop,true
+TEST-IPTIF-02,UrbanRoots AgriTech,AgriTech,IIT Palakkad,2022-08-03,Active,120.50,9,upload test row,https://ui-avatars.com/api/?name=Urban+Roots&size=256&background=15803d&color=fff,https://urbanroots.example.com,Devan Pillai,https://www.linkedin.com/in/devan-pillai,"UrbanRoots helps city dwellers grow food with IoT hydroponic kits.",Grow food anywhere,true
+TEST-IPTIF-03,PayLite Fintech,FinTech,IIT Palakkad,2023-01-19,Pilot,0,4,early stage draft row,,https://paylite.example.com,Anju Thomas,https://www.linkedin.com/in/anju-thomas,"PayLite offers UPI-based micro-lending for gig workers.",Credit for the gig economy,false
+TEST-IPTIF-04,MediNova Devices,HealthTech,IIT Palakkad,2020-11-30,Active,540.75,22,upload test row,https://ui-avatars.com/api/?name=Medi+Nova&size=256&background=0ea5e9&color=fff,https://medinova.example.com,Rohit Verma,https://www.linkedin.com/in/rohit-verma,"MediNova designs low-cost diagnostic devices for primary health centres.",Affordable diagnostics for all,true
+TEST-IPTIF-05,EcoCycle Waste,GreenTech,IIT Palakkad,2022-03-14,Active,88.20,11,upload test row,https://ui-avatars.com/api/?name=Eco+Cycle&size=256&background=65a30d&color=fff,https://ecocycle.example.com,Sara Joseph,https://www.linkedin.com/in/sara-joseph,"EcoCycle converts campus organic waste into compost and biogas.",Closing the waste loop,false
+TEST-IPTIF-06,LinguaLearn EdTech,EdTech,IIT Palakkad,2023-06-09,Active,33.00,6,draft row without logo,,https://lingualearn.example.com,Maya Krishnan,https://www.linkedin.com/in/maya-krishnan,"LinguaLearn teaches regional languages through gamified lessons.",Speak your roots,true

@@ -565,6 +565,11 @@ button.sp-card:hover {
   color: var(--color-text-light);
 }
 
+.sp-req {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
 .sp-form-check {
   display: flex;
   align-items: center;

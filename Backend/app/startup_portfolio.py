@@ -45,6 +45,9 @@ _EDITABLE_FIELDS = (
     'startup_summary', 'startup_tagline',
 )
 
+# Extra fields collected only when creating a brand-new startup inline (normally filled by the CSV pipeline).
+_CREATE_EXTRA = ('domain', 'status', 'incubated_date')
+
 
 def _editable_origins(conn, user_id):
     """Return the set of origins the user may edit ('iptif', 'techin')."""
@@ -94,6 +97,14 @@ def _form_values():
 
 def _parse_bool(value):
     return str(value).strip().lower() in ('true', '1', 'on', 'yes')
+
+
+def _new_id(cur, origin):
+    """Generate a fresh PK for an inline-created startup (tables have no id default)."""
+    if origin == 'techin':  # integer PK — next sequential id
+        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 AS nid FROM techin_startup_table")
+        return cur.fetchone()['nid']
+    return 'IPTIF-ST-' + uuid.uuid4().hex[:10].upper()  # varchar PK
 
 
 # ── GET / ──────────────────────────────────────────────────────────────────────
@@ -150,6 +161,67 @@ def get_manage_list(current_user_id):
     except (pg_errors.UndefinedTable, pg_errors.UndefinedColumn):
         conn.rollback()
         return jsonify([]), 200
+    finally:
+        release_db_connection(conn)
+
+
+# ── POST /<origin> ─────────────────────────────────────────────────────────────
+
+@startup_portfolio_bp.route('/<origin>', methods=['POST'])
+@token_required
+def create_startup(current_user_id, origin):
+    """Inline-create a new startup in the given incubator's table (admin-only)."""
+    if origin not in ORIGINS:
+        return jsonify({'error': 'Unknown startup origin.'}), 404
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection failed.'}), 503
+    try:
+        if origin not in _editable_origins(conn, current_user_id):
+            return jsonify({'error': f'{origin.upper()} admin access required.'}), 403
+
+        startup_name = (request.form.get('startup_name') or '').strip()
+        if not startup_name:
+            return jsonify({'error': 'startup_name is required.'}), 400
+
+        table = ORIGINS[origin]['table']
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+        values = _form_values()
+        extra = {f: (request.form.get(f) or '').strip() or None for f in _CREATE_EXTRA}
+
+        logo = None
+        if 'image' in request.files and request.files['image'].filename:
+            logo, err = _save_image(request.files['image'])
+            if err:
+                return jsonify({'error': err}), 400
+        else:
+            posted_logo = (request.form.get('startup_logo') or '').strip()
+            if posted_logo:
+                logo = posted_logo
+
+        cols = ['id', 'startup_name', *_CREATE_EXTRA, *_EDITABLE_FIELDS, 'startup_logo', 'is_published']
+        vals = [
+            _new_id(cur, origin), startup_name,
+            *(extra[f] for f in _CREATE_EXTRA),
+            *(values[f] for f in _EDITABLE_FIELDS),
+            logo, _parse_bool(request.form.get('is_published')),
+        ]
+        cur.execute(
+            f"""
+            INSERT INTO {table} ({', '.join(cols)})
+            VALUES ({', '.join(['%s'] * len(cols))})
+            RETURNING {_MANAGE_COLUMNS}
+            """,
+            vals,
+        )
+        row = cur.fetchone()
+        conn.commit()
+        cur.close()
+        result = dict(row)
+        result['origin'] = origin
+        return jsonify(result), 201
     finally:
         release_db_connection(conn)
 
