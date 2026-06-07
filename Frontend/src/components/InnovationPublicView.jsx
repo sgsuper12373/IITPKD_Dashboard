@@ -6,6 +6,7 @@ import './InnovationMinimal.css';
 import IptifSection from './IptifSection';
 import TechinSection from './TechinSection';
 import HomeGroundStartup from './HomeGroundStartup';
+import StartupPortfolio from './StartupPortfolio';
 
 function InnovationPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -34,6 +35,14 @@ function InnovationPublicView({ user, embedded }) {
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: '🚀',
       component: TechinSection
+    },
+    {
+      id: 'startup-portfolio',
+      title: 'Startup Portfolio',
+      subtitle: '',
+      expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TechIN',
+      icon: '📇',
+      component: StartupPortfolio
     }
   ];
 

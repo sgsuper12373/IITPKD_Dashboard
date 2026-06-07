@@ -25,6 +25,12 @@ function InnovationEntrepreneurship({ user }) {
       route: '/innovation-entrepreneurship/techin',
       description: 'Entrepreneurship',
       allowedRoles: [3, 13]
+    },
+    {
+      title: 'Startup Portfolio',
+      route: '/innovation-entrepreneurship/startup-portfolio',
+      description: 'Showcase of IPTIF & TechIn startups',
+      allowedRoles: [3, 13, 14]
     }
   ];
   const [showPublicView, setShowPublicView] = useState(false);
@@ -76,7 +82,7 @@ function InnovationEntrepreneurship({ user }) {
                 className="people-campus-card"
               >
                 <div className="card-icon">
-                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : section.title === 'Home Ground Startup' ? '🏠' : '🚀'}
+                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : section.title === 'Startup Portfolio' ? '📇' : section.title === 'Home Grown Startup' ? '🏠' : '🚀'}
                 </div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>

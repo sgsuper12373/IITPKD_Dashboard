@@ -54,6 +54,7 @@ const IptifSection = lazyWithRetry(() => import('./components/IptifSection'));
 const IptifFacilities = lazyWithRetry(() => import('./components/IptifFacilities'));
 const TechinSection = lazyWithRetry(() => import('./components/TechinSection'));
 const HomeGroundStartup = lazyWithRetry(() => import('./components/HomeGroundStartup'));
+const StartupPortfolio = lazyWithRetry(() => import('./components/StartupPortfolio'));
 
 // Outreach & Extension
 const OutreachExtension = lazyWithRetry(() => import('./components/OutreachExtension'));
@@ -251,6 +252,7 @@ function App() {
             <Route path="innovation-entrepreneurship/iptif/facilities" element={<IptifFacilities user={user} />} />
             <Route path="innovation-entrepreneurship/techin" element={<AdminRoute sectionKey="innovation/techin"><TechinSection user={user} /></AdminRoute>} />
             <Route path="innovation-entrepreneurship/home-ground-startup" element={<HomeGroundStartup user={user} />} />
+            <Route path="innovation-entrepreneurship/startup-portfolio" element={<StartupPortfolio user={user} />} />
             <Route path="industry-connect/icsr" element={<AdminRoute sectionKey="industry-connect/icsr"><IcsrSection user={user} /></AdminRoute>} />
             <Route path="industry-connect/conclave" element={<AdminRoute sectionKey="industry-connect/conclave"><ConclaveSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension" element={<OutreachExtension user={user} />} />

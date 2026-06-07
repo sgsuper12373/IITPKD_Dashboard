@@ -41,6 +41,10 @@ def create_app():
     app.config['FACILITIES_UPLOAD_FOLDER'] = FACILITIES_UPLOAD_FOLDER
     os.makedirs(FACILITIES_UPLOAD_FOLDER, exist_ok=True)
 
+    STARTUPS_UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'startups')
+    app.config['STARTUPS_UPLOAD_FOLDER'] = STARTUPS_UPLOAD_FOLDER
+    os.makedirs(STARTUPS_UPLOAD_FOLDER, exist_ok=True)
+
     @app.route('/uploads/logos/<path:filename>')
     def serve_logo(filename):
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -49,13 +53,17 @@ def create_app():
     def serve_facility_image(filename):
         return send_from_directory(app.config['FACILITIES_UPLOAD_FOLDER'], filename)
 
+    @app.route('/uploads/startups/<path:filename>')
+    def serve_startup_logo(filename):
+        return send_from_directory(app.config['STARTUPS_UPLOAD_FOLDER'], filename)
+
     from . import (
         auth, dashboard, upload,
         academic_stats, administrative_stats, grievance_stats,
         ewd_stats, iar_stats, education_stats, placement_stats,
         academic_module, research_module, innovation_module,
         industry_connect_module, outreach_extension_module, nirf_stats, export_db,
-        mou_partners, last_updated, iptif_facilities,
+        mou_partners, last_updated, iptif_facilities, startup_portfolio,
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
@@ -77,6 +85,7 @@ def create_app():
     app.register_blueprint(outreach_extension_module.outreach_extension_bp, url_prefix='/api/outreach-extension')
     app.register_blueprint(mou_partners.mou_partners_bp,                   url_prefix='/api/mou-partners')
     app.register_blueprint(iptif_facilities.iptif_facilities_bp,           url_prefix='/api/iptif-facilities')
+    app.register_blueprint(startup_portfolio.startup_portfolio_bp,         url_prefix='/api/startup-portfolio')
     app.register_blueprint(last_updated.last_updated_bp,                   url_prefix='/api/last-updated')
 
     @app.route('/health')
