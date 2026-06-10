@@ -229,8 +229,8 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                 };
             case 'icsr_consultancy_projects':
                 return {
-                    headers: ["project_id", "project_title", "principal_investigator", "department", "funding_agency", "client_organization", "amount_sanctioned", "start_date", "end_date", "status", "created_at"],
-                    sample: ["1", "Sample project_title", "Sample principal_investigator", "Sample department", "Sample funding_agency", "Sample client_organization", "100.5", "2023-01-01", "2023-01-01", "Sample status", "2023-01-01"]
+                    headers: ["project_id", "project_title", "principal_investigator", "department", "sponsoring_industry", "project_area", "industry_logo", "funding_agency", "client_organization", "amount_sanctioned", "start_date", "end_date", "status", "created_at"],
+                    sample: ["1", "Sample project_title", "Sample principal_investigator", "Sample department", "Sample sponsoring_industry", "Sample project_area", "https://example.com/logo.png", "Sample funding_agency", "Sample client_organization", "100.5", "2023-01-01", "2023-01-01", "Sample status", "2023-01-01"]
                 };
             case 'icsr_csr':
                 return {
