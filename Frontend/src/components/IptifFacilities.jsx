@@ -7,6 +7,7 @@ import {
   addFacility,
   deleteFacility,
   fetchFacilities,
+  fetchManageFacilities,
   updateFacility,
 } from '../services/iptifFacilities';
 import { canModifySection } from '../utils/rolePermissions';
@@ -66,6 +67,9 @@ function EditableRow({ facility, onEdit, onDelete }) {
       <div className="iff-row-body">
         <div className="iff-row-head">
           <h3 className="iff-row-title">{facility.display_title}</h3>
+          <span className={`iff-pub ${facility.is_published ? 'iff-pub--on' : 'iff-pub--off'}`}>
+            {facility.is_published ? 'Published' : 'Draft'}
+          </span>
         </div>
         {facility.facility_type && <p className="iff-row-type">{facility.facility_type}</p>}
         <div className="iff-edit-actions">
@@ -156,6 +160,7 @@ function FacilityForm({ initial, onSave, onCancel }) {
     more_info_link: initial?.more_info_link ?? '',
   });
   const [file, setFile] = useState(null);
+  const [isPublished, setIsPublished] = useState(!!initial?.is_published);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -169,6 +174,7 @@ function FacilityForm({ initial, onSave, onCancel }) {
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([key, value]) => fd.append(key, value.trim()));
+      fd.append('is_published', isPublished ? 'true' : 'false');
       if (file) fd.append('image', file);
       await onSave(fd);
     } catch (err) {
@@ -236,6 +242,11 @@ function FacilityForm({ initial, onSave, onCancel }) {
             )}
           </label>
 
+          <label className="iff-form-check">
+            <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
+            <span>Publish on the public IPTIF Facilities page</span>
+          </label>
+
           {error && <p className="iff-form-error">{error}</p>}
           <div className="iff-form-actions">
             <button type="button" className="iff-btn" onClick={onCancel} disabled={saving}>Cancel</button>
@@ -258,6 +269,7 @@ function IptifFacilities({ user }) {
   const isAdmin = canModifySection(user?.role_id, 'innovation/iptif');
 
   const [facilities, setFacilities] = useState([]);
+  const [manageList, setManageList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openFacility, setOpenFacility] = useState(null);
@@ -275,25 +287,46 @@ function IptifFacilities({ user }) {
     }
   }, [token]);
 
+  // Admin manage list — includes drafts and the is_published flag.
+  const loadManage = useCallback(async () => {
+    try {
+      setManageList((await fetchManageFacilities(token)) ?? []);
+    } catch {
+      setManageList([]);
+    }
+  }, [token]);
+
   useEffect(() => { load(); }, [load]);
+
+  const enterEditMode = async () => {
+    await loadManage();
+    setIsEditMode(true);
+  };
+
+  // After a mutation, refresh the public list and (if open) the manage list.
+  const refresh = async () => {
+    await Promise.all([load(), isEditMode ? loadManage() : Promise.resolve()]);
+  };
 
   const handleAdd = async (formData) => {
     await addFacility(formData, token);
     setShowAddForm(false);
-    await load();
+    await refresh();
   };
 
   const handleEdit = async (formData) => {
     await updateFacility(editingFacility.facility_id, formData, token);
     setEditingFacility(null);
-    await load();
+    await refresh();
   };
 
   const handleDelete = async (facility) => {
     if (!window.confirm(`Delete "${facility.display_title}"?`)) return;
     await deleteFacility(facility.facility_id, token);
-    await load();
+    await refresh();
   };
+
+  const source = isEditMode ? manageList : facilities;
 
   return (
     <div className="page-container">
@@ -319,7 +352,7 @@ function IptifFacilities({ user }) {
                   <button className="iff-btn" onClick={() => setIsEditMode(false)}>Done</button>
                 </>
               ) : (
-                <button className="iff-btn" onClick={() => setIsEditMode(true)}>Manage Facilities</button>
+                <button className="iff-btn" onClick={enterEditMode}>Manage Facilities</button>
               )}
             </div>
           )}
@@ -327,15 +360,17 @@ function IptifFacilities({ user }) {
 
         {loading ? (
           <p className="iff-empty">Loading facilities…</p>
-        ) : facilities.length === 0 ? (
+        ) : source.length === 0 ? (
           <p className="iff-empty">
-            {isAdmin
-              ? 'No facilities yet. Use “Manage Facilities” → “Add Facility” to create one.'
-              : 'No facilities have been published yet.'}
+            {isEditMode
+              ? 'No facilities to manage yet. Use “Add Facility” to create one.'
+              : isAdmin
+                ? 'No published facilities yet. Use “Manage Facilities” to add and publish them.'
+                : 'No facilities have been published yet.'}
           </p>
         ) : (
           <div className="iff-list">
-            {facilities.map((f) =>
+            {source.map((f) =>
               isEditMode ? (
                 <EditableRow
                   key={f.facility_id}

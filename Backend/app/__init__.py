@@ -45,9 +45,9 @@ def create_app():
     app.config['STARTUPS_UPLOAD_FOLDER'] = STARTUPS_UPLOAD_FOLDER
     os.makedirs(STARTUPS_UPLOAD_FOLDER, exist_ok=True)
 
-    INDUSTRY_UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'industry')
-    app.config['INDUSTRY_UPLOAD_FOLDER'] = INDUSTRY_UPLOAD_FOLDER
-    os.makedirs(INDUSTRY_UPLOAD_FOLDER, exist_ok=True)
+    INDUSTRY_PROJECT_UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'icsr_industry_project')
+    app.config['INDUSTRY_PROJECT_UPLOAD_FOLDER'] = INDUSTRY_PROJECT_UPLOAD_FOLDER
+    os.makedirs(INDUSTRY_PROJECT_UPLOAD_FOLDER, exist_ok=True)
 
     @app.route('/uploads/logos/<path:filename>')
     def serve_logo(filename):
@@ -63,7 +63,7 @@ def create_app():
 
     @app.route('/uploads/industry/<path:filename>')
     def serve_industry_logo(filename):
-        return send_from_directory(app.config['INDUSTRY_UPLOAD_FOLDER'], filename)
+        return send_from_directory(app.config['INDUSTRY_PROJECT_UPLOAD_FOLDER'], filename)
 
     from . import (
         auth, dashboard, upload,
@@ -72,7 +72,7 @@ def create_app():
         academic_module, research_module, innovation_module,
         industry_connect_module, outreach_extension_module, nirf_stats, export_db,
         mou_partners, last_updated, iptif_facilities, startup_portfolio,
-        icsr_consultancy,
+        icsr_consultancy, icsr_sponsored,
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
@@ -96,6 +96,7 @@ def create_app():
     app.register_blueprint(iptif_facilities.iptif_facilities_bp,           url_prefix='/api/iptif-facilities')
     app.register_blueprint(startup_portfolio.startup_portfolio_bp,         url_prefix='/api/startup-portfolio')
     app.register_blueprint(icsr_consultancy.icsr_consultancy_bp,           url_prefix='/api/icsr-consultancy')
+    app.register_blueprint(icsr_sponsored.icsr_sponsored_bp,               url_prefix='/api/icsr-sponsored')
     app.register_blueprint(last_updated.last_updated_bp,                   url_prefix='/api/last-updated')
 
     @app.route('/health')

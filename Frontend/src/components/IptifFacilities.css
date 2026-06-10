@@ -463,3 +463,36 @@ button.iff-row:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Publish badge (manage mode) ──────────────────────────────────────────── */
+
+.iff-pub {
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.iff-pub--on {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.iff-pub--off {
+  background: var(--color-bg-2);
+  color: var(--color-text-muted);
+}
+
+/* ── Publish checkbox (add/edit form) ─────────────────────────────────────── */
+
+.iff-form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+}

@@ -32,6 +32,7 @@ const IarSection = lazyWithRetry(() => import('./components/IarSection'));
 const Research = lazyWithRetry(() => import('./components/Research'));
 const ResearchIcsrSection = lazyWithRetry(() => import('./components/ResearchIcsrSection'));
 const IcsrConsultancyProjects = lazyWithRetry(() => import('./components/IcsrConsultancyProjects'));
+const IcsrSponsoredProjects = lazyWithRetry(() => import('./components/IcsrSponsoredProjects'));
 const Patents = lazyWithRetry(() => import('./components/Patents'));
 const MoUCollaborations = lazyWithRetry(() => import('./components/MoUCollaborations'));
 const IndustryAdministrativeSection = lazyWithRetry(() => import('./components/IndustryAdministrativeSection'));
@@ -240,6 +241,7 @@ function App() {
             <Route path="research" element={<Research user={user} />} />
             <Route path="research/icsr" element={<AdminRoute sectionKey="research/icsr"><ResearchIcsrSection user={user} /></AdminRoute>} />
             <Route path="research/icsr_consultancy_prj" element={<AdminRoute sectionKey="research/icsr"><IcsrConsultancyProjects user={user} /></AdminRoute>} />
+            <Route path="research/icsr_sponsered_prj" element={<AdminRoute sectionKey="research/icsr"><IcsrSponsoredProjects user={user} /></AdminRoute>} />
             <Route path="patents" element={<AdminRoute><Patents user={user} /></AdminRoute>} />
             <Route path="mou-collaborations" element={<AdminRoute><MoUCollaborations user={user} /></AdminRoute>} />
             <Route path="industry-connect/administrative-section" element={<AdminRoute sectionKey="industry-connect/administrative"><IndustryAdministrativeSection user={user} /></AdminRoute>} />

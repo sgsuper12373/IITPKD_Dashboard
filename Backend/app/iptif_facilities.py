@@ -27,11 +27,18 @@ _PUBLIC_COLUMNS = (
     "image_url, availability_status, availing_guidance, more_info_link, last_updated"
 )
 
+# Manage view additionally needs the publish flag so admins can publish/unpublish.
+_MANAGE_COLUMNS = _PUBLIC_COLUMNS + ", is_published"
+
 # Showcase-editable text fields (everything except the image, which is handled separately).
 _EDITABLE_FIELDS = (
     'display_title', 'facility_name', 'facility_type', 'facility_summary',
     'availability_status', 'availing_guidance', 'more_info_link',
 )
+
+
+def _parse_bool(value):
+    return str(value).strip().lower() in ('true', '1', 'on', 'yes')
 
 
 def _check_iptif_admin(conn, user_id):
@@ -80,7 +87,11 @@ def _form_values():
 @iptif_facilities_bp.route('/', methods=['GET'])
 @token_optional
 def get_facilities(current_user_id=None):
-    """Public list of showcased facilities. A facility is 'showcased' once it has a display_title."""
+    """Public list of published, showcased facilities.
+
+    A facility is 'showcased' once it has a display_title, and only appears here
+    once an admin has published it (is_published = true).
+    """
     conn = get_db_connection()
     if not conn:
         return jsonify({'error': 'Database connection failed.'}), 503
@@ -90,7 +101,7 @@ def get_facilities(current_user_id=None):
             f"""
             SELECT {_PUBLIC_COLUMNS}
             FROM iptif_facilities_table
-            WHERE display_title IS NOT NULL
+            WHERE display_title IS NOT NULL AND is_published
             ORDER BY display_title ASC
             """
         )
@@ -99,6 +110,38 @@ def get_facilities(current_user_id=None):
         return jsonify([dict(r) for r in rows]), 200
     except (pg_errors.UndefinedTable, pg_errors.UndefinedColumn):
         # Migration not applied yet — degrade gracefully instead of 500.
+        conn.rollback()
+        return jsonify([]), 200
+    finally:
+        release_db_connection(conn)
+
+
+# ── GET /manage ──────────────────────────────────────────────────────────────
+
+@iptif_facilities_bp.route('/manage', methods=['GET'])
+@token_required
+def get_manage_facilities(current_user_id):
+    """All showcased facilities (published + draft) for IPTIF admins to manage."""
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection failed.'}), 503
+    try:
+        if not _check_iptif_admin(conn, current_user_id):
+            return jsonify({'error': 'IPTIF admin access required.'}), 403
+
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+        cur.execute(
+            f"""
+            SELECT {_MANAGE_COLUMNS}
+            FROM iptif_facilities_table
+            WHERE display_title IS NOT NULL
+            ORDER BY display_title ASC
+            """
+        )
+        rows = cur.fetchall()
+        cur.close()
+        return jsonify([dict(r) for r in rows]), 200
+    except (pg_errors.UndefinedTable, pg_errors.UndefinedColumn):
         conn.rollback()
         return jsonify([]), 200
     finally:
@@ -131,14 +174,15 @@ def add_facility(current_user_id):
             if err:
                 return jsonify({'error': err}), 400
 
+        is_published = _parse_bool(request.form.get('is_published'))
         cur.execute(
             f"""
             INSERT INTO iptif_facilities_table
-                (facility_id, {', '.join(_EDITABLE_FIELDS)}, image_url)
-            VALUES (%s, {', '.join(['%s'] * len(_EDITABLE_FIELDS))}, %s)
-            RETURNING {_PUBLIC_COLUMNS}
+                (facility_id, {', '.join(_EDITABLE_FIELDS)}, image_url, is_published)
+            VALUES (%s, {', '.join(['%s'] * len(_EDITABLE_FIELDS))}, %s, %s)
+            RETURNING {_MANAGE_COLUMNS}
             """,
-            (uuid.uuid4().hex, *(values[f] for f in _EDITABLE_FIELDS), image_url),
+            (uuid.uuid4().hex, *(values[f] for f in _EDITABLE_FIELDS), image_url, is_published),
         )
         row = cur.fetchone()
         conn.commit()
@@ -178,16 +222,24 @@ def update_facility(current_user_id, facility_id):
             _delete_image_file(existing['image_url'])
             new_image_url = saved_url
 
+        # Publish flag is set explicitly when present, otherwise left unchanged.
+        if 'is_published' in request.form:
+            published_clause = ", is_published = %s"
+            published_param = [_parse_bool(request.form.get('is_published'))]
+        else:
+            published_clause = ""
+            published_param = []
+
         # COALESCE keeps the existing value when a field is omitted/blank.
         set_clause = ', '.join(f"{field} = COALESCE(%s, {field})" for field in _EDITABLE_FIELDS)
         cur.execute(
             f"""
             UPDATE iptif_facilities_table
-            SET {set_clause}, image_url = %s
+            SET {set_clause}, image_url = %s{published_clause}
             WHERE facility_id = %s
-            RETURNING {_PUBLIC_COLUMNS}
+            RETURNING {_MANAGE_COLUMNS}
             """,
-            (*(values[f] for f in _EDITABLE_FIELDS), new_image_url, facility_id),
+            (*(values[f] for f in _EDITABLE_FIELDS), new_image_url, *published_param, facility_id),
         )
         row = cur.fetchone()
         conn.commit()

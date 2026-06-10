@@ -1,14 +1,13 @@
-"""Blueprint for managing ICSR consultancy projects.
+"""Blueprint for managing ICSR sponsored projects.
 
-Powers the /research/icsr_consultancy_prj management page where the ICSR section
+Powers the /research/icsr_sponsered_prj management page where the ICSR section
 (role 9) and the master admin (role 3) can list, inline-create, and edit
-icsr_consultancy_projects rows — including the sponsoring industry, that
+icsr_sponsered_projects rows — including the sponsoring industry, that
 industry's logo, and the project's area. Bulk creation still flows through the
 existing CSV upload pipeline; this blueprint handles single-row edits and the
 logo upload that CSV cannot express. Logos are stored on disk under
 uploads/icsr_industry_project/ and served at the /uploads/industry/<file> URL
-(see serve_industry_logo in app/__init__.py), mirroring the IPTIF facilities /
-startup portfolio flow.
+(shared with the consultancy projects flow — see app/__init__.py).
 """
 import os
 import uuid
@@ -21,21 +20,23 @@ from werkzeug.utils import secure_filename
 from .auth import token_required
 from .db import get_db_connection, release_db_connection
 
-icsr_consultancy_bp = Blueprint('icsr_consultancy', __name__)
+icsr_sponsored_bp = Blueprint('icsr_sponsored', __name__)
 
 ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
 
-# Roles allowed to manage consultancy projects: master admin + ICSR section.
+# Roles allowed to manage sponsored projects: master admin + ICSR section.
 # Mirrors SECTION_PERMISSIONS['research/icsr'] on the frontend.
 MANAGE_ROLES = (3, 9)
 
-TABLE = 'icsr_consultancy_projects'
+TABLE = 'icsr_sponsered_projects'
 
-# Plain text / varchar fields. principal_investigator & department are NOT NULL.
+# Plain text / varchar fields. None are NOT NULL on this table (only project_id is).
 _TEXT_FIELDS = (
-    'project_title', 'principal_investigator', 'department',
+    'project_title', 'principal_investigator', 'principal_investigator_department',
+    'co_principal_investigator1', 'co_principal_investigator1_department',
+    'co_principal_investigator2', 'co_principal_investigator2_department',
     'funding_agency', 'client_organization', 'status',
-    'sponsoring_industry', 'project_area',
+    'sponsered_industry', 'project_area',
 )
 _NUMERIC_FIELDS = ('amount_sanctioned',)
 _DATE_FIELDS = ('start_date', 'end_date')
@@ -48,7 +49,7 @@ _COLUMNS = (
 
 
 def _can_manage(conn, user_id):
-    """True if the user's role may manage consultancy projects."""
+    """True if the user's role may manage sponsored projects."""
     cur = conn.cursor()
     try:
         cur.execute("SELECT role_id FROM users WHERE id = %s", (user_id,))
@@ -120,10 +121,10 @@ def _resolve_logo(existing=None):
 
 # ── GET / ──────────────────────────────────────────────────────────────────────
 
-@icsr_consultancy_bp.route('/', methods=['GET'])
+@icsr_sponsored_bp.route('/', methods=['GET'])
 @token_required
 def list_projects(current_user_id):
-    """All consultancy projects for the management page (admins / ICSR only)."""
+    """All sponsored projects for the management page (admins / ICSR only)."""
     conn = get_db_connection()
     if not conn:
         return jsonify({'error': 'Database connection failed.'}), 503
@@ -149,10 +150,10 @@ def list_projects(current_user_id):
 
 # ── POST / ─────────────────────────────────────────────────────────────────────
 
-@icsr_consultancy_bp.route('/', methods=['POST'])
+@icsr_sponsored_bp.route('/', methods=['POST'])
 @token_required
 def create_project(current_user_id):
-    """Inline-create a single consultancy project (admins / ICSR only)."""
+    """Inline-create a single sponsored project (admins / ICSR only)."""
     conn = get_db_connection()
     if not conn:
         return jsonify({'error': 'Database connection failed.'}), 503
@@ -160,10 +161,9 @@ def create_project(current_user_id):
         if not _can_manage(conn, current_user_id):
             return jsonify({'error': 'ICSR admin access required.'}), 403
 
-        pi = (request.form.get('principal_investigator') or '').strip()
-        dept = (request.form.get('department') or '').strip()
-        if not pi or not dept:
-            return jsonify({'error': 'principal_investigator and department are required.'}), 400
+        title = (request.form.get('project_title') or '').strip()
+        if not title:
+            return jsonify({'error': 'project_title is required.'}), 400
 
         logo, err = _resolve_logo()
         if err:
@@ -198,10 +198,10 @@ def create_project(current_user_id):
 
 # ── PUT /<project_id> ───────────────────────────────────────────────────────────
 
-@icsr_consultancy_bp.route('/<int:project_id>', methods=['PUT'])
+@icsr_sponsored_bp.route('/<int:project_id>', methods=['PUT'])
 @token_required
 def update_project(current_user_id, project_id):
-    """Edit a consultancy project's fields, industry, area, and logo."""
+    """Edit a sponsored project's fields, industry, area, and logo."""
     conn = get_db_connection()
     if not conn:
         return jsonify({'error': 'Database connection failed.'}), 503

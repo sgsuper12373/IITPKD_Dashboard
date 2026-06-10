@@ -358,6 +358,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         </button>
                         <button
                           className="page-upload-btn"
+                          onClick={() => navigate('/research/icsr_sponsered_prj')}
+                        >
+                          <span>&#9881;&#65039;</span> Manage Sponsored
+                        </button>
+                        <button
+                          className="page-upload-btn"
                           onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}
                         >
                           <span>&#128228;</span> Consultancy

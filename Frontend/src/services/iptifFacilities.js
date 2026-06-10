@@ -16,12 +16,23 @@ const handleError = (error, defaultMessage) => {
   throw new Error('Network error. Please verify the backend server is reachable.');
 };
 
+// Public list — only published, showcased facilities.
 export const fetchFacilities = async (token) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/`, authHeaders(token));
     return response.data;
   } catch (error) {
     handleError(error, 'Failed to fetch IPTIF facilities.');
+  }
+};
+
+// Admin manage list — all showcased facilities (published + draft), incl. is_published.
+export const fetchManageFacilities = async (token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/manage`, authHeaders(token));
+    return response.data;
+  } catch (error) {
+    handleError(error, 'Failed to fetch facilities for management.');
   }
 };
 
