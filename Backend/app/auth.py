@@ -101,42 +101,6 @@ def token_optional(f):
 # Auth routes
 # ---------------------------------------------------------------------------
 
-@auth_bp.route('/signup', methods=['POST'])
-def signup():
-    """Registers a new user and returns a JWT."""
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'message': 'Email and password are required!'}), 400
-
-    hashed = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(
-            """
-            INSERT INTO users (email, password_hash, display_name, username)
-            VALUES (%s, %s, %s, %s)
-            RETURNING id, email, display_name, created_at, role_id;
-            """,
-            (data['email'], hashed, data.get('display_name'), data.get('username'))
-        )
-        new_user = cur.fetchone()
-        conn.commit()
-        return jsonify({
-            'message': 'User created successfully!',
-            'token': encode_auth_token(new_user['id'], new_user['role_id']),
-            'user': new_user,
-        }), 201
-    except psycopg2.errors.UniqueViolation:
-        conn.rollback()
-        return jsonify({'message': 'Email or username already exists.'}), 409
-    finally:
-        if conn:
-            cur.close()
-            release_db_connection(conn)
-
-
 @auth_bp.route('/login', methods=['POST'])
 def login():
     """Validates credentials and returns a JWT on success."""
