@@ -58,7 +58,7 @@
 }
 .pat-card-value {
   color: white;
-  font-size: 36px;
+  font-size: var(--text-metric);
 }
 
 /* ── Main panel ── */

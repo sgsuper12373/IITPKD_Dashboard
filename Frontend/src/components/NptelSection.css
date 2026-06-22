@@ -14,7 +14,7 @@
 .nptel-card-header  { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .nptel-card-icon    { font-size: 32px; background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 12px; }
 .nptel-card-h3      { margin: 0; opacity: 0.9; }
-.nptel-card-value   { font-size: 48px; font-weight: bold; }
+.nptel-card-value   { font-size: var(--text-metric); font-weight: bold; }
 
 /* ── Content panels ── */
 .nptel-panel        { padding: 24px; background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }

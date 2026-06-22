@@ -15,7 +15,7 @@
 /* hg-summary-card base is in injected TRANSITION_STYLE */
 .hg-summary-card { flex: 1 1 min(250px, 100%); }
 .hg-summary-card-h3  { margin: 0 0 10px 0; font-size: 16px; opacity: 0.9; }
-.hg-summary-card-sub { font-size: 11px; opacity: 0.7; margin-top: 6px; }
+.hg-summary-card-sub { font-size: var(--text-xs); opacity: 0.7; margin-top: 6px; }
 
 /* ── Revenue section ── */
 .hg-revenue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }

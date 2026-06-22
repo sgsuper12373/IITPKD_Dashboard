@@ -75,7 +75,7 @@
   font-weight: 500;
 }
 .cncl-stat-card-value {
-  font-size: 48px;
+  font-size: var(--text-metric);
   font-weight: bold;
   color: white;
   margin-bottom: 8px;

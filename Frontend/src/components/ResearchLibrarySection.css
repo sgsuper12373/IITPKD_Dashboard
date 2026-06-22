@@ -57,7 +57,7 @@
   flex-shrink: 0;
 }
 .rls-card-sub {
-  font-size: 9px;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.7);
 }
 

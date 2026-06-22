@@ -14,7 +14,7 @@
 .icsr-card--indigo   { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); }
 .icsr-card--green    { background: linear-gradient(135deg, #22c55e 0%, #166534 100%); }
 .icsr-card-h3        { margin: 0 0 10px 0; opacity: 0.9; }
-.icsr-card-value     { font-size: 48px; font-weight: bold; }
+.icsr-card-value     { font-size: var(--text-metric); font-weight: bold; }
 
 /* ── Chart panel ── */
 .icsr-panel        { background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; padding: 24px; margin-bottom: 30px; }

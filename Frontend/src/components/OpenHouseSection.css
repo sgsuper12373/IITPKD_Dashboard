@@ -13,7 +13,7 @@
 .oh-card--pink   { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 10px 20px rgba(240, 147, 251, 0.2); }
 .oh-card--green  { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 10px 20px rgba(67, 233, 123, 0.2); }
 .oh-card-h3    { margin: 0 0 10px 0; opacity: 0.9; }
-.oh-card-value { font-size: 48px; font-weight: bold; }
+.oh-card-value { font-size: var(--text-metric); font-weight: bold; }
 
 /* ── Content panels ── */
 .oh-panel      { padding: 24px; background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; }

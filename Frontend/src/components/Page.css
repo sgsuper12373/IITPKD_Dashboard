@@ -368,6 +368,19 @@
 }
 
 /* ================================================================
+   CHART TEXT — uniform typography across ALL Recharts graphs.
+   Each chart sets its own inline fontSize, which made the text size
+   differ from graph to graph. These rules override those inline
+   values so every graph matches the IGRC reference. !important is
+   required because Recharts applies fontSize inline. The mobile
+   breakpoints further below scale these down on small screens.
+   ================================================================ */
+.recharts-cartesian-axis-tick text { font-size: 18px !important; }   /* axis tick labels (years, numbers) */
+.recharts-label-list text          { font-size: 16px !important; }   /* data labels above bars / on points */
+.recharts-legend-wrapper ul,
+.recharts-legend-wrapper li        { font-size: 18px !important; }   /* legend (Filed / Pending / Resolved) */
+
+/* ================================================================
    RESPONSIVE BREAKPOINTS
    ================================================================ */
 @media (max-width: 1024px) {

@@ -17,7 +17,7 @@
 
 /* Title */
 .page-content-studentsEngagement>h1 {
-    font-size: 32px;
+    font-size: var(--text-2xl);
     font-weight: 800;
     line-height: 1.25;
     letter-spacing: -0.4px;
