@@ -1,13 +1,38 @@
-# Feedback Form Integration & Google Sheets Setup Guide
+  # Feedback Form Integration & Google Sheets Setup Guide
 
-This guide explains how to connect the Feedback Form in the IITPKD Dashboard to a Google Sheet. The feedback submission uses **Google Apps Script** as a lightweight backend proxy to receive submissions from the React client and append them directly to a spreadsheet.
+This guide explains how the Feedback Form in the IITPKD Dashboard connects to a Google Sheet.
+
+> **Important — the flow changed.** After launch the public form was abused (phishing
+> images, stickers/GIFs, nude images) because the browser posted **directly** to the
+> public Apps Script URL, so there was no server to authenticate the submitter or
+> inspect the image. The form is now **authorized-users-only** and every submission
+> is routed through the Flask backend, which verifies an **email OTP + math CAPTCHA**
+> and **sanitises the screenshot** before relaying to the Sheet:
+>
+> ```
+> Browser (logged-in, JWT) ──► Flask /api/feedback ──► Google Apps Script ──► Sheet/Drive
+>                                       ▲
+>                       OTP email + CAPTCHA + image validation enforced here
+> ```
+>
+> The Apps Script URL is no longer in the frontend. It lives in the backend `.env`
+> (`FEEDBACK_SCRIPT_URL`) and the Apps Script only accepts requests carrying a
+> shared secret (`FEEDBACK_SHARED_SECRET`) — so a direct `curl` to the public URL,
+> the original abuse vector, now fails.
 
 ---
 
-## 📍 File Locations
+## 📍 File / config locations
 
-1. **Frontend Component**: `Frontend/src/components/FeedbackModal.jsx`
-2. **Variable to Update**: `SCRIPT_URL` (defined near the top of the file)
+| What | Where |
+| --- | --- |
+| Frontend modal (two-step verify → feedback) | `Frontend/src/components/FeedbackModal.jsx` |
+| Backend relay + OTP/CAPTCHA/image checks | `Backend/app/feedback.py`, `mailer.py`, `image_safety.py` |
+| Apps Script URL + shared secret | `Backend/.env` → `FEEDBACK_SCRIPT_URL`, `FEEDBACK_SHARED_SECRET` |
+| SMTP credentials for the OTP email | `Backend/.env` → `SMTP_HOST/PORT/USER/PASSWORD` |
+| OTP/CAPTCHA state table | `Database_Schema/migrations/add_feedback_verification.sql` |
+
+All required env vars are documented in **`Backend/.env.example`**.
 
 ---
 
@@ -15,118 +40,41 @@ This guide explains how to connect the Feedback Form in the IITPKD Dashboard to 
 
 ### Step 1: Create a Google Sheet
 1. Open [Google Sheets](https://sheets.google.com) and create a new blank spreadsheet.
-2. Give your spreadsheet a descriptive name (e.g., `IITPKD Dashboard Feedback Responses`).
-3. (Optional) Rename the sheet tab at the bottom to `Feedback` or leave it as `Sheet1`.
+2. Name it something descriptive (e.g., `IITPKD Dashboard Feedback Responses`).
 
-### Step 2: Open Google Apps Script editor
-1. In the Google Sheets top menu, go to **Extensions** > **Apps Script**.
-2. This opens the Apps Script editor connected to your spreadsheet.
-3. Rename the Apps Script project at the top to something like `IITPKD Feedback Handler`.
+### Step 2: Open the Apps Script editor
+1. In the Sheet, go to **Extensions** > **Apps Script**.
+2. Rename the project to something like `IITPKD Feedback Handler`.
 
-### Step 3: Paste the Apps Script Code
-1. Erase any default code in the editor (`Code.gs`) and paste the following Google Apps Script:
+### Step 3: Paste the Apps Script code (with the shared-secret guard)
+Erase the default `Code.gs` and paste the following. **Set `SHARED_SECRET` to the same
+value you put in `FEEDBACK_SHARED_SECRET` in `Backend/.env`.**
 
 ```javascript
+// Must match FEEDBACK_SHARED_SECRET in Backend/.env. Known only to the Flask
+// server, so direct POSTs to this public URL (without the secret) are rejected.
+var SHARED_SECRET = "PASTE_THE_SAME_SECRET_AS_BACKEND_ENV";
+
 function doPost(e) {
   try {
-    // Open the spreadsheet that owns this script
-    var doc = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = doc.getActiveSheet();
-    
-    // Parse the incoming JSON payload from the frontend request
     var data = JSON.parse(e.postData.contents);
-    
-    // Initialize headers if the spreadsheet is completely empty
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["Timestamp", "Name", "Email", "Feedback"]);
+
+    // Reject anything that didn't come from our backend.
+    if (!data.secret || data.secret !== SHARED_SECRET) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: "error", error: "unauthorized" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
-    
-    // Append a new row with timestamp and form values
-    var timestamp = new Date();
-    sheet.appendRow([
-      timestamp, 
-      data.name || "Anonymous", 
-      data.email, 
-      data.feedback
-    ]);
-    
-    // Return a success JSON payload
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  } catch (error) {
-    Logger.log("Error inserting feedback: " + error.toString());
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": error.toString() }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-```
 
-2. Save the script (click the floppy disk icon or press `Ctrl + S` / `Cmd + S`).
-
-### Step 4: Deploy the Script as a Web App
-For the frontend React application to communicate with your Google Sheet, you must deploy the script as a public Web App.
-
-1. In the upper-right corner of the Apps Script editor, click **Deploy** > **New deployment**.
-2. Click the gear icon (**Select type**) next to "Configuration" and choose **Web app**.
-3. Fill out the configuration fields:
-   - **Description**: `IITPKD Dashboard Feedback Form API` (or similar).
-   - **Execute as**: Select **Me (your-email@gmail.com)**.
-   - **Who has access**: Select **Anyone**. *(This is critical to allow submissions from the web client without requiring users to log into a Google Account).*
-4. Click **Deploy**.
-5. You may be prompted to **Authorize Access**. Follow the instructions:
-   - Click *Authorize Access*.
-   - Choose your Google Account.
-   - Click *Advanced* (on the Google Safety screen) and then click *Go to IITPKD Feedback Handler (unsafe)* to grant permissions.
-6. Once deployed, copy the **Web app URL** provided in the confirmation window. The URL will look like:
-   `https://script.google.com/macros/s/XXXXX...XXXXX/exec`
-
-### Step 5: Update the URL in the React Project
-1. Open the file `Frontend/src/components/FeedbackModal.jsx`.
-2. Locate the `SCRIPT_URL` constant near the top:
-   ```javascript
-   const SCRIPT_URL = 'YOUR_NEW_GOOGLE_SCRIPT_URL_HERE';
-   ```
-3. Replace the existing placeholder URL with the Web App URL you copied in Step 4.
-4. Save the file.
-
----
-
-## 🧪 Testing the Integration
-1. Run the frontend development server:
-   ```bash
-   cd Frontend
-   npm run dev
-   ```
-2. Navigate to the dashboard in your browser and click on the **Feedback** action/button (usually in the header or footer).
-3. Fill out the fields (Name, Email, and Feedback content) and submit.
-4. Go back to your Google Sheet. You should see a new row populated with the timestamp, name, email, and feedback message instantly.
-
----
-
-## 📸 Adding Screenshot Upload Support
-
-The feedback form can also let users attach a screenshot. The image is sent (base64-encoded) inside the same JSON payload; the Apps Script decodes it, saves it to a Google Drive folder, makes it link-viewable, and writes the Drive link into a new **Screenshot** column of the sheet.
-
-> The **frontend** part (file picker, preview, 5 MB validation, base64 conversion, payload field) is already implemented in `Frontend/src/components/FeedbackModal.jsx`. You only need to update the Apps Script and re-deploy.
-
-### Step A: Replace the Apps Script with the screenshot-aware version
-In the Apps Script editor, replace the `doPost` function with this:
-
-```javascript
-function doPost(e) {
-  try {
     var doc = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = doc.getActiveSheet();
-
-    // Parse the incoming JSON payload from the frontend request
-    var data = JSON.parse(e.postData.contents);
 
     // Initialize headers if the spreadsheet is completely empty
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(["Timestamp", "Name", "Email", "Feedback", "Screenshot"]);
     }
 
-    // If a screenshot was attached, decode it and store it in Drive
+    // If a (already-validated, re-encoded) screenshot was relayed, store it in Drive
     var screenshotUrl = "";
     if (data.screenshot) {
       var folderName = "IITPKD Dashboard Feedback Screenshots";
@@ -141,7 +89,6 @@ function doPost(e) {
       screenshotUrl = file.getUrl();
     }
 
-    // Append the feedback row (with the Drive link, if any)
     sheet.appendRow([
       new Date(),
       data.name || "Anonymous",
@@ -150,42 +97,101 @@ function doPost(e) {
       screenshotUrl
     ]);
 
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success" }))
-                         .setMimeType(ContentService.MimeType.JSON);
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     Logger.log("Error inserting feedback: " + error.toString());
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": error.toString() }))
-                         .setMimeType(ContentService.MimeType.JSON);
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: "error", error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Optional: lets you sanity-check the deployment in a browser. Opening the /exec
+// URL is a GET request; without this you'll see "Script function not found: doGet"
+// (harmless — the backend only ever talks to this script via POST).
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ result: "ok", message: "Feedback endpoint is live. Use POST." }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 ```
 
-### Step B: Re-deploy (keep the same URL)
-Because the script now touches Google Drive, it needs a new authorization **and** a new version published to the *existing* deployment so your `SCRIPT_URL` does not change:
+Save (`Ctrl/Cmd + S`). **After any script edit you must re-deploy a new version**
+(Deploy → Manage deployments → ✏️ → *New version* → Deploy) for the change to take effect.
 
-1. Save the script (`Ctrl/Cmd + S`).
-2. Click **Deploy** > **Manage deployments**.
-3. Click the ✏️ (pencil/edit) icon on your existing deployment.
-4. Under **Version**, choose **New version**, then click **Deploy**.
-5. When prompted, **Authorize Access** again and accept the new Drive permission (`See, edit, create, and delete … Google Drive files`).
-6. The Web app URL stays the same — no frontend change needed.
+### Step 4: Deploy as a Web App
+1. **Deploy** > **New deployment** > select type **Web app**.
+2. **Description**: `IITPKD Dashboard Feedback API`.
+3. **Execute as**: **Me**.
+4. **Who has access**: **Anyone**. *(Required so the Flask server can reach it without a
+   Google login. This is safe now because the `SHARED_SECRET` check — not Google auth —
+   is what gates writes.)*
+5. **Deploy**, authorize access (accept the Drive permission), and copy the **Web app URL**
+   (`https://script.google.com/macros/s/XXXXX/exec`).
 
-> If you instead create a *brand-new* deployment, the URL changes; in that case update `SCRIPT_URL` in `FeedbackModal.jsx` (Step 5 above).
+### Step 5: Configure the backend (NOT the frontend)
+In `Backend/.env` (see `Backend/.env.example`):
 
-### Step C: Verify
-1. Open the feedback form, attach an image (≤ 5 MB), and submit.
-2. In the sheet, the new row should have a **Screenshot** link.
-3. Open the link — it should show the uploaded image (stored in the *IITPKD Dashboard Feedback Screenshots* Drive folder).
+```
+FEEDBACK_SCRIPT_URL=https://script.google.com/macros/s/XXXXX/exec
+FEEDBACK_SHARED_SECRET=<the exact string you set as SHARED_SECRET in the Apps Script>
 
-### Notes specific to screenshots
-- **Size**: the frontend rejects images larger than 5 MB. base64 inflates the payload by ~33%; keep images modest so requests stay fast and within Apps Script payload limits.
-- **Drive storage**: every screenshot consumes Drive quota of the account that owns the script. Periodically clean the folder if volume is high.
-- **Privacy**: screenshots are set to *Anyone with the link can view*. Anyone holding the Drive link can see the image — acceptable for dashboard screenshots, but don't encourage users to attach sensitive content.
+# OTP email (Gmail App Password works for low volume; swap to institute SMTP later)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=<sending gmail address>
+SMTP_PASSWORD=<16-char Gmail App Password>
+```
+
+> **Gmail App Password:** enable 2-Step Verification on the account, then create an App
+> Password at <https://myaccount.google.com/apppasswords>. Use that 16-char value as
+> `SMTP_PASSWORD` — the normal account password will not work.
+
+### Step 6: Apply the DB migration
+```bash
+psql -h <host> -U <user> -d <db> -f Database_Schema/migrations/add_feedback_verification.sql
+```
+And install the new image dependency:
+```bash
+cd Backend && pip install -r requirements.txt   # adds Pillow
+```
 
 ---
 
-## ⚠️ Notes & Security Considerations
+## 🧪 Testing the Integration
+1. Start the backend and frontend.
+2. Log in as a **real (authorized) user** — guests do not see the Feedback button.
+3. Click **Feedback**. The modal requests an OTP; check your inbox for the 6-digit code.
+4. Enter the code, solve the CAPTCHA (e.g. `7 + 4`), click **Verify**.
+5. Enter feedback, optionally attach a **PNG/JPG**, and submit.
+6. Confirm a new row (and a Drive screenshot link, if attached) appears in the Sheet.
 
-- **CORS handling (`no-cors`)**: The `fetch` function in the frontend operates in `no-cors` mode to bypass strict cross-origin checks. Consequently, the browser cannot read the Google response body (it is treated as an "opaque" response). Even if the promise resolves successfully, the status is handled based on the HTTP request success. The provided Apps Script is specifically structured to process the `no-cors` request body.
-- **Rate Limits**: Google Apps Script has daily quotas (e.g., 20,000 email/spreadsheet operations per day for consumer accounts, 100,000 for Google Workspace accounts). This is more than sufficient for typical dashboard feedback volume.
-- **Privacy**: Because "Who has access" is set to "Anyone", anyone with the URL can submit POST requests. Ensure you do not store highly sensitive credentials inside the Apps Script environment itself.
+### Re-deploying the script later
+If you edit `doPost`, push a new version to the **same** deployment (Deploy → Manage
+deployments → ✏️ → New version) so `FEEDBACK_SCRIPT_URL` stays the same.
+
+---
+
+## 🔒 Security model (why this stops the abuse)
+
+- **Authorized-only:** the Feedback button is hidden from guests, and every
+  `/api/feedback/*` endpoint requires a valid login token (the shared guest account is
+  rejected too). Each submission is tied to a real account — abuse is deanonymized.
+- **Email OTP + CAPTCHA:** a 6-digit code is emailed to the account address and a math
+  CAPTCHA must be solved; both are verified server-side, single-use, expire in 10 min,
+  and are rate-limited (1/min, 5/hour per user).
+- **Image hardening (`image_safety.py`):** the screenshot's real type is detected by
+  decoding (not the filename/MIME), only static **JPEG/PNG** are accepted, animated
+  images/stickers are rejected, size + dimensions are capped, and the image is
+  **re-encoded** so EXIF and any appended/polyglot payload is stripped before it ever
+  reaches Drive.
+- **Shared secret:** the Apps Script ignores any request without the backend-only
+  secret, so the original `curl`-the-public-URL attack no longer works.
+
+### Notes specific to screenshots
+- **Drive storage**: every screenshot consumes Drive quota of the account that owns the
+  script. Periodically clean the *IITPKD Dashboard Feedback Screenshots* folder if volume is high.
+- **Privacy**: screenshots are set to *Anyone with the link can view* — fine for dashboard
+  screenshots; don't encourage attaching sensitive content.

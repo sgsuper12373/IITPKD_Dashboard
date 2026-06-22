@@ -36,6 +36,9 @@ requests>=2.31.0
 openpyxl>=3.1.0
 xlrd>=2.0.0
 
+# Image Processing (feedback screenshot validation & re-encoding)
+Pillow>=10.0.0
+
 # Data Validation
 cerberus>=1.3.5
 

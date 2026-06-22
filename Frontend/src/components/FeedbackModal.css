@@ -122,6 +122,57 @@
   margin: 0.25rem 0 0.75rem;
 }
 
+/* ── Verification step ── */
+.fb-step-hint {
+  font-size: 0.83rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 1.1rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.fb-step-hint strong {
+  color: #2b2b2b;
+}
+
+.fb-captcha-question {
+  font-weight: 700;
+  color: #2b2b2b;
+}
+
+.fb-readonly-input {
+  background: #f0eeeb !important;
+  color: #777 !important;
+  cursor: not-allowed;
+}
+
+.fb-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.fb-link-btn {
+  border: none;
+  background: none;
+  color: #d88f00;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+
+.fb-link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.fb-link-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ── Screenshot field ── */
 .fb-optional {
   font-weight: 400;
