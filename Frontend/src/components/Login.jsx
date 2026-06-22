@@ -5,17 +5,13 @@ import { GoogleLogin } from '@react-oauth/google';
 import './Login.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 // The Login component receives a prop `onLoginSuccess` from App.jsx
-// which it will call with the token and user data after a successful login/signup.
+// which it will call with the token and user data after a successful login.
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
-  // This state toggles between Login and Sign Up forms
-  const [isLoginView] = useState(true);
 
   // Form fields state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [displayName, setDisplayName] = useState('');
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,38 +39,13 @@ function Login({ onLoginSuccess }) {
     }
   };
 
-  const handleGuestLogin = async () => {
-    setError('');
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/guest`
-      );
-      onLoginSuccess(response.data.token, response.data.user);
-      navigate('/');
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Guest login failed. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const url = isLoginView
-      ? `${import.meta.env.VITE_API_BASE_URL}/auth/login`
-      : `${import.meta.env.VITE_API_BASE_URL}/auth/signup`;
-
-    const payload = isLoginView
-      ? { email, password }
-      : { email, password, username, display_name: displayName };
+    const url = `${import.meta.env.VITE_API_BASE_URL}/auth/login`;
+    const payload = { email, password };
 
     try {
       const response = await axios.post(url, payload);
@@ -110,7 +81,7 @@ function Login({ onLoginSuccess }) {
           <img src={IIPKD_Logo} alt="IIT Palakkad Logo" />
         </div>
 
-        <h2>{isLoginView ? 'Sign in to Dashboard' : 'Create an Account'}</h2>
+        <h2>Sign in to Dashboard</h2>
 
         <form onSubmit={handleSubmit} className="login-form">
           <input
@@ -129,26 +100,8 @@ function Login({ onLoginSuccess }) {
             required
           />
 
-          {!isLoginView && (
-            <>
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Display Name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
-            </>
-          )}
-
           <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Loading...' : (isLoginView ? 'Login' : 'Sign Up')}
+            {isLoading ? 'Loading...' : 'Login'}
           </button>
 
           {error && <p className="login-error">{error}</p>}
@@ -166,31 +119,6 @@ function Login({ onLoginSuccess }) {
             theme="outline"
           />
         </div>
-
-        {/* Continue as Guest — commented out because visitors are automatically
-            logged in as guest on site entry; this button is no longer needed.
-        <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-          <span style={{ color: '#888', fontSize: '0.85rem' }}>or</span>
-        </div>
-        <button
-          type="button"
-          onClick={handleGuestLogin}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '0.6rem',
-            marginTop: '0.25rem',
-            background: 'transparent',
-            border: '1.5px solid #ccc',
-            borderRadius: '6px',
-            color: '#555',
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-          }}
-        >
-          Continue as Guest
-        </button>
-        */}
       </div>
     </div>
   );

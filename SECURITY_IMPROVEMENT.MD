@@ -12,7 +12,7 @@ This document lists security issues and hardening suggestions. Each item has a l
 
 | Severity | Count | Items |
 |----------|-------|-------|
-| 🔴 Critical | 3 | C1, C2, C3 |
+| 🔴 Critical | 3 (1 resolved) | C1, ~~C2~~ ✅, C3 |
 | 🟠 High | 6 | H1–H6 |
 | 🟡 Medium | 8 | M1–M8 |
 | 🔵 Low | 6 | L1–L6 |
@@ -37,14 +37,14 @@ Compare with every other write module (`icsr_consultancy.py:54`, `iptif_faciliti
 
 ---
 
-### C2 — Public self-registration is open and grants an immediately-usable token
-**Location:** `Backend/app/auth.py:104-137` (`/auth/signup`)
+### C2 — Public self-registration is open and grants an immediately-usable token — ✅ RESOLVED (2026-06-21)
+**Location:** `Backend/app/auth.py` (`/auth/signup`)
 
-`/auth/signup` requires no authentication and returns a working JWT in its response (`auth.py:128`). New rows default to `role_id = 1` and `status = 'pending_verification'` (`Database_Schema/schema_dump.sql:1428-1431`), but **nothing enforces the verification step** — see C3. So anyone can create an account and immediately call authenticated endpoints (including C1's upload).
+> **Resolution:** The public `/auth/signup` route was removed from `Backend/app/auth.py`, and the corresponding dead signup UI was removed from `Frontend/src/components/Login.jsx` (login is now the only credential flow). Admin accounts are provisioned on the server and additional users are created via the admin-only `/auth/create-user` endpoint, so no public registration path remains. See "Shipping the product: creating the first admin" at the end of this document for the recommended way to bootstrap the initial account on a fresh deployment.
 
-**Impact:** Removes the "authentication" barrier in front of every `@token_required` endpoint, including the destructive CSV upload. Also enables account/resource spam.
+*Original finding (for the record):* `/auth/signup` required no authentication and returned a working JWT in its response. New rows default to `role_id = 1` and `status = 'pending_verification'` (`Database_Schema/schema_dump.sql:1428-1431`), but **nothing enforced the verification step** — see C3. So anyone could create an account and immediately call authenticated endpoints (including C1's upload).
 
-**Fix:** Decide whether public signup should exist at all. If not, remove the route or gate it behind admin. If it must stay, require email verification before the account is usable, and never hand back a usable token for an unverified account.
+**Impact:** Removed the "authentication" barrier in front of every `@token_required` endpoint, including the destructive CSV upload. Also enabled account/resource spam.
 
 ---
 
@@ -225,10 +225,27 @@ A shared guest account is a reasonable pattern, but ensure the guest role is str
 ## Suggested remediation order
 
 1. **C1** — add a role check to `/api/upload-csv` (stops dataset wipe). *Highest priority.*
-2. **C2 / C3** — close public registration or enforce verification + `status` at login.
-3. **H1** — disable Flask debug; deploy under gunicorn.
-4. **M1 / H2** — set a stable `JWT_SECRET_KEY`; shorten token lifetime + add revocation.
-5. **H3** — rate limiting + real account lockout on `/auth/*` and uploads.
-6. **H4 / M7** — stop leaking `str(e)` to clients and PII to logs.
-7. **H5 / H6 / M4 / M5** — upload size cap, CORS allow-list, security headers, token storage.
-8. Work through the remaining Medium/Low items as hardening.
+2. ~~**C2** — close public registration.~~ ✅ Done — `/auth/signup` removed.
+3. **C3** — enforce account `status` at login (and ideally re-check the user per request).
+4. **H1** — disable Flask debug; deploy under gunicorn.
+5. **M1 / H2** — set a stable `JWT_SECRET_KEY`; shorten token lifetime + add revocation.
+6. **H3** — rate limiting + real account lockout on `/auth/*` and uploads.
+7. **H4 / M7** — stop leaking `str(e)` to clients and PII to logs.
+8. **H5 / H6 / M4 / M5** — upload size cap, CORS allow-list, security headers, token storage.
+9. Work through the remaining Medium/Low items as hardening.
+
+---
+
+## Shipping the product: creating the first admin
+
+With public signup removed, a fresh deployment starts with an empty `users` table and no way to log in through the UI. Only the **very first admin** needs bootstrapping — every account after that is created through the existing admin-only `/auth/create-user` endpoint (and its CreateUser UI). Recommended options, best first:
+
+1. **A one-off CLI management script (recommended).** Add a `Backend/create_admin.py` (companion to the existing `setup_database.py`) that the operator runs once on the server during setup. It reads the email/password (from a prompt or `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars), hashes the password with bcrypt, and inserts a row with `role_id = 3` and `status = 'active'`. This is the Django-`createsuperuser` pattern: it runs locally with DB access, is never exposed over HTTP, and ships no secret in the repo.
+
+2. **Env-based bootstrap on first boot.** In `create_app()`, if no admin exists, create one from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars and stop doing so once an admin is present. Convenient for automated/container deploys, but the credentials live in the environment — pair it with a forced password change on first login.
+
+3. **One-time setup endpoint.** Expose `/auth/bootstrap` that works **only while the users table has zero admins** (or is guarded by a single-use `SETUP_TOKEN` from the environment), and returns `403/410` forever after. This gives a web-based install wizard but is HTTP-exposed, so it needs the zero-admin/again-token guard to be airtight.
+
+4. **Allowlisted-Google bootstrap.** If you adopt the M2 fix (restrict Google login to an institutional domain), the first user who signs in with an allowlisted email can be promoted to admin automatically when no admin yet exists. No password handling at all, but it depends on Google OAuth being configured first.
+
+**Recommendation:** ship option 1 (CLI script) as the documented setup step, optionally backed by option 2 for hands-off/container deployments. Both keep the bootstrap off the public HTTP surface, which is the whole point of having removed C2.
