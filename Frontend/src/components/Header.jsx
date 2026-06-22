@@ -137,12 +137,6 @@ function Header({ user, onLogout, isGuest }) {
         navigate('/profile');
     };
 
-    const handleSignIn = () => {
-        setShowProfileDropdown(false);
-        onLogout();
-        navigate('/login');
-    };
-
 
 
     return (
@@ -198,6 +192,10 @@ function Header({ user, onLogout, isGuest }) {
                                 </div>
                             )}
                         </div>
+                        {/* Profile avatar is hidden for guests — only authenticated
+                            (authorized) users get an account menu. Guests have no
+                            UI path to /login; the login URL is shared by mail. */}
+                        {!isGuest && (
                         <div ref={dropdownRef} className="user-profile-container">
                             <div
                                 className="user-avatar"
@@ -211,18 +209,18 @@ function Header({ user, onLogout, isGuest }) {
                                     }
                                 }}
                             >
-                                {isGuest ? 'G' : (user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U')}
+                                {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
                             {showProfileDropdown && (
                                 <div className="profile-dropdown">
                                     <div className="dropdown-header">
                                         <div className="dropdown-user-info">
                                             <div className="dropdown-avatar">
-                                                {isGuest ? 'G' : (user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U')}
+                                                {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                                             </div>
                                             <div className="dropdown-user-details">
-                                                <div className="dropdown-name">{isGuest ? 'Guest' : (user?.display_name || 'User')}</div>
-                                                <div className="dropdown-email">{isGuest ? 'Viewing as Guest' : (user?.email || '')}</div>
+                                                <div className="dropdown-name">{user?.display_name || 'User'}</div>
+                                                <div className="dropdown-email">{user?.email || ''}</div>
                                                 <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
                                                     Role ID: {user?.role_id ?? 0} — {getRoleName(user?.role_id ?? 0)}
                                                 </div>
@@ -230,23 +228,16 @@ function Header({ user, onLogout, isGuest }) {
                                         </div>
                                     </div>
                                     <div className="dropdown-divider"></div>
-                                    {isGuest ? (
-                                        <button className="dropdown-item" onClick={handleSignIn}>
-                                            Sign In
-                                        </button>
-                                    ) : (
-                                        <>
-                                            <button className="dropdown-item" onClick={handleProfileClick}>
-                                                {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
-                                            </button>
-                                            <button className="dropdown-item" onClick={onLogout}>
-                                                Logout
-                                            </button>
-                                        </>
-                                    )}
+                                    <button className="dropdown-item" onClick={handleProfileClick}>
+                                        {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
+                                    </button>
+                                    <button className="dropdown-item" onClick={onLogout}>
+                                        Logout
+                                    </button>
                                 </div>
                             )}
                         </div>
+                        )}
                     </div>
                 </header>
 
