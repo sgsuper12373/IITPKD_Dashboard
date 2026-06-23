@@ -271,6 +271,7 @@ function IptifFacilities({ user }) {
   const [facilities, setFacilities] = useState([]);
   const [manageList, setManageList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openFacility, setOpenFacility] = useState(null);
   const [editingFacility, setEditingFacility] = useState(null);
@@ -284,6 +285,7 @@ function IptifFacilities({ user }) {
       setFacilities([]);
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [token]);
 
@@ -358,7 +360,7 @@ function IptifFacilities({ user }) {
           )}
         </div>
 
-        {loading ? (
+        {loading && !hasLoaded ? (
           <p className="iff-empty">Loading facilities…</p>
         ) : source.length === 0 ? (
           <p className="iff-empty">

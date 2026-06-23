@@ -32,6 +32,7 @@ function ConclaveSection({ user, isPublicView = false }) {
 
   const [conclaves, setConclaves] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ function ConclaveSection({ user, isPublicView = false }) {
         setError(err.message || 'Failed to load summary data');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
     loadSummary();
@@ -136,7 +138,7 @@ function ConclaveSection({ user, isPublicView = false }) {
           </div>
         </div>
 
-        {loading ? (
+        {loading && !hasLoaded ? (
           <div className="cncl-loading">
             <div className="loading-spinner" />
             <p className="cncl-loading-text">Loading conclave information...</p>

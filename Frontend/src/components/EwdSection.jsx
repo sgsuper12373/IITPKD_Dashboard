@@ -58,6 +58,7 @@ function EwdSection({ user, isPublicView = false }) {
     latest: null
   });
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [activeView, setActiveView] = useState('electricity');
   const [chartType, setChartType] = useState('Bar');
@@ -122,6 +123,7 @@ function EwdSection({ user, isPublicView = false }) {
         setError(err.message || 'Failed to load EWD data. Please try again.');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
 
@@ -205,7 +207,7 @@ function EwdSection({ user, isPublicView = false }) {
 
         {error && <div className="error-message">{error}</div>}
 
-        {loading ? (
+        {loading && !hasLoaded ? (
           <SectionSkeleton cards={3} charts={3} />
         ) : (
           <>

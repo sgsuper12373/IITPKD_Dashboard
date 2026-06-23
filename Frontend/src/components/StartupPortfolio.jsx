@@ -368,6 +368,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
   const [portfolio, setPortfolio] = useState([]);
   const [manageList, setManageList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openStartup, setOpenStartup] = useState(null);
   const [editing, setEditing] = useState(null);
@@ -385,6 +386,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
       setPortfolio([]);
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [token]);
 
@@ -493,7 +495,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
           />
         </div>
 
-        {loading ? (
+        {loading && !hasLoaded ? (
           <p className="sp-empty">Loading startups…</p>
         ) : visible.length === 0 ? (
           <p className="sp-empty">

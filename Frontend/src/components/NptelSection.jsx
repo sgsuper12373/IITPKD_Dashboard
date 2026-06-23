@@ -46,6 +46,7 @@ function NptelSection({ user, isPublicView = false }) {
   });
   const [listData, setListData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [expandedChart, setExpandedChart] = useState(null);
 
@@ -70,6 +71,7 @@ function NptelSection({ user, isPublicView = false }) {
         setError(err.message || 'Failed to load NPTEL data');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
     loadData();
@@ -272,7 +274,7 @@ function NptelSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container performance-render-auto"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {loading ? (
+        {loading && !hasLoaded ? (
           <div className="chart-skeleton-wrap">
             <div className="chart-skeleton-heading" />
             <div className="chart-skeleton" aria-label="Loading chart data…">

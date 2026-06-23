@@ -267,6 +267,7 @@ function IcsrSponsoredProjects({ user }) {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -283,6 +284,7 @@ function IcsrSponsoredProjects({ user }) {
       setError(err.message || 'Failed to load projects.');
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [token]);
 
@@ -358,7 +360,7 @@ function IcsrSponsoredProjects({ user }) {
 
         {error && <div className="icp-error">{error}</div>}
 
-        {loading ? (
+        {loading && !hasLoaded ? (
           <p className="icp-empty">Loading projects…</p>
         ) : visible.length === 0 ? (
           <p className="icp-empty">

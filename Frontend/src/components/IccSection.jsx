@@ -47,6 +47,7 @@ function IccSection({ user, isPublicView = false }) {
   });
   const [chartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [expandedChart, setExpandedChart] = useState(null);
 
@@ -96,6 +97,7 @@ function IccSection({ user, isPublicView = false }) {
         setError(err.message || 'Failed to load ICC data. Please try again.');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
 
@@ -174,7 +176,7 @@ function IccSection({ user, isPublicView = false }) {
 
             {error && <div className="error-message">{error}</div>}
 
-            {loading ? (
+            {loading && !hasLoaded ? (
               <SectionSkeleton cards={3} charts={1} />
             ) : (
               <>

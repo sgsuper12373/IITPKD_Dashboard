@@ -135,6 +135,9 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   const [mouChartMode, setMouChartMode] = useState('bar');
 
   const [loading, setLoading] = useState(false);
+  // True once the first load completes. Used so filter refetches keep the page
+  // mounted (charts update in place) instead of flashing the full-page skeleton.
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [expandedChart, setExpandedChart] = useState(null);
 
@@ -181,6 +184,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
       setError(err.message || 'Failed to load ICSR analytics.');
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [filters, token, mouOnly]);
 
@@ -311,7 +315,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
   return (
     <div className={isPublicView ? "" : "page-container"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {loading ? (
+        {loading && !hasLoaded ? (
           <div className="chart-skeleton-wrap">
             <div className="chart-skeleton-heading" />
             <div className="chart-skeleton" aria-label="Loading chart data…">

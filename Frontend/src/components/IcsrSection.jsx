@@ -82,6 +82,7 @@ function IcsrSection({ user, isPublicView = false }) {
   }, []);
 
   const [loading, setLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
 
   const loadSummary = useCallback(async () => {
@@ -92,6 +93,7 @@ function IcsrSection({ user, isPublicView = false }) {
       setError(err.message || 'Failed to load summary data');
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [token, filters]);
 
@@ -329,7 +331,7 @@ function IcsrSection({ user, isPublicView = false }) {
   return (
     <div className={isPublicView ? "" : "page-container performance-render-auto"}>
       <div className={isPublicView ? "" : "page-content"}>
-        {loading ? (
+        {loading && !hasLoaded ? (
           <div className="chart-skeleton-wrap">
             <div className="chart-skeleton-heading" />
             <div className="chart-skeleton" aria-label="Loading chart data…">

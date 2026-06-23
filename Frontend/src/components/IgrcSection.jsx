@@ -47,6 +47,7 @@ function IgrcSection({ user, isPublicView = false }) {
   });
   const [chartType, setChartType] = useState('Bar'); // 'Bar' | 'Trend'
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [expandedChart, setExpandedChart] = useState(null);
 
@@ -95,6 +96,7 @@ function IgrcSection({ user, isPublicView = false }) {
         setError(err.message || 'Failed to load IGRC data. Please try again.');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
 
@@ -146,7 +148,7 @@ function IgrcSection({ user, isPublicView = false }) {
 
             {error && <div className="error-message">{error}</div>}
 
-            {loading ? (
+            {loading && !hasLoaded ? (
               <SectionSkeleton cards={4} charts={1} />
             ) : (
               <div className="performance-render-auto">
