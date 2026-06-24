@@ -96,14 +96,8 @@ def build_filter_query(filters):
     return where_clause, params
 
 
-def active_sql(cutoff_date):
-    """
-    Returns a SQL fragment (as a string) that evaluates to 1 when a row is
-    active as of cutoff_date.  The date is embedded as an ISO literal so the
-    expression can be used inside SUM() without extra parameter binding.
-    """
-    iso = cutoff_date.isoformat()
-    return f"CASE WHEN enddate IS NULL OR enddate >= '{iso}'::date THEN 1 ELSE 0 END"
+def active_sql():
+    return "CASE WHEN enddate IS NULL OR enddate >= %s::date THEN 1 ELSE 0 END"
 
 
 def fetch_rows(where_clause, params, extra_columns=''):
@@ -366,14 +360,14 @@ def get_department_breakdown(current_user_id):
             SELECT department,
                    {get_standardized_type_sql()} AS std_type,
                    COUNT(*) AS total,
-                   SUM({active_sql(cutoff)}) AS active
+                   SUM({active_sql()}) AS active
             FROM faculty_engagement
             {where_clause}
             GROUP BY department, std_type
             HAVING {get_standardized_type_sql()} IS NOT NULL
             ORDER BY department, std_type
             """,
-            params
+            [cutoff.isoformat()] + list(params)
         )
         rows = cur.fetchall()
 
@@ -538,7 +532,7 @@ def get_type_distribution(current_user_id):
             f"""
             SELECT std_type,
                    COUNT(*) AS total,
-                   SUM({active_sql(cutoff)}) AS active
+                   SUM({active_sql()}) AS active
             FROM (
                 SELECT {get_standardized_type_sql()} AS std_type,
                        enddate
@@ -549,7 +543,7 @@ def get_type_distribution(current_user_id):
             GROUP BY std_type
             ORDER BY std_type
             """,
-            params
+            [cutoff.isoformat()] + list(params)
         )
         rows = cur.fetchall()
         distribution = [
@@ -588,8 +582,7 @@ def get_faculty_engagement_list(current_user_id):
     where_clause, params = build_filter_query(filters)
     cutoff = get_cutoff_date(year_str)
 
-    # Add active-only condition on top of the year-overlap filter
-    active_condition = f"(enddate IS NULL OR enddate >= '{cutoff.isoformat()}'::date)"
+    active_condition = "(enddate IS NULL OR enddate >= %s::date)"
     if where_clause:
         active_where = where_clause + f" AND {active_condition}"
     else:
@@ -620,7 +613,7 @@ def get_faculty_engagement_list(current_user_id):
             {active_where}
             ORDER BY year DESC, faculty_name ASC
             """,
-            params
+            list(params) + [cutoff.isoformat()]
         )
         rows = cur.fetchall()
 

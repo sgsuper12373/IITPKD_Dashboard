@@ -22,7 +22,7 @@ from .db import get_db_connection, release_db_connection
 
 icsr_sponsored_bp = Blueprint('icsr_sponsored', __name__)
 
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 # Roles allowed to manage sponsored projects: master admin + ICSR section.
 # Mirrors SECTION_PERMISSIONS['research/icsr'] on the frontend.
@@ -96,7 +96,7 @@ def _delete_image_file(logo):
     """Remove a previously uploaded logo file. External URLs (http…) are left untouched."""
     if not logo or '/uploads/industry/' not in logo:
         return
-    filename = logo.split('/uploads/industry/')[-1]
+    filename = os.path.basename(logo.split('/uploads/industry/')[-1])
     upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'icsr_industry_project')
     try:
         os.remove(os.path.join(upload_folder, filename))
@@ -191,7 +191,8 @@ def create_project(current_user_id):
         return jsonify(_serialize(row)), 201
     except pg_errors.Error as exc:
         conn.rollback()
-        return jsonify({'error': f'Failed to create project: {exc}'}), 400
+        print(f"Error creating sponsored project: {exc}")
+        return jsonify({'error': 'Failed to create project.'}), 400
     finally:
         release_db_connection(conn)
 
@@ -245,6 +246,7 @@ def update_project(current_user_id, project_id):
         return jsonify(_serialize(row)), 200
     except pg_errors.Error as exc:
         conn.rollback()
-        return jsonify({'error': f'Failed to update project: {exc}'}), 400
+        print(f"Error updating sponsored project: {exc}")
+        return jsonify({'error': 'Failed to update project.'}), 400
     finally:
         release_db_connection(conn)

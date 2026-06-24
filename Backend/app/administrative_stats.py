@@ -276,7 +276,7 @@ def get_employee_overview(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching employee overview: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching employee overview: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -359,7 +359,7 @@ def get_faculty_gender_last_five_years(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching faculty gender last five years: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'Failed to fetch faculty gender distribution: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -427,7 +427,7 @@ def get_faculty_by_department_designation(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching faculty by department: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching faculty data: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -482,7 +482,7 @@ def get_staff_count(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching staff count: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching staff data: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -562,7 +562,7 @@ def get_gender_distribution(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching gender distribution: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching gender distribution: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -637,7 +637,7 @@ def get_category_distribution(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching group distribution: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching group distribution: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -694,7 +694,7 @@ def get_data_summary(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching data summary: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -768,7 +768,7 @@ def get_department_breakdown(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching department breakdown: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching department breakdown: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -913,7 +913,7 @@ def get_yearwise_strength(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching yearwise strength: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching yearwise strength: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -998,7 +998,7 @@ def get_faculty_expertise_matrix(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching faculty expertise matrix: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': f'An error occurred while fetching faculty expertise matrix: {e}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()

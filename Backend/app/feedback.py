@@ -149,7 +149,8 @@ def start(current_user_id):
         }), 200
     except Exception as exc:
         conn.rollback()
-        return jsonify({'message': str(exc)}), 500
+        print(f"Feedback start error: {exc}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -182,7 +183,8 @@ def verify(current_user_id):
         return jsonify({'ok': True}), 200
     except Exception as exc:
         conn.rollback()
-        return jsonify({'message': str(exc)}), 500
+        print(f"Feedback verify error: {exc}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -262,12 +264,14 @@ def submit(current_user_id):
                 timeout=15,
             )
         except requests.RequestException as exc:
-            return jsonify({'message': f'Could not deliver feedback: {exc}'}), 502
+            print(f"Feedback relay error: {exc}")
+            return jsonify({'message': 'Could not deliver feedback. Please try again later.'}), 502
 
         return jsonify({'message': 'Feedback submitted successfully.'}), 200
     except Exception as exc:
         conn.rollback()
-        return jsonify({'message': str(exc)}), 500
+        print(f"Feedback submit error: {exc}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)

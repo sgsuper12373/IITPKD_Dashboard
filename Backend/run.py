@@ -1,8 +1,7 @@
+import os
 from app import create_app
 
-# Create the app instance using the factory
 app = create_app()
 
 if __name__ == '__main__':
-    # Set debug=True for development
-    app.run(debug=True, port=5000)
+    app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1', port=5000)

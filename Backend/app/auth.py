@@ -12,7 +12,7 @@ from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 
 from .db import get_db_connection, release_db_connection
-from . import bcrypt
+from . import bcrypt, limiter
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -29,7 +29,7 @@ def encode_auth_token(user_id, role_id):
             'sub': str(user_id),
             'role': role_id,
             'iat': int(now.timestamp()),
-            'exp': int((now + datetime.timedelta(days=30)).timestamp()),
+            'exp': int((now + datetime.timedelta(hours=24)).timestamp()),
         }
         return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
     except Exception as e:
@@ -102,6 +102,7 @@ def token_optional(f):
 # ---------------------------------------------------------------------------
 
 @auth_bp.route('/login', methods=['POST'])
+@limiter.limit("10 per minute")
 def login():
     """Validates credentials and returns a JWT on success."""
     data = request.get_json()
@@ -112,14 +113,37 @@ def login():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, created_at FROM users WHERE email = %s;", (data['email'],))
+        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, failed_login_attempts, last_failed_at, created_at FROM users WHERE email = %s;", (data['email'],))
         user = cur.fetchone()
 
         if not user:
-            return jsonify({'message': 'Email not found.'}), 404
+            return jsonify({'message': 'Invalid email or password.'}), 401
+
+        max_attempts = int(os.environ.get('MAX_LOGIN_ATTEMPTS', '10'))
+        lockout_minutes = int(os.environ.get('LOCKOUT_DURATION_MINUTES', '30'))
+        failed = user.get('failed_login_attempts') or 0
+        if failed >= max_attempts:
+            last_attempt = user.get('last_failed_at')
+            if last_attempt:
+                elapsed = (datetime.datetime.now(timezone.utc) - last_attempt.replace(tzinfo=timezone.utc)).total_seconds()
+                if elapsed < lockout_minutes * 60:
+                    remaining = int((lockout_minutes * 60 - elapsed) / 60) + 1
+                    return jsonify({'message': f'Account locked due to too many failed attempts. Try again in {remaining} minutes.'}), 429
+                cur.execute("UPDATE users SET failed_login_attempts = 0 WHERE id = %s;", (user['id'],))
+                conn.commit()
+            else:
+                return jsonify({'message': f'Account locked due to too many failed attempts. Try again in {lockout_minutes} minutes.'}), 429
 
         if not bcrypt.check_password_hash(user['password_hash'], data['password']):
-            return jsonify({'message': 'Incorrect password.'}), 401
+            cur.execute(
+                "UPDATE users SET failed_login_attempts = failed_login_attempts + 1, last_failed_at = NOW() WHERE id = %s;",
+                (user['id'],),
+            )
+            conn.commit()
+            return jsonify({'message': 'Invalid email or password.'}), 401
+
+        if user.get('status') and user['status'] != 'active':
+            return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 403
 
         cur.execute(
             "UPDATE users SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = %s;",
@@ -147,6 +171,7 @@ _GOOGLE_ISSUERS = {'accounts.google.com', 'https://accounts.google.com'}
 
 
 @auth_bp.route('/google', methods=['POST'])
+@limiter.limit("10 per minute")
 def google_login():
     """Verifies a Google ID token and returns a JWT. Any verified Google account is accepted."""
     data = request.get_json()
@@ -165,7 +190,8 @@ def google_login():
             clock_skew_in_seconds=120,
         )
     except ValueError as e:
-        return jsonify({'message': f'Invalid Google token: {e}'}), 401
+        print(f"Google token verification failed: {e}")
+        return jsonify({'message': 'Invalid Google token. Please try again.'}), 401
 
     if idinfo.get('iss') not in _GOOGLE_ISSUERS:
         return jsonify({'message': 'Invalid token issuer.'}), 401
@@ -175,6 +201,11 @@ def google_login():
 
     email = idinfo['email']
     display_name = idinfo.get('name', email.split('@')[0])
+
+    allowed_domains = os.environ.get('OAUTH_ALLOWED_DOMAINS', 'iitpkd.ac.in').split(',')
+    email_domain = email.rsplit('@', 1)[-1].lower()
+    if email_domain not in allowed_domains:
+        return jsonify({'message': 'Only institutional email accounts are allowed.'}), 403
 
     conn = None
     try:
@@ -201,6 +232,9 @@ def google_login():
             user = dict(cur.fetchone())
             conn.commit()
         else:
+            if user.get('status') and user['status'] != 'active':
+                return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 403
+
             cur.execute(
                 "UPDATE users SET last_login_at = NOW() WHERE id = %s;",
                 (user['id'],),
@@ -226,6 +260,7 @@ def google_login():
 # ---------------------------------------------------------------------------
 
 @auth_bp.route('/guest', methods=['POST'])
+@limiter.limit("10 per minute")
 def guest_login():
     """Logs in the pre-configured guest account whose credentials live in .env."""
     guest_email = os.environ.get('GUEST_USER_NAME', '')
@@ -318,7 +353,8 @@ def update_role(current_user_id, role_id):
         return jsonify(updated), 200
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': str(e)}), 500
+        print(f"Error updating role: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -351,7 +387,8 @@ def create_role(current_user_id):
         return jsonify({'message': 'A role with that id or name already exists'}), 409
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': str(e)}), 500
+        print(f"Error creating role: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -381,7 +418,8 @@ def delete_role(current_user_id, role_id):
         return jsonify({'message': 'Role deleted successfully'}), 200
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': str(e)}), 500
+        print(f"Error deleting role: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -415,7 +453,7 @@ def create_user(current_user_id):
         return jsonify({'message': 'Email or username already exists'}), 409
     finally:
         cur.close()
-        conn.close()
+        release_db_connection(conn)
 
 @auth_bp.route('/users', methods=['GET'])
 @token_required
@@ -431,7 +469,8 @@ def get_users(current_user_id):
         users = cur.fetchall()
         return jsonify(users), 200
     except Exception as e:
-        return jsonify({'message': str(e)}), 500
+        print(f"Error fetching users: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -461,7 +500,8 @@ def update_user(current_user_id, user_id):
         return jsonify({'message': 'User updated successfully'}), 200
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': str(e)}), 500
+        print(f"Error updating user: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)

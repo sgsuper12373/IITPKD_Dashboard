@@ -284,7 +284,7 @@ def get_filter_options(current_user_id):
 
         return jsonify(filters)
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch research filter options: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -387,7 +387,7 @@ def get_summary(current_user_id):
         }
         return jsonify(summary)
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch research summary: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -448,7 +448,7 @@ def funded_project_trend(current_user_id):
         ]
         return jsonify({'data': data}), 200
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch project trend: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -539,7 +539,7 @@ def project_list(current_user_id):
         rows.sort(key=lambda r: (r['start_date'] or r['end_date'] or '', r['project_title'] or ''), reverse=True)
         return jsonify({'data': rows})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch projects: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -599,7 +599,7 @@ def consultancy_revenue_trend(current_user_id):
         ]
         return jsonify({'data': data}), 200
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch revenue trend: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -646,7 +646,7 @@ def mou_list(current_user_id):
             })
         return jsonify({'data': rows})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch MoUs: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -693,7 +693,7 @@ def mou_trend(current_user_id):
         ]
         return jsonify({'data': data}), 200
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch MoU trend: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -776,7 +776,7 @@ def patent_stats(current_user_id):
 
         return jsonify({'overall': overall_counts, 'yearly': yearly}), 200
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch patent stats: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -839,7 +839,7 @@ def patent_list(current_user_id):
             })
         return jsonify({'data': rows})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch patents: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -947,7 +947,7 @@ def externship_analytics(current_user_id):
             'data': list_data
         })
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch combined externship info: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur: cur.close()
         if conn: release_db_connection(conn)
@@ -1033,7 +1033,7 @@ def publication_summary(current_user_id):
             'conference_count': conference_count
         })
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch publication summary: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -1069,7 +1069,7 @@ def publication_trend(current_user_id):
         data = [{'year': row['year'], 'total': row['total']} for row in cur.fetchall()]
         return jsonify({'data': data})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch publication trend: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -1105,7 +1105,7 @@ def publication_by_department(current_user_id):
         data = [{'department': row['department'], 'total': row['total']} for row in cur.fetchall()]
         return jsonify({'data': data})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch department publications: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -1139,7 +1139,7 @@ def publication_type_distribution(current_user_id):
         data = [{'publication_type': row['publication_type'], 'total': row['total']} for row in cur.fetchall()]
         return jsonify({'data': data})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch publication type distribution: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()
@@ -1190,7 +1190,7 @@ def publication_list(current_user_id):
             })
         return jsonify({'data': data})
     except Exception as exc:
-        return jsonify({'message': f'Failed to fetch publications: {exc}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
             cur.close()

@@ -83,7 +83,7 @@ def get_all(current_user_id=None):
         return jsonify({'tables': result}), 200
     except Exception as exc:
         conn.rollback()
-        return jsonify({'error': str(exc)}), 500
+        return jsonify({'error': 'An internal error occurred.'}), 500
     finally:
         release_db_connection(conn)
 
@@ -114,6 +114,6 @@ def get_one(current_user_id=None, table_name=None):
         }), 200
     except Exception as exc:
         conn.rollback()
-        return jsonify({'error': str(exc)}), 500
+        return jsonify({'error': 'An internal error occurred.'}), 500
     finally:
         release_db_connection(conn)

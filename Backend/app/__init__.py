@@ -1,15 +1,22 @@
 """Flask application factory."""
 import os
 import secrets
-from flask import Flask, request, send_from_directory
+from flask import Flask, abort, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 
 load_dotenv()
 
 cors = CORS()
 bcrypt = Bcrypt()
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 
 def create_app():
@@ -24,14 +31,23 @@ def create_app():
     app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL')
     app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', '')
 
+    allowed_origins = os.environ.get(
+        'CORS_ALLOWED_ORIGINS',
+        'https://dashboard.iitpkd.ac.in,http://localhost:5173,http://127.0.0.1:5173'
+    ).split(',')
     cors.init_app(app, resources={
         r"/*": {
-            "origins": "*",
+            "origins": allowed_origins,
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
         }
     })
     bcrypt.init_app(app)
+    limiter.init_app(app)
+
+    @app.errorhandler(429)
+    def ratelimit_handler(_e):
+        return jsonify({'message': 'Too many requests. Please slow down and try again later.'}), 429
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'logos')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -49,20 +65,31 @@ def create_app():
     app.config['INDUSTRY_PROJECT_UPLOAD_FOLDER'] = INDUSTRY_PROJECT_UPLOAD_FOLDER
     os.makedirs(INDUSTRY_PROJECT_UPLOAD_FOLDER, exist_ok=True)
 
-    @app.route('/uploads/logos/<path:filename>')
+    SAFE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+
+    def _validate_upload_filename(filename):
+        ext = os.path.splitext(filename)[1].lower()
+        if ext not in SAFE_EXTENSIONS:
+            abort(404)
+
+    @app.route('/uploads/logos/<filename>')
     def serve_logo(filename):
+        _validate_upload_filename(filename)
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-    @app.route('/uploads/facilities/<path:filename>')
+    @app.route('/uploads/facilities/<filename>')
     def serve_facility_image(filename):
+        _validate_upload_filename(filename)
         return send_from_directory(app.config['FACILITIES_UPLOAD_FOLDER'], filename)
 
-    @app.route('/uploads/startups/<path:filename>')
+    @app.route('/uploads/startups/<filename>')
     def serve_startup_logo(filename):
+        _validate_upload_filename(filename)
         return send_from_directory(app.config['STARTUPS_UPLOAD_FOLDER'], filename)
 
-    @app.route('/uploads/industry/<path:filename>')
+    @app.route('/uploads/industry/<filename>')
     def serve_industry_logo(filename):
+        _validate_upload_filename(filename)
         return send_from_directory(app.config['INDUSTRY_PROJECT_UPLOAD_FOLDER'], filename)
 
     from . import (
@@ -105,22 +132,34 @@ def create_app():
         return "Server is running!"
 
     @app.after_request
-    def add_cache_headers(response):
-        """
-        Add Cache-Control to read-only endpoints so the browser can skip
-        round-trips on repeated calls within the same session.
+    def add_security_and_cache_headers(response):
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        response.headers['X-XSS-Protection'] = '0'
+        response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
 
-        filter-options  → 5 min  (these almost never change between requests)
-        all other GETs  → 30 s   (light freshness buffer, cuts duplicate calls)
-        non-GET         → no-store (uploads, auth — must always hit the server)
-        """
+        csp_directives = (
+            "default-src 'self'; "
+            "script-src 'self' https://accounts.google.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; "
+            "img-src 'self' data: blob:; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "connect-src 'self'; "
+            "frame-src https://accounts.google.com https://maps.google.com https://www.google.com; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self';"
+        )
+        response.headers['Content-Security-Policy'] = csp_directives
+
         if request.method != 'GET':
             response.headers['Cache-Control'] = 'no-store'
             return response
 
         path = request.path
         if 'filter-options' in path or 'filter_options' in path:
-            # Authenticated responses: private so proxies don't share across users
             response.headers['Cache-Control'] = 'private, max-age=300'
         else:
             response.headers['Cache-Control'] = 'private, max-age=30'

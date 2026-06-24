@@ -1,8 +1,25 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const apiBase = env.VITE_API_BASE_URL || 'http://127.0.0.1:5000'
+
+  const isDev = mode === 'development'
+  const csp = [
+    "default-src 'self'",
+    isDev ? "script-src 'self' 'unsafe-inline' https://accounts.google.com" : "script-src 'self' https://accounts.google.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
+    `img-src 'self' data: blob: ${apiBase}`,
+    "font-src 'self' https://fonts.gstatic.com",
+    `connect-src 'self' ${apiBase} https://accounts.google.com` + (isDev ? ' ws:' : ''),
+    "frame-src https://accounts.google.com https://maps.google.com https://www.google.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ')
+
+  return {
   plugins: [
     react({
       include: /\.[jt]sx?$/,
@@ -10,6 +27,20 @@ export default defineConfig({
   ],
   resolve: {
     extensions: ['.jsx', '.js', '.tsx', '.ts', '.json'],
+  },
+  server: {
+    headers: {
+      'Content-Security-Policy': csp,
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'X-XSS-Protection': '0',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    },
+    fs: {
+      strict: true,
+    },
   },
   build: {
     // esnext keeps output smaller (no legacy polyfills) — safe for modern browsers
@@ -52,4 +83,5 @@ export default defineConfig({
     // Warn when any single chunk exceeds 600 kB
     chunkSizeWarningLimit: 600,
   },
+  }
 })

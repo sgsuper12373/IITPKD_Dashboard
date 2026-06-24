@@ -13,7 +13,7 @@ import psycopg2
 import psycopg2.extras
 from flask import Blueprint, jsonify, request
 
-from .auth import token_required
+from .auth import token_required, _require_admin
 from .db import get_db_connection, release_db_connection
 
 upload_bp = Blueprint('upload', __name__)
@@ -514,6 +514,17 @@ def upload_csv(current_user_id):
     4. Deduplicate rows on the conflict key.
     5. Execute bulk upsert.
     """
+    conn_check = get_db_connection()
+    if not conn_check:
+        return jsonify({'message': 'Database connection failed.'}), 500
+    try:
+        cur_check = conn_check.cursor()
+        if not _require_admin(cur_check, current_user_id):
+            return jsonify({'message': 'Admin access required.'}), 403
+        cur_check.close()
+    finally:
+        release_db_connection(conn_check)
+
     if 'table_name' not in request.form:
         return jsonify({'message': 'No table_name specified.'}), 400
     if 'csv_file' not in request.files or request.files['csv_file'].filename == '':
@@ -876,89 +887,45 @@ def upload_csv(current_user_id):
 
     except psycopg2.errors.StringDataRightTruncation as e:
         safe_rollback(conn)
-        error_msg = str(e).strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - String Data Right Truncation{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Data Too Long For Column{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - String Data Right Truncation{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Data too long for column{row_hint}. Check field lengths.',
                         'row_number': _failing_row_num}), 400
     except psycopg2.errors.UniqueViolation as e:
         safe_rollback(conn)
-        error_msg = str(e).split('DETAIL:')[-1].strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - Unique Violation{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Duplicate Entry Error{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - Unique Violation{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Duplicate entry found{row_hint}. A row with the same key already exists.',
                         'row_number': _failing_row_num}), 409
     except psycopg2.errors.InvalidTextRepresentation as e:
         safe_rollback(conn)
-        error_msg = str(e).strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - Invalid Text Representation{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Data Format Error{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - Invalid Text Representation{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Data format error{row_hint}. Check that values match expected types.',
                         'row_number': _failing_row_num}), 400
     except psycopg2.errors.NotNullViolation as e:
         safe_rollback(conn)
-        error_msg = str(e).strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - Not Null Violation{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Missing Required Data{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - Not Null Violation{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Missing required data{row_hint}. Ensure all required columns are filled.',
                         'row_number': _failing_row_num}), 400
     except psycopg2.errors.DatatypeMismatch as e:
         safe_rollback(conn)
-        error_msg = str(e).strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - Data Type Mismatch{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Data Type Mismatch{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - Data Type Mismatch{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Data type mismatch{row_hint}. Check that values match column types.',
                         'row_number': _failing_row_num}), 400
     except psycopg2.errors.ForeignKeyViolation as e:
         safe_rollback(conn)
-        error_msg = str(e).split('DETAIL:')[-1].strip()
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"DATABASE ERROR - Foreign Key Violation{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error: {error_msg}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'Foreign Key Constraint Violation{row_hint}', 'details': error_msg,
+        print(f"DATABASE ERROR - Foreign Key Violation{row_hint} | Table: {table_name} | {e}")
+        return jsonify({'message': f'Reference error{row_hint}. A referenced record does not exist.',
                         'row_number': _failing_row_num}), 400
     except Exception as e:
         safe_rollback(conn)
-        error_msg = str(e)
         row_hint = f' at CSV row {_failing_row_num}' if _failing_row_num else ''
-        print(f"\n{'='*80}")
-        print(f"GENERAL ERROR - CSV Upload{row_hint}")
-        print(f"{'='*80}")
-        print(f"Table: {table_name}")
-        print(f"Error Type: {type(e).__name__}")
-        print(f"Error Message: {error_msg}")
-        print(f"Traceback:\n{traceback.format_exc()}")
-        print(f"{'='*80}\n")
-        return jsonify({'message': f'An error occurred during processing{row_hint}.', 'error': error_msg,
+        print(f"GENERAL ERROR - CSV Upload{row_hint} | Table: {table_name} | {type(e).__name__}: {e}\n{traceback.format_exc()}")
+        return jsonify({'message': f'An error occurred during processing{row_hint}.',
                         'row_number': _failing_row_num}), 500
     finally:
         if conn:

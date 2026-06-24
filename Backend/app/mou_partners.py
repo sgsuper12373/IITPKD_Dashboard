@@ -11,7 +11,7 @@ from .db import get_db_connection, release_db_connection
 
 mou_partners_bp = Blueprint('mou_partners', __name__)
 
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 
 def _check_admin(conn, user_id):
@@ -42,7 +42,7 @@ def _save_logo(file):
 def _delete_logo_file(logo_url):
     if not logo_url:
         return
-    filename = logo_url.split('/uploads/logos/')[-1]
+    filename = os.path.basename(logo_url.split('/uploads/logos/')[-1])
     upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'logos')
     try:
         os.remove(os.path.join(upload_folder, filename))

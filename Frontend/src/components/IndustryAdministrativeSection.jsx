@@ -481,7 +481,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   )
                 })}
               >
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={400} minWidth={0}>
                   <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                     <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />

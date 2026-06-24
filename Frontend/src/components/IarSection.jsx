@@ -801,7 +801,7 @@ function IarSection({ user, isPublicView = false }) {
                           )
                         })}
                       >
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height={400} minWidth={0}>
                           <BarChart
                             data={sortedOutcomeBreakdown}
                             margin={{ top: 24, right: 20, left: 10, bottom: 80 }}

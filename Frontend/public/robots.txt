@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /api/
+Disallow: /auth/
+Disallow: /uploads/
+Disallow: /upload
+Disallow: /create-user
+Disallow: /profile
+Allow: /

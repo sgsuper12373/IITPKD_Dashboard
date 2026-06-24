@@ -16,7 +16,7 @@ from .db import get_db_connection, release_db_connection
 
 iptif_facilities_bp = Blueprint('iptif_facilities', __name__)
 
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 # Roles allowed to modify IPTIF facilities (mirrors SECTION_PERMISSIONS['innovation/iptif']).
 IPTIF_ADMIN_ROLES = (3, 14)
@@ -69,7 +69,7 @@ def _save_image(file):
 def _delete_image_file(image_url):
     if not image_url:
         return
-    filename = image_url.split('/uploads/facilities/')[-1]
+    filename = os.path.basename(image_url.split('/uploads/facilities/')[-1])
     upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'facilities')
     try:
         os.remove(os.path.join(upload_folder, filename))

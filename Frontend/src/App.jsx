@@ -99,14 +99,17 @@ function App() {
   // race where ProtectedRoute redirects to /login before rehydration finishes.
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // Remove the ?_v=<timestamp> cache-busting param added by ChunkErrorBoundary
-  // so it doesn't stay visible in the address bar after a successful reload.
   useEffect(() => {
-    if (window.location.search.includes('_v=')) {
+    const search = window.location.search;
+    if (search.includes('_v=') || search.includes('token=')) {
+      const params = new URLSearchParams(search);
+      params.delete('_v');
+      params.delete('token');
+      const clean = params.toString();
       window.history.replaceState(
         {},
         '',
-        window.location.pathname + window.location.hash
+        window.location.pathname + (clean ? `?${clean}` : '') + window.location.hash
       );
     }
   }, []);

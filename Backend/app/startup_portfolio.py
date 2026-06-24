@@ -19,7 +19,7 @@ from .db import get_db_connection, release_db_connection
 
 startup_portfolio_bp = Blueprint('startup_portfolio', __name__)
 
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 # origin → (table, roles allowed to edit). Mirrors SECTION_PERMISSIONS innovation/iptif & innovation/techin.
 ORIGINS = {
@@ -82,7 +82,7 @@ def _delete_image_file(logo):
     """Remove a previously uploaded logo file. External URLs (http…) are left untouched."""
     if not logo or '/uploads/startups/' not in logo:
         return
-    filename = logo.split('/uploads/startups/')[-1]
+    filename = os.path.basename(logo.split('/uploads/startups/')[-1])
     upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'startups')
     try:
         os.remove(os.path.join(upload_folder, filename))

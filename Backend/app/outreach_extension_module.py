@@ -103,13 +103,9 @@ def get_open_house_summary(current_user_id):
         }), 200
         
     except Exception as e:
-        import traceback
-        error_details = str(e)
         print(f"Open House summary error: {e}")
-        print(traceback.format_exc())
         return jsonify({
             'message': 'Failed to fetch Open House summary statistics.',
-            'error': error_details
         }), 500
     finally:
         if cur:

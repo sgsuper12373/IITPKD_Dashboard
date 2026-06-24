@@ -1,8 +1,3 @@
-/**
- * Central role-permission mapping.
- * modifyRoles — roles that can view AND upload/modify data for a section.
- * Role 3 (master admin) always has full access; it is listed explicitly for clarity.
- */
 export const SECTION_PERMISSIONS = {
   'people-campus/academic-section':        { modifyRoles: [3, 4] },
   'people-campus/administrative-section':  { modifyRoles: [3, 2] },
@@ -30,7 +25,6 @@ export const SECTION_PERMISSIONS = {
   'outreach/nss':                          { modifyRoles: [3, 22] },
 };
 
-/** roleId → human-readable role name (mirrors the `roles` table). Used for debugging/profile display. */
 export const ROLE_NAMES = {
   0: 'Guest',
   1: 'Management View',
@@ -57,10 +51,8 @@ export const ROLE_NAMES = {
   22: 'NSS',
 };
 
-/** Returns the role name for a roleId, or 'Unknown' if unmapped. */
 export const getRoleName = (roleId) => ROLE_NAMES[roleId] ?? 'Unknown';
 
-/** Mapping from OutreachSection programKey → roles that can modify it */
 export const OUTREACH_PROGRAM_ROLES = {
   science_quest:        [3, 18],
   palakkad_math_circle: [3, 19],
@@ -69,20 +61,16 @@ export const OUTREACH_PROGRAM_ROLES = {
   nss_activities:       [3, 22],
 };
 
-/** Returns true if roleId can modify (upload/export) the given section. */
 export const canModifySection = (roleId, sectionKey) => {
   if (roleId === 3) return true;
   return SECTION_PERMISSIONS[sectionKey]?.modifyRoles.includes(roleId) ?? false;
 };
 
-/** Returns true if roleId can view (access) the given section detail page. */
 export const canViewSection = (roleId, sectionKey) => {
-  // Guests (0) and management (1) see restricted views inside sections
   if (roleId === 0 || roleId === 1 || roleId === 3) return true;
   return SECTION_PERMISSIONS[sectionKey]?.modifyRoles.includes(roleId) ?? false;
 };
 
-// Human-readable labels for the access-denied warning links
 const SECTION_LABELS = {
   'people-campus/academic-section':        'People & Campus → Academic Section',
   'people-campus/administrative-section':  'People & Campus → Administrative Section',
@@ -137,7 +125,6 @@ const SECTION_ROUTES = {
   'outreach/nss':                          '/outreach-extension/outreach?program=nss_activities',
 };
 
-/** Returns [{label, route}] for every section a role can access. */
 export const getRoleAccessibleSections = (roleId) => {
   if (!roleId || roleId === 0 || roleId === 1 || roleId === 3) return [];
   return Object.entries(SECTION_PERMISSIONS)
@@ -145,7 +132,6 @@ export const getRoleAccessibleSections = (roleId) => {
     .map(([key]) => ({ label: SECTION_LABELS[key], route: SECTION_ROUTES[key] }));
 };
 
-/** Roles that have at least one section card on each page */
 export const PAGE_ACCESS_ROLES = {
   'people-campus':               [3, 2, 4, 5, 6, 7, 8],
   'research':                    [3, 9, 10],

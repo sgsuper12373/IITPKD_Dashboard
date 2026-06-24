@@ -1,6 +1,7 @@
 import csv
 import io
 from flask import Blueprint, jsonify, request, send_file
+from psycopg2 import sql
 from .db import get_db_connection, release_db_connection
 from .auth import token_required, _require_admin
 from . import bcrypt
@@ -26,7 +27,8 @@ def get_tables(current_user_id):
         tables = [row['table_name'] for row in cur.fetchall()]
         return jsonify(tables), 200
     except Exception as e:
-        return jsonify({'message': str(e)}), 500
+        print(f"Error listing tables: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -46,10 +48,9 @@ def export_table(current_user_id, table_name):
         if not cur.fetchone():
             return jsonify({'message': 'Table not found'}), 404
 
-        cur.execute(f"SELECT * FROM \"{table_name}\";")
+        cur.execute(sql.SQL("SELECT * FROM {}").format(sql.Identifier(table_name)))
         rows = cur.fetchall()
-        
-        # If no rows, we still want to get column names. Let's get them from cursor.description
+
         cols = [desc[0] for desc in cur.description]
 
         si = io.StringIO()
@@ -57,13 +58,12 @@ def export_table(current_user_id, table_name):
         cw.writerow(cols)
 
         for row in rows:
-            # rows are RealDictRow, we need to extract values in order of cols
             cw.writerow([row[c] for c in cols])
 
         output = io.BytesIO()
         output.write(si.getvalue().encode('utf-8'))
         output.seek(0)
-        
+
         return send_file(
             output,
             mimetype='text/csv',
@@ -72,7 +72,8 @@ def export_table(current_user_id, table_name):
         )
 
     except Exception as e:
-        return jsonify({'message': str(e)}), 500
+        print(f"Error exporting table: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -106,13 +107,14 @@ def truncate_table(current_user_id, table_name):
         if not user or not bcrypt.check_password_hash(user['password_hash'], data['password']):
             return jsonify({'message': 'Password verification failed. If you signed in via Google, set a password first.'}), 401
 
-        cur.execute(f'TRUNCATE TABLE "{table_name}" RESTART IDENTITY CASCADE;')
+        cur.execute(sql.SQL("TRUNCATE TABLE {} RESTART IDENTITY CASCADE").format(sql.Identifier(table_name)))
         conn.commit()
         return jsonify({'message': f"Table '{table_name}' truncated successfully."}), 200
 
     except Exception as e:
         conn.rollback()
-        return jsonify({'message': str(e)}), 500
+        print(f"Error truncating table: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)

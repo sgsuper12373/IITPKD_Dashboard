@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify
+from .auth import token_optional
 from .db import get_db_connection, release_db_connection
 
 nirf_bp = Blueprint('nirf', __name__)
 
 @nirf_bp.route('/nirf_metrics', methods=['GET'])
-def get_nirf_metrics():
+@token_optional
+def get_nirf_metrics(current_user_id=None):
     """Fetch NIRF ranking data for all years."""
     conn = None
     try:
@@ -37,7 +39,7 @@ def get_nirf_metrics():
 
     except Exception as e:
         print(f"NIRF API error: {e}")
-        return jsonify({'message': f'Error fetching NIRF data: {str(e)}'}), 500
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if conn:
             cur.close()

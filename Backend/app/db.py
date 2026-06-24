@@ -15,7 +15,7 @@ try:
     db_pool = pool.ThreadedConnectionPool(1, 20, DATABASE_URL)
     print("Database connection pool initialized successfully.")
 except Exception as e:
-    print(f"Error initializing database pool: {e}")
+    print(f"Error initializing database pool: {type(e).__name__}")
     db_pool = None
 
 def get_db_connection():
