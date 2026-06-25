@@ -300,6 +300,8 @@ function Header({ user, onLogout, isGuest }) {
                     )}
 
                     {/* Quick Navigation */}
+                    {!isGuest && (
+                    <>
                     <div>
                         <p className="sidebar-section-label">Quick Navigation</p>
                         {QUICK_NAV_ITEMS.map((item) => (
@@ -325,6 +327,8 @@ function Header({ user, onLogout, isGuest }) {
                             {isGuest ? 'Guest' : (user?.display_name || user?.email || 'User')}
                         </div>
                     </div>
+                    </>
+                    )}
                 </aside>
             )}
             {/* Feedback Modal */}

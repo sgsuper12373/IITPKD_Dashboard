@@ -304,7 +304,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               active_years: activeYears,
               top_type: topType
             }]}
-            headers={['Total Faculty Industry Stint', 'Participating Departments', 'Timeline Coverage']}
+            headers={['Total No. of Externships', 'Participating Departments', 'Timeline Coverage']}
             keys={['total', 'participating_departments', 'active_years', 'top_type']}
             filename="externship_summary"
             title="Faculty Industry Stint Summary"
@@ -317,7 +317,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             <div className="ias-stat-card-body">
               <div className="ias-stat-card-header">
                 <span className="ias-stat-card-icon">&#128188;</span>
-                <span className="ias-stat-card-label">Total Faculty Industry Stint</span>
+                <span className="ias-stat-card-label">Total No. of Externships</span>
               </div>
               <div className="stat-card-value ias-stat-card-value">
                 {formatNumber(summary.total)}
@@ -421,7 +421,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
                 {/* Year Filter */}
                 <div className="filter-group">
-                  <label className="ias-filter-label">Faculty Industry Stint Year</label>
+                  <label className="ias-filter-label">Faculty Externship Year</label>
                   <select
                     className="filter-select"
                     value={filters.externship_year}
