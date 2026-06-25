@@ -129,31 +129,10 @@ def create_app():
 
     @app.route('/health')
     def health_check():
-        return "Server is running!"
+        return jsonify({'status': 'running'}), 200
 
     @app.after_request
-    def add_security_and_cache_headers(response):
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['X-Frame-Options'] = 'DENY'
-        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        response.headers['X-XSS-Protection'] = '0'
-        response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
-
-        csp_directives = (
-            "default-src 'self'; "
-            "script-src 'self' https://accounts.google.com; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; "
-            "img-src 'self' data: blob:; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "connect-src 'self'; "
-            "frame-src https://accounts.google.com https://maps.google.com https://www.google.com; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'; "
-            "form-action 'self';"
-        )
-        response.headers['Content-Security-Policy'] = csp_directives
-
+    def add_cache_headers(response):
         if request.method != 'GET':
             response.headers['Cache-Control'] = 'no-store'
             return response
