@@ -10,9 +10,10 @@ const API_FEEDBACK_URL = `${import.meta.env.VITE_API_BASE_URL}/api/feedback`;
 const MAX_SCREENSHOT_MB = 5;
 const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
 
-function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
-  // step: 'loading' (requesting OTP) | 'verify' | 'details' | 'success'
-  const [step, setStep] = useState('loading');
+function FeedbackModal({ onClose, defaultName = '', defaultEmail = '', askEmail = false }) {
+  // step: 'email' (guest types address) | 'loading' (requesting OTP) | 'verify' | 'details' | 'success'
+  // Logged-in users skip 'email' — we already know their address and request the OTP immediately.
+  const [step, setStep] = useState(askEmail ? 'email' : 'loading');
 
   // Verification state issued by POST /start.
   const [verificationId, setVerificationId] = useState('');
@@ -33,31 +34,54 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
   const [resending, setResending] = useState(false);
 
   const fileInputRef = useRef(null);
-  const token = localStorage.getItem('authToken');
 
-  const authHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  // Guests have no token; only attach Authorization when one actually exists so
+  // the request doesn't go out as "Bearer null".
+  const buildHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = localStorage.getItem('authToken');
+    if (token && token !== 'null' && token !== 'undefined') {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
+  };
 
-  // Request an OTP as soon as the modal opens.
-  const requestOtp = async () => {
+  // Request an OTP. `manualEmail` is the guest-entered address; logged-in users
+  // pass nothing and the server uses their account email.
+  const requestOtp = async (manualEmail) => {
     setError('');
     try {
-      const res = await fetch(`${API_FEEDBACK_URL}/start`, { method: 'POST', headers: authHeaders });
+      const res = await fetch(`${API_FEEDBACK_URL}/start`, {
+        method: 'POST',
+        headers: buildHeaders(),
+        body: manualEmail ? JSON.stringify({ email: manualEmail }) : undefined,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Could not start verification.');
       setVerificationId(data.verification_id);
       setCaptchaQuestion(data.captcha_question);
-      setEmail(data.email || defaultEmail);
+      setEmail(data.email || manualEmail || defaultEmail);
       setStep('verify');
     } catch (err) {
       setError(err.message);
-      setStep('verify'); // surface the error with a Retry control
+      // Guests stay on the email step to fix the address; logged-in users land
+      // on 'verify' so the error shows next to a Retry control.
+      if (!manualEmail) setStep('verify');
     }
   };
 
+  // Logged-in users: fire the OTP immediately. Guests wait on the email step.
   useEffect(() => {
-    requestOtp();
+    if (!askEmail) requestOtp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    await requestOtp(email.trim());
+    setBusy(false);
+  };
 
   // Close on ESC
   useEffect(() => {
@@ -70,7 +94,11 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
     setResending(true);
     setError('');
     try {
-      const res = await fetch(`${API_FEEDBACK_URL}/start`, { method: 'POST', headers: authHeaders });
+      const res = await fetch(`${API_FEEDBACK_URL}/start`, {
+        method: 'POST',
+        headers: buildHeaders(),
+        body: askEmail ? JSON.stringify({ email }) : undefined,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Could not resend the code.');
       setVerificationId(data.verification_id);
@@ -92,7 +120,7 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
     try {
       const res = await fetch(`${API_FEEDBACK_URL}/verify`, {
         method: 'POST',
-        headers: authHeaders,
+        headers: buildHeaders(),
         body: JSON.stringify({ verification_id: verificationId, otp: otp.trim(), captcha_answer: captchaAnswer.trim() }),
       });
       const data = await res.json();
@@ -145,7 +173,7 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
       const screenshotBase64 = screenshot ? String(screenshot.dataUrl).split(',')[1] : '';
       const res = await fetch(`${API_FEEDBACK_URL}/submit`, {
         method: 'POST',
-        headers: authHeaders,
+        headers: buildHeaders(),
         body: JSON.stringify({
           verification_id: verificationId,
           otp: otp.trim(),
@@ -176,6 +204,36 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
           <h2 className="fb-title" id="fb-title">Share Your Feedback</h2>
           <button className="fb-close-btn" onClick={onClose} aria-label="Close feedback form">✕</button>
         </div>
+
+        {/* ── Email entry (guests only): collect the address to verify ── */}
+        {step === 'email' && (
+          <form onSubmit={handleEmailSubmit}>
+            <p className="fb-step-hint">
+              Enter your email and we'll send a 6-digit code to verify it before you share feedback.
+            </p>
+
+            <div className="fb-field">
+              <label htmlFor="fb-email-entry">Email <span className="fb-required" aria-label="required">*</span></label>
+              <input
+                id="fb-email-entry"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            {error && <p className="fb-error-msg" role="alert">{error}</p>}
+
+            <div className="fb-form-footer">
+              <button type="submit" className="fb-submit-btn" disabled={busy || !email.trim()}>
+                {busy ? 'Sending…' : 'Send code'}
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* ── Loading: requesting OTP ── */}
         {step === 'loading' && (
@@ -232,6 +290,16 @@ function FeedbackModal({ onClose, defaultName = '', defaultEmail = '' }) {
               >
                 {resending ? 'Resending…' : 'Resend code'}
               </button>
+              {/* Guests can go back and fix a mistyped address. */}
+              {askEmail && (
+                <button
+                  type="button"
+                  className="fb-link-btn"
+                  onClick={() => { setOtp(''); setCaptchaAnswer(''); setError(''); setStep('email'); }}
+                >
+                  Change email
+                </button>
+              )}
               <button type="submit" className="fb-submit-btn" disabled={busy || !verificationId}>
                 {busy ? 'Verifying…' : 'Verify'}
               </button>

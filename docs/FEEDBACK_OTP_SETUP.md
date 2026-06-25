@@ -1,9 +1,10 @@
 # Feedback Form — OTP + CAPTCHA + Image Hardening Setup Guide
 
-A complete, step-by-step runbook to set up the **secured feedback form**: only
-authorized (logged-in) users can submit, and only after an **email OTP** + **math
-CAPTCHA**, with **server-side image validation**. Submissions are relayed by the
-Flask backend to your existing Google Sheet.
+A complete, step-by-step runbook to set up the **secured feedback form**: open to
+everyone (including guests), but only after the submitter **verifies an email via
+OTP** + solves a **math CAPTCHA**, with **server-side image validation**. Logged-in
+users verify their account email automatically; guests type their own address.
+Submissions are relayed by the Flask backend to your existing Google Sheet.
 
 > For the Google Apps Script / Sheet specifics (the `doPost` code, Drive screenshot
 > handling), see **[FEEDBACK_FORM_GUIDELINE.md](./FEEDBACK_FORM_GUIDELINE.md)**.
@@ -14,7 +15,7 @@ Flask backend to your existing Google Sheet.
 ## 0. How it works (read this first)
 
 ```
-Browser (logged-in user, JWT)                 Flask  (/api/feedback)              Google
+Browser (any visitor; guests type an email)   Flask  (/api/feedback)              Google
   1. open form ───────────────► POST /start ──► email OTP via SMTP ───────────────► user inbox
                                             └─ generate math CAPTCHA + DB row
   2. enter OTP + solve CAPTCHA ► POST /verify ─► check (no consume) ─► reveal feedback fields
@@ -27,8 +28,7 @@ Why each piece exists:
 
 | Control | Stops |
 | --- | --- |
-| Button hidden from guests + every endpoint requires a login token | Anonymous abuse |
-| Email OTP (6-digit, 10-min, single-use, rate-limited) | Bots / impersonation; ties each submission to a real inbox |
+| Email OTP (6-digit, 10-min, single-use; per-email cooldown + hourly cap; per-IP cap on `/start`) | Anonymous abuse / mail bombing; ties each submission to a real inbox |
 | Math CAPTCHA (server-generated + verified) | Automated scripted posting |
 | Image validation by decoded type, JPEG/PNG only, re-encode | Stickers/GIFs, renamed files, EXIF/polyglot payloads |
 | Apps Script **shared secret** | Direct `curl` to the public script URL (the original attack) |
@@ -178,10 +178,10 @@ cd Frontend && npm run dev
 
 **Walk the flow:**
 
-1. Open the dashboard **as a guest / logged out** → the **Feedback** button is **not** shown. ✔
-2. **Log in** as a real authorized user → the **Feedback** button appears.
-3. Click **Feedback**. The modal says a code was emailed to your address → check your inbox
-   for the 6-digit code.
+1. Open the dashboard **as a guest / logged out** → the **Feedback** button **is** shown.
+2. Click **Feedback** → the modal asks for your **email**; enter it and click **Send code**.
+   (Logged-in users skip this — the code goes to their account email automatically.)
+3. Check your inbox for the 6-digit code.
 4. Enter the code, solve the CAPTCHA (e.g. `7 + 4 → 11`), click **Verify**.
 5. Type feedback, optionally attach a **PNG/JPG** (≤ 5 MB), click **Submit Feedback**.
 6. Open the Google Sheet → a new row appears (with a Drive screenshot link if attached).
@@ -205,20 +205,20 @@ cd Frontend && npm run dev
 | Submit succeeds but no row in Sheet | `FEEDBACK_SHARED_SECRET` ≠ Apps Script `SHARED_SECRET`; or the web app wasn't re-deployed after editing `doPost`. |
 | "Feedback relay is not configured" (500) | `FEEDBACK_SCRIPT_URL` or `FEEDBACK_SHARED_SECRET` empty in `.env`. |
 | Image always rejected | Must be a static JPEG/PNG ≤ 5 MB and ≤ 4000 px/side; animated PNG/GIF/WebP/stickers are refused by design. |
-| 401 on `/api/feedback/*` | No/expired login token — the user must be logged in (guests are blocked server-side too). |
-| "Please wait a minute…" (429) | Resend cooldown (1/min) or hourly cap (5/hour) per user. Expected. |
+| "Please enter a valid email address." (400) | Guest submitted `/start` without a well-formed email. Re-enter the address. |
+| "Please wait a minute…" / "Too many requests" (429) | Per-email resend cooldown (1/min) or hourly cap (5/hour), or the per-IP cap on `/start`. Expected. |
 
 ---
 
 ## 10. Production deployment checklist
 
 - [ ] `pip install -r requirements.txt` on the production backend (Pillow present).
-- [ ] Run `add_feedback_verification.sql` against the **production** database.
+- [ ] Run `add_feedback_verification.sql` **and** `add_feedback_guest_email.sql` against the **production** database.
 - [ ] Set `SMTP_*`, `FEEDBACK_SCRIPT_URL`, `FEEDBACK_SHARED_SECRET` in the production `.env`.
 - [ ] Apps Script deployed with the matching secret; "Who has access" = Anyone.
 - [ ] `VITE_API_BASE_URL` in the frontend build points at the production backend origin.
 - [ ] Rebuild the frontend (`npm run build`) and redeploy.
-- [ ] Smoke test: guest sees no button; a real login completes OTP → CAPTCHA → submit → row in Sheet.
+- [ ] Smoke test: as a guest, enter an email → OTP → CAPTCHA → submit → row in Sheet.
 
 ---
 
@@ -226,8 +226,8 @@ cd Frontend && npm run dev
 
 | Concern | File |
 | --- | --- |
-| Frontend modal (2-step verify → feedback) | `Frontend/src/components/FeedbackModal.jsx` |
-| Hide button from guests | `Frontend/src/components/Header.jsx` |
+| Frontend modal (email → verify → feedback) | `Frontend/src/components/FeedbackModal.jsx` |
+| Feedback button (shown to everyone, incl. guests) | `Frontend/src/components/Header.jsx` |
 | Endpoints `/start` `/verify` `/submit` + relay | `Backend/app/feedback.py` |
 | SMTP OTP sender | `Backend/app/mailer.py` |
 | Image validation + re-encode | `Backend/app/image_safety.py` |

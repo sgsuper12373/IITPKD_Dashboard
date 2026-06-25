@@ -171,9 +171,8 @@ function Header({ user, onLogout, isGuest }) {
                     </Link>
 
                     <div className="header-right">
-                        {/* Feedback is for authorized (logged-in) users only — hidden
-                            from guests, who also can't reach the OTP-gated endpoint. */}
-                        {!isGuest && (
+                        {/* Feedback is open to everyone. Guests just enter their
+                            email manually and verify it via the same OTP + CAPTCHA. */}
                         <div className="feedback-btn-wrapper">
                             <button
                                 className="feedback-btn"
@@ -195,7 +194,6 @@ function Header({ user, onLogout, isGuest }) {
                                 </div>
                             )}
                         </div>
-                        )}
                         {/* Profile avatar is hidden for guests — only authenticated
                             (authorized) users get an account menu. Guests have no
                             UI path to /login; the login URL is shared by mail. */}
@@ -333,6 +331,7 @@ function Header({ user, onLogout, isGuest }) {
             {showFeedback && (
                 <FeedbackModal
                     onClose={() => setShowFeedback(false)}
+                    askEmail={isGuest}
                     defaultName={isGuest ? '' : (user?.display_name || '')}
                     defaultEmail={isGuest ? '' : (user?.email || '')}
                 />

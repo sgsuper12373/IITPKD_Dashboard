@@ -4,13 +4,14 @@ This guide explains how the Feedback Form in the IITPKD Dashboard connects to a 
 
 > **Important — the flow changed.** After launch the public form was abused (phishing
 > images, stickers/GIFs, nude images) because the browser posted **directly** to the
-> public Apps Script URL, so there was no server to authenticate the submitter or
-> inspect the image. The form is now **authorized-users-only** and every submission
-> is routed through the Flask backend, which verifies an **email OTP + math CAPTCHA**
-> and **sanitises the screenshot** before relaying to the Sheet:
+> public Apps Script URL, so there was no server to verify the submitter or inspect the
+> image. The form is now open to **everyone (including guests)** but every submission is
+> routed through the Flask backend, which verifies an **email OTP + math CAPTCHA** (guests
+> enter their own email; logged-in users use their account email) and **sanitises the
+> screenshot** before relaying to the Sheet:
 >
 > ```
-> Browser (logged-in, JWT) ──► Flask /api/feedback ──► Google Apps Script ──► Sheet/Drive
+> Browser (any visitor) ──► Flask /api/feedback ──► Google Apps Script ──► Sheet/Drive
 >                                       ▲
 >                       OTP email + CAPTCHA + image validation enforced here
 > ```
@@ -162,8 +163,9 @@ cd Backend && pip install -r requirements.txt   # adds Pillow
 
 ## 🧪 Testing the Integration
 1. Start the backend and frontend.
-2. Log in as a **real (authorized) user** — guests do not see the Feedback button.
-3. Click **Feedback**. The modal requests an OTP; check your inbox for the 6-digit code.
+2. Open the dashboard **as a guest** — the Feedback button is visible to everyone.
+3. Click **Feedback**, enter your **email**, and click **Send code**. (Logged-in users
+   skip this step and the code goes to their account email.) Check your inbox.
 4. Enter the code, solve the CAPTCHA (e.g. `7 + 4`), click **Verify**.
 5. Enter feedback, optionally attach a **PNG/JPG**, and submit.
 6. Confirm a new row (and a Drive screenshot link, if attached) appears in the Sheet.
@@ -176,12 +178,13 @@ deployments → ✏️ → New version) so `FEEDBACK_SCRIPT_URL` stays the same.
 
 ## 🔒 Security model (why this stops the abuse)
 
-- **Authorized-only:** the Feedback button is hidden from guests, and every
-  `/api/feedback/*` endpoint requires a valid login token (the shared guest account is
-  rejected too). Each submission is tied to a real account — abuse is deanonymized.
-- **Email OTP + CAPTCHA:** a 6-digit code is emailed to the account address and a math
-  CAPTCHA must be solved; both are verified server-side, single-use, expire in 10 min,
-  and are rate-limited (1/min, 5/hour per user).
+- **Verified email per submission:** the form is open to everyone, but every submission
+  is tied to an email proven via OTP (logged-in users use their account email; guests
+  type their own). Abuse is traceable to a real, reachable inbox.
+- **Email OTP + CAPTCHA:** a 6-digit code is emailed to that address and a math CAPTCHA
+  must be solved; both are verified server-side, single-use, expire in 10 min, and are
+  rate-limited per email (1/min, 5/hour) plus a per-IP cap on `/start` to curb mail
+  bombing.
 - **Image hardening (`image_safety.py`):** the screenshot's real type is detected by
   decoding (not the filename/MIME), only static **JPEG/PNG** are accepted, animated
   images/stickers are rejected, size + dimensions are capped, and the image is
