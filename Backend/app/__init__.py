@@ -133,16 +133,7 @@ def create_app():
 
     @app.after_request
     def add_cache_headers(response):
-        if request.method != 'GET':
-            response.headers['Cache-Control'] = 'no-store'
-            return response
-
-        path = request.path
-        if 'filter-options' in path or 'filter_options' in path:
-            response.headers['Cache-Control'] = 'private, max-age=300'
-        else:
-            response.headers['Cache-Control'] = 'private, max-age=30'
-
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return response
 
     return app
