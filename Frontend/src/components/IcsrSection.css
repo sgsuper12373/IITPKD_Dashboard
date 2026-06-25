@@ -10,7 +10,9 @@
 
 /* ── Summary cards ── */
 .icsr-cards          { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
-.icsr-card           { flex: 1 1 min(280px, 100%); border-radius: 20px; padding: 28px; color: white; }
+/* Don't grow to fill the row: a lone card (e.g. guests, who don't see Total
+   Funding) should stay a compact block, not a full-width banner. */
+.icsr-card           { flex: 0 1 min(280px, 100%); border-radius: 20px; padding: 24px 28px; color: white; }
 .icsr-card--indigo   { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); }
 .icsr-card--green    { background: linear-gradient(135deg, #22c55e 0%, #166534 100%); }
 .icsr-card-h3        { margin: 0 0 10px 0; opacity: 0.9; }
