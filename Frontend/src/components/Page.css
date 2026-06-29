@@ -2,12 +2,6 @@
    All :root tokens are defined in src/styles/global.css.
    This file contains only page-specific overrides and shared layout patterns. */
 
-/* ── Page entrance animation ── */
-@keyframes pageSlideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 /* ================================================================
    PAGE CONTAINER — clean white card
    ================================================================ */
@@ -24,7 +18,6 @@
   color: var(--color-text);
   line-height: 1.6;
   overflow: visible;
-  animation: pageSlideIn 0.28s var(--ease-spring) both;
 }
 
 /* ── Page headings ── */

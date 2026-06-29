@@ -72,19 +72,27 @@ const UploadForm = lazyWithRetry(() => import('./components/UploadForm'));
 const CreateUser = lazyWithRetry(() => import('./components/CreateUser'));
 
 // ── Loading fallback ───────────────────────────────────────────────────────
-// Shown while a lazy chunk is being fetched. Kept intentionally minimal so
-// it renders instantly from the already-loaded main bundle.
+// Slim top progress bar shown while a lazy chunk is being fetched.
+// Stays invisible for the first 150ms so instant navigations show nothing.
 const PageLoader = () => (
-  <div style={{
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    height: '100vh', background: '#f8f9fa'
-  }}>
+  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
     <div style={{
-      width: 40, height: 40, borderRadius: '50%',
-      border: '4px solid #e9ecef', borderTopColor: '#667eea',
-      animation: 'spin 0.75s linear infinite'
+      height: 3,
+      background: 'var(--color-primary, #f7a600)',
+      animation: 'page-load-bar 1.2s ease-in-out infinite, page-load-show 0.15s step-end',
+      transformOrigin: 'left',
     }} />
-    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <style>{`
+      @keyframes page-load-bar {
+        0%   { transform: scaleX(0); }
+        50%  { transform: scaleX(0.7); }
+        100% { transform: scaleX(1); }
+      }
+      @keyframes page-load-show {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+    `}</style>
   </div>
 );
 
