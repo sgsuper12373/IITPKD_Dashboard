@@ -141,10 +141,14 @@ def create_app():
         # ── Cache ──
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
 
-        # ── HSTS — force HTTPS for 1 year ──
-        response.headers['Strict-Transport-Security'] = (
-            'max-age=31536000; includeSubDomains'
-        )
+        # ── HSTS ──
+        # Only set when NOT behind a reverse proxy that already adds its own
+        # HSTS header (duplicate HSTS violates RFC 6797).  The proxy/nginx
+        # config (nginx-security.conf) is the single source of truth for HSTS.
+        if os.environ.get('SET_HSTS', '').lower() in ('1', 'true', 'yes'):
+            response.headers['Strict-Transport-Security'] = (
+                'max-age=31536000; includeSubDomains'
+            )
 
         # ── Prevent MIME-sniffing ──
         response.headers['X-Content-Type-Options'] = 'nosniff'
