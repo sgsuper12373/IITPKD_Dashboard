@@ -8,7 +8,6 @@ import ScrollToTop from './components/ScrollToTop';
 import Login from './components/Login';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import lazyWithRetry from './utils/lazyWithRetry';
-import NavigationLoader from './components/NavigationLoader';
 import AccessDenied from './components/AccessDenied';
 import { canViewSection } from './utils/rolePermissions';
 // ── Lazy route chunks ──────────────────────────────────────────────────────
@@ -214,7 +213,6 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <NavigationLoader />
       <ChunkErrorBoundary>
        <Suspense fallback={<PageLoader />}>
         <Routes>

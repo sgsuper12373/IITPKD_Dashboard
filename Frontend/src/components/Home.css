@@ -210,9 +210,20 @@ body {
   border-radius: var(--radius-md);
   border-left: 3px solid var(--color-primary);
   box-shadow: var(--shadow-lg);
-  padding: 0.7rem 2rem 0.7rem 0.85rem;
+  padding: 0.7rem 0.85rem;
   z-index: 1100;
-  animation: hint-drop 0.35s var(--ease-spring);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.feedback-btn-wrapper:hover .feedback-hint-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .feedback-hint-bubble::before {
@@ -226,11 +237,6 @@ body {
   filter: drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.08));
 }
 
-@keyframes hint-drop {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 .feedback-hint-bubble p {
   margin: 0;
   font-size: var(--text-sm);
@@ -240,27 +246,6 @@ body {
 
 .feedback-hint-bubble p strong {
   color: var(--color-text);
-}
-
-.feedback-hint-close {
-  position: absolute;
-  top: 0.3rem;
-  right: 0.35rem;
-  background: none;
-  border: none;
-  color: #c0bdba;
-  font-size: var(--text-xs);
-  cursor: pointer;
-  padding: 0.2rem 0.3rem;
-  border-radius: var(--radius-sm);
-  line-height: 1;
-  transition: color var(--dur-fast) var(--ease-std),
-              background var(--dur-fast) var(--ease-std);
-}
-
-.feedback-hint-close:hover {
-  color: var(--color-text);
-  background: var(--color-bg-2);
 }
 
 /* ================================================================

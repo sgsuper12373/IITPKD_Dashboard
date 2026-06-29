@@ -51,8 +51,6 @@ const SECTION_ICONS = {
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
-    const [showFeedbackHint, setShowFeedbackHint] = useState(false);
-    const dismissedPaths = useRef(new Set());
     const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
@@ -117,18 +115,6 @@ function Header({ user, onLogout, isGuest }) {
         return () => { document.body.style.overflow = ''; };
     }, [sidebarOpen]);
 
-    // Show hint once per unique path per session; dismissed paths are remembered until page reload.
-    useEffect(() => {
-        setShowFeedbackHint(false);
-        if (dismissedPaths.current.has(location.pathname)) return;
-        const timer = setTimeout(() => setShowFeedbackHint(true), 4000);
-        return () => clearTimeout(timer);
-    }, [location.pathname]);
-
-    const dismissHint = () => {
-        dismissedPaths.current.add(location.pathname);
-        setShowFeedbackHint(false);
-    };
 
     const toggleDropdown = () => setShowProfileDropdown((prev) => !prev);
 
@@ -176,23 +162,14 @@ function Header({ user, onLogout, isGuest }) {
                         <div className="feedback-btn-wrapper">
                             <button
                                 className="feedback-btn"
-                                onClick={() => { setShowFeedback(true); dismissHint(); }}
+                                onClick={() => setShowFeedback(true)}
                                 aria-label="Open feedback form"
                             >
                                 Feedback
                             </button>
-                            {showFeedbackHint && (
-                                <div className="feedback-hint-bubble" role="tooltip">
-                                    <button
-                                        className="feedback-hint-close"
-                                        onClick={dismissHint}
-                                        aria-label="Dismiss hint"
-                                    >
-                                        <X size={12} strokeWidth={2.5} />
-                                    </button>
-                                    <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions. click this button to submit it anytime!</p>
-                                </div>
-                            )}
+                            <div className="feedback-hint-bubble" role="tooltip">
+                                <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions. Click this button to submit it anytime!</p>
+                            </div>
                         </div>
                         {/* Profile avatar is hidden for guests — only authenticated
                             (authorized) users get an account menu. Guests have no
