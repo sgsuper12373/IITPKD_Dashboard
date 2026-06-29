@@ -31,6 +31,11 @@ def create_app():
     app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL')
     app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', '')
 
+    # ── Secure cookie defaults ─────────────────────────────────────────────
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
     allowed_origins = os.environ.get(
         'CORS_ALLOWED_ORIGINS',
         'https://dashboard.iitpkd.ac.in,http://localhost:5173,http://127.0.0.1:5173'
@@ -132,8 +137,63 @@ def create_app():
         return jsonify({'status': 'running'}), 200
 
     @app.after_request
-    def add_cache_headers(response):
+    def add_security_headers(response):
+        # ── Cache ──
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+
+        # ── HSTS — force HTTPS for 1 year ──
+        response.headers['Strict-Transport-Security'] = (
+            'max-age=31536000; includeSubDomains'
+        )
+
+        # ── Prevent MIME-sniffing ──
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+
+        # ── Clickjacking protection ──
+        response.headers['X-Frame-Options'] = 'DENY'
+
+        # ── Referrer policy ──
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+        # ── Disable legacy XSS filter (modern CSP is the replacement) ──
+        response.headers['X-XSS-Protection'] = '0'
+
+        # ── Restrict browser features ──
+        response.headers['Permissions-Policy'] = (
+            'camera=(), microphone=(), geolocation=()'
+        )
+
+        # ── Content Security Policy ──
+        frontend_origin = os.environ.get(
+            'FRONTEND_ORIGIN', 'https://dashboard.iitpkd.ac.in'
+        )
+        csp_directives = '; '.join([
+            "default-src 'self'",
+            "script-src 'self' https://accounts.google.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
+            f"img-src 'self' data: blob: {frontend_origin}",
+            "font-src 'self' https://fonts.gstatic.com",
+            f"connect-src 'self' {frontend_origin} https://accounts.google.com",
+            "frame-src https://accounts.google.com https://maps.google.com https://www.google.com",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ])
+        response.headers['Content-Security-Policy'] = csp_directives
+
+        # ── Secure cookie attributes (retrofit onto any Set-Cookie headers) ──
+        if 'Set-Cookie' in response.headers:
+            cookies = response.headers.getlist('Set-Cookie')
+            response.headers.pop('Set-Cookie')
+            for cookie in cookies:
+                if 'Secure' not in cookie:
+                    cookie += '; Secure'
+                if 'SameSite' not in cookie:
+                    cookie += '; SameSite=Lax'
+                if 'HttpOnly' not in cookie:
+                    cookie += '; HttpOnly'
+                response.headers.add('Set-Cookie', cookie)
+
         return response
 
     return app
