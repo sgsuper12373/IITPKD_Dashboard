@@ -119,6 +119,7 @@
 .slider-dot {
   width: 10px;
   height: 10px;
+  min-height: unset;
   border-radius: 50%;
   border: none;
   background: rgba(0, 0, 0, 0.3);
