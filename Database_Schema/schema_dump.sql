@@ -1428,6 +1428,7 @@ CREATE TABLE public.users (
     status public.user_status DEFAULT 'pending_verification'::public.user_status NOT NULL,
     last_login_at timestamp with time zone,
     failed_login_attempts smallint DEFAULT 0 NOT NULL,
+    last_failed_at timestamp with time zone,
     role_id integer DEFAULT 1 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     last_updated timestamp with time zone DEFAULT now() NOT NULL
@@ -2754,6 +2755,108 @@ CREATE TRIGGER trg_users_last_updated BEFORE INSERT OR UPDATE ON public.users FO
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE SET DEFAULT;
+
+
+--
+-- Additive migrations folded in 2026-09-04
+--
+-- Database_Schema/migrations/ contained several ALTER/CREATE statements that
+-- were written and applied to some running database, but never folded back
+-- into this dump — a fresh install via setup_database.py was missing them
+-- entirely (confirmed: feedback OTP submission, the IPTIF facilities publish
+-- toggle, ICSR industry-sponsor fields, and the startup portfolio showcase
+-- all 500'd against a database built from this file before this block was
+-- added). This section makes the dump match what the application code
+-- actually requires. The original migrations/*.sql files are left in place
+-- as a record and remain safe to re-run (IF NOT EXISTS throughout).
+--
+
+-- migrations/add_facilities_is_published.sql
+ALTER TABLE public.iptif_facilities_table ADD COLUMN IF NOT EXISTS is_published boolean NOT NULL DEFAULT false;
+UPDATE public.iptif_facilities_table SET is_published = true WHERE display_title IS NOT NULL AND is_published = false;
+CREATE INDEX IF NOT EXISTS idx_iptif_facilities_published ON public.iptif_facilities_table (is_published) WHERE is_published;
+
+-- migrations/add_feedback_verification.sql + add_feedback_guest_email.sql
+CREATE TABLE IF NOT EXISTS public.feedback_verification (
+    verification_id TEXT PRIMARY KEY,
+    user_id         INTEGER REFERENCES public.users(id) ON DELETE CASCADE,
+    email           TEXT,
+    otp_hash        TEXT    NOT NULL,
+    captcha_answer  INTEGER NOT NULL,
+    attempts        INTEGER NOT NULL DEFAULT 0,
+    consumed        BOOLEAN NOT NULL DEFAULT FALSE,
+    expires_at      TIMESTAMPTZ NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_feedback_verif_user       ON public.feedback_verification (user_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_verif_expires_at ON public.feedback_verification (expires_at);
+CREATE INDEX IF NOT EXISTS idx_feedback_verif_email      ON public.feedback_verification (email);
+
+-- migrations/add_icsr_consultancy_industry_columns.sql
+ALTER TABLE public.icsr_consultancy_projects ADD COLUMN IF NOT EXISTS sponsoring_industry varchar(200);
+ALTER TABLE public.icsr_consultancy_projects ADD COLUMN IF NOT EXISTS industry_logo       text;
+ALTER TABLE public.icsr_consultancy_projects ADD COLUMN IF NOT EXISTS project_area        varchar(200);
+
+-- migrations/add_icsr_sponsored_industry_columns.sql
+ALTER TABLE public.icsr_sponsered_projects ADD COLUMN IF NOT EXISTS sponsered_industry varchar(200);
+ALTER TABLE public.icsr_sponsered_projects ADD COLUMN IF NOT EXISTS industry_logo      text;
+ALTER TABLE public.icsr_sponsered_projects ADD COLUMN IF NOT EXISTS project_area       varchar(200);
+
+-- migrations/add_startup_portfolio_columns.sql
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_logo                 text;
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_website_link         text;
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_founder_name         varchar(200);
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_founder_profile_line text;
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_summary              text;
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS startup_tagline              varchar(300);
+ALTER TABLE public.iptif_startup_table  ADD COLUMN IF NOT EXISTS is_published                 boolean NOT NULL DEFAULT false;
+
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_logo                 text;
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_website_link         text;
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_founder_name         varchar(200);
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_founder_profile_line text;
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_summary              text;
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS startup_tagline              varchar(300);
+ALTER TABLE public.techin_startup_table ADD COLUMN IF NOT EXISTS is_published                 boolean NOT NULL DEFAULT false;
+
+CREATE INDEX IF NOT EXISTS idx_iptif_startup_table_published  ON public.iptif_startup_table  (is_published) WHERE is_published;
+CREATE INDEX IF NOT EXISTS idx_techin_startup_table_published ON public.techin_startup_table (is_published) WHERE is_published;
+
+-- Seed public.roles — every users.role_id value the application actually
+-- assigns or checks (Frontend/src/utils/rolePermissions.js ROLE_NAMES) is a
+-- foreign key into this table, but it was never seeded anywhere in this
+-- dump. On a fresh database this makes EVERY user insert fail with
+-- "violates foreign key constraint fk_role" — including /auth/google
+-- auto-provisioning (role_id 0), the schema default (role_id 1), and
+-- Backend/create_admin.py (role_id 3). Confirmed by bootstrapping an admin
+-- against a database restored from this file before this block was added.
+INSERT INTO public.roles (id, name) VALUES
+    (0,  'Guest'),
+    (1,  'Management View'),
+    (2,  'Administration Section'),
+    (3,  'Master Admin'),
+    (4,  'Academic Section'),
+    (5,  'IAR'),
+    (6,  'EWD'),
+    (7,  'IGRC'),
+    (8,  'ICC'),
+    (9,  'ICSR'),
+    (10, 'Library'),
+    (11, 'CDC'),
+    (12, 'IAC'),
+    (13, 'TechIn'),
+    (14, 'IPTIF'),
+    (15, 'Open House'),
+    (16, 'CCE'),
+    (17, 'UBA'),
+    (18, 'Science Quest'),
+    (19, 'PMC'),
+    (20, 'PBD'),
+    (21, 'Institute Visits'),
+    (22, 'NSS')
+ON CONFLICT (id) DO NOTHING;
+
+SELECT setval('public.roles_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM public.roles), false);
 
 
 --

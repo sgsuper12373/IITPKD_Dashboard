@@ -4,14 +4,12 @@ import uuid
 
 from flask import Blueprint, current_app, jsonify, request
 from psycopg2 import errors as pg_errors, extras
-from werkzeug.utils import secure_filename
 
 from .auth import token_optional, token_required
 from .db import get_db_connection, release_db_connection
+from .image_safety import ImageRejected, validate_and_reencode
 
 mou_partners_bp = Blueprint('mou_partners', __name__)
-
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 
 def _check_admin(conn, user_id):
@@ -25,17 +23,22 @@ def _check_admin(conn, user_id):
 
 
 def _save_logo(file):
-    """Validate extension, save to UPLOAD_FOLDER, return stored path or None."""
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        return None, f"File type '{ext}' not allowed."
-    filename = uuid.uuid4().hex + '_' + secure_filename(file.filename)
+    """
+    Validates the upload by decoding it as an image (not by trusting the
+    filename extension), re-encodes it, and saves the clean bytes.
+    """
+    try:
+        clean_bytes, _content_type, ext = validate_and_reencode(file.read())
+    except ImageRejected as rej:
+        return None, str(rej)
+    filename = f"{uuid.uuid4().hex}.{ext}"
     upload_folder = current_app.config.get(
         'UPLOAD_FOLDER',
         os.path.join(os.path.dirname(__file__), '..', 'uploads', 'logos'),
     )
     save_path = os.path.join(upload_folder, filename)
-    file.save(save_path)
+    with open(save_path, 'wb') as f:
+        f.write(clean_bytes)
     return f'/uploads/logos/{filename}', None
 
 

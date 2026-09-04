@@ -99,10 +99,10 @@ function injectStyle() {
 }
 
 const VIEWS = [
-  { id: 'projects',   label: 'Projects Trend',    color: '#667eea', icon: '&#128202;' },
-  { id: 'programs',   label: 'Programs Trend',    color: '#f093fb', icon: '&#127891;' },
-  { id: 'startups',   label: 'Startups Growth',   color: '#43e97b', icon: '&#128640;' },
-  { id: 'facilities', label: 'Facilities Revenue', color: '#f97316', icon: '&#127981;' },
+  { id: 'projects',   label: 'Projects Trend',    color: '#667eea', icon: '📊' },
+  { id: 'programs',   label: 'Programs Trend',    color: '#f093fb', icon: '🎓' },
+  { id: 'startups',   label: 'Startups Growth',   color: '#43e97b', icon: '🚀' },
+  { id: 'facilities', label: 'Facilities Revenue', color: '#f97316', icon: '🏭' },
 ];
 
 function IptifSection({ user, isPublicView = false }) {
@@ -652,7 +652,7 @@ function IptifSection({ user, isPublicView = false }) {
                     fontWeight: active ? 600 : 500,
                   }}
                 >
-                  <span className="iptif-tab-icon" dangerouslySetInnerHTML={{ __html: icon }} />{label}
+                  <span className="iptif-tab-icon">{icon}</span>{label}
                 </button>
               );
             })}
@@ -672,7 +672,7 @@ function IptifSection({ user, isPublicView = false }) {
           <div className="iptif-chart-header-row">
             <div>
               <h2 className="iptif-chart-h2">
-                <span className="iptif-chart-icon" dangerouslySetInnerHTML={{ __html: currentView?.icon }} />
+                <span className="iptif-chart-icon">{currentView?.icon}</span>
                 {currentView?.label}
               </h2>
               <p className="iptif-chart-desc">

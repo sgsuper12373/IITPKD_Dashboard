@@ -19,6 +19,17 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+try:
+    # Windows consoles default to a legacy codepage (e.g. cp1252) that can't
+    # encode the ✅/❌ used below, which crashes the script on its own
+    # success message after the restore already succeeded. Force UTF-8 where
+    # supported; harmless no-op on stdout that's already UTF-8 or can't be
+    # reconfigured (e.g. some CI redirect targets).
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except (AttributeError, ValueError):
+    pass
+
 SCRIPT_DIR = Path(__file__).parent
 DUMP_FILE  = SCRIPT_DIR.parent / 'Database_Schema' / 'schema_dump.sql'
 

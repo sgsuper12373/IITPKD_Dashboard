@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +15,15 @@ cors = CORS()
 bcrypt = Bcrypt()
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=[],
+    # Baseline per-IP ceiling for every route that doesn't set its own
+    # (uploads, export, feedback verify/submit, etc. add stricter limits
+    # below; this is what used to be an unlimited default for everything
+    # else — every stats/read endpoint included).
+    default_limits=["200 per minute", "3000 per hour"],
+    # In-memory store: correct for a single worker process. Behind gunicorn
+    # with multiple workers each worker counts independently, so the
+    # effective ceiling is (this limit × worker count) — switch to a shared
+    # storage_uri (e.g. redis://...) if/when this runs with >1 worker.
     storage_uri="memory://",
 )
 
@@ -22,14 +31,43 @@ limiter = Limiter(
 def create_app():
     app = Flask(__name__)
 
+    # ── Trust the reverse proxy's forwarded headers, if configured ─────────
+    # request.remote_addr (and therefore flask-limiter's get_remote_address,
+    # and every log line) reflects the direct TCP peer. Behind Apache/nginx
+    # that's the proxy itself for every visitor, which silently breaks
+    # per-IP rate limiting — everyone shares one bucket. This is opt-in via
+    # TRUST_PROXY_HOPS (set to the number of reverse proxies in front of this
+    # process, typically 1) specifically so it is never on by default: if
+    # this were enabled without an actual trusted proxy in front, any client
+    # could forge X-Forwarded-For and pick whatever "IP" it wants, which
+    # would be worse than the current gap — it would let an attacker bypass
+    # IP-based rate limiting and lockouts entirely.
+    trust_hops = int(os.environ.get('TRUST_PROXY_HOPS', '0'))
+    if trust_hops > 0:
+        app.wsgi_app = ProxyFix(
+            app.wsgi_app, x_for=trust_hops, x_proto=trust_hops, x_host=0, x_prefix=0
+        )
+
+    is_debug = os.environ.get('FLASK_DEBUG', '0') == '1'
     secret_key = os.environ.get('JWT_SECRET_KEY')
     if not secret_key:
-        print("⚠️  WARNING: JWT_SECRET_KEY not set — using a temporary key for this session.")
+        if not is_debug:
+            raise RuntimeError(
+                'JWT_SECRET_KEY is not set. Refusing to start outside of FLASK_DEBUG=1 — '
+                'running with an ephemeral per-process key invalidates every session on '
+                'restart and signs tokens differently across workers.'
+            )
+        print("⚠️  WARNING: JWT_SECRET_KEY not set — using a temporary key for this debug session only.")
         secret_key = secrets.token_hex(32)
 
     app.config['SECRET_KEY'] = secret_key
     app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL')
     app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', '')
+
+    # ── Upload size cap ─────────────────────────────────────────────────────
+    # Werkzeug rejects any request whose body exceeds this before it is ever
+    # buffered into memory, so this also caps CSV-upload memory usage (H1).
+    app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_CONTENT_LENGTH_MB', '15')) * 1024 * 1024
 
     # ── Secure cookie defaults ─────────────────────────────────────────────
     app.config['SESSION_COOKIE_SECURE'] = True
@@ -53,6 +91,11 @@ def create_app():
     @app.errorhandler(429)
     def ratelimit_handler(_e):
         return jsonify({'message': 'Too many requests. Please slow down and try again later.'}), 429
+
+    @app.errorhandler(413)
+    def too_large_handler(_e):
+        max_mb = app.config['MAX_CONTENT_LENGTH'] // (1024 * 1024)
+        return jsonify({'message': f'File too large. Maximum upload size is {max_mb} MB.'}), 413
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'logos')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -143,8 +186,9 @@ def create_app():
 
         # ── HSTS ──
         # Only set when NOT behind a reverse proxy that already adds its own
-        # HSTS header (duplicate HSTS violates RFC 6797).  The proxy/nginx
-        # config (nginx-security.conf) is the single source of truth for HSTS.
+        # HSTS header (duplicate HSTS violates RFC 6797). apache-security.conf
+        # (repo root) is the single source of truth for HSTS when Apache sits
+        # in front of this app — leave SET_HSTS unset in that case.
         if os.environ.get('SET_HSTS', '').lower() in ('1', 'true', 'yes'):
             response.headers['Strict-Transport-Security'] = (
                 'max-age=31536000; includeSubDomains'

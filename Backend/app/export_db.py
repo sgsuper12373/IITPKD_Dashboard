@@ -4,9 +4,23 @@ from flask import Blueprint, jsonify, request, send_file
 from psycopg2 import sql
 from .db import get_db_connection, release_db_connection
 from .auth import token_required, _require_admin
-from . import bcrypt
+from . import bcrypt, limiter
 
 export_db_bp = Blueprint('export_db', __name__)
+
+_FORMULA_LEAD_CHARS = ('=', '+', '-', '@', '\t', '\r')
+
+
+def _csv_safe(value):
+    """
+    Neutralizes CSV/formula injection (CWE-1236): a cell that starts with
+    =, +, -, @, tab, or CR is interpreted as a formula by Excel/Sheets when
+    the exported file is opened. Prefixing it with an apostrophe forces it
+    to be read back as literal text instead of executed.
+    """
+    if isinstance(value, str) and value.startswith(_FORMULA_LEAD_CHARS):
+        return "'" + value
+    return value
 
 @export_db_bp.route('/tables', methods=['GET'])
 @token_required
@@ -58,7 +72,7 @@ def export_table(current_user_id, table_name):
         cw.writerow(cols)
 
         for row in rows:
-            cw.writerow([row[c] for c in cols])
+            cw.writerow([_csv_safe(row[c]) for c in cols])
 
         output = io.BytesIO()
         output.write(si.getvalue().encode('utf-8'))
@@ -80,6 +94,7 @@ def export_table(current_user_id, table_name):
 
 
 @export_db_bp.route('/truncate/<table_name>', methods=['POST'])
+@limiter.limit("10 per hour")
 @token_required
 def truncate_table(current_user_id, table_name):
     """Truncates a specific table after admin + password verification. Admin only."""

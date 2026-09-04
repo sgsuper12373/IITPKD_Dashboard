@@ -15,6 +15,7 @@ from flask import Blueprint, jsonify, request
 
 from .auth import token_required, _require_admin
 from .db import get_db_connection, release_db_connection
+from . import limiter
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -502,6 +503,7 @@ def _preprocess_iar_mous(reader, csv_headers):
 # ---------------------------------------------------------------------------
 
 @upload_bp.route('/upload-csv', methods=['POST'])
+@limiter.limit("20 per hour")
 @token_required
 def upload_csv(current_user_id):
     """
@@ -845,9 +847,8 @@ def upload_csv(current_user_id):
                     print(f"{'='*80}")
                     print(f"Table: {table_name}")
                     print(f"Column: {col_name} (Max: {max_len})")
-                    print(f"Value: '{val}' (Length: {len(str(val))})")
+                    print(f"Value length: {len(str(val))} (value redacted — may contain PII)")
                     print(f"Row Index: {row_idx}")
-                    print(f"Full Row: {row}")
                     print(f"{'='*80}\n")
                     return jsonify({
                         'message': 'Data Truncation Error', 

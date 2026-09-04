@@ -54,8 +54,39 @@ def decode_auth_token(token):
         return 'Error validating token. Please log in again.'
 
 
+def _is_account_active(user_id):
+    """
+    Re-reads the account's current status from the database.
+
+    Returns True only if the account still exists and is 'active'. This is
+    what makes suspension/deactivation take effect immediately instead of
+    only at the next login — the JWT itself is not re-issued when an admin
+    changes a user's status, so it must be checked per request.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return False
+        cur = conn.cursor()
+        cur.execute("SELECT status FROM users WHERE id = %s;", (user_id,))
+        row = cur.fetchone()
+        cur.close()
+        if not row:
+            return False
+        status = row.get('status')
+        return not status or status == 'active'
+    except Exception as e:
+        print(f"Account status check error: {e}")
+        return False
+    finally:
+        if conn:
+            release_db_connection(conn)
+
+
 def token_required(f):
-    """Route decorator that checks for a valid Bearer token in the Authorization header."""
+    """Route decorator that checks for a valid Bearer token in the Authorization header
+    and that the account it belongs to is still active."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
@@ -71,6 +102,9 @@ def token_required(f):
         if isinstance(user_id, str):
             return jsonify({'message': user_id}), 401
 
+        if not _is_account_active(user_id):
+            return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 401
+
         kwargs['current_user_id'] = user_id
         return f(*args, **kwargs)
 
@@ -79,7 +113,9 @@ def token_required(f):
 
 def token_optional(f):
     """Route decorator that validates a token if present, allows the request if absent.
-    Use on public/read-only endpoints that should also work for unauthenticated users."""
+    Use on public/read-only endpoints that should also work for unauthenticated users.
+    A token for a since-suspended account is treated as anonymous rather than an error,
+    since these routes already permit anonymous access."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
@@ -89,7 +125,7 @@ def token_optional(f):
             user_id = decode_auth_token(parts[1])
             if isinstance(user_id, str):
                 return jsonify({'message': user_id}), 401
-            kwargs['current_user_id'] = user_id
+            kwargs['current_user_id'] = user_id if _is_account_active(user_id) else None
         else:
             kwargs['current_user_id'] = None
         return f(*args, **kwargs)
@@ -216,21 +252,28 @@ def google_login():
         user = cur.fetchone()
 
         if not user:
-            # First login: create the user. A random hash satisfies NOT NULL
-            # while preventing password-based login for this OAuth-only account.
+            # First login: create the user as pending, not active — matching the
+            # password-account flow (/auth/create-user), an admin still has to
+            # approve any new account before it can use the dashboard, even one
+            # from a verified institutional Google identity (M3). A random hash
+            # satisfies NOT NULL while preventing password-based login for this
+            # OAuth-only account.
             dummy_hash = bcrypt.generate_password_hash(
                 secrets.token_urlsafe(32)
             ).decode('utf-8')
             cur.execute(
                 """
                 INSERT INTO users (email, password_hash, display_name, role_id, status)
-                VALUES (%s, %s, %s, 0, 'active')
+                VALUES (%s, %s, %s, 0, 'pending_verification')
                 RETURNING id, email, display_name, role_id, status, created_at;
                 """,
                 (email, dummy_hash, display_name),
             )
             user = dict(cur.fetchone())
             conn.commit()
+            return jsonify({
+                'message': 'Account created. An administrator must activate it before you can sign in.',
+            }), 403
         else:
             if user.get('status') and user['status'] != 'active':
                 return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 403
@@ -426,6 +469,7 @@ def delete_role(current_user_id, role_id):
 
 
 @auth_bp.route('/create-user', methods=['POST'])
+@limiter.limit("20 per hour")
 @token_required
 def create_user(current_user_id):
     """Creates a new user account. Admin only."""
@@ -477,6 +521,7 @@ def get_users(current_user_id):
 
 
 @auth_bp.route('/users/<int:user_id>', methods=['PUT'])
+@limiter.limit("30 per hour")
 @token_required
 def update_user(current_user_id, user_id):
     """Updates a user's role_id and optionally password. Admin only."""

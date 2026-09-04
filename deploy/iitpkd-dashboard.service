@@ -1,0 +1,35 @@
+# systemd unit template for the Flask/gunicorn backend.
+#
+# Fill in the paths below, then:
+#   sudo cp deploy/iitpkd-dashboard.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now iitpkd-dashboard
+#
+# Apache/nginx should reverse-proxy to 127.0.0.1:5000 (see apache-security.conf
+# for the header/TLS side of that). Env vars (JWT_SECRET_KEY, DATABASE_URL,
+# TRUST_PROXY_HOPS=1, etc.) belong in Backend/.env, which EnvironmentFile
+# below loads directly — keep that file's permissions restricted (chmod 600).
+
+[Unit]
+Description=IITPKD Dashboard backend (gunicorn)
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/IITPKD_Dashboard-1/Backend
+EnvironmentFile=/path/to/IITPKD_Dashboard-1/Backend/.env
+ExecStart=/path/to/IITPKD_Dashboard-1/Backend/.venv/bin/gunicorn -c gunicorn.conf.py run:app
+Restart=on-failure
+RestartSec=5
+
+# Hardening (safe defaults for a service with no need to touch the rest of
+# the filesystem beyond its own working directory and uploads folder).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/path/to/IITPKD_Dashboard-1/Backend/uploads
+
+[Install]
+WantedBy=multi-user.target

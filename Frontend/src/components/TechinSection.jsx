@@ -97,9 +97,9 @@ function injectStyle() {
 }
 
 const VIEWS = [
-  { id: 'programs',  label: 'Programs Trend',   color: '#667eea', icon: '&#128202;' },
-  { id: 'skillDev',  label: 'Skill Dev Trend',  color: '#f093fb', icon: '&#127919;' },
-  { id: 'startups',  label: 'Startups Growth',  color: '#43e97b', icon: '&#128640;' },
+  { id: 'programs',  label: 'Programs Trend',   color: '#667eea', icon: '📊' },
+  { id: 'skillDev',  label: 'Skill Dev Trend',  color: '#f093fb', icon: '🎯' },
+  { id: 'startups',  label: 'Startups Growth',  color: '#43e97b', icon: '🚀' },
 ];
 
 function TechinSection({ user, isPublicView = false }) {
@@ -620,7 +620,7 @@ function TechinSection({ user, isPublicView = false }) {
                     fontWeight: active ? 600 : 500,
                   }}
                 >
-                  <span className="techin-tab-icon" dangerouslySetInnerHTML={{ __html: icon }} />{label}
+                  <span className="techin-tab-icon">{icon}</span>{label}
                 </button>
               );
             })}
@@ -638,7 +638,7 @@ function TechinSection({ user, isPublicView = false }) {
           <div className="techin-chart-header-row">
             <div>
               <h2 className="techin-chart-h2">
-                <span className="techin-chart-icon" dangerouslySetInnerHTML={{ __html: currentView?.icon }} />
+                <span className="techin-chart-icon">{currentView?.icon}</span>
                 {currentView?.label}
               </h2>
               <p className="techin-chart-desc">

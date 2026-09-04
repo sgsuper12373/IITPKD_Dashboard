@@ -1,21 +1,24 @@
 # Flask Framework
-Flask==3.0.0
+Flask==3.1.3
 Werkzeug>=3.0.0
 
 # Database
 psycopg2-binary>=2.9.10
 
 # Authentication & Security
-PyJWT==2.8.0
+# Pinned at these floors specifically to clear known CVEs (pip-audit, 2026-09-04):
+# PyJWT 2.8.0 had several disclosed advisories; flask-cors 4.0.0 likewise
+# (including origin-validation bugs) — both fixed upstream by these versions.
+PyJWT>=2.13.0
 flask-bcrypt==1.0.1
 flask-limiter>=3.0.0
 google-auth>=2.0.0
 
 # Environment Variables
-python-dotenv==1.0.0
+python-dotenv>=1.2.2
 
 # CORS Support
-flask-cors==4.0.0
+flask-cors>=6.0.0
 
 # Data Generation & Testing
 faker>=20.0.0
@@ -43,14 +46,13 @@ Pillow>=10.0.0
 # Data Validation
 cerberus>=1.3.5
 
-# Development & Debugging
-flask-debugtoolbar>=0.14.0
-
 # Testing (Optional - uncomment if needed)
 # pytest>=7.4.0
 # pytest-flask>=1.2.0
 # pytest-cov>=4.1.0
 
-# Production Server (Optional - uncomment for deployment)
-# gunicorn>=21.2.0
-# gevent>=23.9.0
+# Production Server
+# Linux/macOS only (gunicorn's arbiter uses fcntl, unavailable on Windows) —
+# local Windows dev keeps using `python run.py`; a real deployment uses this
+# via gunicorn.conf.py / Procfile instead of the Werkzeug dev server.
+gunicorn>=21.2.0

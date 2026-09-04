@@ -16,14 +16,12 @@ from decimal import Decimal
 
 from flask import Blueprint, current_app, jsonify, request
 from psycopg2 import errors as pg_errors, extras
-from werkzeug.utils import secure_filename
 
 from .auth import token_required
 from .db import get_db_connection, release_db_connection
+from .image_safety import ImageRejected, validate_and_reencode
 
 icsr_consultancy_bp = Blueprint('icsr_consultancy', __name__)
-
-ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 # Roles allowed to manage consultancy projects: master admin + ICSR section.
 # Mirrors SECTION_PERMISSIONS['research/icsr'] on the frontend.
@@ -78,16 +76,21 @@ def _serialize(row):
 
 
 def _save_image(file):
-    """Validate extension, save to the industry upload folder, return (path, error)."""
-    ext = os.path.splitext(file.filename)[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        return None, f"File type '{ext}' not allowed."
-    filename = uuid.uuid4().hex + '_' + secure_filename(file.filename)
+    """
+    Validates the upload by decoding it as an image (not by trusting the
+    filename extension), re-encodes it, and saves the clean bytes.
+    """
+    try:
+        clean_bytes, _content_type, ext = validate_and_reencode(file.read())
+    except ImageRejected as rej:
+        return None, str(rej)
+    filename = f"{uuid.uuid4().hex}.{ext}"
     upload_folder = current_app.config.get(
         'INDUSTRY_PROJECT_UPLOAD_FOLDER',
         os.path.join(os.path.dirname(__file__), '..', 'uploads', 'icsr_industry_project'),
     )
-    file.save(os.path.join(upload_folder, filename))
+    with open(os.path.join(upload_folder, filename), 'wb') as f:
+        f.write(clean_bytes)
     return f'/uploads/industry/{filename}', None
 
 

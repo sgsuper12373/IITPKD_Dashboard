@@ -1,0 +1,4 @@
+# Local development / debugging only — never install this file in production.
+-r requirements.txt
+
+flask-debugtoolbar>=0.14.0

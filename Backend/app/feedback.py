@@ -204,6 +204,7 @@ def start(current_user_id):
 # ── POST /api/feedback/verify ────────────────────────────────────────────────
 
 @feedback_bp.route('/verify', methods=['POST'])
+@limiter.limit("20 per minute")
 @token_optional
 def verify(current_user_id):
     """Checks the OTP + CAPTCHA without consuming the code (gates the UI reveal)."""
@@ -238,6 +239,7 @@ def verify(current_user_id):
 # ── POST /api/feedback/submit ────────────────────────────────────────────────
 
 @feedback_bp.route('/submit', methods=['POST'])
+@limiter.limit("20 per minute")
 @token_optional
 def submit(current_user_id):
     """Authoritative check + image sanitisation, then relay to the Google Sheet."""
