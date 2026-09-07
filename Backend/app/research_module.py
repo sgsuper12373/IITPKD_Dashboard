@@ -13,6 +13,7 @@ from psycopg2 import extras
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns
 
 
 research_bp = Blueprint('research_module', __name__)
@@ -1181,10 +1182,10 @@ def publication_list(current_user_id):
         for row in cur.fetchall():
             data.append({
                 'publication_id': row['id'],
-                'publication_title': row['publication_title'],
-                'journal_name': row['journal_name'],
+                'publication_title': redact_pii_patterns(row['publication_title']),
+                'journal_name': redact_pii_patterns(row['journal_name']),
                 'department': row['department'],
-                'faculty_name': row['faculty_name'],
+                'faculty_name': redact_pii_patterns(row['faculty_name']),
                 'publication_year': row['publication_year'],
                 'publication_type': row['publication_type'],
             })

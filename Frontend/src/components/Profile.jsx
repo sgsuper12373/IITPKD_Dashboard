@@ -7,6 +7,13 @@ import TruncateConfirmModal from './TruncateConfirmModal';
 const API_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/auth`;
 const API_EXPORT_URL = `${import.meta.env.VITE_API_BASE_URL}/api/export`;
 
+// Mirrors the public.user_status enum in the database (Database_Schema/schema_dump.sql).
+const USER_STATUSES = [
+  { value: 'active', label: 'Active' },
+  { value: 'pending_verification', label: 'Pending Verification' },
+  { value: 'deactivated', label: 'Deactivated' },
+];
+
 function Profile({ user }) {
   const token = localStorage.getItem('authToken');
 
@@ -27,6 +34,7 @@ function Profile({ user }) {
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState(null);
   const [editUserRole, setEditUserRole] = useState('');
+  const [editUserStatus, setEditUserStatus] = useState('');
   const [editUserPassword, setEditUserPassword] = useState('');
   const [editUserConfirmPassword, setEditUserConfirmPassword] = useState('');
 
@@ -195,6 +203,7 @@ function Profile({ user }) {
   const handleUserEditStart = (u) => {
     setEditingUserId(u.id);
     setEditUserRole(u.role_id);
+    setEditUserStatus(u.status || 'active');
     setEditUserPassword('');
     setEditUserConfirmPassword('');
   };
@@ -202,6 +211,7 @@ function Profile({ user }) {
   const handleUserEditCancel = () => {
     setEditingUserId(null);
     setEditUserRole('');
+    setEditUserStatus('');
     setEditUserPassword('');
     setEditUserConfirmPassword('');
   };
@@ -215,7 +225,11 @@ function Profile({ user }) {
       const res = await fetch(`${API_AUTH_URL}/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ role_id: editUserRole, password: editUserPassword || undefined }),
+        body: JSON.stringify({
+          role_id: editUserRole,
+          status: editUserStatus,
+          password: editUserPassword || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to update user');
@@ -404,6 +418,7 @@ function Profile({ user }) {
                               <th>Email</th>
                               <th>Username</th>
                               <th>Role ID</th>
+                              <th>Status</th>
                               <th>Password</th>
                               <th className="profile-actions-col">Actions</th>
                             </tr>
@@ -425,6 +440,21 @@ function Profile({ user }) {
                                     </select>
                                   ) : (
                                     <span className="profile-role-id">{u.role_id}</span>
+                                  )}
+                                </td>
+                                <td>
+                                  {editingUserId === u.id ? (
+                                    <select
+                                      value={editUserStatus}
+                                      onChange={(e) => setEditUserStatus(e.target.value)}
+                                      className="roles-edit-input profile-role-select"
+                                    >
+                                      {USER_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                                    </select>
+                                  ) : (
+                                    <span className={`profile-status-badge profile-status-${u.status || 'active'}`}>
+                                      {USER_STATUSES.find(s => s.value === u.status)?.label || u.status || 'Active'}
+                                    </span>
                                   )}
                                 </td>
                                 <td>

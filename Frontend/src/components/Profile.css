@@ -433,8 +433,44 @@
 .profile-loading-text { color: #666; padding: 1rem 0; }
 
 /* ── Users table scroll wrapper ── */
-.profile-table-scroll { overflow-x: auto; }
-.profile-users-table  { min-width: 600px; }
+/* Fixed height sized for ~10 data rows before scrolling kicks in
+   (header ~42px + 10 rows @ ~44px each ≈ 480px, +margin for readability). */
+.profile-table-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 520px;
+}
+.profile-users-table  { min-width: 700px; }
+.profile-users-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* ── Status badges ── */
+.profile-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.profile-status-active {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.profile-status-pending_verification {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.profile-status-deactivated {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
 
 /* ── Column widths ── */
 .profile-actions-col { width: 160px; }

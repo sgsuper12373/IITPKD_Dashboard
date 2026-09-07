@@ -579,11 +579,14 @@ def get_users(current_user_id):
         release_db_connection(conn)
 
 
+_VALID_USER_STATUSES = {'pending_verification', 'active', 'deactivated'}
+
+
 @auth_bp.route('/users/<int:user_id>', methods=['PUT'])
 @limiter.limit("30 per hour")
 @token_required
 def update_user(current_user_id, user_id):
-    """Updates a user's role_id and optionally password. Admin only."""
+    """Updates a user's role_id, status, and optionally password. Admin only."""
     data = request.get_json()
     conn = get_db_connection()
     cur = conn.cursor()
@@ -594,7 +597,18 @@ def update_user(current_user_id, user_id):
         # Update role_id if provided
         if 'role_id' in data:
             cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (data['role_id'], user_id))
-            
+
+        # Update status if provided. No extra invalidation step needed here —
+        # token_required already re-checks status fresh on every request, so
+        # setting a user to 'deactivated' takes effect on their very next
+        # request, not just their next login.
+        if 'status' in data and data['status']:
+            if data['status'] not in _VALID_USER_STATUSES:
+                return jsonify({
+                    'message': f"Invalid status. Must be one of: {', '.join(sorted(_VALID_USER_STATUSES))}"
+                }), 400
+            cur.execute("UPDATE users SET status = %s WHERE id = %s;", (data['status'], user_id))
+
         # Update password if provided. Bumping password_changed_at here is
         # what makes this take effect immediately: it invalidates every JWT
         # already issued to this account (see token_required), not just
@@ -605,7 +619,7 @@ def update_user(current_user_id, user_id):
                 "UPDATE users SET password_hash = %s, password_changed_at = now() WHERE id = %s;",
                 (hashed, user_id)
             )
-            
+
         conn.commit()
         return jsonify({'message': 'User updated successfully'}), 200
     except Exception as e:
