@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import { safeHref } from '../utils/safeUrl';
 import {
   ResponsiveContainer,
   BarChart,
@@ -263,8 +264,8 @@ function OpenHouseSection({ user, isPublicView = false }) {
                     <td>{event.theme || '-'}</td>
                     <td className="oh-td-bold">{formatNumber(event.total_visitors)}</td>
                     <td>
-                      {event.photos_url && (
-                        <a href={event.photos_url} target="_blank" rel="noreferrer" className="oh-td-link">&#128248; View</a>
+                      {safeHref(event.photos_url) && (
+                        <a href={safeHref(event.photos_url)} target="_blank" rel="noreferrer" className="oh-td-link">&#128248; View</a>
                       )}
                     </td>
                   </tr>

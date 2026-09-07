@@ -11,6 +11,7 @@ import traceback
 
 import psycopg2
 import psycopg2.extras
+from psycopg2 import sql
 from flask import Blueprint, jsonify, request
 
 from .auth import token_required, _require_admin
@@ -93,7 +94,9 @@ def _find_failing_row(cur, conn, query, data, use_truncate, table_name):
     try:
         cur.execute("SAVEPOINT _diag_start")
         if use_truncate:
-            cur.execute(f'TRUNCATE TABLE "{table_name}" RESTART IDENTITY CASCADE;')
+            cur.execute(
+                sql.SQL('TRUNCATE TABLE {} RESTART IDENTITY CASCADE;').format(sql.Identifier(table_name))
+            )
         for i, row in enumerate(data, start=1):
             cur.execute("SAVEPOINT _diag_row")
             try:
@@ -856,7 +859,9 @@ def upload_csv(current_user_id):
                     }), 400
 
         if use_truncate:
-            cur.execute(f'TRUNCATE TABLE "{table_name}" RESTART IDENTITY CASCADE;')
+            cur.execute(
+                sql.SQL('TRUNCATE TABLE {} RESTART IDENTITY CASCADE;').format(sql.Identifier(table_name))
+            )
         try:
             psycopg2.extras.execute_values(cur, query, data)
             conn.commit()

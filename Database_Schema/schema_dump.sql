@@ -1431,7 +1431,8 @@ CREATE TABLE public.users (
     last_failed_at timestamp with time zone,
     role_id integer DEFAULT 1 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    last_updated timestamp with time zone DEFAULT now() NOT NULL
+    last_updated timestamp with time zone DEFAULT now() NOT NULL,
+    password_changed_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -2857,6 +2858,40 @@ INSERT INTO public.roles (id, name) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval('public.roles_id_seq', (SELECT COALESCE(MAX(id), 0) + 1 FROM public.roles), false);
+
+
+-- Least-privilege read surface for the public dashboard stats endpoints —
+-- see Database_Schema/migrations/add_dashboard_views.sql for the full
+-- rationale. A fresh database restored from this dump gets these views
+-- directly; Backend/setup_dashboard_roles.py still needs to be run
+-- separately to create the two Postgres roles that are actually granted
+-- access to them.
+
+CREATE OR REPLACE VIEW employees_dashboard_view AS
+SELECT
+    id, department, designation, gender, emp_type, empstatus,
+    group_name, doj, dor, last_updated
+FROM employees;
+
+CREATE OR REPLACE VIEW students_dashboard_view AS
+SELECT
+    admission_year, admission_batch, programme_current, stream_current,
+    department_current, academic_program_type, student_status,
+    gender, state, nationality
+FROM student_table;
+
+CREATE OR REPLACE VIEW employees_admin_view AS
+SELECT
+    id, department, designation, gender, emp_type, empstatus,
+    group_name, appointed_category, doj, dor, last_updated
+FROM employees;
+
+CREATE OR REPLACE VIEW students_admin_view AS
+SELECT
+    admission_year, admission_batch, programme_current, stream_current,
+    department_current, academic_program_type, student_status,
+    gender, state, nationality, original_category, pwd_status
+FROM student_table;
 
 
 --

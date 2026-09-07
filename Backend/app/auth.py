@@ -21,13 +21,23 @@ auth_bp = Blueprint('auth', __name__)
 # JWT helpers
 # ---------------------------------------------------------------------------
 
-def encode_auth_token(user_id, role_id):
-    """Creates a signed JWT valid for 24 hours. Returns the token string or None."""
+def encode_auth_token(user_id, role_id, password_changed_at):
+    """
+    Creates a signed JWT valid for 24 hours. Returns the token string or None.
+
+    Embeds password_changed_at (as the 'pwd' claim, a unix timestamp) at the
+    moment of issuance. token_required compares this against the account's
+    *current* password_changed_at on every request, so a password change
+    invalidates every outstanding token immediately instead of waiting up to
+    24 hours for natural expiry.
+    """
     try:
         now = datetime.datetime.now(timezone.utc)
+        pwd_epoch = int(password_changed_at.replace(tzinfo=timezone.utc).timestamp()) if password_changed_at else 0
         payload = {
             'sub': str(user_id),
             'role': role_id,
+            'pwd': pwd_epoch,
             'iat': int(now.timestamp()),
             'exp': int((now + datetime.timedelta(hours=24)).timestamp()),
         }
@@ -39,13 +49,13 @@ def encode_auth_token(user_id, role_id):
 
 def decode_auth_token(token):
     """
-    Decodes a JWT. Returns the integer user_id on success,
+    Decodes a JWT. Returns {'user_id': int, 'pwd_epoch': int} on success,
     or an error message string on failure.
     """
     try:
         secret = current_app.config['SECRET_KEY']
         payload = jwt.decode(token, secret, algorithms=['HS256'], leeway=10)
-        return int(payload['sub'])
+        return {'user_id': int(payload['sub']), 'pwd_epoch': int(payload.get('pwd', 0))}
     except jwt.ExpiredSignatureError:
         return 'Token expired. Please log in again.'
     except jwt.InvalidTokenError:
@@ -54,39 +64,53 @@ def decode_auth_token(token):
         return 'Error validating token. Please log in again.'
 
 
-def _is_account_active(user_id):
+def _check_session_still_valid(user_id, pwd_epoch_claim):
     """
-    Re-reads the account's current status from the database.
+    Re-reads the account's current status and password-change timestamp.
 
-    Returns True only if the account still exists and is 'active'. This is
-    what makes suspension/deactivation take effect immediately instead of
-    only at the next login — the JWT itself is not re-issued when an admin
-    changes a user's status, so it must be checked per request.
+    Returns (is_valid, error_message). is_valid is False if the account no
+    longer exists, is suspended, or its password has changed since this JWT
+    was issued (the DB's password_changed_at is newer than the token's pwd
+    claim). This is what makes suspension AND password resets take effect
+    immediately instead of only at the next login — the JWT itself is never
+    re-issued or revoked out-of-band, so it must be checked per request.
     """
     conn = None
     try:
         conn = get_db_connection()
         if not conn:
-            return False
+            return False, 'Error validating session. Please log in again.'
         cur = conn.cursor()
-        cur.execute("SELECT status FROM users WHERE id = %s;", (user_id,))
+        cur.execute("SELECT status, password_changed_at FROM users WHERE id = %s;", (user_id,))
         row = cur.fetchone()
         cur.close()
+
         if not row:
-            return False
+            return False, 'Account no longer exists. Please log in again.'
+
         status = row.get('status')
-        return not status or status == 'active'
+        if status and status != 'active':
+            return False, 'Account is not active. Please contact an administrator.'
+
+        changed_at = row.get('password_changed_at')
+        if changed_at:
+            current_epoch = int(changed_at.replace(tzinfo=timezone.utc).timestamp())
+            if current_epoch > pwd_epoch_claim:
+                return False, 'Your password was changed. Please log in again.'
+
+        return True, None
     except Exception as e:
-        print(f"Account status check error: {e}")
-        return False
+        print(f"Session validity check error: {e}")
+        return False, 'Error validating session. Please log in again.'
     finally:
         if conn:
             release_db_connection(conn)
 
 
 def token_required(f):
-    """Route decorator that checks for a valid Bearer token in the Authorization header
-    and that the account it belongs to is still active."""
+    """Route decorator that checks for a valid Bearer token in the Authorization header,
+    that the account it belongs to is still active, and that its password hasn't
+    changed since the token was issued."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
@@ -98,14 +122,15 @@ def token_required(f):
         else:
             return jsonify({'message': 'Invalid Authorization header format!'}), 401
 
-        user_id = decode_auth_token(token)
-        if isinstance(user_id, str):
-            return jsonify({'message': user_id}), 401
+        decoded = decode_auth_token(token)
+        if isinstance(decoded, str):
+            return jsonify({'message': decoded}), 401
 
-        if not _is_account_active(user_id):
-            return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 401
+        is_valid, error_message = _check_session_still_valid(decoded['user_id'], decoded['pwd_epoch'])
+        if not is_valid:
+            return jsonify({'message': error_message}), 401
 
-        kwargs['current_user_id'] = user_id
+        kwargs['current_user_id'] = decoded['user_id']
         return f(*args, **kwargs)
 
     return decorated
@@ -114,18 +139,25 @@ def token_required(f):
 def token_optional(f):
     """Route decorator that validates a token if present, allows the request if absent.
     Use on public/read-only endpoints that should also work for unauthenticated users.
-    A token for a since-suspended account is treated as anonymous rather than an error,
-    since these routes already permit anonymous access."""
+    A token that's since been invalidated (suspended account, or password changed)
+    is rejected with the same error as token_required — it is not silently
+    downgraded to anonymous, matching this decorator's prior behavior for any
+    other invalid token."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
         parts = auth_header.split()
         if (len(parts) == 2 and parts[0].lower() == 'bearer'
                 and parts[1].lower() not in ('null', 'undefined', '')):
-            user_id = decode_auth_token(parts[1])
-            if isinstance(user_id, str):
-                return jsonify({'message': user_id}), 401
-            kwargs['current_user_id'] = user_id if _is_account_active(user_id) else None
+            decoded = decode_auth_token(parts[1])
+            if isinstance(decoded, str):
+                return jsonify({'message': decoded}), 401
+
+            is_valid, error_message = _check_session_still_valid(decoded['user_id'], decoded['pwd_epoch'])
+            if not is_valid:
+                return jsonify({'message': error_message}), 401
+
+            kwargs['current_user_id'] = decoded['user_id']
         else:
             kwargs['current_user_id'] = None
         return f(*args, **kwargs)
@@ -149,7 +181,7 @@ def login():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, failed_login_attempts, last_failed_at, created_at FROM users WHERE email = %s;", (data['email'],))
+        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, failed_login_attempts, last_failed_at, password_changed_at, created_at FROM users WHERE email = %s;", (data['email'],))
         user = cur.fetchone()
 
         if not user:
@@ -187,10 +219,12 @@ def login():
         )
         conn.commit()
 
+        password_changed_at = user['password_changed_at']
         del user['password_hash']
+        del user['password_changed_at']
         return jsonify({
             'message': 'Login successful!',
-            'token': encode_auth_token(user['id'], user['role_id']),
+            'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
         }), 200
     finally:
@@ -248,7 +282,7 @@ def google_login():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, created_at FROM users WHERE email = %s;", (email,))
+        cur.execute("SELECT id, email, display_name, role_id, status, password_hash, password_changed_at, created_at FROM users WHERE email = %s;", (email,))
         user = cur.fetchone()
 
         if not user:
@@ -286,9 +320,10 @@ def google_login():
             user = dict(user)
             user.pop('password_hash', None)
 
+        password_changed_at = user.pop('password_changed_at', None)
         return jsonify({
             'message': 'Login successful!',
-            'token': encode_auth_token(user['id'], user['role_id']),
+            'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
         }), 200
 
@@ -316,7 +351,7 @@ def guest_login():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, email, display_name, role_id, status, password_hash, created_at FROM users WHERE email = %s;",
+            "SELECT id, email, display_name, role_id, status, password_hash, password_changed_at, created_at FROM users WHERE email = %s;",
             (guest_email,)
         )
         user = cur.fetchone()
@@ -332,9 +367,10 @@ def guest_login():
 
         user = dict(user)
         user.pop('password_hash', None)
+        password_changed_at = user.pop('password_changed_at', None)
         return jsonify({
             'message': 'Login successful!',
-            'token': encode_auth_token(user['id'], user['role_id']),
+            'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
         }), 200
     finally:
@@ -354,6 +390,29 @@ def _require_admin(cur, user_id):
     if not user or user['role_id'] != 3:
         return None
     return user
+
+
+def _is_management(user_id):
+    """
+    True only for a currently-active role_id=3 account. Used by the public
+    dashboard stats blueprints (administrative_stats.py, academic_stats.py)
+    to decide which read-only view/connection a token_optional route uses —
+    deliberately separate from _require_admin, which 403s a request outright.
+    This never rejects a request; it only narrows what it can see.
+    """
+    if not user_id:
+        return False
+    conn = get_db_connection()
+    if not conn:
+        return False
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT role_id FROM users WHERE id = %s;", (user_id,))
+        row = cur.fetchone()
+        return bool(row and row['role_id'] == 3)
+    finally:
+        cur.close()
+        release_db_connection(conn)
 
 
 @auth_bp.route('/roles', methods=['GET'])
@@ -536,10 +595,16 @@ def update_user(current_user_id, user_id):
         if 'role_id' in data:
             cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (data['role_id'], user_id))
             
-        # Update password if provided
+        # Update password if provided. Bumping password_changed_at here is
+        # what makes this take effect immediately: it invalidates every JWT
+        # already issued to this account (see token_required), not just
+        # future logins.
         if 'password' in data and data['password'].strip():
             hashed = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-            cur.execute("UPDATE users SET password_hash = %s WHERE id = %s;", (hashed, user_id))
+            cur.execute(
+                "UPDATE users SET password_hash = %s, password_changed_at = now() WHERE id = %s;",
+                (hashed, user_id)
+            )
             
         conn.commit()
         return jsonify({'message': 'User updated successfully'}), 200

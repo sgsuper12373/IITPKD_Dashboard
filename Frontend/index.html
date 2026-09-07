@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- The backend sets this for its own API responses, but that doesn't cover
+         pages served by this frontend. Without it, browsers fall back to their
+         own default (modern ones already default to strict-origin-when-cross-origin,
+         but older ones use no-referrer-when-downgrade, which leaks the full
+         path/query — e.g. Google OAuth or password-reset flows — to any
+         cross-origin sub-resource, such as Google Fonts). Set explicitly rather
+         than relying on browser defaults. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>IIT Palakkad Dashboard</title>
 
     <link rel="icon" type="image/png" href="/favicon.png" />

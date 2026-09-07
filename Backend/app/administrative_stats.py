@@ -1,21 +1,36 @@
 from flask import Blueprint, jsonify, request
-from .db import get_db_connection, release_db_connection
-from .auth import token_optional
+from .db import get_dashboard_connection, release_dashboard_connection
+from .auth import token_optional, _is_management
 import psycopg2.extras
 from datetime import date
 
 administrative_bp = Blueprint('administrative', __name__)
 
 
+def _employees_table(is_mgmt):
+    """
+    employees_admin_view additionally carries appointed_category;
+    employees_dashboard_view omits it. Neither ever exposes the base
+    employees table's contact/health/compensation PII columns — see
+    Database_Schema/migrations/add_dashboard_views.sql.
+    """
+    return 'employees_admin_view' if is_mgmt else 'employees_dashboard_view'
+
+
 # ---------------------------------------------------------------------------
 # Helper: build dynamic WHERE clause from filter dict
 # ---------------------------------------------------------------------------
 
-def build_filter_query(filters):
+def build_filter_query(filters, is_mgmt=False):
     """
     Builds a WHERE clause dynamically based on provided filters.
-    All queries now target the flat ``employees`` table (no JOINs).
     Returns a tuple: (where_clause_string, parameter_list)
+
+    'appointed_category' is a reservation-category field restricted to
+    management (role_id=3). For anyone else it's left out of filter_mapping
+    entirely, so the existing "unmapped key -> continue" branch below
+    silently ignores it — identical to an unrecognized filter name, not a
+    distinct error path a caller could probe to confirm the restriction.
     """
     conditions = []
     params = []
@@ -27,8 +42,9 @@ def build_filter_query(filters):
         'emp_type': 'emp_type',
         'empstatus': 'empstatus',
         'group_name': 'group_name',
-        'appointed_category': 'appointed_category',
     }
+    if is_mgmt:
+        filter_mapping['appointed_category'] = 'appointed_category'
 
     for filter_name, value in filters.items():
         if value is None or value == '' or value == 'All':
@@ -76,7 +92,7 @@ def _append_emp_type(where_clause, params, employee_type):
 
 
 def _read_common_filters():
-    """Read filter query‑params shared by most endpoints."""
+    """Read filter query-params shared by most endpoints."""
     return {
         'department': request.args.get('department', type=str),
         'designation': request.args.get('designation', type=str),
@@ -104,7 +120,7 @@ _FILTER_COLUMN_MAP = {
 }
 
 
-def _cascading_conditions(active_filters, exclude_field):
+def _cascading_conditions(active_filters, exclude_field, is_mgmt=False):
     """Build SQL conditions for all active filters except `exclude_field`.
 
     Used by the filter-options endpoint to compute distinct values for one
@@ -115,6 +131,8 @@ def _cascading_conditions(active_filters, exclude_field):
     params = []
     for filter_name, value in active_filters.items():
         if filter_name == exclude_field:
+            continue
+        if filter_name == 'appointed_category' and not is_mgmt:
             continue
         if value is None or value == '' or value == 'All':
             continue
@@ -134,7 +152,7 @@ def _cascading_conditions(active_filters, exclude_field):
 @token_optional
 def get_filter_options(current_user_id):
     """
-    Fetches distinct values for each filter field from the employees table.
+    Fetches distinct values for each filter field from the employees view.
 
     Cascading behaviour: when the request includes any of department,
     designation, gender, emp_type, empstatus, group_name, appointed_category
@@ -142,14 +160,21 @@ def get_filter_options(current_user_id):
     applying ALL OTHER active filters (each dimension excludes itself, so
     its own dropdown still shows the values reachable given the rest).
 
+    appointed_category is management-only (role_id=3): the key is simply
+    absent from the response for anyone else, and cannot be used to filter
+    the other dimensions either (see _cascading_conditions).
+
     If ?faculty_only=true, Department / Designation / Group are additionally
     scoped to active teaching faculty (emp_type='Teaching',
     designation!='Director', doj<=today, dor in future or null).
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -166,10 +191,10 @@ def get_filter_options(current_user_id):
             base = [f"{column} IS NOT NULL"]
             if extra_scope:
                 base.append(extra_scope)
-            cond, params = _cascading_conditions(active_filters, exclude_field)
+            cond, params = _cascading_conditions(active_filters, exclude_field, is_mgmt)
             where_clause = "WHERE " + " AND ".join(base + cond)
             cur.execute(
-                f"SELECT DISTINCT {column} AS val FROM employees {where_clause} ORDER BY val;",
+                f"SELECT DISTINCT {column} AS val FROM {table} {where_clause} ORDER BY val;",
                 params,
             )
             return [row['val'] for row in cur.fetchall()]
@@ -186,8 +211,9 @@ def get_filter_options(current_user_id):
             'emp_type': distinct_values('emp_type', 'emp_type'),
             'empstatus': distinct_values('empstatus', 'empstatus'),
             'group_name': distinct_values('group_name', 'group_name', faculty_scope),
-            'appointed_category': distinct_values('appointed_category', 'appointed_category'),
         }
+        if is_mgmt:
+            filter_options['appointed_category'] = distinct_values('appointed_category', 'appointed_category')
 
         # Years of Joining (doj) — NOT cascaded. Year is a per-chart filter
         # (regYearFD/YW/GR, summary card selectedYear) and shrinking this list
@@ -197,7 +223,7 @@ def get_filter_options(current_user_id):
         if faculty_scope:
             year_where += f" AND {faculty_scope}"
         cur.execute(
-            f"SELECT DISTINCT EXTRACT(YEAR FROM doj)::int AS year FROM employees {year_where} ORDER BY year DESC;"
+            f"SELECT DISTINCT EXTRACT(YEAR FROM doj)::int AS year FROM {table} {year_where} ORDER BY year DESC;"
         )
         filter_options['years'] = [row['year'] for row in cur.fetchall()]
 
@@ -210,7 +236,7 @@ def get_filter_options(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/employee-overview', methods=['GET'])
@@ -222,15 +248,18 @@ def get_employee_overview(current_user_id):
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = _read_common_filters()
         employee_type = filters.pop('emp_type', None)
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
         where_clause, params = _append_active_default(where_clause, params, filters.get('empstatus'))
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
 
@@ -239,7 +268,7 @@ def get_employee_overview(current_user_id):
                 COALESCE(department, 'Unknown') AS department,
                 gender,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY department, gender
             ORDER BY department, gender;
@@ -270,7 +299,10 @@ def get_employee_overview(current_user_id):
         return jsonify({
             'data': data,
             'total': total,
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -281,7 +313,7 @@ def get_employee_overview(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/faculty-gender-last-five-years', methods=['GET'])
@@ -293,8 +325,11 @@ def get_faculty_gender_last_five_years(current_user_id):
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -313,9 +348,9 @@ def get_faculty_gender_last_five_years(current_user_id):
         for year_start, label in year_labels:
             for gender in genders:
                 cur.execute(
-                    """
+                    f"""
                     SELECT COUNT(*) AS count
-                    FROM employees
+                    FROM {table}
                     WHERE doj <= make_date(%s, 12, 31)
                       AND (dor IS NULL OR dor >= make_date(%s, 1, 1))
                       AND gender = %s
@@ -364,7 +399,7 @@ def get_faculty_gender_last_five_years(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/faculty-by-department-designation', methods=['GET'])
@@ -373,15 +408,18 @@ def get_faculty_by_department_designation(current_user_id):
     """Department × designation breakdown."""
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = _read_common_filters()
         employee_type = filters.pop('emp_type', None)
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
         where_clause, params = _append_active_default(where_clause, params, filters.get('empstatus'))
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
 
@@ -390,7 +428,7 @@ def get_faculty_by_department_designation(current_user_id):
                 COALESCE(department, 'Unknown') AS department,
                 COALESCE(designation, 'Unknown') AS designation,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY department, designation
             ORDER BY department, designation;
@@ -421,7 +459,10 @@ def get_faculty_by_department_designation(current_user_id):
         return jsonify({
             'data': data,
             'total': total,
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -432,7 +473,7 @@ def get_faculty_by_department_designation(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/staff-count', methods=['GET'])
@@ -443,21 +484,24 @@ def get_staff_count(current_user_id):
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = _read_common_filters()
         # Don't pop emp_type here — we want to allow filtering
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
         where_clause, params = _append_active_default(where_clause, params, filters.get('empstatus'))
 
         query = f"""
             SELECT
                 COALESCE(emp_type, 'Unknown') AS emp_type,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY emp_type
             ORDER BY emp_type;
@@ -476,7 +520,10 @@ def get_staff_count(current_user_id):
         return jsonify({
             'data': staff_data,
             'total': total,
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -487,7 +534,7 @@ def get_staff_count(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/gender-distribution', methods=['GET'])
@@ -496,10 +543,13 @@ def get_gender_distribution(current_user_id):
     """Gender-wise distribution for employees who joined in the current year."""
     conn = None
     cur = None
+    is_mgmt = False
     try:
         from datetime import datetime
 
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -510,7 +560,7 @@ def get_gender_distribution(current_user_id):
         # ✅ ADD: default year
         selected_year = request.args.get('year', type=int) or datetime.now().year
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         # ✅ ADD: year-based condition
         date_condition = """
@@ -532,7 +582,7 @@ def get_gender_distribution(current_user_id):
 
         query = f"""
             SELECT gender, COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY gender
             ORDER BY gender;
@@ -556,7 +606,10 @@ def get_gender_distribution(current_user_id):
             'data': gender_data,
             'total': total,
             'employee_type': employee_type or 'All',
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -567,7 +620,7 @@ def get_gender_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/category-distribution', methods=['GET'])
@@ -576,10 +629,13 @@ def get_category_distribution(current_user_id):
 
     conn = None
     cur = None
+    is_mgmt = False
     try:
         from datetime import datetime
 
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -589,7 +645,7 @@ def get_category_distribution(current_user_id):
         # ✅ ADD: default year
         selected_year = request.args.get('year', type=int) or datetime.now().year
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         # ✅ ADD: year-based condition (instead of only active)
         date_condition = """
@@ -611,7 +667,7 @@ def get_category_distribution(current_user_id):
             SELECT
                 COALESCE(group_name, 'Not Specified') AS group_name,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY group_name
             ORDER BY group_name;
@@ -631,7 +687,10 @@ def get_category_distribution(current_user_id):
             'data': group_data,
             'total': total,
             'employee_type': employee_type or 'All',
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -642,17 +701,20 @@ def get_category_distribution(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/data-summary', methods=['GET'])
 @token_optional
 def get_data_summary(current_user_id):
-    """Diagnostic endpoint — quick stats from the employees table."""
+    """Diagnostic endpoint — quick stats from the employees view."""
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -660,25 +722,25 @@ def get_data_summary(current_user_id):
         summary = {}
 
         # Total employees
-        cur.execute("SELECT COUNT(*) AS total FROM employees;")
+        cur.execute(f"SELECT COUNT(*) AS total FROM {table};")
         summary['total_employees'] = cur.fetchone()['total']
 
         # Active vs Relieved
-        cur.execute("SELECT empstatus, COUNT(*) AS count FROM employees GROUP BY empstatus;")
+        cur.execute(f"SELECT empstatus, COUNT(*) AS count FROM {table} GROUP BY empstatus;")
         summary['status_distribution'] = {row['empstatus'] or 'Unknown': row['count'] for row in cur.fetchall()}
 
         # Gender distribution
-        cur.execute("SELECT gender, COUNT(*) AS count FROM employees GROUP BY gender ORDER BY gender;")
+        cur.execute(f"SELECT gender, COUNT(*) AS count FROM {table} GROUP BY gender ORDER BY gender;")
         summary['gender_distribution'] = {row['gender'] or 'Unknown': row['count'] for row in cur.fetchall()}
 
         # Employee type distribution
-        cur.execute("SELECT emp_type, COUNT(*) AS count FROM employees GROUP BY emp_type;")
+        cur.execute(f"SELECT emp_type, COUNT(*) AS count FROM {table} GROUP BY emp_type;")
         summary['employee_type_distribution'] = {row['emp_type'] or 'Unknown': row['count'] for row in cur.fetchall()}
 
         # Top departments
-        cur.execute("""
+        cur.execute(f"""
             SELECT COALESCE(department, 'Unknown') AS dept, COUNT(*) AS count
-            FROM employees
+            FROM {table}
             GROUP BY department
             ORDER BY count DESC
             LIMIT 10;
@@ -686,7 +748,7 @@ def get_data_summary(current_user_id):
         summary['top_departments'] = {row['dept']: row['count'] for row in cur.fetchall()}
 
         # Sample designations
-        cur.execute("SELECT DISTINCT designation FROM employees WHERE designation IS NOT NULL LIMIT 10;")
+        cur.execute(f"SELECT DISTINCT designation FROM {table} WHERE designation IS NOT NULL LIMIT 10;")
         summary['sample_designations'] = [row['designation'] for row in cur.fetchall()]
 
         return jsonify(summary), 200
@@ -699,7 +761,7 @@ def get_data_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/department-breakdown', methods=['GET'])
@@ -708,15 +770,18 @@ def get_department_breakdown(current_user_id):
     """Department-wise breakdown with gender and employee type."""
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
         filters = _read_common_filters()
         employee_type = filters.pop('emp_type', None)
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
         where_clause, params = _append_active_default(where_clause, params, filters.get('empstatus'))
         where_clause, params = _append_emp_type(where_clause, params, employee_type)
 
@@ -726,7 +791,7 @@ def get_department_breakdown(current_user_id):
                 gender,
                 COALESCE(emp_type, 'Unknown') AS employee_type,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             {where_clause}
             GROUP BY department, gender, emp_type
             ORDER BY department, gender, emp_type;
@@ -762,7 +827,10 @@ def get_department_breakdown(current_user_id):
         return jsonify({
             'data': data,
             'total': total,
-            'filters_applied': {k: v for k, v in filters.items() if v and v != 'All'}
+            'filters_applied': {
+                k: v for k, v in filters.items()
+                if v and v != 'All' and (is_mgmt or k != 'appointed_category')
+            }
         }), 200
 
     except Exception as e:
@@ -773,7 +841,7 @@ def get_department_breakdown(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/yearwise-strength', methods=['GET'])
@@ -794,11 +862,17 @@ def get_yearwise_strength(current_user_id):
     The previous `employmentnature = 'Regular'` filter has been dropped — DB
     values are Contract/Permanent/Temporary; "Regular" doesn't exist there.
     Non-regular faculty live in the separate `faculty_engagement` table.
+
+    appointed_category filtering is management-only (role_id=3); the query
+    param is simply not read for anyone else.
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -807,7 +881,7 @@ def get_yearwise_strength(current_user_id):
         designation        = request.args.get('designation',        type=str)
         gender             = request.args.get('gender',             type=str)
         group_name         = request.args.get('group_name',         type=str)
-        appointed_category = request.args.get('appointed_category', type=str)
+        appointed_category = request.args.get('appointed_category', type=str) if is_mgmt else None
         num_years          = request.args.get('num_years',          type=int) or 5
 
         # ✅ ADD THIS
@@ -869,21 +943,21 @@ def get_yearwise_strength(current_user_id):
                 COUNT(e.id) FILTER (WHERE e.gender NOT IN ('Male','Female') AND e.gender IS NOT NULL) AS other
             FROM (
                 SELECT generate_series(
-                    CASE 
+                    CASE
                         WHEN %s IS NOT NULL THEN %s
                         ELSE GREATEST(
                             (SELECT EXTRACT(YEAR FROM MIN(doj))::int
-                             FROM employees WHERE doj IS NOT NULL),
+                             FROM {table} WHERE doj IS NOT NULL),
                             EXTRACT(YEAR FROM CURRENT_DATE)::int - %s + 1
                         )
                     END,
-                    CASE 
+                    CASE
                         WHEN %s IS NOT NULL THEN %s
                         ELSE EXTRACT(YEAR FROM CURRENT_DATE)::int
                     END
                 ) AS yr
             ) y
-            LEFT JOIN employees e
+            LEFT JOIN {table} e
                 ON  e.doj <= make_date(y.yr::int, 12, 31)
                 AND (e.dor IS NULL OR e.dor >= make_date(y.yr::int, 12, 31))
                 AND {full_filter}
@@ -918,7 +992,7 @@ def get_yearwise_strength(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @administrative_bp.route('/stats/faculty-expertise-matrix', methods=['GET'])
@@ -927,10 +1001,13 @@ def get_faculty_expertise_matrix(current_user_id):
 
     conn = None
     cur = None
+    is_mgmt = False
     try:
         from datetime import datetime
 
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _employees_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -938,7 +1015,7 @@ def get_faculty_expertise_matrix(current_user_id):
         designation        = request.args.get('designation',        type=str)
         gender             = request.args.get('gender',             type=str)
         group_name         = request.args.get('group_name',         type=str)
-        appointed_category = request.args.get('appointed_category', type=str)
+        appointed_category = request.args.get('appointed_category', type=str) if is_mgmt else None
 
         # ✅ Default to current year
         selected_year = request.args.get('year', type=int) or datetime.now().year
@@ -977,7 +1054,7 @@ def get_faculty_expertise_matrix(current_user_id):
             SELECT
                 COALESCE(department, 'Unknown') AS department,
                 COUNT(*) AS count
-            FROM employees
+            FROM {table}
             WHERE emp_type = 'Teaching'
               AND designation != 'Director'
               AND {date_condition}
@@ -1003,4 +1080,4 @@ def get_faculty_expertise_matrix(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)

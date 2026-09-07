@@ -5,6 +5,7 @@ import {
   fetchConclaveList
 } from '../services/industryConnectStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import { safeHref } from '../utils/safeUrl';
 import './Page.css';
 import './AcademicSection.css';
 import './ConclaveSection.css';
@@ -212,11 +213,11 @@ function ConclaveSection({ user, isPublicView = false }) {
                       </div>
                     )}
 
-                    {(conclave.brochure_url || conclave.event_photos_url) && (
+                    {(safeHref(conclave.brochure_url) || safeHref(conclave.event_photos_url)) && (
                       <div className="cncl-action-btns">
-                        {conclave.brochure_url && (
+                        {safeHref(conclave.brochure_url) && (
                           <a
-                            href={conclave.brochure_url}
+                            href={safeHref(conclave.brochure_url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="cncl-action-link"
@@ -224,9 +225,9 @@ function ConclaveSection({ user, isPublicView = false }) {
                             <span>&#128196;</span> View Brochure
                           </a>
                         )}
-                        {conclave.event_photos_url && (
+                        {safeHref(conclave.event_photos_url) && (
                           <a
-                            href={conclave.event_photos_url}
+                            href={safeHref(conclave.event_photos_url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="cncl-action-link"

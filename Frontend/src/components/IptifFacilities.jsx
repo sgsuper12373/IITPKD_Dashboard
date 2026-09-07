@@ -10,6 +10,7 @@ import {
   fetchManageFacilities,
   updateFacility,
 } from '../services/iptifFacilities';
+import { safeHref } from '../utils/safeUrl';
 import { canModifySection } from '../utils/rolePermissions';
 
 import './IptifFacilities.css';
@@ -130,10 +131,10 @@ function DetailModal({ facility, onClose }) {
             </div>
           )}
 
-          {facility.more_info_link && (
+          {safeHref(facility.more_info_link) && (
             <a
               className="iff-modal-link"
-              href={facility.more_info_link}
+              href={safeHref(facility.more_info_link)}
               target="_blank"
               rel="noopener noreferrer"
             >

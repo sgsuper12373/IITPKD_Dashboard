@@ -1,23 +1,31 @@
 from flask import Blueprint, jsonify, request
-from .db import get_db_connection, release_db_connection
-from .auth import token_optional
+from .db import get_dashboard_connection, release_dashboard_connection
+from .auth import token_optional, _is_management
 
 academic_bp = Blueprint('academic', __name__)
 
-# New table name (was 'student')
-STUDENT_TABLE = 'student_table'
+
+def _student_table(is_mgmt):
+    """
+    students_admin_view additionally carries original_category and
+    pwd_status; students_dashboard_view omits both. Neither ever exposes
+    the base student_table's direct-identifier or contact-PII columns —
+    see Database_Schema/migrations/add_dashboard_views.sql.
+    """
+    return 'students_admin_view' if is_mgmt else 'students_dashboard_view'
 
 
-def get_latest_year():
-    """Returns the maximum admission_year from the student_table."""
+def get_latest_year(is_mgmt=False):
+    """Returns the maximum admission_year from the student view."""
     conn = None
     try:
-        conn = get_db_connection()
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return None
 
+        table = _student_table(is_mgmt)
         cur = conn.cursor()
-        cur.execute(f"SELECT MAX(admission_year) as latest_year FROM {STUDENT_TABLE};")
+        cur.execute(f"SELECT MAX(admission_year) as latest_year FROM {table};")
         result = cur.fetchone()
 
         if result and result['latest_year']:
@@ -29,29 +37,38 @@ def get_latest_year():
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
-def build_filter_query(filters):
+def build_filter_query(filters, is_mgmt=False):
     """
     Builds a WHERE clause dynamically based on provided filters.
     Returns a tuple: (where_clause_string, parameter_list)
+
+    'category' (-> original_category) and 'pwd' (-> pwd_status) are
+    admission-reservation-category and disability-status fields, restricted
+    to management (role_id=3). For anyone else, both keys are left out of
+    filter_mapping entirely, so the existing "unmapped key -> continue"
+    branch below silently ignores them — identical to a typo or an
+    unrecognized filter name, not a distinct error path a caller could
+    probe to confirm the restriction exists.
     """
     conditions = []
     params = []
 
-    # Map frontend filter names to new database column names
+    # Map frontend filter names to database column names
     filter_mapping = {
         'yearofadmission': 'admission_year',
         'program': 'programme_current',
         'batch': 'admission_batch',
         'branch': 'stream_current',
         'department': 'department_current',
-        'category': 'original_category',
         'gender': 'gender',
         'state': 'state',
-        'pwd': 'pwd_status'
     }
+    if is_mgmt:
+        filter_mapping['category'] = 'original_category'
+        filter_mapping['pwd'] = 'pwd_status'
 
     for filter_name, value in filters.items():
         if value is None or value == '' or value == 'All':
@@ -87,7 +104,9 @@ def get_filter_options(current_user_id):
     """Fetches distinct values for each filter field, supporting cross-filtering."""
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -110,7 +129,7 @@ def get_filter_options(current_user_id):
         for k, v in current_filters.items():
             if v == 'All':
                 current_filters[k] = None
-        
+
         if current_filters.get('pwd') == 'true':
             current_filters['pwd'] = True
         elif current_filters.get('pwd') == 'false':
@@ -119,34 +138,38 @@ def get_filter_options(current_user_id):
         # Helper to build WHERE clause excluding a specific filter
         def build_where_except(exclude_key):
             filters_to_apply = {k: v for k, v in current_filters.items() if k != exclude_key}
-            return build_filter_query(filters_to_apply)
+            return build_filter_query(filters_to_apply, is_mgmt)
 
         filter_options = {}
 
-        # Columns to fetch distinct options for
+        # Columns to fetch distinct options for. 'category' -> original_category
+        # is management-only, so it's only added to the list when is_mgmt —
+        # a public caller's response simply has no 'category' key at all,
+        # matching how the underlying filter is already silently dropped.
         columns = [
             ('yearofadmission', 'admission_year', 'DESC'),
             ('program', 'programme_current', 'ASC'),
             ('batch', 'admission_batch', 'ASC'),
             ('branch', 'stream_current', 'ASC'),
             ('department', 'department_current', 'ASC'),
-            ('category', 'original_category', 'ASC'),
-            ('state', 'state', 'ASC')
+            ('state', 'state', 'ASC'),
         ]
+        if is_mgmt:
+            columns.append(('category', 'original_category', 'ASC'))
 
         for filter_key, db_col, order in columns:
             where_clause, params = build_where_except(filter_key)
             query = f"""
-                SELECT DISTINCT {db_col} 
-                FROM {STUDENT_TABLE} 
-                {where_clause} {"AND" if where_clause else "WHERE"} {db_col} IS NOT NULL 
+                SELECT DISTINCT {db_col}
+                FROM {table}
+                {where_clause} {"AND" if where_clause else "WHERE"} {db_col} IS NOT NULL
                 ORDER BY {db_col} {order};
             """
             cur.execute(query, params)
             filter_options[filter_key] = [row[db_col] for row in cur.fetchall()]
 
         # Get latest year
-        latest_year = get_latest_year()
+        latest_year = get_latest_year(is_mgmt)
         filter_options['latest_year'] = latest_year
 
         return jsonify(filter_options), 200
@@ -157,7 +180,7 @@ def get_filter_options(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/gender-distribution-filtered', methods=['GET'])
@@ -166,7 +189,9 @@ def get_gender_distribution_filtered(current_user_id):
     """Fetches gender distribution based on provided filters."""
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -196,15 +221,15 @@ def get_gender_distribution_filtered(current_user_id):
             filters['pwd'] = None
 
         if filters['yearofadmission'] is None:
-            latest_year = get_latest_year()
+            latest_year = get_latest_year(is_mgmt)
             if latest_year:
                 filters['yearofadmission'] = latest_year
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         query = f"""
             SELECT gender, COUNT(*) as count
-            FROM {STUDENT_TABLE}
+            FROM {table}
             {where_clause}
             GROUP BY gender
             ORDER BY gender;
@@ -230,6 +255,7 @@ def get_gender_distribution_filtered(current_user_id):
         filters_applied = {
             k: v for k, v in filters.items()
             if v is not None and v != '' and v != 'All'
+            and (is_mgmt or k not in ('category', 'pwd'))
         }
 
         return jsonify({
@@ -244,7 +270,7 @@ def get_gender_distribution_filtered(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/state-distribution', methods=['GET'])
@@ -253,7 +279,9 @@ def get_state_distribution(current_user_id):
     """Fetches student state distribution based on provided filters."""
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -265,17 +293,16 @@ def get_state_distribution(current_user_id):
             'gender': request.args.get('gender', type=str),
             'state': request.args.get('state', type=str),
         }
-        
 
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         nationality_condition = "LOWER(TRIM(COALESCE(nationality, ''))) = 'india'"
 
         if where_clause:
             query = f"""
                 SELECT state, COUNT(*) as count
-                FROM {STUDENT_TABLE}
+                FROM {table}
                 {where_clause} AND state IS NOT NULL AND TRIM(state) != ''
                 AND {nationality_condition}
                 GROUP BY state
@@ -284,7 +311,7 @@ def get_state_distribution(current_user_id):
         else:
             query = f"""
                 SELECT state, COUNT(*) as count
-                FROM {STUDENT_TABLE}
+                FROM {table}
                 WHERE state IS NOT NULL AND TRIM(state) != ''
                 AND {nationality_condition}
                 GROUP BY state
@@ -310,7 +337,7 @@ def get_state_distribution(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/student-strength', methods=['GET'])
@@ -319,7 +346,9 @@ def get_student_strength(current_user_id):
     """Fetches student strength grouped by program with gender breakdown."""
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -337,7 +366,7 @@ def get_student_strength(current_user_id):
             filters['yearofadmission'] = yearofadmission_param
 
         if filters['yearofadmission'] is None:
-            latest_year = get_latest_year()
+            latest_year = get_latest_year(is_mgmt)
             if latest_year:
                 filters['yearofadmission'] = latest_year
             else:
@@ -346,12 +375,12 @@ def get_student_strength(current_user_id):
         if filters['yearofadmission'] is None:
             return jsonify({'message': 'yearofadmission is required.'}), 400
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         # Use programme_current but alias as 'name' for frontend compatibility
         query = f"""
             SELECT programme_current as name, gender, COUNT(*) as count
-            FROM {STUDENT_TABLE}
+            FROM {table}
             {where_clause}
             GROUP BY programme_current, gender
             ORDER BY programme_current, gender;
@@ -384,6 +413,7 @@ def get_student_strength(current_user_id):
         filters_applied = {
             k: v for k, v in filters.items()
             if v is not None and v != '' and v != 'All'
+            and (is_mgmt or k not in ('category', 'pwd'))
         }
 
         return jsonify({
@@ -398,7 +428,7 @@ def get_student_strength(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/gender-trends', methods=['GET'])
@@ -407,7 +437,9 @@ def get_gender_trends(current_user_id):
     """Fetches gender distribution grouped by year of admission."""
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -428,12 +460,12 @@ def get_gender_trends(current_user_id):
         elif filters['pwd'] == '' or filters['pwd'] is None:
             filters['pwd'] = None
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         # Use admission_year but alias as 'yearofadmission' for frontend compatibility
         query = f"""
             SELECT admission_year as yearofadmission, gender, COUNT(*) as count
-            FROM {STUDENT_TABLE}
+            FROM {table}
             {where_clause}
             GROUP BY admission_year, gender
             ORDER BY admission_year;
@@ -468,7 +500,7 @@ def get_gender_trends(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/program-trends', methods=['GET'])
@@ -482,7 +514,9 @@ def get_program_trends(current_user_id):
     """
     conn = None
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -502,7 +536,7 @@ def get_program_trends(current_user_id):
         elif filters['pwd'] == '' or filters['pwd'] is None:
             filters['pwd'] = None
 
-        where_clause, params = build_filter_query(filters)
+        where_clause, params = build_filter_query(filters, is_mgmt)
 
         # Fetch per-program, per-gender, per-year counts
         query = f"""
@@ -512,7 +546,7 @@ def get_program_trends(current_user_id):
                 academic_program_type,
                 gender,
                 COUNT(*) AS count
-            FROM {STUDENT_TABLE}
+            FROM {table}
             {where_clause}
             GROUP BY admission_year, programme_current, academic_program_type, gender
             ORDER BY admission_year;
@@ -606,7 +640,7 @@ def get_program_trends(current_user_id):
     finally:
         if conn:
             cur.close()
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/student-summary', methods=['GET'])
@@ -618,8 +652,11 @@ def get_student_summary(current_user_id):
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
 
@@ -638,7 +675,7 @@ def get_student_summary(current_user_id):
                 COUNT(*) FILTER (WHERE academic_program_type = 'UG')             AS ug_total,
                 COUNT(*) FILTER (WHERE academic_program_type = 'PG')             AS pg_total,
                 COUNT(*) FILTER (WHERE academic_program_type = 'Research')       AS research_total
-            FROM {STUDENT_TABLE}
+            FROM {table}
             {where};
         """
 
@@ -661,7 +698,7 @@ def get_student_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)
 
 
 @academic_bp.route('/stats/onroll-summary', methods=['GET'])
@@ -672,23 +709,13 @@ def get_onroll_summary(current_user_id):
     """
     conn = None
     cur = None
+    is_mgmt = False
     try:
-        conn = get_db_connection()
+        is_mgmt = _is_management(current_user_id)
+        table = _student_table(is_mgmt)
+        conn = get_dashboard_connection(is_mgmt)
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
-
-        # First, debug: check actual values in database
-        debug_query = f"""
-            SELECT DISTINCT academic_program_type, student_status
-            FROM {STUDENT_TABLE}
-            LIMIT 20;
-        """
-        cur = conn.cursor()
-        cur.execute(debug_query)
-        debug_results = cur.fetchall()
-        print("DEBUG - Sample data from database:")
-        for row in debug_results:
-            print(f"  academic_program_type: '{row['academic_program_type']}' | student_status: '{row['student_status']}'")
 
         query = f"""
             SELECT
@@ -707,9 +734,10 @@ def get_onroll_summary(current_user_id):
                       AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
                 ) AS research_onroll
 
-            FROM {STUDENT_TABLE};
+            FROM {table};
         """
 
+        cur = conn.cursor()
         cur.execute(query)
         row = cur.fetchone()
 
@@ -733,4 +761,4 @@ def get_onroll_summary(current_user_id):
         if cur:
             cur.close()
         if conn:
-            release_db_connection(conn)
+            release_dashboard_connection(conn, is_mgmt)

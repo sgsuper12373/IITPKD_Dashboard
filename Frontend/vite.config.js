@@ -12,7 +12,14 @@ export default defineConfig(({ mode }) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
     `img-src 'self' data: blob: ${apiBase}`,
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' ${apiBase} https://accounts.google.com` + (isDev ? ' ws:' : ''),
+    // Dev-only: Vite's HMR client needs a WebSocket back to this same dev
+    // server. A bare "ws:" scheme (no host) permits a WebSocket to ANY host
+    // over unencrypted ws:// — if an XSS bug ever existed, that would let
+    // injected script exfiltrate data to an attacker's own server. Scoping
+    // to localhost/127.0.0.1 with a wildcard port (the dev server's port
+    // varies — Vite falls back to 5174, 5175... when 5173 is taken) keeps
+    // HMR working without opening connect-src up to arbitrary hosts.
+    `connect-src 'self' ${apiBase} https://accounts.google.com` + (isDev ? ' ws://localhost:* ws://127.0.0.1:*' : ''),
     "frame-src https://accounts.google.com https://maps.google.com https://www.google.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",

@@ -1,0 +1,15 @@
+-- auth.py's token_required now rejects any JWT whose embedded 'pwd' claim
+-- (the password_changed_at timestamp at the moment the token was issued)
+-- predates the account's *current* password_changed_at. Without this, the
+-- app's stateless 24h JWTs have no revocation mechanism at all: resetting a
+-- password (via admin edit or any future self-service flow) would leave
+-- every already-issued token for that account valid regardless, for up to
+-- 24 more hours. Run this against any existing database that predates this
+-- fix; new databases created from schema_dump.sql already have the column.
+--
+-- Note: because the default is now(), every row gets password_changed_at
+-- set to "the moment this migration runs" — which means every JWT already
+-- issued before running this (no 'pwd' claim, treated as 0) will be
+-- rejected on its next use. Every currently logged-in user will be forced
+-- to log in again. This is the intended one-time effect of shipping the fix.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at timestamp with time zone DEFAULT now() NOT NULL;

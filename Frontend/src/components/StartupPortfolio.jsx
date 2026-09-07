@@ -9,6 +9,7 @@ import {
   updateStartupShowcase,
 } from '../services/startupPortfolio';
 import { canModifySection } from '../utils/rolePermissions';
+import { safeHref } from '../utils/safeUrl';
 import LastUpdated from './LastUpdated';
 import DataUploadModal from './LazyDataUploadModal';
 
@@ -146,12 +147,12 @@ function DetailModal({ startup, onClose }) {
               <h4 className="sp-modal-block-title">Founder</h4>
               <p className="sp-modal-block-text">
                 {startup.startup_founder_name || '—'}
-                {startup.startup_founder_profile_line && (
+                {safeHref(startup.startup_founder_profile_line) && (
                   <>
                     {'  '}
                     <a
                       className="sp-inline-link"
-                      href={startup.startup_founder_profile_line}
+                      href={safeHref(startup.startup_founder_profile_line)}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -163,10 +164,10 @@ function DetailModal({ startup, onClose }) {
             </div>
           )}
 
-          {startup.startup_website_link && (
+          {safeHref(startup.startup_website_link) && (
             <a
               className="sp-modal-link"
-              href={startup.startup_website_link}
+              href={safeHref(startup.startup_website_link)}
               target="_blank"
               rel="noopener noreferrer"
             >

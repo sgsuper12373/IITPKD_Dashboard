@@ -114,8 +114,18 @@ def create_app():
     os.makedirs(INDUSTRY_PROJECT_UPLOAD_FOLDER, exist_ok=True)
 
     SAFE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
+    # Werkzeug's send_from_directory already resolves the path via safe_join
+    # and rejects anything that would escape the target directory, and a bare
+    # <filename> route segment cannot contain a literal "/" in the first
+    # place — so path traversal here is already blocked at the framework
+    # level. This check makes that explicit and auditable in application
+    # code (an allow-list on shape, not a deny-list on "../"), rather than
+    # relying solely on a reviewer trusting framework internals.
+    _TRAVERSAL_CHARS = ('..', '/', '\\', '\0')
 
     def _validate_upload_filename(filename):
+        if not filename or any(c in filename for c in _TRAVERSAL_CHARS):
+            abort(404)
         ext = os.path.splitext(filename)[1].lower()
         if ext not in SAFE_EXTENSIONS:
             abort(404)
