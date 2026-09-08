@@ -8,6 +8,7 @@ from psycopg2 import extras
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns
 
 
 industry_connect_bp = Blueprint('industry_connect', __name__)
@@ -288,12 +289,12 @@ def get_icsr_events(current_user_id):
         for row in events:
             result.append({
                 'project_id': row['project_id'],
-                'event_name': row['event_name'],
+                'event_name': redact_pii_patterns(row['event_name']),
                 'event_type': row['event_type'],
                 'date_of_event': row['date_of_event'].isoformat() if row['date_of_event'] else None,
-                'target_audience': row['target_audience'],
-                'hosted_by': row['hosted_by'],
-                'funding_by': row['funding_by'],
+                'target_audience': redact_pii_patterns(row['target_audience']),
+                'hosted_by': redact_pii_patterns(row['hosted_by']),
+                'funding_by': redact_pii_patterns(row['funding_by']),
                 'amount': float(row['amount']) if row['amount'] else None,
                 'year': row['year']
             })
@@ -455,14 +456,14 @@ def get_conclave_list(current_user_id):
                 'start_date': row['start_date'].isoformat() if row['start_date'] else None,
                 'end_date': row['end_date'].isoformat() if row['end_date'] else None,
                 'year': row['start_date'].year if row['start_date'] else None,
-                'theme': row['theme'],
-                'focus_area': row['focus_area'],
+                'theme': redact_pii_patterns(row['theme']),
+                'focus_area': redact_pii_patterns(row['focus_area']),
                 'number_of_companies': row['number_of_com'] or 0,
                 'sessions_held': row['sessions_held'],
-                'key_speakers': row['key_speakers'],
+                'key_speakers': redact_pii_patterns(row['key_speakers']),
                 'event_photos_url': row['event_photos_url'],
                 'brochure_url': row['brochure_url'],
-                'description': row['description']
+                'description': redact_pii_patterns(row['description'])
             })
 
         return jsonify({'data': result}), 200

@@ -20,6 +20,7 @@ from psycopg2 import errors as pg_errors, extras
 from .auth import token_required
 from .db import get_db_connection, release_db_connection
 from .image_safety import ImageRejected, validate_and_reencode
+from .url_safety import safe_url_or_none
 
 icsr_consultancy_bp = Blueprint('icsr_consultancy', __name__)
 
@@ -117,7 +118,10 @@ def _resolve_logo(existing=None):
         return saved_url, None
     posted = (request.form.get('industry_logo') or '').strip()
     if posted:
-        return posted, None
+        safe = safe_url_or_none(posted)
+        if safe is None:
+            return None, 'industry_logo must be a valid http(s) URL.'
+        return safe, None
     return existing, None
 
 

@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_in_rows
 
 academic_module_bp = Blueprint('academic_module', __name__)
 
@@ -413,7 +414,7 @@ def get_courses(current_user_id):
             params + [per_page, offset]
         )
         rows = cur.fetchall() or []
-        courses = [dict(row) for row in rows]
+        courses = redact_pii_in_rows([dict(row) for row in rows])
 
         return jsonify({
             'data': courses,

@@ -207,6 +207,43 @@
 
 /* ── Failing row highlight ── */
 .dum-row--error { background-color: rgba(220, 53, 69, 0.25); outline: 2px solid #dc3545; }
+.dum-row--warn  { background-color: rgba(245, 158, 11, 0.2); outline: 2px solid #f59e0b; }
+
+/* ── Schema load status ── */
+.dum-schema-note {
+    font-size: 0.85rem;
+    color: #666;
+    background-color: #f1f3f5;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+.dum-schema-note--warn {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+}
+
+/* ── Required/optional column labels ── */
+.dum-optional-label { display: block; margin-top: 0.75rem; }
+
+/* ── Accepted-values legend ── */
+.dum-enum-legend { margin-top: 0.75rem; font-size: 0.85rem; }
+.dum-enum-legend ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+.dum-enum-legend code { background-color: #2d3748; color: #fff; padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+/* ── Misc format hints (date format, auto-generated id notes, etc.) ── */
+.dum-hint { margin-top: 0.5rem; font-size: 0.85rem; color: #555; }
+.dum-hint code { background-color: #2d3748; color: #fff; padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+/* ── Pre-flight (client-side) validation panel ── */
+.dum-preflight {
+    background-color: #fff8e6;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+.dum-preflight-header { font-weight: 600; color: #856404; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.dum-preflight-item { font-size: 0.85rem; color: #856404; margin-bottom: 0.25rem; }
 
 /* ── Error row label ── */
 .dum-error-row-header { font-weight: bold; margin-bottom: 0.3rem; }

@@ -12,6 +12,7 @@ from psycopg2 import extras
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns, redact_pii_in_rows
 
 
 innovation_bp = Blueprint('innovation', __name__)
@@ -405,14 +406,14 @@ def get_startups(current_user_id):
         """
         cur.execute(query, params + [per_page, offset])
         startups = cur.fetchall()
-        
+
         result = []
         for row in startups:
             result.append({
                 'startup_id': row['startup_id'],
-                'startup_name': row['startup_name'],
-                'founder_name': row['founder_name'],
-                'innovation_focus_area': row['innovation_focus_area'],
+                'startup_name': redact_pii_patterns(row['startup_name']),
+                'founder_name': redact_pii_patterns(row['founder_name']),
+                'innovation_focus_area': redact_pii_patterns(row['innovation_focus_area']),
                 'year_of_incubation': row['year_of_incubation'],
                 'status': row['status'],
                 'sector': row['sector'],
@@ -603,7 +604,7 @@ def get_iptif_projects(current_user_id):
             ORDER BY start_date DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -665,7 +666,7 @@ def get_iptif_programs(current_user_id):
             ORDER BY COALESCE(start_end, date) DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -727,7 +728,7 @@ def get_iptif_startups(current_user_id):
             ORDER BY incubated_date DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -785,7 +786,7 @@ def get_iptif_facilities_revenue(current_user_id):
             ORDER BY financial_year DESC, facility_name ASC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -977,7 +978,7 @@ def get_techin_programs(current_user_id):
             ORDER BY COALESCE(start_end, event_date) DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -1039,7 +1040,7 @@ def get_techin_skill_dev(current_user_id):
             ORDER BY COALESCE(start_end, event_date) DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -1101,7 +1102,7 @@ def get_techin_startups(current_user_id):
             ORDER BY incubated_date DESC;
         """
         cur.execute(list_query, params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         
         return jsonify({'trend': trend, 'data': data_list}), 200
         
@@ -1304,7 +1305,7 @@ def get_home_ground_startups(current_user_id):
             ORDER BY incubated_date DESC;
         """
         cur.execute(list_query, params + params)
-        data_list = [dict(row) for row in cur.fetchall()]
+        data_list = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
 
         return jsonify({'trend': trend, 'data': data_list}), 200
 

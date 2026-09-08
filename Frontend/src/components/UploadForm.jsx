@@ -1,58 +1,56 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { parseCSVToRecords } from '../utils/csvParse';
+import UploadErrorTable from './UploadErrorTable';
 import './UploadForm.css';
 
+// Kept in sync with UPDATABLE_TABLES in Backend/app/upload.py — this used to
+// list stale/renamed table names (e.g. 'student', 'alumini', 'employee')
+// that never matched the backend whitelist, so uploads for those tables
+// always failed with a confusing "not allowed" error regardless of the CSV.
 const tableOptions = [
-  'student',
-  'course',
-  'department',
-  'alumni',
-  'alumini',
-  'designation',
-  'employee',
-  'employment_history',
-  'additional_roles',
-  'externship_info',
-  'igrs_yearwise',
-  'icc_yearwise',
-  'ewd_yearwise',
-  'faculty_engagement',
-  'placement_summary',
-  'placement_companies',
-  'placement_packages',
-  'industry_courses',
-  'academic_program_launch',
-  'research_projects',
-  'research_mous',
-  'research_patents',
-  'research_publications',
-  'startups',
-  'innovation_projects',
-  'industry_events',
-  'industry_conclave',
-  'open_house',
-  'nptel_local_chapters',
-  'nptel_courses',
-  'nptel_enrollments',
-  'uba_projects',
-  'uba_events'
+  'department', 'alumni', 'employees', 'courses_table', 'student_table',
+  'externship_info', 'igrs_yearwise', 'icc_yearwise', 'ewd_yearwise', 'faculty_engagement',
+  'placement_summary', 'placement_companies', 'placement_packages',
+  'icsr_sponsered_projects', 'icsr_consultancy_projects', 'icsr_csr',
+  'research_mous', 'research_patents', 'research_publications',
+  'innovation_projects', 'iptif_startup_table', 'iptif_program_table',
+  'iptif_projects_table', 'iptif_facilities_table', 'techin_startup_table',
+  'techin_program_table', 'techin_skill_development_program',
+  'industry_events', 'industry_conclave', 'open_house',
+  'uba_projects', 'uba_events', 'outreach', 'nptel_courses', 'nirf_ranking', 'iar_mous',
 ];
+
+function formatServerError(data, fallbackText) {
+  const message = data?.message || fallbackText;
+  const details = data?.details;
+  if (Array.isArray(details)) {
+    return { text: message, tableErrors: details, truncated: !!data?.truncated };
+  }
+  if (details && typeof details === 'object') {
+    if (data.error_type === 'missing_columns' && details.missing_in_csv) {
+      return { text: `${message} Missing: ${details.missing_in_csv.join(', ')}.`, tableErrors: null, truncated: false };
+    }
+    if (data.error_type === 'extra_columns' && details.extra_in_csv) {
+      return { text: `${message} Unexpected column(s): ${details.extra_in_csv.join(', ')}.`, tableErrors: null, truncated: false };
+    }
+  }
+  return { text: message, tableErrors: null, truncated: false };
+}
 
 function UploadForm({ token, onLogout }) {
   const [selectedTable, setSelectedTable] = useState(tableOptions[0]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [tableErrors, setTableErrors] = useState(null);
+  const [truncated, setTruncated] = useState(false);
   const [previewData, setPreviewData] = useState(null);
 
   const parseCSVPreview = (csvText) => {
     try {
-      const lines = csvText.trim().split('\n');
-      const header = lines[0].split(',');
-      const rows = lines.slice(1, 6)
-        .filter(line => line)
-        .map(line => line.split(','));
-      setPreviewData({ header, rows });
+      const { headers, records } = parseCSVToRecords(csvText);
+      setPreviewData({ header: headers, rows: records.slice(0, 5) });
     } catch (e) {
       console.error("Failed to parse CSV preview:", e);
       setMessage('Error: Could not parse CSV for preview.');
@@ -64,6 +62,7 @@ function UploadForm({ token, onLogout }) {
     const file = event.target.files[0];
     setSelectedFile(file);
     setMessage('');
+    setTableErrors(null);
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => parseCSVPreview(e.target.result);
@@ -76,6 +75,7 @@ function UploadForm({ token, onLogout }) {
   const handleTableChange = (event) => {
     setSelectedTable(event.target.value);
     setMessage('');
+    setTableErrors(null);
   };
 
   const handleSubmit = async (event) => {
@@ -88,6 +88,7 @@ function UploadForm({ token, onLogout }) {
 
     setIsLoading(true);
     setMessage('');
+    setTableErrors(null);
 
     const formData = new FormData();
     formData.append('table_name', selectedTable);
@@ -116,19 +117,17 @@ function UploadForm({ token, onLogout }) {
       event.target.reset();
 
     } catch (error) {
-      let errorMessage = 'An unknown error occurred.';
-      if (error.response) {
-        errorMessage = error.response.data.message;
+      if (error.response?.data) {
+        let { text, tableErrors: errs, truncated: trunc } = formatServerError(error.response.data, 'An unknown error occurred.');
         if (error.response.status === 401) {
-           errorMessage += " Your session may have expired. Please log out and log back in.";
+          text += " Your session may have expired. Please log out and log back in.";
         }
-        if (error.response.data.details) {
-          // details appended server-side
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
+        setMessage(`Error: ${text}`);
+        setTableErrors(errs);
+        setTruncated(trunc);
+      } else {
+        setMessage(`Error: ${error.message || 'An unknown error occurred.'}`);
       }
-      setMessage(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -189,10 +188,10 @@ function UploadForm({ token, onLogout }) {
                 </tr>
               </thead>
               <tbody>
-                {previewData.rows.map((row, rowIndex) => (
+                {previewData.rows.map((record, rowIndex) => (
                   <tr key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <td key={cellIndex}>{cell}</td>
+                    {previewData.header.map((col, cellIndex) => (
+                      <td key={cellIndex}>{record[col]}</td>
                     ))}
                   </tr>
                 ))}
@@ -214,6 +213,7 @@ function UploadForm({ token, onLogout }) {
           {message}
         </p>
       )}
+      {tableErrors && <UploadErrorTable errors={tableErrors} truncated={truncated} />}
     </div>
   );
 }

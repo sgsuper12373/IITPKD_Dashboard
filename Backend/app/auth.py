@@ -527,17 +527,42 @@ def delete_role(current_user_id, role_id):
         release_db_connection(conn)
 
 
+def _role_exists(cur, role_id):
+    """True if role_id refers to a real row in roles. Guards against a typo'd
+    or malicious integer being written straight into users.role_id with no
+    FK-violation feedback until something else breaks later."""
+    cur.execute("SELECT 1 FROM roles WHERE id = %s;", (role_id,))
+    return cur.fetchone() is not None
+
+
 @auth_bp.route('/create-user', methods=['POST'])
 @limiter.limit("20 per hour")
 @token_required
 def create_user(current_user_id):
     """Creates a new user account. Admin only."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({'message': 'Request body must be JSON.'}), 400
+
+    required = ('email', 'password', 'username', 'role_id')
+    missing = [f for f in required if not data.get(f) and data.get(f) != 0]
+    if missing:
+        return jsonify({'message': f"Missing required field(s): {', '.join(missing)}"}), 400
+
     conn = get_db_connection()
+    if not conn:
+        return jsonify({'message': 'Database connection failed.'}), 503
     cur = conn.cursor()
     try:
         if not _require_admin(cur, current_user_id):
             return jsonify({'message': 'Admin access required'}), 403
+
+        try:
+            role_id = int(data['role_id'])
+        except (TypeError, ValueError):
+            return jsonify({'message': 'role_id must be an integer.'}), 400
+        if not _role_exists(cur, role_id):
+            return jsonify({'message': f"Unknown role_id: {role_id}"}), 400
 
         hashed = bcrypt.generate_password_hash(data['password']).decode('utf-8')
         cur.execute(
@@ -546,7 +571,7 @@ def create_user(current_user_id):
             VALUES (%s, %s, %s, %s, %s, 'pending_verification')
             RETURNING id, email, username, display_name, role_id;
             """,
-            (data['email'], hashed, data['username'], data.get('display_name'), data['role_id'])
+            (data['email'], hashed, data['username'], data.get('display_name'), role_id)
         )
         new_user = cur.fetchone()
         conn.commit()
@@ -554,6 +579,10 @@ def create_user(current_user_id):
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
         return jsonify({'message': 'Email or username already exists'}), 409
+    except Exception as e:
+        conn.rollback()
+        print(f"Error creating user: {e}")
+        return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
         release_db_connection(conn)
@@ -587,7 +616,10 @@ _VALID_USER_STATUSES = {'pending_verification', 'active', 'deactivated'}
 @token_required
 def update_user(current_user_id, user_id):
     """Updates a user's role_id, status, and optionally password. Admin only."""
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({'message': 'Request body must be JSON.'}), 400
+
     conn = get_db_connection()
     cur = conn.cursor()
     try:
@@ -596,7 +628,13 @@ def update_user(current_user_id, user_id):
 
         # Update role_id if provided
         if 'role_id' in data:
-            cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (data['role_id'], user_id))
+            try:
+                new_role_id = int(data['role_id'])
+            except (TypeError, ValueError):
+                return jsonify({'message': 'role_id must be an integer.'}), 400
+            if not _role_exists(cur, new_role_id):
+                return jsonify({'message': f"Unknown role_id: {new_role_id}"}), 400
+            cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (new_role_id, user_id))
 
         # Update status if provided. No extra invalidation step needed here —
         # token_required already re-checks status fresh on every request, so

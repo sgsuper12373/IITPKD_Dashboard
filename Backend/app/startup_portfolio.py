@@ -16,6 +16,7 @@ from psycopg2 import errors as pg_errors, extras
 from .auth import token_optional, token_required
 from .db import get_db_connection, release_db_connection
 from .image_safety import ImageRejected, validate_and_reencode
+from .url_safety import safe_url_or_none
 
 startup_portfolio_bp = Blueprint('startup_portfolio', __name__)
 
@@ -45,6 +46,11 @@ _EDITABLE_FIELDS = (
 
 # Extra fields collected only when creating a brand-new startup inline (normally filled by the CSV pipeline).
 _CREATE_EXTRA = ('domain', 'status', 'incubated_date')
+
+# Of _EDITABLE_FIELDS, the ones rendered as a clickable link (see safeHref()
+# call sites in StartupPortfolio.jsx) rather than plain text — these get the
+# same http(s)-only scheme check server-side, not just at render time.
+_URL_FIELDS = {'startup_website_link', 'startup_founder_profile_line'}
 
 
 def _editable_origins(conn, user_id):
@@ -94,8 +100,18 @@ def _delete_image_file(logo):
 
 
 def _form_values():
-    """Read editable text fields from the multipart form, blanks coerced to None (keep-existing)."""
-    return {field: (request.form.get(field) or '').strip() or None for field in _EDITABLE_FIELDS}
+    """
+    Read editable text fields from the multipart form, blanks coerced to None
+    (keep-existing). URL-shaped fields (_URL_FIELDS) are additionally
+    restricted to http(s) — a non-URL or unsafe-scheme value is dropped to
+    None (keep-existing) rather than stored, since it will later be rendered
+    as a clickable link to every visitor.
+    """
+    values = {field: (request.form.get(field) or '').strip() or None for field in _EDITABLE_FIELDS}
+    for field in _URL_FIELDS:
+        if values[field] is not None:
+            values[field] = safe_url_or_none(values[field])
+    return values
 
 
 def _parse_bool(value):
@@ -202,7 +218,9 @@ def create_startup(current_user_id, origin):
         else:
             posted_logo = (request.form.get('startup_logo') or '').strip()
             if posted_logo:
-                logo = posted_logo
+                logo = safe_url_or_none(posted_logo)
+                if logo is None:
+                    return jsonify({'error': 'startup_logo must be a valid http(s) URL.'}), 400
 
         cols = ['id', 'startup_name', *_CREATE_EXTRA, *_EDITABLE_FIELDS, 'startup_logo', 'is_published']
         vals = [
@@ -265,7 +283,10 @@ def update_startup(current_user_id, origin, startup_id):
         else:
             posted_logo = (request.form.get('startup_logo') or '').strip()
             if posted_logo:
-                new_logo = posted_logo
+                validated = safe_url_or_none(posted_logo)
+                if validated is None:
+                    return jsonify({'error': 'startup_logo must be a valid http(s) URL.'}), 400
+                new_logo = validated
 
         # Publish flag is set explicitly when present, otherwise left unchanged.
         if 'is_published' in request.form:

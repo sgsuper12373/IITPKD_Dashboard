@@ -236,7 +236,7 @@ function FacilityForm({ initial, onSave, onCancel }) {
 
           <label className="iff-form-label">
             Image
-            <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+            <input type="file" accept="image/jpeg,image/png"
               className="iff-form-input" onChange={(e) => setFile(e.target.files[0] || null)} />
             {initial?.image_url && !file && (
               <span className="iff-form-hint">Leave empty to keep the current image.</span>

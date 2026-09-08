@@ -1,38 +1,219 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import cachedAxios from '../utils/cachedAxios';
+import { fetchUploadSchema } from '../services/uploadSchema';
+import { parseCSVToRecords } from '../utils/csvParse';
+import UploadErrorTable from './UploadErrorTable';
 import './DataUploadModal.css';
+
+// Tables where the backend accepts alternate/renamed CSV headers (see the
+// _preprocess_* functions in Backend/app/upload.py) in addition to the
+// canonical DB column names. For these tables we skip the client-side
+// "missing/extra column" check entirely — we can't safely re-derive the
+// backend's renaming rules here, and a false "missing column" warning would
+// be actively misleading. Per-cell checks (blank/enum/length) still run
+// normally for whichever columns happen to match verbatim.
+const PREPROCESSED_TABLES = new Set([
+    'employees', 'student_table', 'uba_events', 'nptel_enrollments',
+    'research_publications', 'iar_mous', 'faculty_engagement',
+    'outreach', 'outreach_science_quest', 'outreach_math_circle',
+    'outreach_pale_blue_dot', 'outreach_institute_visits', 'outreach_nss_activities',
+]);
+
+const MAX_CLIENT_ISSUES = 100;
+
+function sampleValueFor(col) {
+    if (col.allowed_values && col.allowed_values.length > 0) return col.allowed_values[0];
+    const t = (col.data_type || '').toLowerCase();
+    if (t.includes('bool')) return 'TRUE';
+    if (t.includes('date') || t.includes('timestamp')) return '2024-01-01';
+    if (t.includes('int') || t.includes('numeric') || t.includes('double') || t.includes('real') || t.includes('decimal')) return '1';
+    return `Sample ${col.name}`;
+}
+
+// Mirrors the handful of value aliases upload.py accepts before checking an
+// enum column, so a legitimate value like 'General' isn't flagged here as
+// invalid just because the client doesn't know the backend will rewrite it
+// to 'Gen' first.
+function aliasForEnumCheck(colName, value) {
+    if (colName.toLowerCase() === 'category' && value.toLowerCase() === 'general') return 'Gen';
+    return value;
+}
+
+function validateRecordsAgainstSchema(headers, records, schema) {
+    const headerIssues = [];
+    const cellIssues = [];
+    if (!schema) return { headerIssues, cellIssues, truncated: false };
+
+    const colByLower = new Map((schema.columns || []).map(c => [c.name.toLowerCase(), c]));
+    const csvHeaderLower = headers.map(h => h.toLowerCase());
+
+    if (!PREPROCESSED_TABLES.has(schema.table_name)) {
+        const missing = (schema.required_columns || []).filter(
+            rc => !csvHeaderLower.includes(rc.toLowerCase())
+        );
+        if (missing.length > 0) {
+            headerIssues.push(`Missing required column(s): ${missing.join(', ')}.`);
+        }
+        const known = new Set([
+            ...(schema.required_columns || []),
+            ...(schema.optional_columns || []),
+        ].map(c => c.toLowerCase()));
+        const extra = headers.filter(h => !known.has(h.toLowerCase()));
+        if (extra.length > 0) {
+            headerIssues.push(`Column(s) not recognised for this table: ${extra.join(', ')}.`);
+        }
+    }
+
+    outer:
+    for (let idx = 0; idx < records.length; idx++) {
+        const record = records[idx];
+        const rowNum = idx + 1;
+        const isEmptyRow = Object.values(record).every(v => (v ?? '').toString().trim() === '');
+        if (isEmptyRow) continue;
+
+        for (const h of headers) {
+            const col = colByLower.get(h.toLowerCase());
+            if (!col) continue;
+            const raw = record[h];
+            const val = (raw ?? '').toString().trim();
+
+            if (val === '') {
+                if (col.required) {
+                    cellIssues.push({ row: rowNum, column: col.name, reason: 'This field is required and cannot be left empty.' });
+                    if (cellIssues.length >= MAX_CLIENT_ISSUES) break outer;
+                }
+                continue;
+            }
+
+            if (col.allowed_values && col.allowed_values.length > 0) {
+                const checkVal = aliasForEnumCheck(col.name, val);
+                const matched = col.allowed_values.some(a => a.toLowerCase() === checkVal.toLowerCase());
+                if (!matched) {
+                    cellIssues.push({
+                        row: rowNum, column: col.name, value: val,
+                        reason: `'${val}' is not an accepted value for '${col.name}'.`,
+                        allowed_values: col.allowed_values,
+                    });
+                    if (cellIssues.length >= MAX_CLIENT_ISSUES) break outer;
+                }
+            }
+
+            if (col.max_length && val.length > col.max_length) {
+                cellIssues.push({
+                    row: rowNum, column: col.name,
+                    value: val.length > 80 ? val.slice(0, 80) + '…' : val,
+                    reason: `This value is ${val.length} characters long, but '${col.name}' allows at most ${col.max_length}.`,
+                });
+                if (cellIssues.length >= MAX_CLIENT_ISSUES) break outer;
+            }
+        }
+    }
+
+    return { headerIssues, cellIssues, truncated: cellIssues.length >= MAX_CLIENT_ISSUES };
+}
+
+// Reshapes a backend error response into a uniform { text, tableErrors,
+// truncated } shape, whether it's the newer per-row `details` array or one
+// of the older file-level `details` objects (missing/extra columns).
+function formatServerError(data, fallbackText) {
+    const message = data?.message || fallbackText;
+    const details = data?.details;
+    if (Array.isArray(details)) {
+        return { text: message, tableErrors: details, truncated: !!data?.truncated };
+    }
+    if (details && typeof details === 'object') {
+        if (data.error_type === 'missing_columns' && details.missing_in_csv) {
+            return { text: `${message} Missing: ${details.missing_in_csv.join(', ')}.`, tableErrors: null, truncated: false };
+        }
+        if (data.error_type === 'extra_columns' && details.extra_in_csv) {
+            const expected = details.expected_columns || [];
+            const shown = expected.slice(0, 15).join(', ') + (expected.length > 15 ? ', …' : '');
+            return { text: `${message} Unexpected column(s): ${details.extra_in_csv.join(', ')}. Expected columns: ${shown}.`, tableErrors: null, truncated: false };
+        }
+        if (typeof details === 'string') {
+            return { text: `${message} — ${details}`, tableErrors: null, truncated: false };
+        }
+        return { text: message, tableErrors: null, truncated: false };
+    }
+    return { text: message, tableErrors: null, truncated: false };
+}
 
 function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess }) {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [previewData, setPreviewData] = useState(null);
+    const [parsedCSV, setParsedCSV] = useState(null); // { headers, records }
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [uploadSuccess, setUploadSuccess] = useState(false);
-    const [failingRow, setFailingRow] = useState(null);
+    const [serverErrors, setServerErrors] = useState(null);   // array | null
+    const [serverTruncated, setServerTruncated] = useState(false);
+
+    const [schema, setSchema] = useState(null);
+    const [schemaError, setSchemaError] = useState(null);
+    const [schemaLoading, setSchemaLoading] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             setSelectedFile(null);
-            setPreviewData(null);
+            setParsedCSV(null);
             setMessage(null);
             setUploadSuccess(false);
             setIsLoading(false);
-            setFailingRow(null);
+            setServerErrors(null);
+            setServerTruncated(false);
+            setSchema(null);
+            setSchemaError(null);
+
+            if (tableName && token) {
+                setSchemaLoading(true);
+                fetchUploadSchema(tableName, token)
+                    .then(data => setSchema(data))
+                    .catch(err => setSchemaError(err.message || 'Could not load column requirements.'))
+                    .finally(() => setSchemaLoading(false));
+            }
         }
-    }, [isOpen]);
+    }, [isOpen, tableName, token]);
+
+    const templateColumns = useMemo(() => {
+        if (!schema) return [];
+        const requiredLower = new Set((schema.required_columns || []).map(c => c.toLowerCase()));
+        return (schema.columns || []).map(c => ({ ...c, required: requiredLower.has(c.name.toLowerCase()) }));
+    }, [schema]);
+
+    const enumColumns = useMemo(
+        () => templateColumns.filter(c => c.allowed_values && c.allowed_values.length > 0),
+        [templateColumns]
+    );
+
+    const hasDateColumn = useMemo(
+        () => templateColumns.some(c => (c.data_type || '').toLowerCase().includes('date') || (c.data_type || '').toLowerCase().includes('timestamp')),
+        [templateColumns]
+    );
+
+    const clientValidation = useMemo(() => {
+        if (!parsedCSV || !schema) return { headerIssues: [], cellIssues: [], truncated: false };
+        return validateRecordsAgainstSchema(parsedCSV.headers, parsedCSV.records, schema);
+    }, [parsedCSV, schema]);
+
+    const highlightedRows = useMemo(() => {
+        const rows = new Set();
+        clientValidation.cellIssues.forEach(e => rows.add(e.row));
+        (serverErrors || []).forEach(e => { if (e.row) rows.add(e.row); });
+        return rows;
+    }, [clientValidation, serverErrors]);
 
     if (!isOpen) return null;
 
-    const handleClose = () => {
+    const resetAndClose = () => {
         const wasSuccess = uploadSuccess;
         setSelectedFile(null);
-        setPreviewData(null);
+        setParsedCSV(null);
         setMessage(null);
         setUploadSuccess(false);
         setIsLoading(false);
-        setFailingRow(null);
+        setServerErrors(null);
+        setServerTruncated(false);
         onClose();
 
         if (wasSuccess) {
@@ -44,38 +225,28 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         }
     };
 
-    const parseCSVPreview = (csvText) => {
-        try {
-            const lines = csvText.trim().split('\n');
-            if (lines.length === 0) return;
-
-            const header = lines[0].split(',');
-            const rows = lines.slice(1, 51)
-                .filter(line => line)
-                .map(line => line.split(','));
-
-            setPreviewData({ header, rows });
-        } catch (e) {
-            console.error("Failed to parse CSV preview:", e);
-            setPreviewData(null);
-        }
-    };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
         setMessage(null);
         setUploadSuccess(false);
-        setFailingRow(null);
+        setServerErrors(null);
+        setServerTruncated(false);
 
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                parseCSVPreview(event.target.result);
+                try {
+                    const { headers, records } = parseCSVToRecords(event.target.result);
+                    setParsedCSV({ headers, records });
+                } catch (err) {
+                    console.error('Failed to parse CSV:', err);
+                    setParsedCSV(null);
+                }
             };
             reader.readAsText(file);
         } else {
-            setPreviewData(null);
+            setParsedCSV(null);
         }
     };
 
@@ -84,6 +255,8 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
 
         setIsLoading(true);
         setMessage(null);
+        setServerErrors(null);
+        setServerTruncated(false);
 
         const formData = new FormData();
         formData.append('table_name', tableName);
@@ -105,226 +278,24 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
             setUploadSuccess(true);
 
         } catch (error) {
-            const errorMsg = error.response?.data?.message || error.message || 'An error occurred during upload.';
-            const errorDetails = error.response?.data?.details;
-            const rowNumber = error.response?.data?.row_number ?? null;
-
-            let finalMessage = errorMsg;
-            if (errorDetails) finalMessage += ` — ${errorDetails}`;
-
-            setMessage({ type: 'error', text: finalMessage });
-            setFailingRow(rowNumber);
+            if (error.response?.data) {
+                const { text, tableErrors, truncated } = formatServerError(error.response.data, 'An error occurred during upload.');
+                setMessage({ type: 'error', text });
+                setServerErrors(tableErrors);
+                setServerTruncated(truncated);
+            } else {
+                setMessage({ type: 'error', text: error.message || 'An error occurred during upload. Please verify the backend server is reachable.' });
+            }
             setUploadSuccess(false);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const getTemplateData = (table) => {
-        switch (table) {
-            case 'alumni':
-                return {
-                    headers: ["sl_no", "roll_number", "year_of_admission", "year_of_graduation", "course_type", "course_name", "department", "current_job", "country_of_settlement", "place_of_settlement_state", "alumni_contribution"],
-                    sample: ["1", "Sample roll_number", "1", "1", "Sample course_type", "Sample course_name", "Sample department", "Sample current_job", "Sample country_of_settlement", "Sample place_of_settlement_state", "Sample alumni_contribution"]
-                };
-            case 'courses_table':
-                return {
-                    headers: ["course_code", "course_name", "credit_l_t_p_c", "course_category", "proposing_faculty_name", "faculty_affiliation", "target_programme", "target_discipline", "prerequisite", "date_of_proposal", "proposal_type", "bac_number", "senate_number", "course_proposal_pdf", "is_industry_course", "industry_partner", "industry_coordinator_name", "course_status_currentay", "course_status_history"],
-                    sample: ["Sample course_code", "Sample course_name", "Sample credit_l_t_p_c", "Sample course_category", "Sample proposing_faculty_name", "Sample faculty_affiliation", "Sample target_programme", "Sample target_discipline", "Sample prerequisite", "2023-01-01", "Sample proposal_type", "1", "1", "Sample course_proposal_pdf", "Sample is_industry_course", "Sample industry_partner", "Sample industry_coordinator_name", "Sample course_status_currentay", "Sample course_status_history"]
-                };
-            case 'employees':
-                return {
-                    headers: ["empid", "empname", "designation", "phonenumber", "bloodgroup", "dob", "initial_doj", "doj", "dor", "gender", "email", "personalmail", "marital_status", "address", "paylevel", "group_name", "ltchometown", "employmentnature", "appointmentmode", "basicpay", "department", "emp_type", "pwd", "notificationnumber", "notificationdate", "empstatus", "prior_industry_exp_in_months", "prior_research_exp_in_months", "prior_teaching_exp_in_months", "total_teaching_exp_in_months", "original_category", "appointed_category"],
-                    sample: ["IITPKD1234", "John Doe", "Assistant Professor Gr. I", "9876543210", "O+", "1990-01-15", "2017-11-01", "2022-03-25", "2055-01-31", "Male", "john@iitpkd.ac.in", "john@gmail.com", "Married", "123 Main St, City", "F13A1", "group_name", "Hometown", "Regular", "Direct Recruitment", "101500", "Computer Science and Engineering", "Teaching", "No", "IITPKD/R/F/01/2022", "2022-01-10", "Active", "", "", "", "", "GEN", "OBC"]
-                };
-            case 'ewd_yearwise':
-                return {
-                    headers: ["ewd_year", "annual_electricity_consumption", "per_capita_electricity_consumption", "per_capita_water_consumption", "per_capita_recycled_water", "green_coverage"],
-                    sample: ["1", "1", "100.5", "100.5", "100.5", "100.5"]
-                };
-            case 'externship_info':
-                return {
-                    headers: ["employeeid", "empname", "department", "industry_name", "startdate", "enddate", "type", "remarks", "createddate", "modifieddate"],
-                    sample: ["Sample employeeid", "Sample empname", "Sample department", "Sample industry_name", "2023-01-01", "2023-01-01", "Sample type", "Sample remarks", "2023-01-01", "2023-01-01"]
-                };
-            case 'faculty_engagement':
-                return {
-                    headers: ["engagement_code", "faculty_name", "engagement_type", "department", "startdate", "enddate", "duration_months", "year", "remarks", "fc_bg_type"],
-                    sample: ["Sample engagement_code", "Sample faculty_name", "Sample engagement_type", "Sample department", "2023-01-01", "2023-01-01", "1", "1", "Sample remarks", "Academia"]
-                };
-            case 'icc_yearwise':
-                return {
-                    headers: ["complaints_year", "total_complaints", "complaints_resolved", "complaints_pending"],
-                    sample: ["1", "1", "1", "1"]
-                };
-            case 'igrs_yearwise':
-                return {
-                    headers: ["grievance_year", "total_grievances_filed", "grievances_resolved", "grievances_pending"],
-                    sample: ["1", "1", "1", "1"]
-                };
-            case 'industry_conclave':
-                return {
-                    headers: ["start_date", "end_date", "theme", "focus_area", "number_of_com", "sessions_held", "key_speakers", "event_photos_url", "brochure_url", "description", "created_at"],
-                    sample: ["2023-01-01", "2023-01-01", "Sample theme", "Sample focus_area", "1", "1", "Sample key_speakers", "Sample event_photos_url", "Sample brochure_url", "Sample description", "2023-01-01"]
-                };
-            case 'nirf_ranking':
-                return {
-                    headers: ["year", "tlr_score", "rpc_score", "go_score", "oi_score", "pr_score", "rank"],
-                    sample: ["2024", "100.5", "100.5", "100.5", "100.5", "100.5", "1"]
-                };
-            case 'open_house':
-                return {
-                    headers: ["event_year", "event_date", "theme", "target_audience", "departments_participated", "num_departments", "total_visitors", "key_highlights", "photos_url", "poster_url", "brochure_url", "created_at"],
-                    sample: ["1", "2023-01-01", "Sample theme", "Sample target_audience", "Sample departments_participated", "1", "1", "Sample key_highlights", "Sample photos_url", "Sample poster_url", "Sample brochure_url", "2023-01-01"]
-                };
-            case 'placement_companies':
-                return {
-                    headers: ["placement_year", "company_name", "sector", "offers", "hires", "is_top_recruiter", "created_at"],
-                    sample: ["1", "Sample company_name", "Sample sector", "1", "1", "TRUE", "2023-01-01"]
-                };
-            case 'placement_packages':
-                return {
-                    headers: ["placement_year", "program", "highest_package", "lowest_package", "average_package"],
-                    sample: ["1", "Sample program", "100.5", "100.5", "100.5"]
-                };
-            case 'placement_summary':
-                return {
-                    headers: ["placement_year", "program", "gender", "registered", "placed"],
-                    sample: ["1", "Sample program", "Sample gender", "1", "1"]
-                };
-            case 'research_mous':
-                return {
-                    headers: ["partner_name", "collaboration_nature", "date_signed", "validity_end", "remarks"],
-                    sample: ["Sample partner_name", "Sample collaboration_nature", "2023-01-01", "2023-01-01", "Sample remarks"]
-                };
-            case 'research_patents':
-                return {
-                    headers: ["patent_title", "patent_status", "filing_date", "grant_date", "remarks", "inventor1", "inventor1_category", "inventor2", "inventor2_category", "inventor3", "inventor3_category", "inventor4", "inventor4_category"],
-                    sample: ["Sample patent_title", "Sample patent_status", "2023-01-01", "2023-01-01", "Sample remarks", "Sample inventor1", "Sample inventor1_category", "Sample inventor2", "Sample inventor2_category", "Sample inventor3", "Sample inventor3_category", "Sample inventor4", "Sample inventor4_category"]
-                };
-            case 'research_publications':
-                return {
-                    headers: ["publication_title", "journal_name", "department", "faculty_name", "publication_year", "publication_type"],
-                    sample: ["Sample Title", "Sample Journal", "Computer Science and Engineering", "Dr. Sample Name", "2024", "Journal Article"]
-                };
-            case 'student_table':
-                return {
-                    headers: ["roll_no_admission", "roll_no_current", "name_of_student", "programme_admission", "programme_current", "admission_year", "admission_cycle", "admission_batch", "date_of_joining", "date_of_validity", "department_admission", "department_current", "stream_admission", "stream_current", "current_semester", "gender", "original_category", "admission_category", "hosteller_day_scholar", "date_of_birth", "residential_address", "nationality", "state", "pwd_status", "disability_type", "blood_group", "apaar_id", "qualifying_exam", "qualifying_exam_score", "student_contact_no", "institute_email", "personal_email", "parent_name", "parent_contact_no", "parent_email", "faculty_advisor", "institute_scholarship", "nsp_scholarship_recipient", "preparatory", "branch_change", "branch_change_remarks", "slowpaced", "upgraded", "date_of_upgradation", "idc_current", "number_of_total_idcs", "idc_history", "break_type", "break_from_date", "break_to_date", "break_history", "student_status", "student_status_date", "student_status_remarks", "fellowship_status_admission", "fellowship_status_current", "dc_chairperson", "dc_members", "thesis_submission_date", "viva_voice_date", "academic_program_type"],
-                    sample: ["1", "1", "Sample name_of_student", "Sample programme_admission", "Sample programme_current", "1", "Sample admission_cycle", "1", "2023-01-01", "2023-01-01", "Sample department_admission", "Sample department_current", "Sample stream_admission", "Sample stream_current", "1", "Sample gender", "Sample original_category", "Sample admission_category", "Sample hosteller_day_scholar", "2023-01-01", "Sample residential_address", "Sample nationality", "Sample state", "Sample pwd_status", "Sample disability_type", "Sample blood_group", "Sample apaar_id", "Sample qualifying_exam", "1", "1", "Sample institute_email", "Sample personal_email", "Sample parent_name", "1", "Sample parent_email", "Sample faculty_advisor", "Sample institute_scholarship", "Sample nsp_scholarship_recipient", "Sample preparatory", "Sample branch_change", "Sample branch_change_remarks", "Sample slowpaced", "Sample upgraded", "2023-01-01", "Sample idc_current", "1", "Sample idc_history", "Sample break_type", "2023-01-01", "2023-01-01", "Sample break_history", "Sample student_status", "2023-01-01", "Sample student_status_remarks", "Sample fellowship_status_admission", "Sample fellowship_status_current", "Sample dc_chairperson", "Sample dc_members", "2023-01-01", "2023-01-01", "UG"]
-                };
-            case 'uba_events':
-                return {
-                    headers: ["year", "program_name", "program_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks"],
-                    sample: ["2024 - 2025", "Sample Program Name", "Visit", "Sample Association", "2024-06-01", "2024-06-01", "Students", "50", "2", "0", "Palakkad", "Sample remarks"]
-                };
-            case 'uba_projects':
-                return {
-                    headers: ["project_title", "coordinator_name", "intervention_description", "project_status", "start_date", "end_date", "collaboration_partners", "created_at"],
-                    sample: ["Sample project_title", "Sample coordinator_name", "Sample intervention_description", "Sample project_status", "2023-01-01", "2023-01-01", "Sample collaboration_partners", "2023-01-01"]
-                };
-            case 'icsr_sponsered_projects':
-                return {
-                    headers: ["project_id", "project_title", "principal_investigator", "principal_investigator_department", "co_principal_investigator1", "co_principal_investigator1_department", "co_principal_investigator2", "co_principal_investigator2_department", "sponsered_industry", "project_area", "industry_logo", "funding_agency", "client_organization", "amount_sanctioned", "start_date", "end_date", "status", "created_at"],
-                    sample: ["1", "Sample project_title", "Sample principal_investigator", "Sample principal_investigator_department", "Sample co_principal_investigator1", "Sample co_principal_investigator1_department", "Sample co_principal_investigator2", "Sample co_principal_investigator2_department", "Sample sponsered_industry", "Sample project_area", "https://example.com/logo.png", "Sample funding_agency", "Sample client_organization", "100.5", "2023-01-01", "2023-01-01", "Sample status", "2023-01-01"]
-                };
-            case 'icsr_consultancy_projects':
-                return {
-                    headers: ["project_id", "project_title", "principal_investigator", "department", "sponsoring_industry", "project_area", "industry_logo", "funding_agency", "client_organization", "amount_sanctioned", "start_date", "end_date", "status", "created_at"],
-                    sample: ["1", "Sample project_title", "Sample principal_investigator", "Sample department", "Sample sponsoring_industry", "Sample project_area", "https://example.com/logo.png", "Sample funding_agency", "Sample client_organization", "100.5", "2023-01-01", "2023-01-01", "Sample status", "2023-01-01"]
-                };
-            case 'icsr_csr':
-                return {
-                    headers: ["csr_id", "csr_organisation", "year", "type_of_company", "type_of_support", "amount_given"],
-                    sample: ["1", "Sample csr_organisation", "1", "Sample type_of_company", "Sample type_of_support", "100.5"]
-                };
-            case 'innovation_projects':
-                return {
-                    headers: ["project_title", "project_type", "sector", "year_started", "status", "description", "created_at"],
-                    sample: ["Sample project_title", "Sample project_type", "Sample sector", "1", "Sample status", "Sample description", "2023-01-01"]
-                };
-            case 'iptif_startup_table':
-                return {
-                    headers: ["id", "startup_name", "domain", "startup_origin", "incubated_date", "status", "revenue", "number_of_jobs", "remarks"],
-                    sample: ["1", "Sample startup_name", "Sample domain", "Sample startup_origin", "2023-01-01", "Sample status", "100.5", "1", "Sample remarks"]
-                };
-            case 'iptif_program_table':
-                return {
-                    headers: ["id", "program_name", "type", "association", "start_end", "date", "targetted_audi", "no_of_attendees", "remarks"],
-                    sample: ["1", "Sample program_name", "Sample type", "Sample association", "2023-01-01", "2023-01-01", "Sample targetted_audi", "1", "Sample remarks"]
-                };
-            case 'iptif_projects_table':
-                return {
-                    headers: ["project_id", "project_name", "scheme", "status", "start_date"],
-                    sample: ["1", "Sample project_name", "Sample scheme", "Sample status", "2023-01-01"]
-                };
-            case 'iptif_facilities_table':
-                return {
-                    headers: ["facility_id", "facility_name", "facility_type", "revenue_made", "availability_status", "financial_year"],
-                    sample: ["1", "Sample facility_name", "Sample facility_type", "100.5", "Sample availability_status", "1"]
-                };
-            case 'techin_startup_table':
-                return {
-                    headers: ["id", "startup_name", "domain", "startup_origin", "incubated_date", "status", "revenue", "number_of_jobs", "remarks"],
-                    sample: ["1", "Sample startup_name", "Sample domain", "Sample startup_origin", "2023-01-01", "Sample status", "100.5", "1", "Sample remarks"]
-                };
-            case 'techin_program_table':
-                return {
-                    headers: ["id", "program_name", "type", "association", "start_end", "event_date", "targetted_audience", "no_of_attendess", "remarks"],
-                    sample: ["1", "Sample program_name", "Sample type", "Sample association", "2023-01-01", "2023-01-01", "Sample targetted_audience", "1", "Sample remarks"]
-                };
-            case 'techin_skill_development_program':
-                return {
-                    headers: ["id", "program_name", "category", "association", "start_end", "event_date", "targetted_audience", "no_of_attendess", "remarks"],
-                    sample: ["1", "Sample program_name", "Sample category", "Sample association", "2023-01-01", "2023-01-01", "Sample targetted_audience", "1", "Sample remarks"]
-                };
-            case 'industry_events':
-                return {
-                    headers: ["project_id", "event_name", "date_of_event", "event_type", "target_audience", "hosted_by", "funding_by", "amount", "year"],
-                    sample: ["1", "Sample event_name", "2023-01-01", "Sample event_type", "Sample target_audience", "Sample hosted_by", "Sample funding_by", "100.5", "1"]
-                };
-            case 'outreach':
-                return {
-                    headers: ["academic_year", "created_by", "created_at", "program_name", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "sq_stipend_provided", "sq_travel_allowance", "sq_num_lab_sessions", "sq_districts_covered", "pmc_target_class", "pmc_mathematician_led", "pmc_num_sessions", "pbd_lecture_topic", "pbd_speaker_name", "pbd_speaker_affiliation", "iv_visiting_institution", "iv_visiting_institution_type", "iv_num_groups", "nss_activity_type", "nss_volunteer_count", "nss_community_reached", "extra_data"],
-                    sample: ["Sample academic_year", "Sample created_by", "2023-01-01", "Sample program_name", "Sample program_type", "Sample engagement_type", "Sample association", "2023-01-01", "2023-01-01", "Sample targeted_audience", "1", "1", "1", "Sample geographic_reach", "Sample remarks", "TRUE", "TRUE", "1", "Sample sq_districts_covered", "Sample pmc_target_class", "TRUE", "1", "Sample pbd_lecture_topic", "Sample pbd_speaker_name", "Sample pbd_speaker_affiliation", "Sample iv_visiting_institution", "Sample iv_visiting_institution_type", "1", "Sample nss_activity_type", "1", "Sample nss_community_reached", "Sample extra_data"]
-                };
-            case 'outreach_science_quest':
-                return {
-                    headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "sq_stipend_provided", "sq_travel_allowance", "sq_num_lab_sessions", "sq_districts_covered"],
-                    sample:  ["2024-2025", "John Doe", "Camp", "Student", "Sample association", "2024-06-01", "2024-06-05", "School Students", "120", "5", "0", "Palakkad, Thrissur", "Sample remarks", "TRUE", "TRUE", "6", "Palakkad, Malappuram"]
-                };
-            case 'outreach_math_circle':
-                return {
-                    headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "pmc_target_class", "pmc_mathematician_led", "pmc_num_sessions"],
-                    sample:  ["2024-2025", "John Doe", "Workshop", "Student", "Sample association", "2024-07-10", "2024-07-10", "Class 8-10 Students", "60", "3", "0", "Palakkad", "Sample remarks", "Class 8-9", "Jasine, Jayasree, Krithika", "4"]
-                };
-            case 'outreach_pale_blue_dot':
-                return {
-                    headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "pbd_lecture_topic", "pbd_speaker_name", "pbd_speaker_affiliation"],
-                    sample:  ["2024-2025", "John Doe", "Public Lecture", "Social", "Sample association", "2024-08-15", "2024-08-15", "General Public", "200", "0", "2", "Kerala", "Sample remarks", "Life in the Universe", "Dr. Sample Name", "IISc Bangalore"]
-                };
-            case 'outreach_institute_visits':
-                return {
-                    headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "iv_visiting_institution", "iv_visiting_institution_type", "iv_num_groups"],
-                    sample:  ["2024-2025", "John Doe", "Visit", "Student", "Sample association", "2024-09-20", "2024-09-20", "School Students", "80", "1", "0", "Palakkad", "Sample remarks", "Sample School Name", "School", "2"]
-                };
-            case 'outreach_nss_activities':
-                return {
-                    headers: ["academic_year", "created_by", "program_type", "engagement_type", "association", "start_date", "end_date", "targeted_audience", "num_attendees", "num_schools", "num_colleges", "geographic_reach", "remarks", "nss_activity_type", "nss_volunteer_count", "nss_community_reached"],
-                    sample:  ["2024-2025", "John Doe", "Activity", "Social", "Sample association", "2024-10-02", "2024-10-02", "Local Community", "50", "0", "0", "Palakkad", "Sample remarks", "Blood Donation Camp", "30", "Kalmandapam Village"]
-                };
-            case 'department':
-                return {
-                    headers: ["deptcode", "deptname", "coursesoffered", "faculty", "courselist"],
-                    sample: ["Sample deptcode", "Sample deptname", "Sample coursesoffered", "Sample faculty", "Sample courselist"]
-                };
-            default:
-                return { headers: [], sample: [] };
-        }
-    };
-
     const handleDownloadTemplate = () => {
-        const { headers, sample } = getTemplateData(tableName);
-        if (headers.length === 0) return;
+        if (templateColumns.length === 0) return;
+        const headers = templateColumns.map(c => c.name);
+        const sample = templateColumns.map(sampleValueFor);
 
         const csvContent = [
             headers.join(','),
@@ -339,16 +310,18 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
-    const templateInfo = getTemplateData(tableName);
+    const previewRows = parsedCSV ? parsedCSV.records.slice(0, 50) : [];
+    const hasClientIssues = clientValidation.headerIssues.length > 0 || clientValidation.cellIssues.length > 0;
 
     const modalContent = (
-        <div className="modal-overlay" onClick={handleClose}>
+        <div className="modal-overlay" onClick={resetAndClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2>Upload Data: {tableName}</h2>
-                    <button className="close-btn" onClick={handleClose}>&times;</button>
+                    <button className="close-btn" onClick={resetAndClose}>&times;</button>
                 </div>
 
                 <div className="modal-body">
@@ -364,6 +337,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                         <button
                                             className="download-template-btn"
                                             onClick={handleDownloadTemplate}
+                                            disabled={templateColumns.length === 0}
                                         >
                                             Download CSV Template
                                         </button>
@@ -371,12 +345,47 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                 </div>
                             </div>
 
-                            <div className="dum-format-section">
-                                <strong>Required Column Headers:</strong>
-                                <div className="dum-format-code">
-                                    {templateInfo.headers.join(', ')}
+                            {schemaLoading && (
+                                <div className="dum-schema-note">Loading column requirements…</div>
+                            )}
+                            {schemaError && (
+                                <div className="dum-schema-note dum-schema-note--warn">
+                                    Could not load column requirements ({schemaError}). You can still upload —
+                                    any problems will be shown after you submit.
                                 </div>
-                            </div>
+                            )}
+
+                            {templateColumns.length > 0 && (
+                                <div className="dum-format-section">
+                                    <strong>Required columns:</strong>
+                                    <div className="dum-format-code">
+                                        {templateColumns.filter(c => c.required).map(c => c.name).join(', ') || '(none)'}
+                                    </div>
+                                    <strong className="dum-optional-label">Optional columns:</strong>
+                                    <div className="dum-format-code">
+                                        {templateColumns.filter(c => !c.required).map(c => c.name).join(', ') || '(none)'}
+                                    </div>
+
+                                    {enumColumns.length > 0 && (
+                                        <div className="dum-enum-legend">
+                                            <strong>Accepted values:</strong>
+                                            <ul>
+                                                {enumColumns.map(c => (
+                                                    <li key={c.name}><code>{c.name}</code>: {c.allowed_values.join(', ')}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {hasDateColumn && (
+                                        <div className="dum-hint">Dates should be in <code>YYYY-MM-DD</code> format (e.g. 2024-06-01).</div>
+                                    )}
+
+                                    {(schema?.notes || []).map((note, i) => (
+                                        <div className="dum-hint" key={i}>{note}</div>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className="file-input-container">
                                 <input
@@ -387,22 +396,42 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                 />
                             </div>
 
-                            {previewData && (
+                            {hasClientIssues && (
+                                <div className="dum-preflight">
+                                    <div className="dum-preflight-header">
+                                        Heads up — {clientValidation.headerIssues.length + clientValidation.cellIssues.length} potential issue(s) found before uploading.
+                                        You can still upload; the server will confirm if anything actually blocks it.
+                                    </div>
+                                    {clientValidation.headerIssues.map((msg, i) => (
+                                        <div className="dum-preflight-item" key={i}>{msg}</div>
+                                    ))}
+                                    <UploadErrorTable
+                                        errors={clientValidation.cellIssues}
+                                        truncated={clientValidation.truncated}
+                                        highlightColor="#f59e0b"
+                                    />
+                                </div>
+                            )}
+
+                            {parsedCSV && (
                                 <div className="preview-section">
-                                    <h4>CSV Preview (First {previewData.rows.length} Rows)</h4>
+                                    <h4>CSV Preview (First {previewRows.length} Rows)</h4>
                                     <div className="dum-preview-scroll">
                                         <table className="preview-table">
                                             <thead>
                                                 <tr>
-                                                    {previewData.header.map((head, i) => <th key={i}>{head}</th>)}
+                                                    {parsedCSV.headers.map((head, i) => <th key={i}>{head}</th>)}
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {previewData.rows.map((row, i) => {
-                                                    const isFailingRow = failingRow !== null && failingRow === i + 1;
+                                                {previewRows.map((record, i) => {
+                                                    const rowNum = i + 1;
+                                                    const isServerRow = (serverErrors || []).some(e => e.row === rowNum);
+                                                    const isClientRow = !isServerRow && highlightedRows.has(rowNum);
+                                                    const rowClass = isServerRow ? 'dum-row--error' : (isClientRow ? 'dum-row--warn' : '');
                                                     return (
-                                                        <tr key={i} className={isFailingRow ? 'dum-row--error' : ''}>
-                                                            {row.map((cell, j) => <td key={j}>{cell}</td>)}
+                                                        <tr key={i} className={rowClass}>
+                                                            {parsedCSV.headers.map((h, j) => <td key={j}>{record[h]}</td>)}
                                                         </tr>
                                                     );
                                                 })}
@@ -414,20 +443,15 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
 
                             {message && (
                                 <div className={`status-message ${message.type}`}>
-                                    {message.type === 'error' && failingRow && (
-                                        <div className="dum-error-row-header">
-                                            Problem at CSV row {failingRow}
-                                            {failingRow <= 50
-                                                ? ' (highlighted in preview above)'
-                                                : ' (beyond preview range — check your CSV directly)'}
-                                        </div>
+                                    <div>{message.text}</div>
+                                    {message.type === 'error' && serverErrors && (
+                                        <UploadErrorTable errors={serverErrors} truncated={serverTruncated} />
                                     )}
-                                    {message.text}
                                 </div>
                             )}
 
                             <div className="upload-actions">
-                                <button className="cancel-btn" onClick={handleClose} disabled={isLoading}>
+                                <button className="cancel-btn" onClick={resetAndClose} disabled={isLoading}>
                                     Cancel
                                 </button>
                                 <button
@@ -435,7 +459,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                     onClick={handleUpload}
                                     disabled={!selectedFile || isLoading}
                                 >
-                                    {isLoading ? 'Uploading...' : 'Confirm Upload'}
+                                    {isLoading ? 'Uploading...' : (hasClientIssues ? 'Upload Anyway' : 'Confirm Upload')}
                                 </button>
                             </div>
                         </>
@@ -449,7 +473,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                             <p className="dum-success-hint">
                                 Click OK to close this window.
                             </p>
-                            <button className="dum-ok-btn" onClick={handleClose}>
+                            <button className="dum-ok-btn" onClick={resetAndClose}>
                                 OK
                             </button>
                         </div>

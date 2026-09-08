@@ -18,6 +18,7 @@ def _student_table(is_mgmt):
 def get_latest_year(is_mgmt=False):
     """Returns the maximum admission_year from the student view."""
     conn = None
+    cur = None
     try:
         conn = get_dashboard_connection(is_mgmt)
         if conn is None:
@@ -35,8 +36,9 @@ def get_latest_year(is_mgmt=False):
         print(f"Error getting latest year: {e}")
         return None
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -103,6 +105,7 @@ def build_filter_query(filters, is_mgmt=False):
 def get_filter_options(current_user_id):
     """Fetches distinct values for each filter field, supporting cross-filtering."""
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -178,8 +181,9 @@ def get_filter_options(current_user_id):
         print(f"Error fetching filter options: {e}")
         return jsonify({'message': 'An error occurred while fetching filter options.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -188,6 +192,7 @@ def get_filter_options(current_user_id):
 def get_gender_distribution_filtered(current_user_id):
     """Fetches gender distribution based on provided filters."""
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -268,8 +273,9 @@ def get_gender_distribution_filtered(current_user_id):
         print(f"Error fetching gender distribution: {e}")
         return jsonify({'message': 'An error occurred while fetching gender distribution.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -278,6 +284,7 @@ def get_gender_distribution_filtered(current_user_id):
 def get_state_distribution(current_user_id):
     """Fetches student state distribution based on provided filters."""
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -335,8 +342,9 @@ def get_state_distribution(current_user_id):
         print(f"Error fetching state distribution: {e}")
         return jsonify({'message': 'An error occurred while fetching state distribution.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -345,6 +353,7 @@ def get_state_distribution(current_user_id):
 def get_student_strength(current_user_id):
     """Fetches student strength grouped by program with gender breakdown."""
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -426,8 +435,9 @@ def get_student_strength(current_user_id):
         print(f"Error fetching student strength: {e}")
         return jsonify({'message': 'An error occurred while fetching student strength.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -436,6 +446,7 @@ def get_student_strength(current_user_id):
 def get_gender_trends(current_user_id):
     """Fetches gender distribution grouped by year of admission."""
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -498,8 +509,9 @@ def get_gender_trends(current_user_id):
         print(f"Error fetching gender trends: {e}")
         return jsonify({'message': 'An error occurred while fetching gender trends.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 
@@ -513,6 +525,7 @@ def get_program_trends(current_user_id):
     Returns both aggregated program data and per-group gender counts.
     """
     conn = None
+    cur = None
     try:
         is_mgmt = _is_management(current_user_id)
         table = _student_table(is_mgmt)
@@ -638,8 +651,9 @@ def get_program_trends(current_user_id):
         print(f"Error fetching program trends: {e}\n{traceback.format_exc()}")
         return jsonify({'message': 'An error occurred while fetching program trends.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_dashboard_connection(conn, is_mgmt)
 
 

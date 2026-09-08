@@ -191,6 +191,17 @@ def create_app():
 
     @app.after_request
     def add_security_headers(response):
+        # ── Don't leak server/language version ──
+        # Confirmed live (curl) that the unmodified response carries
+        # "Werkzeug/x.x.x Python/x.x.x" — handing an attacker the exact
+        # interpreter and dev-server version to target known CVEs against.
+        # Setting it here is what actually takes effect under gunicorn in
+        # production (its Response only adds its own default when the app
+        # hasn't already supplied one). The Werkzeug *dev* server additionally
+        # writes its own Server header at the socket layer before this ever
+        # runs — see the WSGIRequestHandler override in run.py for that half.
+        response.headers['Server'] = 'IIT-Palakkad-Dashboard'
+
         # ── Cache ──
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
 
@@ -233,6 +244,7 @@ def create_app():
             "font-src 'self' https://fonts.gstatic.com",
             f"connect-src 'self' {frontend_origin} https://accounts.google.com",
             "frame-src https://accounts.google.com https://maps.google.com https://www.google.com",
+            "object-src 'none'",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",

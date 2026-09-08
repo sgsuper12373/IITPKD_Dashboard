@@ -38,6 +38,16 @@ MAX_ATTEMPTS = 5            # failed OTP/CAPTCHA tries before the row is dead
 RESEND_COOLDOWN_SECONDS = 60  # min gap between OTP emails for one email address
 MAX_OTPS_PER_HOUR = 5       # cap OTP emails per email address per hour
 
+# Site-wide circuit breaker, independent of source IP or destination email.
+# The per-IP limiter (@limiter.limit below) and the per-email cap above both
+# key on one dimension each — neither stops an attacker who rotates through
+# many IPs *and* many destination addresses to use this endpoint as a free
+# OTP/email-sending relay against arbitrary third-party inboxes. This caps
+# total OTP sends across ALL callers combined, so that kind of distributed
+# abuse degrades to "feedback OTP unavailable for an hour" instead of
+# unbounded email being sent from the site's SMTP identity.
+GLOBAL_OTP_HOURLY_CAP = int(os.environ.get('FEEDBACK_OTP_GLOBAL_HOURLY_CAP', '60'))
+
 # Pragmatic email shape check — real validation is the OTP delivery itself.
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -130,14 +140,14 @@ def _check_otp_and_captcha(row, otp, captcha_answer):
 
 @feedback_bp.route('/start', methods=['POST'])
 @limiter.limit("5 per minute")
-@limiter.limit("20 per hour")
+@limiter.limit("10 per hour")
 @token_optional
 def start(current_user_id):
     """Emails an OTP to the resolved address and returns a CAPTCHA + verification id.
 
     Open to guests; the per-IP limiter above caps how many distinct addresses a
     single client can email codes to (anti-bombing), on top of the per-email
-    cooldown/cap below.
+    cooldown/cap below and the site-wide circuit breaker.
     """
     data = request.get_json(silent=True) or {}
     conn = get_db_connection()
@@ -148,6 +158,18 @@ def start(current_user_id):
         email, user_id, err = _resolve_identity(cur, current_user_id, data)
         if err:
             return jsonify({'message': err}), 400
+
+        # Site-wide circuit breaker — see GLOBAL_OTP_HOURLY_CAP above. Checked
+        # before any per-email work so a caller flooding many distinct
+        # addresses can't slip through between the per-email checks below.
+        cur.execute(
+            "SELECT COUNT(*) AS total FROM feedback_verification WHERE created_at > NOW() - INTERVAL '1 hour';"
+        )
+        global_count = cur.fetchone()['total']
+        if global_count is not None and global_count >= GLOBAL_OTP_HOURLY_CAP:
+            print(f"⚠️  Feedback OTP circuit breaker tripped: {global_count} sends in the last hour "
+                  f"(cap {GLOBAL_OTP_HOURLY_CAP}). Possible relay abuse — check feedback_verification.")
+            return jsonify({'message': 'Feedback verification is temporarily unavailable. Please try again later.'}), 503
 
         # Rate limiting keyed by destination email: cooldown between sends + hourly cap.
         cur.execute(

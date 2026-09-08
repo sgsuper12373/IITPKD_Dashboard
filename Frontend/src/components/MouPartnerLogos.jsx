@@ -178,7 +178,7 @@ function PartnerForm({ initial, onSave, onCancel }) {
             <input
               ref={fileRef}
               type="file"
-              accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+              accept="image/jpeg,image/png"
               className="mpl-form-input"
               onChange={(e) => setFile(e.target.files[0] || null)}
             />

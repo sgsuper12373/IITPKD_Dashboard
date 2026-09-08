@@ -4,6 +4,7 @@ from psycopg2 import extras
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_in_rows
 
 
 outreach_extension_bp = Blueprint('outreach_extension', __name__)
@@ -182,7 +183,7 @@ def get_open_house_list(current_user_id):
         events = cur.fetchall()
         
         return jsonify({
-            'events': [dict(event) for event in events],
+            'events': redact_pii_in_rows([dict(event) for event in events]),
             'pagination': {
                 'page': page,
                 'per_page': per_page,
@@ -325,9 +326,9 @@ def get_nptel_list(current_user_id):
             ORDER BY offering_year DESC NULLS LAST, course_name ASC;
         """)
         courses = cur.fetchall()
-        
+
         return jsonify({
-            'courses': [dict(c) for c in courses]
+            'courses': redact_pii_in_rows([dict(c) for c in courses])
         }), 200
     except Exception as e:
         print(f"NPTEL list error: {e}")
@@ -407,11 +408,11 @@ def get_uba_projects(current_user_id):
             ORDER BY start_date DESC NULLS LAST, project_id DESC;
         """)
         projects = cur.fetchall()
-        
+
         return jsonify({
-            'projects': [dict(project) for project in projects]
+            'projects': redact_pii_in_rows([dict(project) for project in projects])
         }), 200
-        
+
     except Exception as e:
         print(f"UBA projects error: {e}")
         return jsonify({'message': 'Failed to fetch UBA projects.'}), 500
@@ -463,7 +464,7 @@ def get_outreach_list(current_user_id):
         """, params)
 
         records = cur.fetchall()
-        return jsonify({'records': [dict(r) for r in records]}), 200
+        return jsonify({'records': redact_pii_in_rows([dict(r) for r in records])}), 200
 
     except Exception as e:
         print(f"Outreach list error: {e}")
@@ -519,7 +520,7 @@ def get_uba_events(current_user_id):
         """, params)
         events = cur.fetchall()
 
-        return jsonify({'events': [dict(e) for e in events]}), 200
+        return jsonify({'events': redact_pii_in_rows([dict(e) for e in events])}), 200
 
     except Exception as e:
         print(f"UBA events error: {e}")

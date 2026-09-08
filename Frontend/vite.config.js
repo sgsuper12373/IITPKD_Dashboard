@@ -21,30 +21,62 @@ export default defineConfig(({ mode }) => {
     // HMR working without opening connect-src up to arbitrary hosts.
     `connect-src 'self' ${apiBase} https://accounts.google.com` + (isDev ? ' ws://localhost:* ws://127.0.0.1:*' : ''),
     "frame-src https://accounts.google.com https://maps.google.com https://www.google.com",
+    "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
   ].join('; ')
+
+  // Applied as a middleware (below) rather than the static `server.headers`
+  // option: `server.headers` is only wired into Vite's *own* transform
+  // pipeline, and doesn't reliably reach every internal endpoint (the HMR
+  // client, virtual modules, etc.) across Vite versions — a scanner pointed
+  // at the dev server can walk right past those and find no CSP/X-Frame-
+  // Options/etc. A middleware installed first, before Vite's internal
+  // middlewares, runs for literally every request that hits this server.
+  const devSecurityHeaders = {
+    'Content-Security-Policy': csp,
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-XSS-Protection': '0',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    // No Strict-Transport-Security here: this dev server is plain HTTP, and
+    // HSTS is a promise about HTTPS — browsers ignore it over an insecure
+    // connection anyway (RFC 6797), so it was previously just dead weight.
+  }
+
+  /** @type {import('vite').Plugin} */
+  const securityHeadersPlugin = {
+    name: 'security-headers',
+    configureServer(server) {
+      // No returned function → this runs BEFORE Vite installs its own
+      // internal middlewares, so nothing can be served without it.
+      server.middlewares.use((_req, res, next) => {
+        for (const [key, value] of Object.entries(devSecurityHeaders)) {
+          res.setHeader(key, value)
+        }
+        next()
+      })
+    },
+  }
 
   return {
   plugins: [
     react({
       include: /\.[jt]sx?$/,
     }),
+    securityHeadersPlugin,
   ],
   resolve: {
     extensions: ['.jsx', '.js', '.tsx', '.ts', '.json'],
   },
   server: {
-    headers: {
-      'Content-Security-Policy': csp,
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-      'X-XSS-Protection': '0',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    },
+    // Vite defaults this to `true` (reflects any request Origin back in
+    // Access-Control-Allow-Origin) — nothing legitimately needs to fetch
+    // this dev server's own JS/CSS/HTML cross-origin, so turn it off rather
+    // than inherit an open-by-default CORS policy.
+    cors: false,
     fs: {
       strict: true,
     },

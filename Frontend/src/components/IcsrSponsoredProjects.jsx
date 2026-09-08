@@ -198,7 +198,7 @@ function ProjectForm({ initial, isCreate = false, onSave, onCancel }) {
 
           <label className="icp-form-label">
             Upload industry logo
-            <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+            <input type="file" accept="image/jpeg,image/png"
               className="icp-form-input" onChange={(e) => setFile(e.target.files[0] || null)} />
             {hasUploadedLogo && !file && (
               <span className="icp-form-hint">A logo is already uploaded. Leave empty to keep it.</span>

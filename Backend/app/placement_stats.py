@@ -9,6 +9,7 @@ from psycopg2.errors import UndefinedTable
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns
 
 placement_bp = Blueprint('placement', __name__)
 
@@ -726,7 +727,7 @@ def get_top_recruiters(current_user_id):
         for row in rows:
             data.append({
                 'year': row.get('placement_year'),
-                'company_name': row.get('company_name'),
+                'company_name': redact_pii_patterns(row.get('company_name')),
                 'sector': row.get('sector'),
                 'offers': int(row.get('offers') or 0),
                 'hires': int(row.get('hires') or 0),

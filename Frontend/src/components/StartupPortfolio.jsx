@@ -330,7 +330,7 @@ function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, 
 
           <label className="sp-form-label">
             Upload logo image
-            <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+            <input type="file" accept="image/jpeg,image/png"
               className="sp-form-input" onChange={(e) => setFile(e.target.files[0] || null)} />
             {hasUploadedLogo && !file && (
               <span className="sp-form-hint">A logo is already uploaded. Leave empty to keep it.</span>

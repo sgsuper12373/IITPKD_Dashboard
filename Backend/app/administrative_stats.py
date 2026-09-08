@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from .db import get_dashboard_connection, release_dashboard_connection
 from .auth import token_optional, _is_management
+from .pii_guard import redact_pii_patterns
 import psycopg2.extras
 from datetime import date
 
@@ -440,8 +441,8 @@ def get_faculty_by_department_designation(current_user_id):
 
         department_data = {}
         for row in results:
-            dept = row['department']
-            desig = row['designation']
+            dept = redact_pii_patterns(row['department'])
+            desig = redact_pii_patterns(row['designation'])
             count = row['count']
             if dept not in department_data:
                 department_data[dept] = {}
@@ -745,11 +746,11 @@ def get_data_summary(current_user_id):
             ORDER BY count DESC
             LIMIT 10;
         """)
-        summary['top_departments'] = {row['dept']: row['count'] for row in cur.fetchall()}
+        summary['top_departments'] = {redact_pii_patterns(row['dept']): row['count'] for row in cur.fetchall()}
 
         # Sample designations
         cur.execute(f"SELECT DISTINCT designation FROM {table} WHERE designation IS NOT NULL LIMIT 10;")
-        summary['sample_designations'] = [row['designation'] for row in cur.fetchall()]
+        summary['sample_designations'] = [redact_pii_patterns(row['designation']) for row in cur.fetchall()]
 
         return jsonify(summary), 200
 

@@ -5,6 +5,7 @@ from psycopg2.errors import UndefinedTable
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns
 
 education_bp = Blueprint('education', __name__)
 
@@ -621,14 +622,14 @@ def get_faculty_engagement_list(current_user_id):
         for row in rows:
             result.append({
                 'engagement_code': row.get('engagement_code'),
-                'faculty_name': row.get('faculty_name'),
+                'faculty_name': redact_pii_patterns(row.get('faculty_name')),
                 'engagement_type': row.get('engagement_type'),
-                'department': row.get('department'),
+                'department': redact_pii_patterns(row.get('department')),
                 'startdate': row.get('startdate').isoformat() if row.get('startdate') else None,
                 'enddate': row.get('enddate').isoformat() if row.get('enddate') else None,
                 'duration_months': row.get('duration_months'),
                 'year': row.get('year'),
-                'remarks': row.get('remarks'),
+                'remarks': redact_pii_patterns(row.get('remarks')),
                 'fc_bg_type': row.get('fc_bg_type')
             })
 

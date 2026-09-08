@@ -9,11 +9,12 @@ nirf_bp = Blueprint('nirf', __name__)
 def get_nirf_metrics(current_user_id=None):
     """Fetch NIRF ranking data for all years."""
     conn = None
+    cur = None
     try:
         conn = get_db_connection()
         if conn is None:
             return jsonify({'message': 'Database connection failed!'}), 500
-            
+
         cur = conn.cursor()
         cur.execute("""
             SELECT year, tlr_score, rpc_score, go_score, oi_score, pr_score, rank
@@ -41,6 +42,7 @@ def get_nirf_metrics(current_user_id=None):
         print(f"NIRF API error: {e}")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_db_connection(conn)

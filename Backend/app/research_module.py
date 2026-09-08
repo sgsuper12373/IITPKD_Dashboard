@@ -492,12 +492,12 @@ def project_list(current_user_id):
             for row in cur.fetchall():
                 rows.append({
                     'project_id': row['project_id'],
-                    'project_title': row['project_title'],
-                    'principal_investigator': row['principal_investigator'],
-                    'department': row['department'],
+                    'project_title': redact_pii_patterns(row['project_title']),
+                    'principal_investigator': redact_pii_patterns(row['principal_investigator']),
+                    'department': redact_pii_patterns(row['department']),
                     'project_type': row['project_type'],
-                    'funding_agency': row['funding_agency'],
-                    'client_organization': row['client_organization'],
+                    'funding_agency': redact_pii_patterns(row['funding_agency']),
+                    'client_organization': redact_pii_patterns(row['client_organization']),
                     'amount_sanctioned': _decimal_to_float(row['amount_sanctioned']),
                     'start_date': _serialize_date(row['start_date']),
                     'end_date': _serialize_date(row['end_date']),
@@ -524,12 +524,12 @@ def project_list(current_user_id):
             for row in cur.fetchall():
                 rows.append({
                     'project_id': row['project_id'],
-                    'project_title': row['project_title'],
-                    'principal_investigator': row['principal_investigator'],
-                    'department': row['department'],
+                    'project_title': redact_pii_patterns(row['project_title']),
+                    'principal_investigator': redact_pii_patterns(row['principal_investigator']),
+                    'department': redact_pii_patterns(row['department']),
                     'project_type': row['project_type'],
-                    'funding_agency': row['funding_agency'],
-                    'client_organization': row['client_organization'],
+                    'funding_agency': redact_pii_patterns(row['funding_agency']),
+                    'client_organization': redact_pii_patterns(row['client_organization']),
                     'amount_sanctioned': _decimal_to_float(row['amount_sanctioned']),
                     'start_date': _serialize_date(row['start_date']),
                     'end_date': _serialize_date(row['end_date']),
@@ -639,11 +639,11 @@ def mou_list(current_user_id):
         for row in cur.fetchall():
             rows.append({
                 'mou_id': row['mou_id'],
-                'partner_name': row['partner_name'],
+                'partner_name': redact_pii_patterns(row['partner_name']),
                 'collaboration_nature': row['collaboration_nature'],
                 'date_signed': _serialize_date(row['date_signed']),
                 'validity_end': _serialize_date(row['validity_end']),
-                'remarks': row['remarks'],
+                'remarks': redact_pii_patterns(row['remarks']),
             })
         return jsonify({'data': rows})
     except Exception as exc:
@@ -823,20 +823,20 @@ def patent_list(current_user_id):
             inventors_list = [row[f'inventor{i}'] for i in range(1, 5) if row.get(f'inventor{i}')]
             rows.append({
                 'patent_id': row['patent_id'],
-                'patent_title': row['patent_title'],
-                'inventors': ', '.join(inventors_list),
-                'inventor1': row.get('inventor1'),
+                'patent_title': redact_pii_patterns(row['patent_title']),
+                'inventors': redact_pii_patterns(', '.join(inventors_list)),
+                'inventor1': redact_pii_patterns(row.get('inventor1')),
                 'inventor1_category': row.get('inventor1_category'),
-                'inventor2': row.get('inventor2'),
+                'inventor2': redact_pii_patterns(row.get('inventor2')),
                 'inventor2_category': row.get('inventor2_category'),
-                'inventor3': row.get('inventor3'),
+                'inventor3': redact_pii_patterns(row.get('inventor3')),
                 'inventor3_category': row.get('inventor3_category'),
-                'inventor4': row.get('inventor4'),
+                'inventor4': redact_pii_patterns(row.get('inventor4')),
                 'inventor4_category': row.get('inventor4_category'),
                 'patent_status': row['patent_status'],
                 'filing_date': _serialize_date(row['filing_date']),
                 'grant_date': _serialize_date(row['grant_date']),
-                'remarks': row['remarks'],
+                'remarks': redact_pii_patterns(row['remarks']),
             })
         return jsonify({'data': rows})
     except Exception as exc:
@@ -851,7 +851,20 @@ def patent_list(current_user_id):
 @research_bp.route('/externships/analytics', methods=['GET'])
 @token_optional
 def externship_analytics(current_user_id):
-    """Combined summary and list data for externships to reduce API calls."""
+    return _externship_analytics_impl(current_user_id)
+
+
+def _externship_analytics_impl(current_user_id):
+    """
+    Combined summary and list data for externships to reduce API calls.
+
+    Undecorated on purpose: externship_summary/externship_list below call
+    this directly rather than the @token_optional-wrapped route function —
+    calling a decorated function with an explicit current_user_id used to
+    raise "got multiple values for argument 'current_user_id'", because
+    token_optional's wrapper injects that same name as a kwarg on top of the
+    one already passed positionally. Both aliases 500'd on every request.
+    """
     conn = None
     cur = None
     try:
@@ -932,9 +945,9 @@ def externship_analytics(current_user_id):
         for row in cur.fetchall():
             list_data.append({
                 'externship_id': row['externship_id'],
-                'faculty_name': row['faculty_name'],
-                'department': row['department'],
-                'industry_name': row['industry_name'],
+                'faculty_name': redact_pii_patterns(row['faculty_name']),
+                'department': redact_pii_patterns(row['department']),
+                'industry_name': redact_pii_patterns(row['industry_name']),
                 'type': row['externship_type'],
                 'startdate': _serialize_date(row['startdate']),
                 'enddate': _serialize_date(row['enddate']),
@@ -958,14 +971,14 @@ def externship_analytics(current_user_id):
 @token_optional
 def externship_summary(current_user_id):
     # Keep for backward compatibility, but we should use /analytics
-    return externship_analytics(current_user_id)
+    return _externship_analytics_impl(current_user_id)
 
 
 @research_bp.route('/externships/list', methods=['GET'])
 @token_optional
 def externship_list(current_user_id):
     # Keep for backward compatibility
-    return externship_analytics(current_user_id)
+    return _externship_analytics_impl(current_user_id)
 
 
 @research_bp.route('/publications/summary', methods=['GET'])
@@ -1184,7 +1197,7 @@ def publication_list(current_user_id):
                 'publication_id': row['id'],
                 'publication_title': redact_pii_patterns(row['publication_title']),
                 'journal_name': redact_pii_patterns(row['journal_name']),
-                'department': row['department'],
+                'department': redact_pii_patterns(row['department']),
                 'faculty_name': redact_pii_patterns(row['faculty_name']),
                 'publication_year': row['publication_year'],
                 'publication_type': row['publication_type'],

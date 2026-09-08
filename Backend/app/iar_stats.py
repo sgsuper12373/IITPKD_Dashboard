@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from .auth import token_optional
 from .db import get_db_connection, release_db_connection
+from .pii_guard import redact_pii_patterns, redact_pii_in_rows
 
 iar_bp = Blueprint('iar', __name__)
 
@@ -224,6 +225,7 @@ def get_state_distribution(current_user_id):
         state = row.get('place_of_settlement_state')
         if not state or not state.strip():
             continue
+        state = redact_pii_patterns(state)
         distribution[state] = distribution.get(state, 0) + 1
 
     formatted = [
@@ -249,7 +251,7 @@ def get_country_distribution(current_user_id):
 
     distribution = {}
     for row in rows:
-        country = row.get('country_of_settlement') or 'Unknown'
+        country = redact_pii_patterns(row.get('country_of_settlement')) or 'Unknown'
         distribution[country] = distribution.get(country, 0) + 1
 
     formatted = [
@@ -369,7 +371,7 @@ def get_mou_list(current_user_id):
         query += " ORDER BY date_signed DESC NULLS LAST"
         
         cur.execute(query, params)
-        rows = [dict(row) for row in cur.fetchall()]
+        rows = redact_pii_in_rows([dict(row) for row in cur.fetchall()])
         for r in rows:
             if r.get('date_signed'):
                 r['date_signed'] = r['date_signed'].isoformat()

@@ -11,6 +11,7 @@ dashboard_bp = Blueprint('api', __name__)
 def protected_dashboard(current_user_id):
     """Returns the current user's profile data from the users table."""
     conn = None
+    cur = None
     try:
         conn = get_db_connection()
         if not conn:
@@ -33,6 +34,7 @@ def protected_dashboard(current_user_id):
         print(f"Dashboard error: {e}")
         return jsonify({'message': 'Could not get dashboard data.'}), 500
     finally:
-        if conn:
+        if cur:
             cur.close()
+        if conn:
             release_db_connection(conn)

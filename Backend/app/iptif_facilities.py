@@ -13,6 +13,7 @@ from psycopg2 import errors as pg_errors, extras
 from .auth import token_optional, token_required
 from .db import get_db_connection, release_db_connection
 from .image_safety import ImageRejected, validate_and_reencode
+from .url_safety import safe_url_or_none
 
 iptif_facilities_bp = Blueprint('iptif_facilities', __name__)
 
@@ -80,9 +81,23 @@ def _delete_image_file(image_url):
         pass
 
 
+# more_info_link is rendered as a clickable link (see safeHref() in
+# IptifFacilities.jsx) — restrict it to http(s) server-side too.
+_URL_FIELDS = {'more_info_link'}
+
+
 def _form_values():
-    """Read editable text fields from the multipart form, blanks coerced to None."""
-    return {field: (request.form.get(field) or '').strip() or None for field in _EDITABLE_FIELDS}
+    """
+    Read editable text fields from the multipart form, blanks coerced to
+    None. URL-shaped fields (_URL_FIELDS) are additionally restricted to
+    http(s) — an unsafe-scheme value is dropped to None (keep-existing)
+    rather than stored.
+    """
+    values = {field: (request.form.get(field) or '').strip() or None for field in _EDITABLE_FIELDS}
+    for field in _URL_FIELDS:
+        if values[field] is not None:
+            values[field] = safe_url_or_none(values[field])
+    return values
 
 
 # ── GET / ────────────────────────────────────────────────────────────────────
