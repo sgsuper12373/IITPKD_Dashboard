@@ -404,6 +404,20 @@ function StartupPortfolio({ user, isPublicView = false }) {
   const enterEditMode = async () => {
     await loadManage();
     setIsEditMode(true);
+    // A single-incubator admin (TechIN or IPTIF, not master admin) can only
+    // ever see their own origin while managing — force the filter to it so
+    // a stale 'all'/other-origin selection from the public showcase doesn't
+    // make their own data look like it's missing.
+    if (editableOrigins.length === 1) {
+      setOriginFilter(editableOrigins[0]);
+    }
+  };
+
+  const exitEditMode = () => {
+    setIsEditMode(false);
+    // Public showcase always shows everything — don't leave it stuck on
+    // whatever single-origin filter management mode forced above.
+    setOriginFilter('all');
   };
 
   const handleEdit = async (formData) => {
@@ -417,6 +431,18 @@ function StartupPortfolio({ user, isPublicView = false }) {
     setShowAddForm(false);
     await Promise.all([loadManage(), loadPortfolio()]);
   };
+
+  // Public showcase (not editing) always offers all three — it's a shared
+  // cross-team listing, open to everyone regardless of role. The "Manage
+  // Startups" workspace is scoped to what this admin can actually touch: a
+  // single-incubator admin gets no toggle at all (nothing to switch between
+  // — see the origin-forcing in enterEditMode above), a master admin (both
+  // origins editable) still gets the full All/IPTIF/TechIN toggle.
+  const originToggleOptions = !isEditMode
+    ? ['all', 'iptif', 'techin']
+    : editableOrigins.length > 1
+      ? ['all', ...editableOrigins]
+      : [];
 
   const source = isEditMode ? manageList : portfolio;
 
@@ -450,7 +476,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
                   <button className="sp-btn sp-btn--primary" onClick={() => setShowAddForm(true)}>
                     + Add Startup
                   </button>
-                  <button className="sp-btn" onClick={() => setIsEditMode(false)}>Done</button>
+                  <button className="sp-btn" onClick={exitEditMode}>Done</button>
                 </>
               ) : (
                 <button className="sp-btn" onClick={enterEditMode}>Manage Startups</button>
@@ -476,17 +502,19 @@ function StartupPortfolio({ user, isPublicView = false }) {
 
         {/* Filters */}
         <div className="sp-filters">
-          <div className="sp-origin-toggle">
-            {['all', 'iptif', 'techin'].map((o) => (
-              <button
-                key={o}
-                className={`sp-toggle-btn ${originFilter === o ? 'sp-toggle-btn--active' : ''}`}
-                onClick={() => setOriginFilter(o)}
-              >
-                {o === 'all' ? 'All' : ORIGIN_LABELS[o]}
-              </button>
-            ))}
-          </div>
+          {originToggleOptions.length > 0 && (
+            <div className="sp-origin-toggle">
+              {originToggleOptions.map((o) => (
+                <button
+                  key={o}
+                  className={`sp-toggle-btn ${originFilter === o ? 'sp-toggle-btn--active' : ''}`}
+                  onClick={() => setOriginFilter(o)}
+                >
+                  {o === 'all' ? 'All' : ORIGIN_LABELS[o]}
+                </button>
+              ))}
+            </div>
+          )}
           <input
             className="sp-search"
             type="text"

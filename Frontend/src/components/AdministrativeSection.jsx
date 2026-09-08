@@ -131,6 +131,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const navigate = useNavigate();
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isFacultyUploadModalOpen, setIsFacultyUploadModalOpen] = useState(false);
   const token = localStorage.getItem('authToken');
 
   const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
@@ -968,17 +969,25 @@ function AdministrativeSection({ user, isPublicView = false }) {
         )}
         {!isReadOnlyView && isAdmin && (
           <div className="section-header">
-            <div className="section-header-left"><h1>Employee Overview</h1></div>
+            <div className="section-header-left">
+              <h1>{section === 'education' ? 'Faculty Engagement Overview' : 'Employee Overview'}</h1>
+            </div>
             <div className="section-header-actions">
-              <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                <span>📤</span> Upload Employee Data
-              </button>
+              {section === 'education' ? (
+                <button className="page-upload-btn" onClick={() => setIsFacultyUploadModalOpen(true)}>
+                  <span>📤</span> Upload Faculty Engagement Data
+                </button>
+              ) : (
+                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                  <span>📤</span> Upload Employee Data
+                </button>
+              )}
             </div>
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['employees']} />
+          <LastUpdated tables={[section === 'education' ? 'faculty_engagement' : 'employees']} />
           <ShareButton />
         </div>
 
@@ -1586,6 +1595,12 @@ function AdministrativeSection({ user, isPublicView = false }) {
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
           tableName="employees"
+          token={token}
+        />
+        <DataUploadModal
+          isOpen={isFacultyUploadModalOpen}
+          onClose={() => setIsFacultyUploadModalOpen(false)}
+          tableName="faculty_engagement"
           token={token}
         />
 

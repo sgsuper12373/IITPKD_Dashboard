@@ -14,7 +14,7 @@ import psycopg2.extras
 from psycopg2 import sql
 from flask import Blueprint, jsonify, request
 
-from .auth import token_required, _require_admin
+from .auth import token_required, _require_role
 from .db import get_db_connection, release_db_connection
 from . import limiter
 
@@ -74,6 +74,66 @@ UPDATABLE_TABLES = {
     # IAR
     'iar_mous':                     ['id'],
 }
+
+
+# Role_ids allowed to view a table's upload schema / perform its upload,
+# beyond role 3 (master admin, who can always upload every table — every
+# tuple below includes it explicitly rather than relying on an implicit
+# bypass). This mirrors Frontend/src/utils/rolePermissions.js's
+# SECTION_PERMISSIONS exactly, table-for-table, so a role the frontend shows
+# an upload button to is the same role the backend actually accepts it
+# from — keep the two in sync when either changes. A table with no entry
+# here (no dedicated frontend section owns it) defaults to (3,) via
+# _table_upload_roles() below: master-admin-only, safe by default.
+TABLE_UPLOAD_ROLES = {
+    'employees':                        (3, 2),   # Administration Section
+    'externship_info':                  (3, 2),
+    'faculty_engagement':               (3, 2),
+    'courses_table':                    (3, 4),   # Academic Section
+    'student_table':                    (3, 4),
+    'igrs_yearwise':                    (3, 7),   # IGRC
+    'icc_yearwise':                     (3, 8),   # ICC
+    'ewd_yearwise':                     (3, 6),   # EWD
+    'iar_mous':                         (3, 5),   # IAR
+    'placement_summary':                (3, 11),  # CDC / Placements
+    'placement_companies':              (3, 11),
+    'placement_packages':               (3, 11),
+    'icsr_sponsered_projects':          (3, 9),   # ICSR
+    'icsr_consultancy_projects':        (3, 9),
+    'industry_events':                  (3, 9),
+    'research_mous':                    (3, 9),
+    'research_patents':                 (3, 9),
+    'research_publications':            (3, 10),  # Library
+    'innovation_projects':              (3, 13, 14),  # TechIn + IPTIF (shared base table)
+    'iptif_startup_table':              (3, 14),  # IPTIF
+    'iptif_program_table':              (3, 14),
+    'iptif_projects_table':             (3, 14),
+    'iptif_facilities_table':           (3, 14),
+    'techin_startup_table':             (3, 13),  # TechIn
+    'techin_program_table':             (3, 13),
+    'techin_skill_development_program': (3, 13),
+    'industry_conclave':                (3, 12),  # IAC
+    'open_house':                       (3, 15),  # Open House
+    'uba_projects':                     (3, 17),  # UBA
+    'uba_events':                       (3, 17),
+    'nptel_courses':                    (3, 16),  # CCE
+    'outreach_science_quest':           (3, 18),  # Science Quest
+    'outreach_math_circle':             (3, 19),  # PMC
+    'outreach_pale_blue_dot':           (3, 20),  # PBD
+    'outreach_institute_visits':        (3, 21),  # Institute Visits
+    'outreach_nss_activities':          (3, 22),  # NSS
+    # department, alumni, icsr_csr, outreach (bare), nirf_ranking:
+    # intentionally absent — no dedicated frontend section claims these,
+    # so they stay master-admin-only via the default below.
+}
+
+
+def _table_upload_roles(table_name):
+    """Allowed role_ids for uploading to `table_name` — defaults to
+    master-admin-only for any table not explicitly listed in
+    TABLE_UPLOAD_ROLES, so a new UPDATABLE_TABLES entry is safe by default
+    rather than accidentally open to everyone."""
+    return TABLE_UPLOAD_ROLES.get(table_name, (3,))
 
 
 # Boolean-ish columns that accept Yes/No/True/False/1/0 and get normalised
@@ -670,17 +730,6 @@ def upload_csv(current_user_id):
     4. Deduplicate rows on the conflict key.
     5. Execute bulk upsert.
     """
-    conn_check = get_db_connection()
-    if not conn_check:
-        return jsonify({'message': 'Database connection failed.'}), 500
-    try:
-        cur_check = conn_check.cursor()
-        if not _require_admin(cur_check, current_user_id):
-            return jsonify({'message': 'Admin access required.'}), 403
-        cur_check.close()
-    finally:
-        release_db_connection(conn_check)
-
     if 'table_name' not in request.form:
         return jsonify({'message': 'No table_name specified.'}), 400
     if 'csv_file' not in request.files or request.files['csv_file'].filename == '':
@@ -690,14 +739,27 @@ def upload_csv(current_user_id):
     if not file.filename.endswith('.csv'):
         return jsonify({'message': 'File is not a CSV.'}), 400
 
-    # Validate table name against the whitelist (case-insensitive)
+    # Validate table name against the whitelist (case-insensitive). Must
+    # happen before the role check below — which roles are allowed depends
+    # on which table this is.
     table_name_lower = request.form['table_name'].lower()
     table_name = next(
         (t for t in UPDATABLE_TABLES if t.lower() == table_name_lower), None
     )
     if not table_name:
         return jsonify({'message': f"Updating table '{request.form['table_name']}' is not allowed."}), 403
-    
+
+    conn_check = get_db_connection()
+    if not conn_check:
+        return jsonify({'message': 'Database connection failed.'}), 500
+    try:
+        cur_check = conn_check.cursor()
+        if not _require_role(cur_check, current_user_id, _table_upload_roles(table_name)):
+            return jsonify({'message': 'You do not have permission to upload this table.'}), 403
+        cur_check.close()
+    finally:
+        release_db_connection(conn_check)
+
     # Log upload attempt
     print(f"\n{'='*80}")
     print(f"CSV UPLOAD INITIATED")
@@ -1139,23 +1201,24 @@ def get_upload_schema(current_user_id, table_name):
     column — all read live from the database so it can never drift from
     what /upload-csv will actually accept.
 
-    Gated exactly like /upload-csv (admin-only, table whitelist) since it
-    exposes column names for tables outsiders shouldn't be probing.
+    Gated exactly like /upload-csv (per-table role whitelist, plus the
+    table-name whitelist) since it exposes column names for tables outsiders
+    shouldn't be probing.
     """
+    table_name_lower = table_name.lower()
+    resolved_table = next(
+        (t for t in UPDATABLE_TABLES if t.lower() == table_name_lower), None
+    )
+    if not resolved_table:
+        return jsonify({'message': f"Table '{table_name}' is not available for upload."}), 403
+
     conn = get_db_connection()
     if not conn:
         return jsonify({'message': 'Database connection failed.'}), 500
     try:
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        if not _require_admin(cur, current_user_id):
-            return jsonify({'message': 'Admin access required.'}), 403
-
-        table_name_lower = table_name.lower()
-        resolved_table = next(
-            (t for t in UPDATABLE_TABLES if t.lower() == table_name_lower), None
-        )
-        if not resolved_table:
-            return jsonify({'message': f"Table '{table_name}' is not available for upload."}), 403
+        if not _require_role(cur, current_user_id, _table_upload_roles(resolved_table)):
+            return jsonify({'message': 'You do not have permission to upload this table.'}), 403
 
         # outreach_science_quest etc. are aliases handled by pre-processing —
         # the physical table to introspect is always 'outreach'.

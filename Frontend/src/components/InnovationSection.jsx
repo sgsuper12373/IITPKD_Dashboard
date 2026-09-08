@@ -92,7 +92,10 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  // TechIn (13) + IPTIF (14) — innovation_projects is the shared base table
+  // both startup portfolios draw from. Matches TABLE_UPLOAD_ROLES in
+  // Backend/app/upload.py.
+  const isAdmin = user?.role_id === 3 || user?.role_id === 13 || user?.role_id === 14;
 
   const [viewType, setViewType] = useState('yearlyGrowth');
   const [expandedChart, setExpandedChart] = useState(null);
@@ -268,7 +271,7 @@ function InnovationSectionContent({ user, isPublicView }) {
   return (
     <div className={wrapClass}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['innovation_startups']} />
+        <LastUpdated tables={['innovation_projects']} />
         <ShareButton />
       </div>
 
@@ -779,7 +782,7 @@ function InnovationSectionContent({ user, isPublicView }) {
         <DataUploadModal
           isOpen={isUploadModalOpen}
           onClose={() => setIsUploadModalOpen(false)}
-          tableName="innovation_startups"
+          tableName="innovation_projects"
           token={token}
         />
       )}

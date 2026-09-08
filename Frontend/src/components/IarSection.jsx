@@ -931,7 +931,7 @@ function IarSection({ user, isPublicView = false }) {
       <DataUploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
-        tableName="iar_stats"
+        tableName="iar_mous"
         token={token}
       />
 

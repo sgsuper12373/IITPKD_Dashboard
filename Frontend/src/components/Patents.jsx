@@ -15,7 +15,6 @@ import {
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
-import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
@@ -37,7 +36,6 @@ const formatDate = (value) => {
 function Patents({ user, isPublicView = false }) {
   const navigate = useNavigate();
   const uploadVersion = useUploadRefresh();
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [expandedChart, setExpandedChart] = useState(null);
 
   const [chartIsMobile, setChartIsMobile] = useState(window.innerWidth <= 640);
@@ -49,7 +47,10 @@ function Patents({ user, isPublicView = false }) {
 
   const token = localStorage.getItem('authToken');
 
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  // No upload trigger on this page — research_patents is owned by ICSR
+  // (role 9, see ResearchIcsrSection.jsx). Matches TABLE_UPLOAD_ROLES in
+  // Backend/app/upload.py; a button here previously offered uploads to
+  // role 4, which doesn't own this table.
   const isReadOnlyView = isPublicView || !user;
   const isRestrictedUser = typeof user === 'undefined' || user?.role_id === 0;
 
@@ -130,14 +131,6 @@ function Patents({ user, isPublicView = false }) {
             &#8592; Back to Home
           </button>
         )}
-
-        <div className="pat-upload-row">
-          {!isReadOnlyView && isAdmin && (
-            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-              <span>&#128228;</span> Upload Patent Data
-            </button>
-          )}
-        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <LastUpdated tables={['research_patents']} />
@@ -353,13 +346,6 @@ function Patents({ user, isPublicView = false }) {
             )}
           </div>
         </section>
-
-        <DataUploadModal
-          isOpen={isUploadModalOpen}
-          onClose={() => setIsUploadModalOpen(false)}
-          tableName="research_patents"
-          token={token}
-        />
       </div>
     </div>
   );

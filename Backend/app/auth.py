@@ -392,6 +392,24 @@ def _require_admin(cur, user_id):
     return user
 
 
+def _require_role(cur, user_id, allowed_roles):
+    """
+    Returns the user row if their role_id is in `allowed_roles`, else None.
+
+    Generalization of _require_admin for per-resource (rather than global)
+    authorization — e.g. upload.py's TABLE_UPLOAD_ROLES, which mirrors
+    Frontend/src/utils/rolePermissions.js's SECTION_PERMISSIONS so a role
+    the frontend shows an action to is the same role the backend accepts it
+    from. Applies no implicit admin bypass; callers must include role_id 3
+    in `allowed_roles` themselves wherever master admin should always pass.
+    """
+    cur.execute("SELECT role_id FROM users WHERE id = %s;", (user_id,))
+    user = cur.fetchone()
+    if not user or user['role_id'] not in allowed_roles:
+        return None
+    return user
+
+
 def _is_management(user_id):
     """
     True only for a currently-active role_id=3 account. Used by the public

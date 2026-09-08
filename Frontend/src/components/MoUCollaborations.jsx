@@ -20,7 +20,6 @@ import {
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
-import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
 import MouPartnerLogos from './MouPartnerLogos';
 import LastUpdated from './LastUpdated';
@@ -46,7 +45,11 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const uploadVersion = useUploadRefresh();
   const token = localStorage.getItem('authToken');
 
-  const isAdmin = user?.role_id === 3 || user?.role_id === 4;
+  // No upload trigger on this page — research_mous is owned by ICSR (role 9,
+  // see ResearchIcsrSection.jsx) and iar_mous by IAR (role 5, see
+  // EducationIarSection.jsx). Matches TABLE_UPLOAD_ROLES in
+  // Backend/app/upload.py; a duplicate button here previously offered
+  // uploads to role 4, which owns neither table.
   const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
   const isReadOnlyView = isPublicView || !user;
 
@@ -60,7 +63,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const [icsrList, setIcsrList] = useState([]);
   const [icsrViewType, setIcsrViewType] = useState('trend');
   const [icsrChartMode, setIcsrChartMode] = useState('bar');
-  const [icsrUploadOpen, setIcsrUploadOpen] = useState(false);
 
   // ── Education (IAR) state ──
   const [iarFilterOpts, setIarFilterOpts] = useState({ mou_years: [] });
@@ -70,7 +72,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
   const [iarList, setIarList] = useState([]);
   const [iarViewType, setIarViewType] = useState('trend');
   const [iarChartMode, setIarChartMode] = useState('bar');
-  const [iarUploadOpen, setIarUploadOpen] = useState(false);
 
   const [expandedChart, setExpandedChart] = useState(null);
 
@@ -427,16 +428,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
             <div className="section-header-left">
               <h1>MoU and Collaborations</h1>
             </div>
-            {isAdmin && (
-              <div className="section-header-actions">
-                <button
-                  className="page-upload-btn"
-                  onClick={() => activeTab === 'industry' ? setIcsrUploadOpen(true) : setIarUploadOpen(true)}
-                >
-                  <span>&#128228;</span> Upload MoUs
-                </button>
-              </div>
-            )}
           </div>
         )}
 
@@ -546,19 +537,6 @@ function MoUCollaborations({ user, isPublicView = false }) {
           chartIsMobile,
           setExpandedChart
         })}
-
-        <DataUploadModal
-          isOpen={icsrUploadOpen}
-          onClose={() => setIcsrUploadOpen(false)}
-          tableName="research_mous"
-          token={token}
-        />
-        <DataUploadModal
-          isOpen={iarUploadOpen}
-          onClose={() => setIarUploadOpen(false)}
-          tableName="iar_mous"
-          token={token}
-        />
 
         <ChartExpandModal
           isOpen={!!expandedChart}
