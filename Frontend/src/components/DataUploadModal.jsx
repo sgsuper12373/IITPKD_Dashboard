@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import axios from 'axios';
 import cachedAxios from '../utils/cachedAxios';
 import { fetchUploadSchema } from '../services/uploadSchema';
-import { parseCSVToRecords } from '../utils/csvParse';
+import { parseCSVToRecords, rowsToCSV } from '../utils/csvParse';
 import UploadErrorTable from './UploadErrorTable';
 import './DataUploadModal.css';
 
@@ -138,6 +138,20 @@ function formatServerError(data, fallbackText) {
         return { text: message, tableErrors: null, truncated: false };
     }
     return { text: message, tableErrors: null, truncated: false };
+}
+
+// Combines every issue for the same row into one cell's worth of text (a
+// row can fail more than one column at once), keyed by 1-indexed data-row
+// number — matching both the backend's `row` numbering and the existing
+// preview-highlighting logic below (rowNum = i + 1 over parsedCSV.records).
+function groupErrorsByRow(errors) {
+    const byRow = new Map();
+    for (const e of errors || []) {
+        if (!e.row) continue;
+        const part = e.column ? `${e.column}: ${e.reason}` : e.reason;
+        byRow.set(e.row, byRow.has(e.row) ? `${byRow.get(e.row)} || ${part}` : part);
+    }
+    return byRow;
 }
 
 function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess }) {
@@ -313,6 +327,32 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
         URL.revokeObjectURL(url);
     };
 
+    // Downloads the user's own uploaded file back to them with one extra
+    // trailing column (Upload_Error) — blank on clean rows, filled in with
+    // exactly what's wrong on flagged ones — so problems can be fixed
+    // directly in a spreadsheet instead of cross-referencing an on-screen
+    // table against the original file row by row.
+    const downloadAnnotatedCsv = (errors) => {
+        if (!parsedCSV) return;
+        const byRow = groupErrorsByRow(errors);
+        const headers = [...parsedCSV.headers, 'Upload_Error'];
+        const rows = parsedCSV.records.map((record, i) => [
+            ...parsedCSV.headers.map(h => record[h] ?? ''),
+            byRow.get(i + 1) || '',
+        ]);
+        const csvContent = rowsToCSV(headers, rows);
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${tableName}_with_errors.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     const previewRows = parsedCSV ? parsedCSV.records.slice(0, 50) : [];
     const hasClientIssues = clientValidation.headerIssues.length > 0 || clientValidation.cellIssues.length > 0;
 
@@ -410,6 +450,15 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                         truncated={clientValidation.truncated}
                                         highlightColor="#f59e0b"
                                     />
+                                    {clientValidation.cellIssues.length > 0 && (
+                                        <button
+                                            type="button"
+                                            className="dum-download-errors-btn"
+                                            onClick={() => downloadAnnotatedCsv(clientValidation.cellIssues)}
+                                        >
+                                            Download CSV with error notes
+                                        </button>
+                                    )}
                                 </div>
                             )}
 
@@ -445,7 +494,17 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                 <div className={`status-message ${message.type}`}>
                                     <div>{message.text}</div>
                                     {message.type === 'error' && serverErrors && (
-                                        <UploadErrorTable errors={serverErrors} truncated={serverTruncated} />
+                                        <>
+                                            <UploadErrorTable errors={serverErrors} truncated={serverTruncated} />
+                                            <button
+                                                type="button"
+                                                className="dum-download-errors-btn"
+                                                onClick={() => downloadAnnotatedCsv(serverErrors)}
+                                            >
+                                                Download CSV with error notes
+                                                {serverTruncated ? ` (first ${serverErrors.length} problems)` : ''}
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             )}

@@ -7,6 +7,7 @@ interaction. Column names come from information_schema, not raw user input.
 import csv
 import hashlib
 import io
+import secrets
 import traceback
 
 import psycopg2
@@ -939,9 +940,9 @@ def upload_csv(current_user_id):
                     if c.lower() == ex_col.lower()
                 ]
                 if possible_matches:
-                    print(f"    → Found in DB with different case: {possible_matches}")
+                    print(f"    -> Found in DB with different case: {possible_matches}")
                 else:
-                    print(f"    → NOT found in database (even with case variations)")
+                    print(f"    -> NOT found in database (even with case variations)")
             
             print(f"\nValid database columns (all {len(col_rows)}): {sorted([r['column_name'] for r in col_rows])}")
             print(f"CSV provided columns ({len(csv_headers)}): {csv_headers}")
@@ -1188,11 +1189,20 @@ def upload_csv(current_user_id):
                                  'Reference error. A referenced record does not exist.')
     except Exception as e:
         safe_rollback(conn)
-        print(f"GENERAL ERROR - CSV Upload | Table: {table_name} | {type(e).__name__}: {e}\n{traceback.format_exc()}")
+        # A short, random reference — logged here next to the full traceback,
+        # shown to the user in the response below — lets an admin grep the
+        # log for this exact failure without the user ever seeing (or the
+        # server ever exposing) any actual log content, stack trace, or
+        # other users' data that happens to share the same log stream.
+        error_ref = secrets.token_hex(4)
+        print(f"GENERAL ERROR - CSV Upload | Table: {table_name} | Ref: {error_ref} | "
+              f"{type(e).__name__}: {e}\n{traceback.format_exc()}")
         return jsonify({
             'message': 'An unexpected error occurred while processing your file. '
-                        'Please try again, or contact an administrator if this continues.',
+                        f'Please try again, or contact an administrator with reference {error_ref} '
+                        'if this continues.',
             'error_type': 'server_error',
+            'error_ref': error_ref,
         }), 500
     finally:
         if conn:

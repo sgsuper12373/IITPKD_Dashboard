@@ -264,3 +264,26 @@
     font-size: 1rem;
     font-weight: bold;
 }
+
+/* ── Download-annotated-CSV button (pre-flight + post-submit error panels) ── */
+.dum-download-errors-btn {
+    margin-top: 0.6rem;
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 0.4rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.dum-download-errors-btn:hover {
+    background-color: rgba(220, 53, 69, 0.08);
+}
+.dum-preflight .dum-download-errors-btn {
+    border-color: #f59e0b;
+    color: #92660a;
+}
+.dum-preflight .dum-download-errors-btn:hover {
+    background-color: rgba(245, 158, 11, 0.1);
+}
