@@ -72,8 +72,7 @@ export default function QuickGlance() {
       {/* Row 1 — title + academic year */}
       <header className="qg-head">
         <div>
-          <p className="ds-label qg-eyebrow">Quick Glance</p>
-          <h1 className="qg-title">Institute Pulse</h1>
+          <h1 className="qg-title">Quick Glance</h1>
         </div>
         <div className="qg-year">
           <span className="ds-label">Academic year</span>

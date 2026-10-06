@@ -50,8 +50,7 @@ function HomePage({ user }) {
 
             <Link to="/quick-glance" className="hp-quick-glance">
               <span className="hp-quick-glance__label">Quick Glance</span>
-              <span className="hp-quick-glance__text">Institute Pulse — key indicators, trends and pillar index at a glance</span>
-              <span aria-hidden="true" className="hp-quick-glance__arrow">→</span>
+                          <span aria-hidden="true" className="hp-quick-glance__arrow">→</span>
             </Link>
 
             {/* Image Slider - IIT Palakkad Images */}
