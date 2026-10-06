@@ -1,0 +1,16 @@
+Table NIRF_Finance_section 
+8 columns 
+
+acad_year -> varchar(10) 
+Library ->BIGINT
+New Equipment for Laboratories ->BIGINT
+Engineering Workshop ->BIGINT
+Studios ->BIGINT
+Other expenditure ->BIGINT
+Salaries (Teaching + Nonteaching)  ->BIGINT
+Maintenance_Acad_Infra_consumables_ow_ running_expenditures ->BIGINT
+Seminars/Conferences/Workshops ->BIGINT
+Data_guidelines -> text 
+isRowFreezed  -> BOOL 
+
+
