@@ -48,6 +48,12 @@ function HomePage({ user }) {
           <div className="welcome-section">
             <h1>Exploring the Vision that shapes Us</h1>
 
+            <Link to="/quick-glance" className="hp-quick-glance">
+              <span className="hp-quick-glance__label">Quick Glance</span>
+              <span className="hp-quick-glance__text">Institute Pulse — key indicators, trends and pillar index at a glance</span>
+              <span aria-hidden="true" className="hp-quick-glance__arrow">→</span>
+            </Link>
+
             {/* Image Slider - IIT Palakkad Images */}
             <Suspense fallback={<div className="hp-slider-fallback" />}>
               <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />

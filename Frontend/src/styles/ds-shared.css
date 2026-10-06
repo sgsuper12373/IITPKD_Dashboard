@@ -1,0 +1,42 @@
+/* ds-shared.css — design tokens for the shared chart layer (src/charts) and
+   the Quick Glance page.
+
+   Palette rule: ONE orange highlight per chart, slate for everything else,
+   semantic success / warning / danger for status only. Status colours are
+   aliases of the existing global.css tokens so a theme change there flows
+   through; orange + slate are defined here and mirrored in
+   src/charts/chartConfig.js (SVG attributes need literal values).
+   No other colours or fonts are introduced. */
+
+:root {
+  /* ── Highlight + neutral ── */
+  --ds-accent:        #FF6B35;
+  --ds-slate:         #475569;
+
+  /* slate tints (alpha only — no new hues) */
+  --ds-slate-06:      rgba(71, 85, 105, 0.06);
+  --ds-slate-12:      rgba(71, 85, 105, 0.12);
+  --ds-slate-35:      rgba(71, 85, 105, 0.35);
+  --ds-slate-60:      rgba(71, 85, 105, 0.60);
+  --ds-accent-12:     rgba(255, 107, 53, 0.12);
+
+  /* ── Status (semantic only) ── */
+  --ds-success:       var(--color-success);
+  --ds-warning:       var(--color-warning);
+  --ds-danger:        var(--color-error);
+
+  /* ── Surfaces ── */
+  --ds-card-bg:       #FFFFFF;
+  --ds-card-border:   rgba(71, 85, 105, 0.06);
+  --ds-text:          var(--ds-slate);
+  --ds-text-strong:   #1e293b;
+
+  /* ── Shape + type ── */
+  --r-lg:             var(--radius-lg);
+  --ds-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ds-label-tracking: 0.05em;
+
+  /* ── Layout ── */
+  --ds-page-max:      80rem;
+  --ds-gap:           1rem;
+}

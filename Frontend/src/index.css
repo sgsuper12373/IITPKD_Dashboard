@@ -1,6 +1,8 @@
 /* index.css — entry-point stylesheet */
 /* All design tokens, reset, typography, and component classes live in global.css */
 @import './styles/global.css';
+/* Chart-layer + Quick Glance tokens (orange highlight, slate neutral, card shape) */
+@import './styles/ds-shared.css';
 
 /* ── Light-mode override (overrides OS dark-mode preference) ── */
 @media (prefers-color-scheme: dark) {

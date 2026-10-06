@@ -252,3 +252,25 @@
   .welcome-section > h1 { font-size: clamp(1rem, 5vw, 1.2rem); }
   .vision-banner { font-size: 0.5rem; letter-spacing: 0.01em; }
 }
+
+
+/* ── Quick Glance entry ── */
+.hp-quick-glance {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: var(--space-4) 0;
+  padding: 0.75rem 1rem;
+  background: var(--ds-card-bg);
+  border: 1px solid var(--ds-card-border);
+  border-radius: var(--r-lg);
+  color: var(--ds-slate);
+  text-decoration: none;
+  transition: transform var(--dur-fast) var(--ease-std);
+}
+.hp-quick-glance:hover { transform: translateY(-1px); }
+.hp-quick-glance:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.hp-quick-glance__label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ds-accent); }
+.hp-quick-glance__text { flex: 1; min-width: 12rem; font-size: 0.875rem; }
+.hp-quick-glance__arrow { font-weight: 700; color: var(--ds-slate); }

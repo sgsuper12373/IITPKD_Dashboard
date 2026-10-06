@@ -60,6 +60,11 @@ const ExportMenu = ({
     data.forEach(row => {
       const rowData = keys.map(key => {
         let cellData = row[key] !== undefined && row[key] !== null ? row[key] : '';
+        // Spreadsheet apps run cells starting with = + - @ (or tab/CR) as formulas;
+        // prefix an apostrophe so text from the database can never execute as one.
+        if (typeof cellData === 'string' && /^[=+\-@\t\r]/.test(cellData)) {
+          cellData = `'${cellData}`;
+        }
         if (typeof cellData === 'string' && (cellData.includes(',') || cellData.includes('"') || cellData.includes('\n'))) {
           cellData = `"${cellData.replace(/"/g, '""')}"`;
         }
