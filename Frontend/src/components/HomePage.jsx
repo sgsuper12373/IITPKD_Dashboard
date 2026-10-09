@@ -4,6 +4,12 @@ import './Page.css';
 import './HomePage.css';
 import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
+import HomeIntro from '../home/HomeIntro';
+import HomeTour from '../home/HomeTour';
+import { Highlights, JourneyPicker, RecentPages, PillarFooter } from '../home/HomeDiscover';
+import { useInstitutePulse } from '../hooks/useInstitutePulse';
+
+const LivePreview = lazy(() => import('../home/LivePreview'));
 
 // ImageSlider carries its own CSS and animation logic; defer it so it doesn't
 // block the initial paint of the welcome text and splash screen.
@@ -32,9 +38,21 @@ function HomePage({ user }) {
     () => !sessionStorage.getItem('splashShown')
   );
 
+  const [showTour, setShowTour] = useState(false);
+  // One data load shared by the preview cards, pillar teasers and highlights.
+  const { status, data } = useInstitutePulse(null);
+
   const handleSplashComplete = () => {
     sessionStorage.setItem('splashShown', '1');
     setShowSplash(false);
+    let seen = true;
+    try { seen = !!localStorage.getItem('homeTourSeen'); } catch { /* storage blocked: skip auto-tour */ }
+    if (!seen) setShowTour(true);
+  };
+
+  const closeTour = () => {
+    try { localStorage.setItem('homeTourSeen', '1'); } catch { /* ignore */ }
+    setShowTour(false);
   };
 
   // Every user sees all six pillar cards — each page has a public view.
@@ -43,15 +61,21 @@ function HomePage({ user }) {
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+      {showTour && <HomeTour onClose={closeTour} />}
       <div className="page-container">
         <div className="page-content">
           <div className="welcome-section">
             <h1>Exploring the Vision that shapes Us</h1>
 
-            <Link to="/quick-glance" className="hp-quick-glance">
-              <span className="hp-quick-glance__label">Quick Glance</span>
-                          <span aria-hidden="true" className="hp-quick-glance__arrow">→</span>
-            </Link>
+            <HomeIntro onStartTour={() => setShowTour(true)} />
+
+            <Suspense fallback={null}>
+              <LivePreview status={status} data={data} />
+            </Suspense>
+
+            <RecentPages />
+
+            <Highlights data={data} />
 
             {/* Image Slider - IIT Palakkad Images */}
             <Suspense fallback={<div className="hp-slider-fallback" />}>
@@ -59,7 +83,7 @@ function HomePage({ user }) {
             </Suspense>
 
             {/* ── Six Dimensions of Our Vision ── */}
-            <div className="vision-pillars-section">
+            <div className="vision-pillars-section" data-tour="pillars">
 
               {/* Top Row: People & Campus, Research, Education */}
               <div className="vision-pillars-grid">
@@ -74,6 +98,7 @@ function HomePage({ user }) {
                       <li>Nourish strong ties with our alumni</li>
                       <li>Achieve a net-zero carbon campus by 2040</li>
                     </ul>
+                    <PillarFooter id="people-campus" data={data} />
                   </Link>
                 )}
 
@@ -88,6 +113,7 @@ function HomePage({ user }) {
                       <li>Develop state-of-the-art research infrastructure accessible to institutions and industries</li>
                       <li>Provide solutions that sustain ecologically sensitive regions, with emphasis on our neighbourhood</li>
                     </ul>
+                    <PillarFooter id="research" data={data} />
                   </Link>
                 )}
 
@@ -103,6 +129,7 @@ function HomePage({ user }) {
                       <li>Be flexible and innovative in teaching practices catering to diverse learning needs</li>
                       <li>Promote hands-on and research-based learning</li>
                     </ul>
+                    <PillarFooter id="education" data={data} />
                   </Link>
                 )}
               </div>
@@ -125,6 +152,7 @@ function HomePage({ user }) {
                       <li>Offer opportunities for students to become industry-ready professionals</li>
                       <li>Leverage proximity to an industrial corridor to contribute to India's self-reliance mission</li>
                     </ul>
+                    <PillarFooter id="industry-connect" data={data} />
                   </Link>
                 )}
 
@@ -138,6 +166,7 @@ function HomePage({ user }) {
                       <li>Foster a culture of innovation; encourage students, staff and faculty to take ideas to market</li>
                       <li>Connect innovation activities to solve societal challenges</li>
                     </ul>
+                    <PillarFooter id="innovation" data={data} />
                   </Link>
                 )}
 
@@ -152,13 +181,16 @@ function HomePage({ user }) {
                       <li>Inspire young minds to dream big and nurture them in their pursuits</li>
                       <li>Be a hub for continuing education and skill development</li>
                     </ul>
+                    <PillarFooter id="outreach" data={data} />
                   </Link>
                 )}
               </div>
 
             </div>
+            <JourneyPicker />
+
             {/* NIRF Ranking Section */}
-            <NirfRankingSection user={user} />
+            <div data-tour="nirf"><NirfRankingSection user={user} /></div>
 
             {/* Main Sections Overview 
             <div className="content-card">

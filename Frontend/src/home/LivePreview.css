@@ -1,0 +1,6 @@
+.lp { margin: 0 0 clamp(2rem, 5vw, 3.5rem); }
+.lp__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: var(--space-3); }
+.lp__title { margin: 0; font-size: clamp(1.1rem, 3vw, 1.4rem); font-weight: 700; color: var(--color-text); }
+.lp__more { font-size: 0.875rem; font-weight: 600; color: #c2410c; text-decoration: none; }
+.lp__more:hover { text-decoration: underline; }
+.lp__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-4); }
