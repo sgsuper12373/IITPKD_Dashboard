@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PAGES } from './exploreMap';
+import { searchPages } from './pageSearch';
 import { OPEN_JUMP_EVENT, openJump } from './jumpEvents';
 import { trackClick } from '../analytics/track';
 import './Explore.css';
@@ -16,13 +16,6 @@ export function JumpButton() {
     </button>
   );
 }
-
-const score = (page, q) => {
-  const title = page.title.toLowerCase();
-  if (title.startsWith(q)) return 3;
-  if (title.includes(q)) return 2;
-  return `${page.blurb} ${page.keywords}`.toLowerCase().includes(q) ? 1 : 0;
-};
 
 /** Ctrl/Cmd+K "jump to" search over the static page list. */
 export default function JumpPalette() {
@@ -59,15 +52,7 @@ export default function JumpPalette() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return PAGES.slice(0, 8);
-    return PAGES.map((p) => ({ p, s: score(p, q) }))
-      .filter((r) => r.s > 0)
-      .sort((a, b) => b.s - a.s)
-      .map((r) => r.p)
-      .slice(0, 8);
-  }, [query]);
+  const results = useMemo(() => searchPages(query, 8), [query]);
 
   const close = () => {
     setOpen(false);

@@ -1,4 +1,4 @@
-import { fmtNum } from '../charts';
+import { fmtNum } from '../charts/format';
 import { KPI_PUBLIC_PATH } from './exploreMap';
 
 const PHRASE = {

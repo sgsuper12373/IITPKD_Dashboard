@@ -8,6 +8,7 @@ import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 import FeedbackModal from './FeedbackModal';
+import HeaderSearch from '../home/HeaderSearch';
 import { getRoleName } from '../utils/rolePermissions';
 
 // All top-level nav entries with their page-key for role filtering
@@ -157,6 +158,7 @@ function Header({ user, onLogout, isGuest }) {
                     </Link>
 
                     <div className="header-right">
+                        <HeaderSearch />
                         {/* Feedback is open to everyone. Guests just enter their
                             email manually and verify it via the same OTP + CAPTCHA. */}
                         <div className="feedback-btn-wrapper">

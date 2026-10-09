@@ -6,7 +6,7 @@ import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
 import HomeIntro from '../home/HomeIntro';
 import HomeTour from '../home/HomeTour';
-import { Highlights, JourneyPicker, RecentPages, PillarFooter } from '../home/HomeDiscover';
+import { Highlights, JourneyPicker, MostVisited, NumbersStory, RecentPages, PillarFooter } from '../home/HomeDiscover';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
 
 const LivePreview = lazy(() => import('../home/LivePreview'));
@@ -65,9 +65,7 @@ function HomePage({ user }) {
       <div className="page-container">
         <div className="page-content">
           <div className="welcome-section">
-            <h1>Exploring the Vision that shapes Us</h1>
-
-            <HomeIntro onStartTour={() => setShowTour(true)} />
+            <HomeIntro onStartTour={() => setShowTour(true)} data={data} />
 
             <Suspense fallback={null}>
               <LivePreview status={status} data={data} />
@@ -98,7 +96,7 @@ function HomePage({ user }) {
                       <li>Nourish strong ties with our alumni</li>
                       <li>Achieve a net-zero carbon campus by 2040</li>
                     </ul>
-                    <PillarFooter id="people-campus" data={data} />
+                    <PillarFooter id="people-campus" path="/people-campus" data={data} />
                   </Link>
                 )}
 
@@ -113,7 +111,7 @@ function HomePage({ user }) {
                       <li>Develop state-of-the-art research infrastructure accessible to institutions and industries</li>
                       <li>Provide solutions that sustain ecologically sensitive regions, with emphasis on our neighbourhood</li>
                     </ul>
-                    <PillarFooter id="research" data={data} />
+                    <PillarFooter id="research" path="/research" data={data} />
                   </Link>
                 )}
 
@@ -129,7 +127,7 @@ function HomePage({ user }) {
                       <li>Be flexible and innovative in teaching practices catering to diverse learning needs</li>
                       <li>Promote hands-on and research-based learning</li>
                     </ul>
-                    <PillarFooter id="education" data={data} />
+                    <PillarFooter id="education" path="/education" data={data} />
                   </Link>
                 )}
               </div>
@@ -152,7 +150,7 @@ function HomePage({ user }) {
                       <li>Offer opportunities for students to become industry-ready professionals</li>
                       <li>Leverage proximity to an industrial corridor to contribute to India's self-reliance mission</li>
                     </ul>
-                    <PillarFooter id="industry-connect" data={data} />
+                    <PillarFooter id="industry-connect" path="/industry-connect" data={data} />
                   </Link>
                 )}
 
@@ -166,7 +164,7 @@ function HomePage({ user }) {
                       <li>Foster a culture of innovation; encourage students, staff and faculty to take ideas to market</li>
                       <li>Connect innovation activities to solve societal challenges</li>
                     </ul>
-                    <PillarFooter id="innovation" data={data} />
+                    <PillarFooter id="innovation" path="/innovation-entrepreneurship" data={data} />
                   </Link>
                 )}
 
@@ -181,12 +179,16 @@ function HomePage({ user }) {
                       <li>Inspire young minds to dream big and nurture them in their pursuits</li>
                       <li>Be a hub for continuing education and skill development</li>
                     </ul>
-                    <PillarFooter id="outreach" data={data} />
+                    <PillarFooter id="outreach" path="/outreach-extension" data={data} />
                   </Link>
                 )}
               </div>
 
             </div>
+            <NumbersStory data={data} />
+
+            <MostVisited />
+
             <JourneyPicker />
 
             {/* NIRF Ranking Section */}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { KpiSparkCard } from '../charts';
+import { CountUp } from './motion';
 import './LivePreview.css';
 
 const PREVIEW_KEYS = ['students', 'faculty', 'publications', 'funding'];
@@ -29,7 +30,7 @@ export default function LivePreview({ status, data }) {
           <div key={k.key} data-track="preview-card">
           <KpiSparkCard
             label={k.label ?? ' '}
-            value={k.value}
+            value={loading || k.value === '–' ? k.value : <CountUp text={k.value} />}
             delta={k.delta}
             deltaLabel={k.deltaLabel}
             invert={k.invert}

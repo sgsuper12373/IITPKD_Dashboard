@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
 import Footer from './Footer';
@@ -10,6 +10,7 @@ import './Home.css';
 
 function Home({ user, onLogout, isGuest }) {
   useRecordVisit();
+  const { pathname } = useLocation();
   usePageTracking();
   return (
     <div className="home-container">
@@ -22,7 +23,9 @@ function Home({ user, onLogout, isGuest }) {
           <JumpButton />
         </div>
         <JourneyBar />
-        <Outlet />
+        <div key={pathname} className="route-fade">
+          <Outlet />
+        </div>
         <KeepExploring />
         <JumpPalette />
       </main>

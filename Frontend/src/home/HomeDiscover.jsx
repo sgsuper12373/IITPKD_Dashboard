@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { JOURNEYS, journeyHref } from './exploreMap';
+import { JOURNEYS, KPI_PUBLIC_PATH, journeyHref } from './exploreMap';
+import { Badge, FreshnessBadge } from './Badges';
+import { Reveal, CountUp } from './motion';
+import { popularPages, usePopular } from './usePopular';
+import { fmtNum } from '../charts/format';
 import { buildHighlights } from './highlights';
 import { readRecent } from './useRecentPages';
 import './Explore.css';
@@ -73,15 +77,85 @@ const PILLAR_LIVE = {
   innovation: { kpi: 'startups', label: 'startups incubated' },
 };
 
-/** Live teaser line + call to action inside a pillar card. */
-export function PillarFooter({ id, data }) {
+/** Live teaser line, freshness/rank badges and call to action inside a pillar card. */
+export function PillarFooter({ id, path, data }) {
   const cfg = PILLAR_LIVE[id];
   const k = cfg && data?.kpis.find((x) => x.key === cfg.kpi);
   const live = k && k.value !== '–' ? `${k.value} ${cfg.label}` : null;
+  const nirf = id === 'education' ? data?.gauges?.nirf?.value : null;
   return (
     <div className="vision-pillar-foot">
-      <span className="vision-pillar-live">{live ?? 'Explore the numbers and stories'}</span>
+      <div className="vision-pillar-meta">
+        <span className="vision-pillar-live">{live ?? 'Explore the numbers and stories'}</span>
+        <span className="vision-pillar-badges">
+          {typeof nirf === 'number' && <Badge tone="gold">NIRF #{nirf}</Badge>}
+          <FreshnessBadge path={path} />
+        </span>
+      </div>
       <span className="vision-pillar-cta" aria-hidden="true">Explore →</span>
     </div>
+  );
+}
+
+const STORY = [
+  { key: 'patents', label: 'Patents filed' },
+  { key: 'funding', label: 'Sponsored research funding' },
+  { key: 'startups', label: 'Startups incubated' },
+];
+
+/** Large-type figures that count up as they scroll into view. */
+export function NumbersStory({ data }) {
+  const tiles = STORY.map((s) => {
+    const k = data?.kpis.find((x) => x.key === s.key);
+    return k && k.value !== '–' ? { ...s, value: k.value, sub: k.sub, to: KPI_PUBLIC_PATH[s.key] } : null;
+  }).filter(Boolean);
+
+  const placement = data?.gauges?.placement;
+  if (placement && typeof placement.value === 'number') {
+    tiles.push({ key: 'placement', label: 'Placement rate', value: `${fmtNum(placement.value, 1)}%`, sub: placement.sub, to: '/education' });
+  }
+  if (tiles.length === 0) return null;
+
+  return (
+    <section className="hd ns" aria-labelledby="ns-title">
+      <h2 id="ns-title" className="hd__title">The Institute in numbers</h2>
+      <ul className="ns__grid">
+        {tiles.map((t, i) => (
+          <li key={t.key}>
+            <Reveal delay={i * 90}>
+              <Link to={t.to} className="ns__tile" data-track={`number-${t.key}`}>
+                <span className="ns__value"><CountUp text={t.value} /></span>
+                <span className="ns__label">{t.label}</span>
+                {t.sub && <span className="ns__sub">{t.sub}</span>}
+              </Link>
+            </Reveal>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Pages other visitors view most (aggregate, same for everyone). Hidden until there is enough data. */
+export function MostVisited() {
+  const { top } = usePopular();
+  const pages = popularPages(top).slice(0, 4);
+  if (pages.length < 3) return null;
+  return (
+    <section className="hd" aria-labelledby="hd-popular">
+      <h2 id="hd-popular" className="hd__title">Popular with visitors</h2>
+      <ul className="hd__grid">
+        {pages.map((p) => (
+          <li key={p.path}>
+            <Link to={p.path} className="hd__journey" data-track="popular">
+              <span className="hd__journey-title">{p.title}</span>
+              <span className="hd__journey-blurb">{p.blurb}</span>
+              <FreshnessBadge path={p.path} />
+              <span className="hd__journey-go" aria-hidden="true">Explore →</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

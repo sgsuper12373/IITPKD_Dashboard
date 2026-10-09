@@ -1,12 +1,20 @@
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { journeyFor, journeyHref, normalizePath, relatedFor } from './exploreMap';
+import { FreshnessBadge } from './Badges';
+import { popularPages, usePopular } from './usePopular';
 import './Explore.css';
 
 /** "You might also like" strip shown at the end of every public page. */
 export function KeepExploring() {
   const { pathname } = useLocation();
   const [params] = useSearchParams();
-  const items = relatedFor(pathname);
+  const { also } = usePopular();
+  const here = normalizePath(pathname);
+  const curated = relatedFor(pathname);
+  const learned = popularPages(also[here] ?? []).filter((p) => p.path !== here);
+  // Visitor behaviour first (when enough exists), hand-picked pages fill the remaining slots.
+  const items = [...learned, ...curated.filter((c) => !learned.some((l) => l.path === c.path))].slice(0, 3);
+  const learnedPaths = new Set(learned.map((p) => p.path));
   if (pathname === '/' || items.length === 0) return null;
 
   // Carry an active journey through the strip so the guided path isn't lost.
@@ -19,8 +27,10 @@ export function KeepExploring() {
         {items.map((p) => (
           <li key={p.path}>
             <Link to={journeyKey ? journeyHref(journeyKey, p.path) : p.path} className="ke__card" data-track="keep-exploring">
+              {learnedPaths.has(p.path) && <span className="badge badge--pop">Visitors also viewed</span>}
               <span className="ke__card-title">{p.title}</span>
               <span className="ke__card-blurb">{p.blurb}</span>
+              <FreshnessBadge path={p.path} />
               <span className="ke__card-go" aria-hidden="true">Explore →</span>
             </Link>
           </li>

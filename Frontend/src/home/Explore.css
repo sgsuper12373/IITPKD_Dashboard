@@ -86,3 +86,34 @@
   .hd__grid > li { animation: none; }
   .ke__card, .hd__journey, .hd__high, .vision-pillar-cta { transition: none; }
 }
+
+/* ── Badges ── */
+.badge { display: inline-block; align-self: flex-start; padding: 0.1rem 0.55rem; font-size: 0.7rem; font-weight: 700; line-height: 1.5; border-radius: 999px; border: 1px solid var(--ds-card-border); color: var(--ds-slate); background: var(--color-bg-2, rgba(0, 0, 0, 0.04)); }
+.badge--gold { color: #7c4a03; background: #fdf0d1; border-color: #f3d58a; }
+.badge--pop { color: #9a3412; background: #ffedd5; border-color: #fdba74; }
+.badge--fresh { font-weight: 600; }
+
+/* ── Pillar card footer ── */
+.vision-pillar-meta { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.vision-pillar-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* ── Numbers story ── */
+.ns__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-5); }
+.ns__tile { display: flex; flex-direction: column; gap: 0.25rem; padding: var(--space-5); text-decoration: none; color: var(--ds-slate); background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: var(--r-lg); transition: transform var(--dur-fast) var(--ease-std), box-shadow var(--dur-mid) var(--ease-std); }
+.ns__tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.ns__tile:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.ns__value { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--color-text); font-variant-numeric: tabular-nums; }
+.ns__label { font-size: 0.95rem; font-weight: 700; }
+.ns__sub { font-size: 0.8rem; opacity: 0.75; }
+
+/* ── Motion ── */
+.rv { opacity: 0; transform: translateY(18px); transition: opacity 0.6s var(--ease-spring), transform 0.6s var(--ease-spring); }
+.rv.is-in { opacity: 1; transform: none; }
+.route-fade { animation: ex-rise 0.35s var(--ease-std) both; }
+.ex-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.cu { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; transition: none; }
+  .route-fade { animation: none; }
+  .ns__tile { transition: none; }
+}

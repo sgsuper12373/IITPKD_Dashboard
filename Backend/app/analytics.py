@@ -14,6 +14,8 @@ import hmac
 import ipaddress
 import os
 import re
+import threading
+import time
 
 from flask import Blueprint, current_app, jsonify, request
 
@@ -220,3 +222,67 @@ def summary(current_user_id):
     finally:
         cur.close()
         release_db_connection(conn)
+
+
+# ---------------------------------------------------------------------------
+# Public "popular with visitors" data (powers "Visitors also viewed")
+# ---------------------------------------------------------------------------
+# Aggregate only: ordered paths, never counts, and nothing seen by fewer than
+# POPULAR_MIN_SESSIONS distinct sessions — so a single visit can't be inferred.
+# Not personalised: the same answer for every visitor. Cached in memory.
+
+_POPULAR_TTL_SECONDS = 10 * 60
+_popular_cache = {'at': 0.0, 'data': None}
+_popular_lock = threading.Lock()
+
+
+def _build_popular(cur, min_sessions):
+    window = "viewed_at >= now() - interval '30 days' AND event_type = 'pageview' AND path <> '/'"
+    cur.execute(
+        f"""SELECT path FROM page_views WHERE {window}
+            GROUP BY path HAVING COUNT(DISTINCT session_id) >= %s
+            ORDER BY COUNT(DISTINCT session_id) DESC LIMIT 10;""", (min_sessions,))
+    top = [r['path'] for r in cur.fetchall()]
+
+    cur.execute(
+        f"""WITH s AS (SELECT DISTINCT session_id, path FROM page_views WHERE {window})
+            SELECT a.path AS a, b.path AS b, COUNT(*) AS n
+            FROM s a JOIN s b ON a.session_id = b.session_id AND a.path <> b.path
+            GROUP BY a.path, b.path HAVING COUNT(*) >= %s
+            ORDER BY n DESC LIMIT 500;""", (min_sessions,))
+    also = {}
+    for r in cur.fetchall():
+        also.setdefault(r['a'], [])
+        if len(also[r['a']]) < 3:
+            also[r['a']].append(r['b'])
+    return {'top': top, 'also': also}
+
+
+@analytics_bp.route('/popular', methods=['GET'])
+@limiter.limit("60 per minute")
+def popular():
+    now = time.time()
+    with _popular_lock:
+        if _popular_cache['data'] is not None and now - _popular_cache['at'] < _POPULAR_TTL_SECONDS:
+            return jsonify(_popular_cache['data']), 200
+
+    empty = {'top': [], 'also': {}}
+    conn = None
+    try:
+        min_sessions = max(3, int(os.environ.get('POPULAR_MIN_SESSIONS', '5')))
+        conn = get_db_connection()
+        if not conn:
+            return jsonify(empty), 200
+        cur = conn.cursor()
+        data = _build_popular(cur, min_sessions)
+        cur.close()
+    except Exception as e:
+        print(f"analytics popular error: {type(e).__name__}")
+        return jsonify(empty), 200
+    finally:
+        if conn:
+            release_db_connection(conn)
+
+    with _popular_lock:
+        _popular_cache.update(at=now, data=data)
+    return jsonify(data), 200

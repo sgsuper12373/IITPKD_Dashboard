@@ -1,0 +1,27 @@
+.hs { position: relative; }
+.hs__icon { display: none; width: 40px; height: 40px; font-size: 1.3rem; color: var(--ds-slate); background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius-sm); cursor: pointer; }
+.hs__field { position: relative; display: flex; align-items: center; }
+.hs__glass { position: absolute; left: 0.7rem; font-size: 1.05rem; color: var(--ds-slate); opacity: 0.7; pointer-events: none; }
+.hs__input {
+  width: clamp(11rem, 20vw, 17rem); box-sizing: border-box; padding: 0.42rem 0.8rem 0.42rem 2.1rem;
+  font: inherit; font-size: 0.875rem; color: var(--color-text); background: #fff;
+  border: 1.5px solid var(--color-border-strong, var(--color-border)); border-radius: 999px; transition: width var(--dur-mid) var(--ease-std), box-shadow var(--dur-fast) var(--ease-std);
+}
+.hs__input:focus { width: clamp(13rem, 28vw, 22rem); outline: none; border-color: var(--ds-accent); box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2); }
+.hs__panel {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 60; width: min(26rem, 90vw);
+  background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-lg, 12px); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); overflow: hidden;
+}
+.hs__heading { margin: 0; padding: 0.6rem 0.9rem 0.2rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #c2410c; }
+.hs__list { list-style: none; margin: 0; padding: 0.25rem; max-height: 55vh; overflow-y: auto; }
+.hs__item { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.5rem 0.7rem; border-radius: 8px; cursor: pointer; color: var(--ds-slate); }
+.hs__item.is-active { background: var(--color-bg-2, rgba(0, 0, 0, 0.06)); }
+.hs__item-title { font-weight: 600; font-size: 0.9rem; }
+.hs__item-blurb { font-size: 0.78rem; opacity: 0.75; }
+.hs__empty { padding: 0.9rem; text-align: center; font-size: 0.85rem; opacity: 0.7; }
+
+@media (max-width: 768px) {
+  .hs__field, .hs__panel { display: none; }
+  .hs__icon { display: inline-flex; align-items: center; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .hs__input { transition: none; } }
