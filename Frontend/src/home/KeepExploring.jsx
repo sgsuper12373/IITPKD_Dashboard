@@ -18,7 +18,7 @@ export function KeepExploring() {
       <ul className="ke__grid">
         {items.map((p) => (
           <li key={p.path}>
-            <Link to={journeyKey ? journeyHref(journeyKey, p.path) : p.path} className="ke__card">
+            <Link to={journeyKey ? journeyHref(journeyKey, p.path) : p.path} className="ke__card" data-track="keep-exploring">
               <span className="ke__card-title">{p.title}</span>
               <span className="ke__card-blurb">{p.blurb}</span>
               <span className="ke__card-go" aria-hidden="true">Explore →</span>
@@ -52,13 +52,13 @@ export function JourneyBar() {
         <span className="jb__why">{journey.steps[i].why}</span>
       </div>
       <div className="jb__actions">
-        {prev && <Link className="jb__btn" to={journeyHref(key, prev.path)}>← Back</Link>}
+        {prev && <Link className="jb__btn" to={journeyHref(key, prev.path)} data-track="journey-back">← Back</Link>}
         {next ? (
-          <Link className="jb__btn jb__btn--primary" to={journeyHref(key, next.path)}>Next stop →</Link>
+          <Link className="jb__btn jb__btn--primary" to={journeyHref(key, next.path)} data-track="journey-next">Next stop →</Link>
         ) : (
-          <Link className="jb__btn jb__btn--primary" to="/">Finish</Link>
+          <Link className="jb__btn jb__btn--primary" to="/" data-track="journey-finish">Finish</Link>
         )}
-        <Link className="jb__btn jb__btn--ghost" to={here}>End journey</Link>
+        <Link className="jb__btn jb__btn--ghost" to={here} data-track="journey-end">End journey</Link>
       </div>
     </aside>
   );

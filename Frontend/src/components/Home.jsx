@@ -5,10 +5,12 @@ import Footer from './Footer';
 import { KeepExploring, JourneyBar } from '../home/KeepExploring';
 import JumpPalette, { JumpButton } from '../home/JumpPalette';
 import { useRecordVisit } from '../home/useRecentPages';
+import { usePageTracking } from '../analytics/usePageTracking';
 import './Home.css';
 
 function Home({ user, onLogout, isGuest }) {
   useRecordVisit();
+  usePageTracking();
   return (
     <div className="home-container">
       <a href="#main-content" className="skip-link">Skip to main content</a>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PAGES } from './exploreMap';
 import { OPEN_JUMP_EVENT, openJump } from './jumpEvents';
+import { trackClick } from '../analytics/track';
 import './Explore.css';
 
 
@@ -31,6 +32,7 @@ export default function JumpPalette() {
   const inputRef = useRef(null);
   const returnFocus = useRef(null);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const show = () => {
@@ -74,6 +76,7 @@ export default function JumpPalette() {
   const go = (page) => {
     if (!page) return;
     setOpen(false);
+    trackClick('jump-select', pathname);
     navigate(page.path);
   };
 

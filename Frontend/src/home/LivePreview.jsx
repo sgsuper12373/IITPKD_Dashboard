@@ -20,14 +20,14 @@ export default function LivePreview({ status, data }) {
     <section className="lp" aria-label="Live headline figures" data-tour="preview">
       <header className="lp__head">
         <h2 className="lp__title">The Institute right now</h2>
-        <Link to="/quick-glance" className="lp__more">
+        <Link to="/quick-glance" className="lp__more" data-track="preview-more">
           Open Quick Glance <span aria-hidden="true">→</span>
         </Link>
       </header>
       <div className="lp__grid">
         {kpis.map((k) => (
+          <div key={k.key} data-track="preview-card">
           <KpiSparkCard
-            key={k.key}
             label={k.label ?? ' '}
             value={k.value}
             delta={k.delta}
@@ -38,6 +38,7 @@ export default function LivePreview({ status, data }) {
             to="/quick-glance"
             loading={loading}
           />
+          </div>
         ))}
       </div>
     </section>

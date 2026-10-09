@@ -13,8 +13,19 @@ from google.auth.transport import requests as google_requests
 
 from .db import get_db_connection, release_db_connection
 from . import bcrypt, limiter
+from .security_log import log_event, seen_login_from_ip, current_ip
 
 auth_bp = Blueprint('auth', __name__)
+
+
+def _record_login_success(user):
+    """Audit-logs a successful login; flags an admin signing in from a never-seen IP."""
+    if user.get('role_id') == 3:
+        had_prior, same_ip = seen_login_from_ip(user['id'], current_ip())
+        if had_prior and not same_ip:
+            log_event('admin_new_ip_login', 'high', user_id=user['id'], email=user.get('email'),
+                      detail='admin signed in from an IP not seen before')
+    log_event('login_success', 'info', user_id=user['id'], email=user.get('email'))
 
 
 # ---------------------------------------------------------------------------
@@ -185,6 +196,7 @@ def login():
         user = cur.fetchone()
 
         if not user:
+            log_event('login_failed', 'warning', email=data['email'], detail='unknown account')
             return jsonify({'message': 'Invalid email or password.'}), 401
 
         max_attempts = int(os.environ.get('MAX_LOGIN_ATTEMPTS', '10'))
@@ -196,10 +208,14 @@ def login():
                 elapsed = (datetime.datetime.now(timezone.utc) - last_attempt.replace(tzinfo=timezone.utc)).total_seconds()
                 if elapsed < lockout_minutes * 60:
                     remaining = int((lockout_minutes * 60 - elapsed) / 60) + 1
+                    log_event('account_locked', 'high', user_id=user['id'], email=user['email'],
+                              detail='login attempt while locked out')
                     return jsonify({'message': f'Account locked due to too many failed attempts. Try again in {remaining} minutes.'}), 429
                 cur.execute("UPDATE users SET failed_login_attempts = 0 WHERE id = %s;", (user['id'],))
                 conn.commit()
             else:
+                log_event('account_locked', 'high', user_id=user['id'], email=user['email'],
+                          detail='login attempt while locked out')
                 return jsonify({'message': f'Account locked due to too many failed attempts. Try again in {lockout_minutes} minutes.'}), 429
 
         if not bcrypt.check_password_hash(user['password_hash'], data['password']):
@@ -208,9 +224,14 @@ def login():
                 (user['id'],),
             )
             conn.commit()
+            log_event('login_failed', 'warning', user_id=user['id'], email=user['email'], detail='wrong password')
+            if failed + 1 >= max_attempts:
+                log_event('account_locked', 'high', user_id=user['id'], email=user['email'],
+                          detail='failed-login threshold reached; account locked')
             return jsonify({'message': 'Invalid email or password.'}), 401
 
         if user.get('status') and user['status'] != 'active':
+            log_event('login_blocked', 'warning', user_id=user['id'], email=user['email'], detail='account not active')
             return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 403
 
         cur.execute(
@@ -218,6 +239,7 @@ def login():
             (user['id'],)
         )
         conn.commit()
+        _record_login_success(user)
 
         password_changed_at = user['password_changed_at']
         del user['password_hash']
@@ -261,6 +283,7 @@ def google_login():
         )
     except ValueError as e:
         print(f"Google token verification failed: {e}")
+        log_event('login_failed', 'warning', detail='invalid Google token')
         return jsonify({'message': 'Invalid Google token. Please try again.'}), 401
 
     if idinfo.get('iss') not in _GOOGLE_ISSUERS:
@@ -275,6 +298,7 @@ def google_login():
     allowed_domains = os.environ.get('OAUTH_ALLOWED_DOMAINS', 'iitpkd.ac.in').split(',')
     email_domain = email.rsplit('@', 1)[-1].lower()
     if email_domain not in allowed_domains:
+        log_event('login_failed', 'warning', email=email, detail='Google account outside allowed domains')
         return jsonify({'message': 'Only institutional email accounts are allowed.'}), 403
 
     conn = None
@@ -310,6 +334,7 @@ def google_login():
             }), 403
         else:
             if user.get('status') and user['status'] != 'active':
+                log_event('login_blocked', 'warning', user_id=user['id'], email=email, detail='account not active (Google)')
                 return jsonify({'message': 'Account is not active. Please contact an administrator.'}), 403
 
             cur.execute(
@@ -317,6 +342,7 @@ def google_login():
                 (user['id'],),
             )
             conn.commit()
+            _record_login_success(user)
             user = dict(user)
             user.pop('password_hash', None)
 
@@ -593,6 +619,8 @@ def create_user(current_user_id):
         )
         new_user = cur.fetchone()
         conn.commit()
+        log_event('user_created', 'warning', user_id=current_user_id,
+                  detail=f"created user id {new_user['id']} with role {role_id}")
         return jsonify({'message': 'User created successfully', 'user': new_user}), 201
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
@@ -644,6 +672,8 @@ def update_user(current_user_id, user_id):
         if not _require_admin(cur, current_user_id):
             return jsonify({'message': 'Admin access required'}), 403
 
+        changes = []
+
         # Update role_id if provided
         if 'role_id' in data:
             try:
@@ -653,6 +683,7 @@ def update_user(current_user_id, user_id):
             if not _role_exists(cur, new_role_id):
                 return jsonify({'message': f"Unknown role_id: {new_role_id}"}), 400
             cur.execute("UPDATE users SET role_id = %s WHERE id = %s;", (new_role_id, user_id))
+            changes.append(f"role->{new_role_id}")
 
         # Update status if provided. No extra invalidation step needed here —
         # token_required already re-checks status fresh on every request, so
@@ -664,6 +695,7 @@ def update_user(current_user_id, user_id):
                     'message': f"Invalid status. Must be one of: {', '.join(sorted(_VALID_USER_STATUSES))}"
                 }), 400
             cur.execute("UPDATE users SET status = %s WHERE id = %s;", (data['status'], user_id))
+            changes.append(f"status->{data['status']}")
 
         # Update password if provided. Bumping password_changed_at here is
         # what makes this take effect immediately: it invalidates every JWT
@@ -675,8 +707,12 @@ def update_user(current_user_id, user_id):
                 "UPDATE users SET password_hash = %s, password_changed_at = now() WHERE id = %s;",
                 (hashed, user_id)
             )
+            changes.append('password reset')
 
         conn.commit()
+        if changes:
+            log_event('user_updated', 'warning', user_id=current_user_id,
+                      detail=f"target user {user_id}: {', '.join(changes)}")
         return jsonify({'message': 'User updated successfully'}), 200
     except Exception as e:
         conn.rollback()

@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from 'react';
+﻿import { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -10,7 +10,7 @@ import ChunkErrorBoundary from './components/ChunkErrorBoundary';
 import lazyWithRetry from './utils/lazyWithRetry';
 import AccessDenied from './components/AccessDenied';
 import { canViewSection } from './utils/rolePermissions';
-// ── Lazy route chunks ──────────────────────────────────────────────────────
+// â”€â”€ Lazy route chunks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Each import() becomes its own JS chunk; the browser only fetches a chunk
 // when the user first navigates to that route. lazyWithRetry handles transient
 // dynamic-import failures (e.g. stale index.html after a redeploy).
@@ -71,8 +71,9 @@ const OutreachSection = lazyWithRetry(() => import('./components/OutreachSection
 const Profile = lazyWithRetry(() => import('./components/Profile'));
 const UploadForm = lazyWithRetry(() => import('./components/UploadForm'));
 const CreateUser = lazyWithRetry(() => import('./components/CreateUser'));
+const SiteMonitor = lazyWithRetry(() => import('./components/SiteMonitor'));
 
-// ── Loading fallback ───────────────────────────────────────────────────────
+// â”€â”€ Loading fallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Slim top progress bar shown while a lazy chunk is being fetched.
 // Stays invisible for the first 150ms so instant navigations show nothing.
 const PageLoader = () => (
@@ -98,7 +99,7 @@ const PageLoader = () => (
 );
 
 
-// ── App ────────────────────────────────────────────────────────────────────
+// â”€â”€ App â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function App() {
   const [token, setToken] = useState(null);
@@ -197,7 +198,7 @@ function App() {
     return () => { axios.interceptors.response.eject(responseInterceptor); };
   }, [token]);
 
-  // Everyone can view the dashboard — unauthenticated users get guest-level access.
+  // Everyone can view the dashboard â€” unauthenticated users get guest-level access.
   // AuthRoute/AdminRoute still guard pages that require a real login.
   const ProtectedRoute = ({ children }) => children;
 
@@ -206,7 +207,7 @@ function App() {
 
   const AdminRoute = ({ children, sectionKey }) => {
     if (!user) return <Navigate to="/" replace />;
-    // Roles 0 and 1 pass through — they see read-only/restricted views inside sections
+    // Roles 0 and 1 pass through â€” they see read-only/restricted views inside sections
     const roleId = user.role_id;
     if (roleId === 0 || roleId === 1 || roleId === 3) return children;
     if (sectionKey && !canViewSection(roleId, sectionKey)) {
@@ -241,7 +242,7 @@ function App() {
             }
           >
             <Route index element={<HomePage user={user} />} />
-            {/* Public, read-only analytics overview — uses only token-optional stats endpoints. */}
+            {/* Public, read-only analytics overview â€” uses only token-optional stats endpoints. */}
             <Route path="quick-glance" element={<QuickGlance />} />
             <Route path="people-campus" element={<PeopleCampus user={user} />} />
             <Route path="people-campus/academic-section" element={<AdminRoute sectionKey="people-campus/academic-section"><AcademicSection user={user} /></AdminRoute>} />
@@ -278,13 +279,13 @@ function App() {
             <Route path="outreach-extension/social-engagements" element={<AdminRoute><SocialEngagement user={user} /></AdminRoute>} />
             <Route path="outreach-extension/students-engagements" element={<AdminRoute><StudentsEngagementSection user={user} /></AdminRoute>} />
             <Route path="outreach-extension/outreach" element={<AdminRoute><OutreachSection user={user} /></AdminRoute>} />
-            {/* Public view sub-routes — social engagement */}
+            {/* Public view sub-routes â€” social engagement */}
             <Route path="outreach-extension/social-engagement" element={<SocialEngagement user={user} />} />
             <Route path="outreach-extension/social-engagement/UBA" element={<UbaSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/social-engagement/OpenHouse" element={<OpenHouseSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/social-engagement/InstituteVisits" element={<OutreachSection user={user} isPublicView={true} programKey="institute_visits" />} />
             <Route path="outreach-extension/social-engagement/NSS" element={<OutreachSection user={user} isPublicView={true} programKey="nss_activities" />} />
-            {/* Public view sub-routes — students engagement */}
+            {/* Public view sub-routes â€” students engagement */}
             <Route path="outreach-extension/students-engagement" element={<StudentsEngagementSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/students-engagement/nptel" element={<NptelSection user={user} isPublicView={true} />} />
             <Route path="outreach-extension/students-engagement/pmc" element={<OutreachSection user={user} isPublicView={true} programKey="palakkad_math_circle" />} />
@@ -294,6 +295,7 @@ function App() {
             <Route path="profile" element={<AuthRoute><Profile user={user} /></AuthRoute>} />
             <Route path="upload" element={<AuthRoute><UploadForm token={token} onLogout={handleLogout} /></AuthRoute>} />
             <Route path="create-user" element={<AuthRoute><CreateUser user={user} token={token} /></AuthRoute>} />
+            <Route path="site-monitor" element={<AuthRoute><SiteMonitor token={token} /></AuthRoute>} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

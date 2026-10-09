@@ -210,6 +210,11 @@ function Header({ user, onLogout, isGuest }) {
                                     <button className="dropdown-item" onClick={handleProfileClick}>
                                         {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
                                     </button>
+                                    {user?.role_id === 3 && (
+                                        <button className="dropdown-item" onClick={() => { setShowProfileDropdown(false); navigate('/site-monitor'); }}>
+                                            Site Monitor
+                                        </button>
+                                    )}
                                     <button className="dropdown-item" onClick={onLogout}>
                                         Logout
                                     </button>

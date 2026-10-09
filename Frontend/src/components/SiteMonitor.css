@@ -1,0 +1,20 @@
+.sm { max-width: var(--container-max); margin: 0 auto; padding: var(--space-4) var(--container-padding-x); color: var(--ds-slate); }
+.sm-title { margin: 0 0 var(--space-4); font-size: clamp(1.3rem, 4vw, 1.9rem); color: var(--color-text); }
+.sm-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: var(--space-4); }
+.sm-tab { padding: 0.45rem 1rem; font: inherit; font-weight: 600; color: var(--ds-slate); background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: var(--r-lg); cursor: pointer; }
+.sm-tab.is-active { color: #111; background: var(--ds-accent); border-color: var(--ds-accent); }
+.sm-tab:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.sm-range { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.sm-range select { padding: 0.35rem 0.5rem; font: inherit; }
+.sm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
+.sm-stat { display: flex; flex-direction: column; padding: var(--space-3) var(--space-4); background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: var(--r-lg); }
+.sm-stat__value { font-size: 1.6rem; font-weight: 800; color: var(--color-text); }
+.sm-stat__label { font-size: 0.8rem; }
+.sm-block { margin-bottom: var(--space-5); }
+.sm-h3 { margin: 0 0 var(--space-2); font-size: 1rem; color: var(--color-text); }
+.sm-scroll { overflow-x: auto; background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: var(--r-lg); }
+.sm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.sm-table th, .sm-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--ds-card-border); word-break: break-word; }
+.sm-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.sm-empty { margin: 0; font-size: 0.85rem; opacity: 0.75; }
+.sm-error { padding: var(--space-3) var(--space-4); color: #991b1b; background: #fee2e2; border-radius: var(--r-lg); }

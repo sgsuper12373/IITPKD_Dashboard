@@ -64,3 +64,34 @@ def send_otp_email(to_email, code):
     except Exception as e:
         print(f"OTP email send failed: {e}")
         return False
+
+
+def send_security_alert(to_email, subject, body):
+    """
+    Sends a plain-text security alert. Returns True/False, never raises.
+    Callers run this off the request thread (see security_log._alert).
+    """
+    cfg = _smtp_config()
+    if not cfg or not to_email:
+        return False
+
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = cfg['from']
+    msg['To'] = to_email
+    msg.set_content(body)
+
+    try:
+        if cfg['port'] == 465:
+            with smtplib.SMTP_SSL(cfg['host'], cfg['port'], context=ssl.create_default_context(), timeout=15) as server:
+                server.login(cfg['user'], cfg['password'])
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(cfg['host'], cfg['port'], timeout=15) as server:
+                server.starttls(context=ssl.create_default_context())
+                server.login(cfg['user'], cfg['password'])
+                server.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Security alert email failed: {type(e).__name__}")
+        return False

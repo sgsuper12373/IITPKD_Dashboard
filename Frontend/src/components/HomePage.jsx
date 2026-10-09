@@ -88,7 +88,7 @@ function HomePage({ user }) {
               {/* Top Row: People & Campus, Research, Education */}
               <div className="vision-pillars-grid">
                 {canSeePage('people-campus') && (
-                  <Link to="/people-campus" className="vision-pillar-card">
+                  <Link to="/people-campus" className="vision-pillar-card" data-track="pillar-people-campus">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">🌿</span> <span className="vision-pillar-title-text"><u>People</u> &amp; Campus</span>
                     </h3>
@@ -103,7 +103,7 @@ function HomePage({ user }) {
                 )}
 
                 {canSeePage('research') && (
-                  <Link to="/research" className="vision-pillar-card">
+                  <Link to="/research" className="vision-pillar-card" data-track="pillar-research">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">🔬</span> <span className="vision-pillar-title-text"><u>Research</u></span>
                     </h3>
@@ -118,7 +118,7 @@ function HomePage({ user }) {
                 )}
 
                 {canSeePage('education') && (
-                  <Link to="/education" className="vision-pillar-card">
+                  <Link to="/education" className="vision-pillar-card" data-track="pillar-education">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">🎓</span> <span className="vision-pillar-title-text"><u>Education</u></span>
                     </h3>
@@ -142,7 +142,7 @@ function HomePage({ user }) {
               {/* Bottom Row: Industry Connect, Innovation & Entrepreneurship, Outreach & Extension */}
               <div className="vision-pillars-grid">
                 {canSeePage('industry-connect') && (
-                  <Link to="/industry-connect" className="vision-pillar-card">
+                  <Link to="/industry-connect" className="vision-pillar-card" data-track="pillar-industry-connect">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">🏭</span> <span className="vision-pillar-title-text"><u>Industry</u> Connect</span>
                     </h3>
@@ -157,7 +157,7 @@ function HomePage({ user }) {
                 )}
 
                 {canSeePage('innovation-entrepreneurship') && (
-                  <Link to="/innovation-entrepreneurship" className="vision-pillar-card">
+                  <Link to="/innovation-entrepreneurship" className="vision-pillar-card" data-track="pillar-innovation-entrepreneurship">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">💡</span> <span className="vision-pillar-title-text"><u>Innovation &amp; Entrepreneurship</u></span>
                     </h3>
@@ -171,7 +171,7 @@ function HomePage({ user }) {
                 )}
 
                 {canSeePage('outreach-extension') && (
-                  <Link to="/outreach-extension" className="vision-pillar-card">
+                  <Link to="/outreach-extension" className="vision-pillar-card" data-track="pillar-outreach-extension">
                     <h3 className="vision-pillar-title">
                       <span className="vision-pillar-icon">🌱</span> <span className="vision-pillar-title-text"><u>Outreach &amp; Extension</u></span>
                     </h3>

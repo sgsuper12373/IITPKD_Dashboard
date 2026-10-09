@@ -157,7 +157,7 @@ def create_app():
         academic_module, research_module, innovation_module,
         industry_connect_module, outreach_extension_module, nirf_stats, export_db,
         mou_partners, last_updated, iptif_facilities, startup_portfolio,
-        icsr_consultancy, icsr_sponsored, feedback,
+        icsr_consultancy, icsr_sponsored, feedback, analytics, security_api,
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
@@ -184,6 +184,11 @@ def create_app():
     app.register_blueprint(icsr_sponsored.icsr_sponsored_bp,               url_prefix='/api/icsr-sponsored')
     app.register_blueprint(last_updated.last_updated_bp,                   url_prefix='/api/last-updated')
     app.register_blueprint(feedback.feedback_bp,                           url_prefix='/api/feedback')
+    app.register_blueprint(analytics.analytics_bp,                         url_prefix='/api/analytics')
+    app.register_blueprint(security_api.security_bp,                       url_prefix='/api/security')
+
+    from .security_log import init_security_logging
+    init_security_logging(app)
 
     @app.route('/health')
     def health_check():

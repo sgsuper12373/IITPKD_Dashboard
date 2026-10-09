@@ -39,6 +39,7 @@ const LABELS = {
   'InstituteVisits':            'Institute Visits',
   'NSS':                        'NSS',
   'quick-glance':               'Quick Glance',
+  'site-monitor':               'Site Monitor',
   'profile':                    'Profile',
   'upload':                     'Upload',
   'create-user':                'Create User',

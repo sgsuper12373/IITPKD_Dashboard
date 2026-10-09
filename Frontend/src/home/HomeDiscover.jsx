@@ -15,7 +15,7 @@ export function Highlights({ data }) {
       <ul className="hd__grid">
         {items.map((h) => (
           <li key={h.key}>
-            <Link to={h.to} className={`hd__high hd__high--${h.tone}`}>
+            <Link to={h.to} className={`hd__high hd__high--${h.tone}`} data-track="highlight">
               <span className="hd__high-mark" aria-hidden="true">{h.tone === 'up' ? '▲' : '▼'}</span>
               <span className="hd__high-text">{h.text}</span>
               <span className="hd__high-go" aria-hidden="true">→</span>
@@ -35,7 +35,7 @@ export function JourneyPicker() {
       <ul className="hd__grid hd__grid--3">
         {Object.entries(JOURNEYS).map(([key, j]) => (
           <li key={key}>
-            <Link to={journeyHref(key, j.steps[0].path)} className="hd__journey">
+            <Link to={journeyHref(key, j.steps[0].path)} className="hd__journey" data-track={`journey-start-${key}`}>
               <span className="hd__journey-title">{j.title}</span>
               <span className="hd__journey-blurb">{j.blurb}</span>
               <span className="hd__journey-go" aria-hidden="true">Start the {j.steps.length}-stop tour →</span>
@@ -57,7 +57,7 @@ export function RecentPages() {
       <ul className="hd__chips">
         {recent.map((p) => (
           <li key={p.path}>
-            <Link to={p.path} className="hd__chip">{p.title}</Link>
+            <Link to={p.path} className="hd__chip" data-track="recent-page">{p.title}</Link>
           </li>
         ))}
       </ul>

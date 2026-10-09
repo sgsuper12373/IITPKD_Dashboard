@@ -14,13 +14,13 @@ export default function HomeIntro({ onStartTour }) {
         innovation and outreach. Numbers come straight from the offices that own them, so what you see here is current.
       </p>
       <div className="hi__actions">
-        <Link to="/quick-glance" className="hi__btn hi__btn--primary">
+        <Link to="/quick-glance" className="hi__btn hi__btn--primary" data-track="intro-glance">
           See the Institute at a glance <span aria-hidden="true">→</span>
         </Link>
-        <button type="button" className="hi__btn" onClick={onStartTour}>
+        <button type="button" className="hi__btn" onClick={onStartTour} data-track="intro-tour">
           Take a 30-second tour
         </button>
-        <button type="button" className="hi__btn" onClick={openJump}>
+        <button type="button" className="hi__btn" onClick={openJump} data-track="intro-jump">
           Jump to a page <kbd className="hi__kbd">Ctrl K</kbd>
         </button>
       </div>
