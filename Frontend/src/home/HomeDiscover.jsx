@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { JOURNEYS, KPI_PUBLIC_PATH, journeyHref } from './exploreMap';
-import { Badge, FreshnessBadge } from './Badges';
+import { FreshnessBadge } from './Badges';
 import { Reveal, CountUp } from './motion';
 import { popularPages, usePopular } from './usePopular';
 import { fmtNum } from '../charts/format';
@@ -66,34 +66,6 @@ export function RecentPages() {
         ))}
       </ul>
     </section>
-  );
-}
-
-const PILLAR_LIVE = {
-  'people-campus': { kpi: 'faculty', label: 'faculty' },
-  research: { kpi: 'publications', label: 'publications' },
-  education: { kpi: 'students', label: 'students on roll' },
-  'industry-connect': { kpi: 'funding', label: 'sponsored funding' },
-  innovation: { kpi: 'startups', label: 'startups incubated' },
-};
-
-/** Live teaser line, freshness/rank badges and call to action inside a pillar card. */
-export function PillarFooter({ id, path, data }) {
-  const cfg = PILLAR_LIVE[id];
-  const k = cfg && data?.kpis.find((x) => x.key === cfg.kpi);
-  const live = k && k.value !== '–' ? `${k.value} ${cfg.label}` : null;
-  const nirf = id === 'education' ? data?.gauges?.nirf?.value : null;
-  return (
-    <div className="vision-pillar-foot">
-      <div className="vision-pillar-meta">
-        <span className="vision-pillar-live">{live ?? 'Explore the numbers and stories'}</span>
-        <span className="vision-pillar-badges">
-          {typeof nirf === 'number' && <Badge tone="gold">NIRF #{nirf}</Badge>}
-          <FreshnessBadge path={path} />
-        </span>
-      </div>
-      <span className="vision-pillar-cta" aria-hidden="true">Explore →</span>
-    </div>
   );
 }
 

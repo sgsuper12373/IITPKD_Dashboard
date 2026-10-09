@@ -1,0 +1,49 @@
+/* Interactive pillar card. The title link is stretched over the whole card; controls sit above it. */
+.pc { position: relative; animation: ex-rise 0.55s var(--ease-spring) both; }
+.pc__link { color: inherit; text-decoration: none; }
+.pc__link::after { content: ''; position: absolute; inset: 0; z-index: 0; }
+.pc__link:focus-visible { outline: none; }
+.pc:has(.pc__link:focus-visible) { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+
+.pc__chips, .pc__sub, .pc__vision-toggle, .pc__vision { position: relative; z-index: 1; }
+.pc__chips, .pc__sub, .pc__vision { pointer-events: none; }
+.pc__chip, .pc__pill, .pc__vision-toggle { pointer-events: auto; }
+
+.pc__metric { margin: 0 0 var(--space-3); min-height: 4.6rem; }
+.pc__metric-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.pc__value { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--color-text); font-variant-numeric: tabular-nums; }
+.pc__spark { width: 6.5rem; height: 2.1rem; flex-shrink: 0; color: var(--ds-slate); }
+.pc__metric-label { margin: 0.2rem 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.6rem; font-size: 0.8rem; font-weight: 600; color: var(--ds-slate); }
+.pc__metric-label--idle { min-height: 4.6rem; align-items: center; font-weight: 500; opacity: 0.8; }
+.pc__delta { font-weight: 700; }
+.pc__delta--up { color: #15803d; }
+.pc__delta--down { color: #b45309; }
+.pc__delta-tag { font-weight: 500; opacity: 0.8; }
+
+.pc__chips, .pc__sub { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 var(--space-3); }
+.pc__chip, .pc__pill {
+  padding: 0.28rem 0.75rem; font: inherit; font-size: 0.75rem; font-weight: 600; text-decoration: none; cursor: pointer;
+  color: var(--ds-slate); background: var(--ds-card-bg); border: 1px solid var(--color-border-strong); border-radius: 999px;
+  transition: background var(--dur-fast) var(--ease-std), border-color var(--dur-fast) var(--ease-std), transform var(--dur-fast) var(--ease-std);
+}
+.pc__chip:hover, .pc__pill:hover { border-color: var(--ds-accent); transform: translateY(-1px); }
+.pc__chip.is-active { color: #111; background: var(--ds-accent); border-color: var(--ds-accent); }
+.pc__pill::after { content: ' →'; opacity: 0.6; }
+.pc__chip:focus-visible, .pc__pill:focus-visible, .pc__vision-toggle:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+
+.pc__vision-toggle {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 0.35rem; margin: 0 0 var(--space-2); padding: 0.15rem 0;
+  font: inherit; font-size: 0.78rem; font-weight: 700; color: #c2410c; background: none; border: 0; cursor: pointer;
+}
+.pc__caret { display: inline-block; transition: transform var(--dur-mid) var(--ease-std); }
+.pc__caret.is-open { transform: rotate(180deg); }
+.pc__vision { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-mid) var(--ease-std); }
+.pc__vision.is-open { grid-template-rows: 1fr; margin-bottom: var(--space-3); }
+.pc__vision > .vision-pillar-list { overflow: hidden; min-height: 0; margin: 0; }
+
+.pc .vision-pillar-foot { margin-top: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pc { animation: none; }
+  .pc__vision, .pc__caret, .pc__chip, .pc__pill { transition: none; }
+}

@@ -6,7 +6,9 @@ import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
 import HomeIntro from '../home/HomeIntro';
 import HomeTour from '../home/HomeTour';
-import { Highlights, JourneyPicker, MostVisited, NumbersStory, RecentPages, PillarFooter } from '../home/HomeDiscover';
+import { Highlights, JourneyPicker, MostVisited, NumbersStory, RecentPages } from '../home/HomeDiscover';
+import PillarCard from '../home/PillarCard';
+import { PILLARS } from '../home/pillars';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
 
 const LivePreview = lazy(() => import('../home/LivePreview'));
@@ -55,9 +57,6 @@ function HomePage({ user }) {
     setShowTour(false);
   };
 
-  // Every user sees all six pillar cards — each page has a public view.
-  const canSeePage = () => true;
-
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
@@ -85,51 +84,7 @@ function HomePage({ user }) {
 
               {/* Top Row: People & Campus, Research, Education */}
               <div className="vision-pillars-grid">
-                {canSeePage('people-campus') && (
-                  <Link to="/people-campus" className="vision-pillar-card" data-track="pillar-people-campus">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">🌿</span> <span className="vision-pillar-title-text"><u>People</u> &amp; Campus</span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Be a diverse and inclusive community</li>
-                      <li>Promote wellness and personal development among our community</li>
-                      <li>Nourish strong ties with our alumni</li>
-                      <li>Achieve a net-zero carbon campus by 2040</li>
-                    </ul>
-                    <PillarFooter id="people-campus" path="/people-campus" data={data} />
-                  </Link>
-                )}
-
-                {canSeePage('research') && (
-                  <Link to="/research" className="vision-pillar-card" data-track="pillar-research">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">🔬</span> <span className="vision-pillar-title-text"><u>Research</u></span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Be at the forefront of both applied research and blue sky research</li>
-                      <li>Nurture a collaborative ecosystem for interdisciplinary and transdisciplinary inquiry</li>
-                      <li>Develop state-of-the-art research infrastructure accessible to institutions and industries</li>
-                      <li>Provide solutions that sustain ecologically sensitive regions, with emphasis on our neighbourhood</li>
-                    </ul>
-                    <PillarFooter id="research" path="/research" data={data} />
-                  </Link>
-                )}
-
-                {canSeePage('education') && (
-                  <Link to="/education" className="vision-pillar-card" data-track="pillar-education">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">🎓</span> <span className="vision-pillar-title-text"><u>Education</u></span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Design programmes that prepare students for a leading role in an ever-changing world</li>
-                      <li>Provide broad-based, flexible and rigorous undergraduate education</li>
-                      <li>Offer rigorous masters &amp; doctoral programmes attuned to industry and academia</li>
-                      <li>Be flexible and innovative in teaching practices catering to diverse learning needs</li>
-                      <li>Promote hands-on and research-based learning</li>
-                    </ul>
-                    <PillarFooter id="education" path="/education" data={data} />
-                  </Link>
-                )}
+                {PILLARS.slice(0, 3).map((p, i) => <PillarCard key={p.id} pillar={p} data={data} index={i} />)}
               </div>
 
               {/* Dark Banner */}
@@ -139,49 +94,7 @@ function HomePage({ user }) {
 
               {/* Bottom Row: Industry Connect, Innovation & Entrepreneurship, Outreach & Extension */}
               <div className="vision-pillars-grid">
-                {canSeePage('industry-connect') && (
-                  <Link to="/industry-connect" className="vision-pillar-card" data-track="pillar-industry-connect">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">🏭</span> <span className="vision-pillar-title-text"><u>Industry</u> Connect</span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Synergize R&amp;D goals with industry and be a technological solution provider</li>
-                      <li>Champion academic initiatives that benefit from mutual knowledge exchange</li>
-                      <li>Offer opportunities for students to become industry-ready professionals</li>
-                      <li>Leverage proximity to an industrial corridor to contribute to India's self-reliance mission</li>
-                    </ul>
-                    <PillarFooter id="industry-connect" path="/industry-connect" data={data} />
-                  </Link>
-                )}
-
-                {canSeePage('innovation-entrepreneurship') && (
-                  <Link to="/innovation-entrepreneurship" className="vision-pillar-card" data-track="pillar-innovation-entrepreneurship">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">💡</span> <span className="vision-pillar-title-text"><u>Innovation &amp; Entrepreneurship</u></span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Build a vibrant ecosystem spanning ideation, prototyping, product development and incubation</li>
-                      <li>Foster a culture of innovation; encourage students, staff and faculty to take ideas to market</li>
-                      <li>Connect innovation activities to solve societal challenges</li>
-                    </ul>
-                    <PillarFooter id="innovation" path="/innovation-entrepreneurship" data={data} />
-                  </Link>
-                )}
-
-                {canSeePage('outreach-extension') && (
-                  <Link to="/outreach-extension" className="vision-pillar-card" data-track="pillar-outreach-extension">
-                    <h3 className="vision-pillar-title">
-                      <span className="vision-pillar-icon">🌱</span> <span className="vision-pillar-title-text"><u>Outreach &amp; Extension</u></span>
-                    </h3>
-                    <ul className="vision-pillar-list">
-                      <li>Be actively engaged with the local community</li>
-                      <li>Partner with local organisations to strengthen public engagement with science and technology</li>
-                      <li>Inspire young minds to dream big and nurture them in their pursuits</li>
-                      <li>Be a hub for continuing education and skill development</li>
-                    </ul>
-                    <PillarFooter id="outreach" path="/outreach-extension" data={data} />
-                  </Link>
-                )}
+                {PILLARS.slice(3).map((p, i) => <PillarCard key={p.id} pillar={p} data={data} index={i + 3} />)}
               </div>
 
             </div>
