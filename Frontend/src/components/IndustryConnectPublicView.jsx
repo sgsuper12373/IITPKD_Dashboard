@@ -6,6 +6,7 @@ import './IndustryConnectMinimal.css';
 import IcsrSection from './IcsrSection';
 import ConclaveSection from './ConclaveSection';
 import IndustryAdministrativeSection from './IndustryAdministrativeSection';
+import SectionSuggestions from '../home/SectionSuggestions';
 
 function IndustryConnectPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -85,6 +86,12 @@ function IndustryConnectPublicView({ user, embedded }) {
                     <div className="industry-content-area">
                       <SectionComponent user={user} isPublicView={true} />
                     </div>
+                    <SectionSuggestions
+                      pillar="industry-connect"
+                      sectionId={section.id}
+                      siblings={sections.filter((s) => s.id !== section.id)}
+                      onOpen={setActiveSection}
+                    />
                   </div>
                 </div>
               );

@@ -333,7 +333,40 @@ export function buildPulse(series, year, extras = {}) {
     enrolInsight = `${ay} vs ${prevAy}: ${parts.join(', ')}.`;
   }
 
+  // "x per y" insight for a (denominator bar, numerator line) pair, with last year for context.
+  const pairInsight = (denKey, numKey, phrase, digits = 1) => {
+    const den = at(denKey);
+    const num = at(numKey);
+    if (!den || num === null) return 'Insufficient data to relate these two measures for the selected year.';
+    let text = `${fmtNum(num / den, digits)} ${phrase} in ${ay}`;
+    const pd = at(denKey, year - 1);
+    const pn = at(numKey, year - 1);
+    text += pd && pn !== null ? ` (${fmtNum(pn / pd, digits)} in ${prevAy}).` : '.';
+    return text;
+  };
+  const hasPair = (a, b) => years.some((y) => at(a, y) !== null || at(b, y) !== null);
+
   const combos = {
+    faculty: {
+      rows: comboRows('faculty', 'publications'),
+      insight: pairInsight('faculty', 'publications', 'publications per faculty member'),
+      hasData: hasPair('faculty', 'publications'),
+    },
+    patents: {
+      rows: comboRows('fundingCr', 'patentsFiled'),
+      insight: pairInsight('fundingCr', 'patentsFiled', 'patents filed per ₹ Cr sanctioned', 2),
+      hasData: hasPair('fundingCr', 'patentsFiled'),
+    },
+    industry: {
+      rows: comboRows('icsrEvents', 'consultancyCr'),
+      insight: pairInsight('icsrEvents', 'consultancyCr', '₹ Cr consultancy revenue per industry event', 2),
+      hasData: hasPair('icsrEvents', 'consultancyCr'),
+    },
+    innovation: {
+      rows: comboRows('startups', 'innovationProjects'),
+      insight: pairInsight('startups', 'innovationProjects', 'innovation projects per startup'),
+      hasData: hasPair('startups', 'innovationProjects'),
+    },
     funding: {
       rows: comboRows('fundingCr', 'publications'),
       insight: fundingInsight,

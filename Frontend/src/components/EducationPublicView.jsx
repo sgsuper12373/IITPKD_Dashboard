@@ -6,6 +6,7 @@ import './EducationMinimal.css';
 import PlacementSection from './PlacementSection';
 import EducationAcademicSection from './EducationAcademicSection';
 import EducationIarSection from './EducationIarSection';
+import SectionSuggestions from '../home/SectionSuggestions';
 
 function EducationPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -85,6 +86,12 @@ function EducationPublicView({ user, embedded }) {
                     <div className="education-content-area">
                       <SectionComponent user={user} isPublicView={true} />
                     </div>
+                    <SectionSuggestions
+                      pillar="education"
+                      sectionId={section.id}
+                      siblings={sections.filter((s) => s.id !== section.id)}
+                      onOpen={setActiveSection}
+                    />
                   </div>
                 </div>
               );

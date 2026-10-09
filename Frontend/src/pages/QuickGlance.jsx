@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   ChartCard,
   ComboChart,
@@ -18,42 +19,13 @@ import {
 } from '../charts';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
 import { ayLabel } from '../utils/pulseModel';
+import { COMBO_VIEWS, isComboKey } from '../utils/comboViews';
 import './QuickGlance.css';
-
-const COMBO_VIEWS = {
-  funding: {
-    option: 'Funding vs publications',
-    title: 'Research funding vs publications',
-    subtitle: 'Sponsored funding (ICSR) against publications (Library)',
-    to: SOURCE_ROUTES.funding,
-    barKey: 'fundingCr',
-    barName: 'Sponsored funding (₹ Cr)',
-    barFormat: (v) => fmtNum(v, 1),
-    lineKey: 'publications',
-    lineName: 'Publications',
-    lineFormat: (v) => fmtInt(v),
-    headers: ['Academic year', 'Sponsored funding (Cr)', 'Publications'],
-    filename: 'funding_vs_publications',
-  },
-  enrolment: {
-    option: 'Enrolment vs placement',
-    title: 'Enrolment vs placement',
-    subtitle: 'Student intake (Academic) against placement rate (Placement)',
-    to: SOURCE_ROUTES.placement,
-    barKey: 'intake',
-    barName: 'Student intake',
-    barFormat: (v) => fmtInt(v),
-    lineKey: 'placementPct',
-    lineName: 'Placement %',
-    lineFormat: (v) => `${fmtNum(v, 0)}%`,
-    headers: ['Academic year', 'Student intake', 'Placement %'],
-    filename: 'enrolment_vs_placement',
-  },
-};
 
 export default function QuickGlance() {
   const [pickedYear, setPickedYear] = useState(null);
-  const [comboView, setComboView] = useState('funding');
+  const [params] = useSearchParams();
+  const [comboView, setComboView] = useState(() => (isComboKey(params.get('combo')) ? params.get('combo') : 'funding'));
   const { status, partial, year, years, data } = useInstitutePulse(pickedYear);
 
   const loading = status === 'loading';

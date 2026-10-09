@@ -6,6 +6,7 @@ import './ResearchMinimal.css';
 import ResearchIcsrSection from './ResearchIcsrSection';
 import ResearchLibrarySection from './ResearchLibrarySection';
 import Patents from './Patents';
+import SectionSuggestions from '../home/SectionSuggestions';
 
 function ResearchPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -97,6 +98,12 @@ function ResearchPublicView({ user, embedded }) {
                     <div className="research-content-area">
                       <SectionComponent user={user} isPublicView={true} />
                     </div>
+                    <SectionSuggestions
+                      pillar="research"
+                      sectionId={section.id}
+                      siblings={sections.filter((s) => s.id !== section.id)}
+                      onOpen={setActiveSection}
+                    />
                   </div>
                 </div>
               );

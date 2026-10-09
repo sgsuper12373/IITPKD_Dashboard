@@ -7,6 +7,7 @@ import IptifSection from './IptifSection';
 import TechinSection from './TechinSection';
 import HomeGroundStartup from './HomeGroundStartup';
 import StartupPortfolio from './StartupPortfolio';
+import SectionSuggestions from '../home/SectionSuggestions';
 
 function InnovationPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -99,6 +100,12 @@ function InnovationPublicView({ user, embedded }) {
                     <div className="innovation-content-area">
                       <SectionComponent user={user} isPublicView={true} />
                     </div>
+                    <SectionSuggestions
+                      pillar="innovation"
+                      sectionId={section.id}
+                      siblings={sections.filter((s) => s.id !== section.id)}
+                      onOpen={setActiveSection}
+                    />
                   </div>
                 </div>
               );

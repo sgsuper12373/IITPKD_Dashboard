@@ -9,6 +9,7 @@ import IgrcSection from './IgrcSection';
 import IccSection from './IccSection';
 import EwdSection from './EwdSection';
 import IarSection from './IarSection';
+import SectionSuggestions from '../home/SectionSuggestions';
 
 function PeopleCampusPublicView({ user, embedded }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -131,6 +132,12 @@ function PeopleCampusPublicView({ user, embedded }) {
                         })()
                       )}
                     </div>
+                    <SectionSuggestions
+                      pillar="people-campus"
+                      sectionId={section.id}
+                      siblings={visibleSections.filter((s) => s.id !== section.id)}
+                      onOpen={setActiveSection}
+                    />
                   </div>
                 </div>
               );
