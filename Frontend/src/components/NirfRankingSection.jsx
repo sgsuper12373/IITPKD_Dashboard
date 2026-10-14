@@ -190,7 +190,7 @@ const NirfRankingSection = ({ user }) => {
                                 )
                             })}
                         >
-                            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 {chartType === 'bar' ? (
                                     <BarChart data={rankData} margin={{ top: 26, right: 10, left: 0, bottom: 0 }} barCategoryGap="15%">
                                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -242,7 +242,7 @@ const NirfRankingSection = ({ user }) => {
                                         </div>
                                     </div>
                                     <div className="compact-chart nirf-metric-chart">
-                                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                             {chartType === 'bar' ? (
                                                 <BarChart data={recentData} margin={{ top: 8, right: 4, left: -32, bottom: 0 }} barCategoryGap="15%">
                                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />

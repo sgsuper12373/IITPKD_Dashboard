@@ -31,7 +31,7 @@ export default function PillarRadar({ current = [], previous = [], currentLabel 
   const fmt = (v) => fmtNum(v, 0);
 
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ResponsiveContainer width="100%" height={height} minWidth={0} minHeight={0}>
       <RadarChart data={rows} margin={MARGINS.radar} outerRadius="72%">
         <PolarGrid stroke={COLORS.grid} />
         <PolarAngleAxis dataKey="pillar" tick={{ fontSize: FONT.tick, fill: COLORS.slate }} />

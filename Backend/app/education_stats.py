@@ -21,11 +21,11 @@ CATEGORY_KEYWORDS = {
 def get_standardized_type_sql():
     return """
         CASE
-            WHEN engagement_type ILIKE '%%Adjunct%%' THEN 'Adjunct'
-            WHEN engagement_type ILIKE '%%Honorary%%' THEN 'Honorary'
-            WHEN engagement_type ILIKE '%%Visiting%%' THEN 'Visiting'
-            WHEN engagement_type ILIKE '%%Faculty Fellow%%' OR engagement_type ILIKE '%%FacultyFellow%%' THEN 'FacultyFellow'
-            WHEN engagement_type ILIKE '%%PoP%%' OR engagement_type ILIKE '%%Professor of Practice%%' OR engagement_type ILIKE '%%Practice%%' THEN 'PoP'
+            WHEN engagement_type::TEXT ILIKE '%%Adjunct%%' THEN 'Adjunct'
+            WHEN engagement_type::TEXT ILIKE '%%Honorary%%' THEN 'Honorary'
+            WHEN engagement_type::TEXT ILIKE '%%Visiting%%' THEN 'Visiting'
+            WHEN engagement_type::TEXT ILIKE '%%Faculty Fellow%%' OR engagement_type::TEXT ILIKE '%%FacultyFellow%%' THEN 'FacultyFellow'
+            WHEN engagement_type::TEXT ILIKE '%%PoP%%' OR engagement_type::TEXT ILIKE '%%Professor of Practice%%' OR engagement_type::TEXT ILIKE '%%Practice%%' THEN 'PoP'
             ELSE NULL
         END
     """
@@ -81,16 +81,16 @@ def build_filter_query(filters):
     if engagement_type not in (None, '', 'All'):
         if engagement_type == 'FacultyFellow':
             conditions.append(
-                "(engagement_type ILIKE %s OR engagement_type ILIKE %s)"
+                "(engagement_type::TEXT ILIKE %s OR engagement_type::TEXT ILIKE %s)"
             )
             params.extend(["%Faculty Fellow%", "%FacultyFellow%"])
         elif engagement_type == 'PoP':
             conditions.append(
-                "(engagement_type ILIKE %s OR engagement_type ILIKE %s OR engagement_type ILIKE %s)"
+                "(engagement_type::TEXT ILIKE %s OR engagement_type::TEXT ILIKE %s OR engagement_type::TEXT ILIKE %s)"
             )
             params.extend(["%PoP%", "%Professor of Practice%", "%Practice%"])
         else:
-            conditions.append("engagement_type ILIKE %s")
+            conditions.append("engagement_type::TEXT ILIKE %s")
             params.append(f"%{engagement_type}%")
 
     where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''

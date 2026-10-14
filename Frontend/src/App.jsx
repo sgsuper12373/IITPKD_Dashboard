@@ -243,7 +243,7 @@ function App() {
           >
             <Route index element={<HomePage user={user} />} />
             {/* Public, read-only analytics overview â€” uses only token-optional stats endpoints. */}
-            <Route path="quick-glance" element={<QuickGlance />} />
+            <Route path="quick-glance" element={<QuickGlance user={user} />} />
             <Route path="people-campus" element={<PeopleCampus user={user} />} />
             <Route path="people-campus/academic-section" element={<AdminRoute sectionKey="people-campus/academic-section"><AcademicSection user={user} /></AdminRoute>} />
             <Route path="people-campus/administrative-section" element={<AdminRoute sectionKey="people-campus/administrative-section"><AdministrativeSection user={user} /></AdminRoute>} />

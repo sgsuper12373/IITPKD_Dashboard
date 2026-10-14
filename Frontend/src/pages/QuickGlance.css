@@ -22,6 +22,7 @@
   justify-content: space-between;
   gap: 0.75rem 1.5rem;
 }
+.qg-head-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 1rem; }
 .qg-eyebrow { margin: 0 0 0.125rem; }
 .qg .qg-title {
   margin: 0;
@@ -33,6 +34,14 @@
 }
 .qg-year { display: grid; gap: 0.25rem; max-width: 100%; min-width: 0; }
 
+.qg-edit-btn {
+  font: inherit; font-size: 0.82rem; font-weight: 700; padding: 0.4rem 1rem;
+  border: 2px solid var(--ds-accent, #ff6b35); border-radius: var(--r-md, 8px);
+  background: transparent; color: var(--ds-accent, #ff6b35); cursor: pointer;
+  white-space: nowrap; transition: background 0.15s, color 0.15s;
+}
+.qg-edit-btn:hover { background: var(--ds-accent, #ff6b35); color: #fff; }
+
 .qg-note {
   margin: 0;
   padding: 0.5rem 0.75rem;
@@ -43,31 +52,30 @@
 }
 .qg-note--danger { border-color: var(--ds-danger); color: var(--ds-danger); background: transparent; }
 
-/* Row 2 — gauges (2-up at every width) */
-.qg-gauges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ds-gap); }
-
-/* Row 3 — KPIs */
-.qg-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ds-gap); }
-@media (min-width: 64rem) { .qg-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-
-/* Row 4 — 2/3 + 1/3 */
-.qg-split { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--ds-gap); }
-
-/* Row 5 — three equal cards */
-.qg-trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ds-gap); }
+/* Dynamic grid — 3 columns, widgets span by size */
+.qg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ds-gap);
+}
+.qg-cell--sm { grid-column: span 1; }
+.qg-cell--md { grid-column: span 2; }
+.qg-cell--lg { grid-column: span 3; }
 .qg-bars { display: grid; gap: 0.875rem; padding-top: 0.25rem; }
 
 /* Tablet */
 @media (max-width: 64rem) {
-  .qg-split { grid-template-columns: 1fr; }
-  .qg-trio { grid-template-columns: 1fr; }
+  .qg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qg-cell--lg { grid-column: span 2; }
+  .qg-cell--md { grid-column: span 2; }
 }
 
-/* Mobile ≤ 40rem: single column, gauges stay 2-up */
+/* Mobile ≤ 40rem: single column */
 @media (max-width: 40rem) {
   .qg { padding-inline: 0.75rem; }
-  .qg-kpis { grid-template-columns: 1fr; }
+  .qg-grid { grid-template-columns: 1fr; }
+  .qg-cell--sm, .qg-cell--md, .qg-cell--lg { grid-column: span 1; }
   .qg-head { align-items: flex-start; }
+  .qg-head-actions { width: 100%; flex-direction: column; align-items: flex-start; }
   .qg-year { width: 100%; }
-  .qg-gauges .ds-card--compact { padding: 0.75rem 0.5rem; }
 }

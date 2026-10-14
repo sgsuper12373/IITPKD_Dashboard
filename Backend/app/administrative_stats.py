@@ -875,7 +875,7 @@ def get_yearwise_strength(current_user_id):
         table = _employees_table(is_mgmt)
         conn = get_dashboard_connection(is_mgmt)
         if conn is None:
-            return jsonify({'message': 'Database connection failed!'}), 500
+            return jsonify({'data': [], 'total': 0}), 200
 
         emp_type           = request.args.get('emp_type',           type=str)
         department         = request.args.get('department',         type=str)
@@ -987,8 +987,14 @@ def get_yearwise_strength(current_user_id):
 
     except Exception as e:
         import traceback
-        print(f"Error fetching yearwise strength: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': 'An internal error occurred.'}), 500
+        tb = traceback.format_exc()
+        print(f"Error fetching yearwise strength: {e}\n{tb}")
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+        return jsonify({'data': [], 'total': 0}), 200
     finally:
         if cur:
             cur.close()

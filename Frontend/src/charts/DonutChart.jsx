@@ -21,7 +21,7 @@ export default function DonutChart({ data = [], centerLabel, centerSub, height =
   return (
     <div className="ds-donut">
       <div className="ds-donut__plot" style={{ height }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <PieChart>
             <Pie
               data={slices}

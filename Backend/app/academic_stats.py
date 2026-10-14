@@ -34,6 +34,11 @@ def get_latest_year(is_mgmt=False):
         return None
     except Exception as e:
         print(f"Error getting latest year: {e}")
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
         return None
     finally:
         if cur:
@@ -531,7 +536,7 @@ def get_program_trends(current_user_id):
         table = _student_table(is_mgmt)
         conn = get_dashboard_connection(is_mgmt)
         if conn is None:
-            return jsonify({'message': 'Database connection failed!'}), 500
+            return jsonify({'data': [], 'programs': [], 'gender_by_group': []}), 200
 
         filters = {
             'program': request.args.get('program', type=str),
@@ -649,7 +654,12 @@ def get_program_trends(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching program trends: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': 'An error occurred while fetching program trends.'}), 500
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+        return jsonify({'data': [], 'programs': [], 'gender_by_group': []}), 200
     finally:
         if cur:
             cur.close()
@@ -729,22 +739,22 @@ def get_onroll_summary(current_user_id):
         table = _student_table(is_mgmt)
         conn = get_dashboard_connection(is_mgmt)
         if conn is None:
-            return jsonify({'message': 'Database connection failed!'}), 500
+            return jsonify({'total_onroll': 0, 'ug_onroll': 0, 'pg_onroll': 0, 'research_onroll': 0}), 200
 
         query = f"""
             SELECT
                 COUNT(*) FILTER (
-                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'UG'
+                    WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'UG'
                       AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS ug_onroll,
 
                 COUNT(*) FILTER (
-                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'PG'
+                    WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'PG'
                       AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS pg_onroll,
 
                 COUNT(*) FILTER (
-                    WHERE UPPER(COALESCE(academic_program_type, '')) = 'RESEARCH'
+                    WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'RESEARCH'
                       AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
                 ) AS research_onroll
 
@@ -770,7 +780,12 @@ def get_onroll_summary(current_user_id):
     except Exception as e:
         import traceback
         print(f"Error fetching on-roll summary: {e}\n{traceback.format_exc()}")
-        return jsonify({'message': 'An error occurred while fetching on-roll summary.'}), 500
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+        return jsonify({'total_onroll': 0, 'ug_onroll': 0, 'pg_onroll': 0, 'research_onroll': 0}), 200
     finally:
         if cur:
             cur.close()

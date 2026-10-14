@@ -27,7 +27,7 @@ export default function ComboChart({
   const lineAxis = dualAxis ? 'right' : 'left';
 
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ResponsiveContainer width="100%" height={height} minWidth={0} minHeight={0}>
       <ComposedChart data={rows} margin={MARGINS.combo}>
         <CartesianGrid stroke={COLORS.grid} vertical={false} />
         <XAxis dataKey="label" tick={tick} tickLine={false} axisLine={{ stroke: COLORS.grid }} interval="preserveStartEnd" />

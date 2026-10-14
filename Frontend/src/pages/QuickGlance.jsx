@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import {
   ChartCard,
   ComboChart,
@@ -11,46 +10,184 @@ import {
   ProgressRow,
   RankedBars,
   SegmentedControl,
-  GAUGE_BANDS,
-  NIRF_RANK_RANGE,
-  SOURCE_ROUTES,
-  fmtInt,
-  fmtNum,
 } from '../charts';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
+import { useGlanceWidgets } from '../hooks/useGlanceWidgets';
 import { ayLabel } from '../utils/pulseModel';
-import { COMBO_VIEWS, isComboKey } from '../utils/comboViews';
+import { DATA_KEYS } from '../utils/widgetCatalog';
 import './QuickGlance.css';
 
-export default function QuickGlance() {
+const WidgetEditor = lazy(() => import('./WidgetEditor'));
+
+/* ── Individual widget renderer ── */
+
+function WidgetRenderer({ widget, data, year, loading }) {
+  const { widget_type: type, data_key: dataKey, title } = widget;
+  const def = DATA_KEYS[dataKey];
+  if (!def && !loading) return null;
+
+  const props = data && def ? def.extract(data, year, data.ay, ayLabel(year - 1), type) : {};
+
+  switch (type) {
+    case 'gauge': {
+      const empty = !loading && props.value == null;
+      return (
+        <ChartCard title={title} to={props.to} compact expandable={false} loading={loading} empty={empty}>
+          {() => <GaugeChart {...props} />}
+        </ChartCard>
+      );
+    }
+
+    case 'kpi':
+      return (
+        <KpiSparkCard
+          label={props.label ?? title}
+          value={props.value}
+          delta={props.delta}
+          deltaLabel={props.deltaLabel}
+          invert={props.invert}
+          series={props.series}
+          sub={props.sub}
+          to={props.to}
+          loading={loading}
+        />
+      );
+
+    case 'combo': {
+      const { view, combo } = props;
+      if (!view) return null;
+      const empty = !loading && !combo?.hasData;
+      return (
+        <ChartCard
+          title={title || view.title}
+          subtitle={view.subtitle}
+          to={view.to}
+          loading={loading}
+          empty={empty}
+          height={300}
+          footer={combo?.insight}
+        >
+          {({ chartIsMobile, height }) => (
+            <ComboChart
+              data={combo?.rows ?? []}
+              barKey={view.barKey}
+              lineKey={view.lineKey}
+              barName={view.barName}
+              lineName={view.lineName}
+              barFormat={view.barFormat}
+              lineFormat={view.lineFormat}
+              selectedYear={year}
+              dualAxis
+              isMobile={chartIsMobile}
+              height={height}
+            />
+          )}
+        </ChartCard>
+      );
+    }
+
+    case 'radar': {
+      const empty = !loading && !props.current?.some((p) => p.value !== null);
+      return (
+        <ChartCard
+          title={title}
+          subtitle="Six pillars, scored 0–100 against the last seven years"
+          loading={loading}
+          empty={empty}
+          height={300}
+          footer="Each pillar averages its key metrics, scaled between the lowest (0) and highest (100) value of the last seven years."
+        >
+          {({ height }) => (
+            <PillarRadar
+              current={props.current ?? []}
+              previous={props.previous ?? []}
+              currentLabel={props.currentLabel}
+              previousLabel={props.previousLabel}
+              height={height}
+            />
+          )}
+        </ChartCard>
+      );
+    }
+
+    case 'funnel': {
+      const empty = !loading && props.stages?.[0]?.value == null;
+      return (
+        <ChartCard title={title} subtitle={props.subtitle} to={props.to} loading={loading} empty={empty} expandable={false}>
+          {() => <FunnelBars stages={props.stages ?? []} chips={props.chips ?? []} />}
+        </ChartCard>
+      );
+    }
+
+    case 'donut':
+      return (
+        <ChartCard title={title} subtitle={props.subtitle} to={props.to} loading={loading} empty={props.empty} expandable={false}>
+          {() => <DonutChart data={props.data ?? []} centerLabel={props.centerLabel} centerSub={props.centerSub} />}
+        </ChartCard>
+      );
+
+    case 'progress': {
+      const rows = props.rows ?? [];
+      const empty = !loading && !rows.some((r) => typeof r.value === 'number');
+      return (
+        <ChartCard title={title} subtitle={props.subtitle} to={props.to} loading={loading} empty={empty} expandable={false}>
+          {() => (
+            <div className="qg-bars">
+              {rows.map((r) => (
+                <ProgressRow key={r.key} label={r.label} value={r.value} highlight={props.topKey === r.key} />
+              ))}
+            </div>
+          )}
+        </ChartCard>
+      );
+    }
+
+    case 'ranked': {
+      const rows = props.rows ?? [];
+      const empty = !loading && rows.length === 0;
+      return (
+        <ChartCard title={title} subtitle={props.subtitle} to={props.to} loading={loading} empty={empty} expandable={false}>
+          {() => <RankedBars rows={rows} />}
+        </ChartCard>
+      );
+    }
+
+    default:
+      return null;
+  }
+}
+
+/* ── Main page ── */
+
+export default function QuickGlance({ user }) {
   const [pickedYear, setPickedYear] = useState(null);
-  const [params] = useSearchParams();
-  const [comboView, setComboView] = useState(() => (isComboKey(params.get('combo')) ? params.get('combo') : 'funding'));
   const { status, partial, year, years, data } = useInstitutePulse(pickedYear);
+  const { widgets, loading: widgetsLoading, addWidget, updateWidget, deleteWidget, reorder } = useGlanceWidgets();
 
   const loading = status === 'loading';
-  const view = COMBO_VIEWS[comboView];
   const yearOptions = useMemo(() => years.map((y) => ({ value: y, label: ayLabel(y) })), [years]);
+  const isAdmin = user?.role_id === 3;
 
-  const combo = data?.combos[comboView];
-  const genderRows = data?.gender ?? [];
-  const topGender = genderRows.reduce(
-    (best, r) => (typeof r.value === 'number' && (best === null || r.value > best.value) ? r : best),
-    null
-  );
+  const [editing, setEditing] = useState(false);
 
   return (
     <div className="qg">
-      {/* Row 1 — title + academic year */}
       <header className="qg-head">
         <div>
           <h1 className="qg-title">Quick Glance</h1>
         </div>
-        <div className="qg-year">
-          <span className="ds-label">Academic year</span>
-          {yearOptions.length > 0 && (
-            <SegmentedControl label="Academic year" options={yearOptions} value={year} onChange={setPickedYear} />
+        <div className="qg-head-actions">
+          {isAdmin && (
+            <button type="button" className="qg-edit-btn" onClick={() => setEditing((e) => !e)}>
+              {editing ? '✕ Done' : '⚙ Edit layout'}
+            </button>
           )}
+          <div className="qg-year">
+            <span className="ds-label">Academic year</span>
+            {yearOptions.length > 0 && (
+              <SegmentedControl label="Academic year" options={yearOptions} value={year} onChange={setPickedYear} />
+            )}
+          </div>
         </div>
       </header>
 
@@ -65,233 +202,35 @@ export default function QuickGlance() {
         </p>
       )}
 
-      {/* Row 2 — gauges */}
-      <section className="qg-gauges" aria-label="Headline indicators">
-        <ChartCard
-          title="Placement rate"
-          to={SOURCE_ROUTES.placement}
-          compact
-          expandable={false}
-          loading={loading}
-          empty={!loading && data?.gauges.placement.value == null}
-        >
-          {() => (
-            <GaugeChart
-              label="Placed / registered"
-              value={data.gauges.placement.value}
-              min={0}
-              max={100}
-              bands={GAUGE_BANDS.placement}
-              format={(v) => `${fmtNum(v, 1)}%`}
-              delta={data.gauges.placement.delta}
-              deltaUnit="pp"
-              deltaLabel="vs previous year"
-              sub={data.gauges.placement.sub}
-            />
-          )}
-        </ChartCard>
-
-        <ChartCard
-          title="NIRF engineering rank"
-          to={SOURCE_ROUTES.nirf}
-          compact
-          expandable={false}
-          loading={loading}
-          empty={!loading && data?.gauges.nirf.value == null}
-        >
-          {() => (
-            <GaugeChart
-              label="Rank (lower is better)"
-              value={data.gauges.nirf.value}
-              min={NIRF_RANK_RANGE.min}
-              max={NIRF_RANK_RANGE.max}
-              invert
-              bands={GAUGE_BANDS.nirf}
-              format={(v) => `#${fmtInt(v)}`}
-              delta={data.gauges.nirf.delta}
-              deltaUnit=" places"
-              deltaLabel="vs previous edition"
-              sub={data.gauges.nirf.sub}
-            />
-          )}
-        </ChartCard>
-      </section>
-
-      {/* Row 3 — KPI cards */}
-      <section className="qg-kpis" aria-label="Key figures">
-        {(data?.kpis ?? Array.from({ length: 6 }, (_, i) => ({ key: i }))).map((k) => (
-          <KpiSparkCard
-            key={k.key}
-            label={k.label ?? ' '}
-            value={k.value}
-            delta={k.delta}
-            deltaLabel={k.deltaLabel}
-            invert={k.invert}
-            series={k.series}
-            sub={k.sub}
-            to={k.to}
-            loading={loading}
+      {editing && (
+        <Suspense fallback={<p className="qg-note">Loading editor…</p>}>
+          <WidgetEditor
+            widgets={widgets ?? []}
+            onAdd={addWidget}
+            onUpdate={updateWidget}
+            onDelete={deleteWidget}
+            onReorder={reorder}
           />
-        ))}
-      </section>
+        </Suspense>
+      )}
 
-      {/* Row 4 — combo (2/3) + pillar radar (1/3) */}
-      <section className="qg-split" aria-label="Cross-section analysis">
-        <ChartCard
-          title={view.title}
-          subtitle={view.subtitle}
-          to={view.to}
-          loading={loading}
-          empty={!loading && !combo?.hasData}
-          height={300}
-          actions={
-            <SegmentedControl
-              label="Combined chart view"
-              options={Object.entries(COMBO_VIEWS).map(([value, v]) => ({ value, label: v.option }))}
-              value={comboView}
-              onChange={setComboView}
-            />
-          }
-          exportData={
-            combo && {
-              data: combo.rows,
-              headers: view.headers,
-              keys: ['label', view.barKey, view.lineKey],
-              filename: view.filename,
-            }
-          }
-          footer={combo?.insight}
-        >
-          {({ chartIsMobile, height }) => (
-            <ComboChart
-              data={combo.rows}
-              barKey={view.barKey}
-              lineKey={view.lineKey}
-              barName={view.barName}
-              lineName={view.lineName}
-              barFormat={view.barFormat}
-              lineFormat={view.lineFormat}
-              selectedYear={year}
-              dualAxis
-              isMobile={chartIsMobile}
-              height={height}
-            />
-          )}
-        </ChartCard>
+      {widgetsLoading && <p className="qg-note" role="status">Loading layout…</p>}
 
-        <ChartCard
-          title="Pillar index"
-          subtitle="Six pillars, scored 0–100 against the last seven years"
-          to={SOURCE_ROUTES.pillars}
-          loading={loading}
-          empty={!loading && !data?.pillars.current.some((p) => p.value !== null)}
-          height={300}
-          footer="Each pillar averages its key metrics, scaled between the lowest (0) and highest (100) value of the last seven years. The index is relative to the institute’s own history, not a benchmark."
-        >
-          {({ height }) => (
-            <PillarRadar
-              current={data.pillars.current}
-              previous={data.pillars.previous}
-              currentLabel={data.ay}
-              previousLabel={ayLabel(year - 1)}
-              height={height}
-            />
-          )}
-        </ChartCard>
-      </section>
-
-      {/* Row 5 — funnel | donut | female share */}
-      <section className="qg-trio" aria-label="Placement, alumni and gender">
-        <ChartCard
-          title="Placement funnel"
-          subtitle={data ? `Academic year ${data.ay}` : undefined}
-          to={SOURCE_ROUTES.placement}
-          loading={loading}
-          empty={!loading && data?.placement.registered == null}
-          expandable={false}
-        >
-          {() => (
-            <FunnelBars
-              stages={[
-                { label: 'Registered', value: data.placement.registered },
-                { label: 'Placed', value: data.placement.placed },
-              ]}
-              chips={[
-                { label: 'Companies', value: data.placement.companies },
-                { label: 'Offers', value: data.placement.offers },
-              ]}
-            />
-          )}
-        </ChartCard>
-
-        <ChartCard
-          title="Alumni outcomes"
-          subtitle={data ? `Graduating class of ${data.alumni.year}` : undefined}
-          to={SOURCE_ROUTES.alumni}
-          loading={loading}
-          empty={!loading && !(data?.alumni.slices.length > 0)}
-          expandable={false}
-          exportData={
-            data && {
-              data: data.alumni.slices,
-              headers: ['Outcome', 'Alumni'],
-              keys: ['name', 'value'],
-              filename: 'alumni_outcomes',
-            }
-          }
-        >
-          {() => (
-            <DonutChart data={data.alumni.slices} centerLabel={fmtInt(data.alumni.total)} centerSub="Alumni" />
-          )}
-        </ChartCard>
-
-        <ChartCard
-          title="Female share"
-          subtitle={data ? `Intake ${data.ay} · faculty at year end` : undefined}
-          to={SOURCE_ROUTES.students}
-          loading={loading}
-          empty={!loading && !genderRows.some((r) => typeof r.value === 'number')}
-          expandable={false}
-          exportData={
-            data && {
-              data: genderRows,
-              headers: ['Group', 'Female share (%)'],
-              keys: ['label', 'value'],
-              filename: 'female_share',
-            }
-          }
-        >
-          {() => (
-            <div className="qg-bars">
-              {genderRows.map((r) => (
-                <ProgressRow key={r.key} label={r.label} value={r.value} highlight={topGender?.key === r.key} />
-              ))}
+      {!widgetsLoading && widgets && widgets.length > 0 && (
+        <section className="qg-grid" aria-label="Dashboard widgets">
+          {widgets.map((w) => (
+            <div key={w.id} className={`qg-cell qg-cell--${w.size}`}>
+              <WidgetRenderer widget={w} data={data} year={year} loading={loading} />
             </div>
-          )}
-        </ChartCard>
-      </section>
+          ))}
+        </section>
+      )}
 
-      {/* Row 6 — publications by department */}
-      <section aria-label="Publications by department">
-        <ChartCard
-          title="Publications by department"
-          subtitle={data ? `Calendar year ${data.year} · seven-year trend per department` : undefined}
-          to={SOURCE_ROUTES.publications}
-          loading={loading}
-          empty={!loading && !(data?.pubDepts.length > 0)}
-          expandable={false}
-          exportData={
-            data && {
-              data: data.pubDepts,
-              headers: ['Department', 'Publications', 'YoY change (%)'],
-              keys: ['label', 'value', 'delta'],
-              filename: 'publications_by_department',
-            }
-          }
-        >
-          {() => <RankedBars rows={data.pubDepts} />}
-        </ChartCard>
-      </section>
+      {!widgetsLoading && widgets && widgets.length === 0 && (
+        <p className="qg-note" role="status">
+          No widgets configured.{isAdmin ? ' Click "Edit layout" to add widgets.' : ''}
+        </p>
+      )}
     </div>
   );
 }

@@ -172,20 +172,20 @@ def get_summary(current_user_id):
 def get_yearly_growth(current_user_id):
     """Get year-wise growth of incubatees and startups."""
     if not _data_available():
-        return jsonify({'message': 'Innovation tables are missing.'}), 500
+        return jsonify({'data': []}), 200
 
     conn = None
     cur = None
     try:
         conn = get_db_connection()
         if conn is None:
-            return jsonify({'message': 'Database connection failed.'}), 500
-        
+            return jsonify({'data': []}), 200
+
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        
+
         # Get year-wise counts for startups/incubatees
         cur.execute(f"""
-            SELECT 
+            SELECT
                 year_of_incubation as year,
                 COUNT(*) as incubatees,
                 COUNT(CASE WHEN status = 'Active' THEN 1 END) as active_startups,
