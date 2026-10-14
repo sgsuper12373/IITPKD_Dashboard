@@ -57,9 +57,9 @@ def build_filter_query(filters, is_mgmt=False):
 
         # NULL emp_type is treated as Teaching (default)
         if column_name == 'emp_type' and value == 'Teaching':
-            conditions.append("(emp_type = %s OR emp_type IS NULL)")
+            conditions.append("(emp_type::TEXT = %s OR emp_type IS NULL)")
         else:
-            conditions.append(f"{column_name} = %s")
+            conditions.append(f"{column_name}::TEXT = %s")
         params.append(value)
 
     where_clause = ""
@@ -74,9 +74,9 @@ def _append_active_default(where_clause, params, empstatus_value):
     if empstatus_value is not None and empstatus_value != '' and empstatus_value != 'All':
         return where_clause, params          # already filtered
     if where_clause:
-        where_clause += " AND empstatus = %s"
+        where_clause += " AND empstatus::TEXT = %s"
     else:
-        where_clause = "WHERE empstatus = %s"
+        where_clause = "WHERE empstatus::TEXT = %s"
     params.append('Active')
     return where_clause, params
 
@@ -85,9 +85,9 @@ def _append_emp_type(where_clause, params, employee_type):
     """Append emp_type condition (Teaching / Non Teaching) if given."""
     if employee_type and employee_type != 'All':
         if where_clause:
-            where_clause += " AND emp_type = %s"
+            where_clause += " AND emp_type::TEXT = %s"
         else:
-            where_clause = "WHERE emp_type = %s"
+            where_clause = "WHERE emp_type::TEXT = %s"
         params.append(employee_type)
     return where_clause, params
 
@@ -142,9 +142,9 @@ def _cascading_conditions(active_filters, exclude_field, is_mgmt=False):
             continue
         # Mirror build_filter_query: NULL emp_type is treated as Teaching
         if column_name == 'emp_type' and value == 'Teaching':
-            conditions.append("(emp_type = %s OR emp_type IS NULL)")
+            conditions.append("(emp_type::TEXT = %s OR emp_type IS NULL)")
         else:
-            conditions.append(f"{column_name} = %s")
+            conditions.append(f"{column_name}::TEXT = %s")
         params.append(value)
     return conditions, params
 
@@ -184,7 +184,7 @@ def get_filter_options(current_user_id):
         active_filters = _read_common_filters()
 
         faculty_scope = (
-            "emp_type = 'Teaching' AND designation != 'Director' "
+            "emp_type::TEXT = 'Teaching' AND designation != 'Director' "
             "AND doj <= CURRENT_DATE AND (dor IS NULL OR dor > CURRENT_DATE)"
         ) if faculty_only else None
 
@@ -354,8 +354,8 @@ def get_faculty_gender_last_five_years(current_user_id):
                     FROM {table}
                     WHERE doj <= make_date(%s, 12, 31)
                       AND (dor IS NULL OR dor >= make_date(%s, 1, 1))
-                      AND gender = %s
-                      AND emp_type = 'Teaching';
+                      AND gender::TEXT = %s
+                      AND emp_type::TEXT = 'Teaching';
                     """,
                     (year_start, year_start, gender)
                 )
@@ -500,12 +500,12 @@ def get_staff_count(current_user_id):
 
         query = f"""
             SELECT
-                COALESCE(emp_type, 'Unknown') AS emp_type,
+                COALESCE(emp_type::TEXT, 'Unknown') AS emp_type,
                 COUNT(*) AS count
             FROM {table}
             {where_clause}
-            GROUP BY emp_type
-            ORDER BY emp_type;
+            GROUP BY emp_type::TEXT
+            ORDER BY emp_type::TEXT;
         """
 
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -790,7 +790,7 @@ def get_department_breakdown(current_user_id):
             SELECT
                 COALESCE(department, 'Unknown') AS department,
                 gender,
-                COALESCE(emp_type, 'Unknown') AS employee_type,
+                COALESCE(emp_type::TEXT, 'Unknown') AS employee_type,
                 COUNT(*) AS count
             FROM {table}
             {where_clause}
@@ -892,16 +892,16 @@ def get_yearwise_strength(current_user_id):
         # (no space). Accept 'Non Teaching' as a backward-compat alias.
         if emp_type == 'Teaching':
             emp_filter = (
-                "e.emp_type = 'Teaching' "
+                "e.emp_type::TEXT = 'Teaching' "
                 "AND e.designation != 'Director'"
             )
         elif emp_type in ('NonTeaching', 'Non Teaching'):
-            emp_filter = "e.emp_type = 'Non Teaching'"
+            emp_filter = "e.emp_type::TEXT = 'Non Teaching'"
         else:
             emp_filter = (
                 "("
-                "  (e.emp_type = 'Teaching' AND e.designation != 'Director') "
-                "  OR e.emp_type = 'Non Teaching'"
+                "  (e.emp_type::TEXT = 'Teaching' AND e.designation != 'Director') "
+                "  OR e.emp_type::TEXT = 'Non Teaching'"
                 ")"
             )
 
@@ -914,7 +914,7 @@ def get_yearwise_strength(current_user_id):
             extra_conditions.append("e.designation = %s")
             filter_params.append(designation)
         if gender:
-            extra_conditions.append("e.gender = %s")
+            extra_conditions.append("e.gender::TEXT = %s")
             filter_params.append(gender)
         if group_name:
             extra_conditions.append("e.group_name = %s")
@@ -939,9 +939,9 @@ def get_yearwise_strength(current_user_id):
             SELECT
                 y.yr                                                    AS year,
                 COUNT(e.id)                                             AS total,
-                COUNT(e.id) FILTER (WHERE e.gender = 'Male')            AS male,
-                COUNT(e.id) FILTER (WHERE e.gender = 'Female')          AS female,
-                COUNT(e.id) FILTER (WHERE e.gender NOT IN ('Male','Female') AND e.gender IS NOT NULL) AS other
+                COUNT(e.id) FILTER (WHERE e.gender::TEXT = 'Male')            AS male,
+                COUNT(e.id) FILTER (WHERE e.gender::TEXT = 'Female')          AS female,
+                COUNT(e.id) FILTER (WHERE e.gender::TEXT NOT IN ('Male','Female') AND e.gender IS NOT NULL) AS other
             FROM (
                 SELECT generate_series(
                     CASE
@@ -1037,7 +1037,7 @@ def get_faculty_expertise_matrix(current_user_id):
             extra_conditions.append("designation = %s")
             params.append(designation)
         if gender:
-            extra_conditions.append("gender = %s")
+            extra_conditions.append("gender::TEXT = %s")
             params.append(gender)
         if group_name:
             extra_conditions.append("group_name = %s")
@@ -1062,7 +1062,7 @@ def get_faculty_expertise_matrix(current_user_id):
                 COALESCE(department, 'Unknown') AS department,
                 COUNT(*) AS count
             FROM {table}
-            WHERE emp_type = 'Teaching'
+            WHERE emp_type::TEXT = 'Teaching'
               AND designation != 'Director'
               AND {date_condition}
               {extra_sql}

@@ -440,7 +440,7 @@ def get_program_status(current_user_id):
         'branch': request.args.get('branch'),
     }
     where_clause, params = build_where_clause(
-        {'year': 'placement_year', 'program': 'program', 'gender': 'gender', 'branch': 'branch'},
+        {'year': 'placement_year', 'program': 'program', 'gender': 'gender::text', 'branch': 'branch'},
         filters
     )
 

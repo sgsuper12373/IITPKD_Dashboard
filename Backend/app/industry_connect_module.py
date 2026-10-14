@@ -62,7 +62,7 @@ def _build_events_where_clause(filters: dict) -> tuple[str, list]:
     params = []
 
     if filters.get('event_type') and filters.get('event_type') != 'All':
-        conditions.append("event_type = %s")
+        conditions.append("event_type::TEXT = %s")
         params.append(filters['event_type'])
 
     if filters.get('year') and filters.get('year') != 'All':
@@ -348,7 +348,7 @@ def get_icsr_filter_options(current_user_id):
         event_types = [row['event_type'] for row in cur.fetchall()]
 
         # Years: filter by event_type only
-        type_cond = "WHERE event_type = %s AND COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL" if active_event_type else "WHERE COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL"
+        type_cond = "WHERE event_type::TEXT = %s AND COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL" if active_event_type else "WHERE COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) IS NOT NULL"
         type_params = [active_event_type] if active_event_type else []
         cur.execute(f"""
             SELECT DISTINCT COALESCE(year, EXTRACT(YEAR FROM date_of_event)::INT) as year

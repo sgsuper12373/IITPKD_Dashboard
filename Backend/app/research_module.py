@@ -127,7 +127,7 @@ def _build_patent_filters(
             pass
 
     if patent_status and patent_status != 'All':
-        conditions.append("patent_status = %s")
+        conditions.append("patent_status::TEXT = %s")
         params.append(patent_status)
 
     clause = ""
@@ -157,7 +157,7 @@ def _build_publication_filters(
             pass
 
     if publication_type and publication_type != 'All':
-        conditions.append("publication_type = %s")
+        conditions.append("publication_type::TEXT = %s")
         params.append(publication_type)
 
     clause = ""
@@ -250,7 +250,7 @@ def get_filter_options(current_user_id):
 
         if _table_exists(conn, 'research_patents'):
             # Patent years: filter by patent_status
-            py_cond = "WHERE patent_status = %s AND filing_date IS NOT NULL" if patent_status else "WHERE filing_date IS NOT NULL"
+            py_cond = "WHERE patent_status::TEXT = %s AND filing_date IS NOT NULL" if patent_status else "WHERE filing_date IS NOT NULL"
             py_params = [patent_status] if patent_status else []
             cur.execute(f"SELECT DISTINCT EXTRACT(YEAR FROM filing_date)::INT AS year FROM research_patents {py_cond} ORDER BY year DESC", py_params)
             filters['patent_years'] = [int(row['year']) for row in cur.fetchall() if row['year'] is not None]
@@ -727,7 +727,7 @@ def patent_stats(current_user_id):
             except ValueError:
                 pass
         if patent_status and patent_status != 'All':
-            filed_conditions.append("patent_status = %s")
+            filed_conditions.append("patent_status::TEXT = %s")
             filed_params.append(patent_status)
         filed_where = "WHERE " + " AND ".join(filed_conditions)
 
@@ -740,7 +740,7 @@ def patent_stats(current_user_id):
         filed_rows = cur.fetchall()
 
         # Granted: count patents with status='Granted' grouped by grant_date year
-        granted_conditions = ["patent_status = 'Granted'", "grant_date IS NOT NULL"]
+        granted_conditions = ["patent_status::TEXT = 'Granted'", "grant_date IS NOT NULL"]
         granted_params: List[Any] = []
         if patent_year and patent_year != 'All':
             try:

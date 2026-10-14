@@ -95,7 +95,7 @@ def build_filter_query(filters, is_mgmt=False):
                 # 'No' includes explicit 'No' values AND blank/NULL entries
                 conditions.append(f"UPPER(COALESCE({column_name}, '')) != 'YES'")
         else:
-            conditions.append(f"{column_name} = %s")
+            conditions.append(f"{column_name}::TEXT = %s")
             params.append(value)
 
     where_clause = ""
@@ -696,9 +696,9 @@ def get_student_summary(current_user_id):
         query = f"""
             SELECT
                 COUNT(*)                                                         AS total_students,
-                COUNT(*) FILTER (WHERE academic_program_type = 'UG')             AS ug_total,
-                COUNT(*) FILTER (WHERE academic_program_type = 'PG')             AS pg_total,
-                COUNT(*) FILTER (WHERE academic_program_type = 'Research')       AS research_total
+                COUNT(*) FILTER (WHERE academic_program_type::TEXT = 'UG')             AS ug_total,
+                COUNT(*) FILTER (WHERE academic_program_type::TEXT = 'PG')             AS pg_total,
+                COUNT(*) FILTER (WHERE academic_program_type::TEXT = 'Research')       AS research_total
             FROM {table}
             {where};
         """
@@ -745,17 +745,17 @@ def get_onroll_summary(current_user_id):
             SELECT
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'UG'
-                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS ug_onroll,
 
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'PG'
-                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'SLOW-PACE')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE')
                 ) AS pg_onroll,
 
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'RESEARCH'
-                      AND UPPER(COALESCE(student_status, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
                 ) AS research_onroll
 
             FROM {table};

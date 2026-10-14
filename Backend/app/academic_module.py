@@ -179,8 +179,8 @@ def get_summary(current_user_id):
                 COUNT(DISTINCT course_category) AS distinct_categories,
                 COUNT(DISTINCT target_programme) AS distinct_programmes,
                 COUNT(DISTINCT target_discipline) AS distinct_disciplines,
-                COUNT(CASE WHEN UPPER(course_status_currentay) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_courses,
-                COUNT(CASE WHEN UPPER(course_status_currentay) = 'INACTIVE' THEN 1 END) AS inactive_courses
+                COUNT(CASE WHEN UPPER(course_status_currentay::TEXT) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_courses,
+                COUNT(CASE WHEN UPPER(course_status_currentay::TEXT) = 'INACTIVE' THEN 1 END) AS inactive_courses
             FROM {COURSES_TABLE}
             {where_clause}
             """,

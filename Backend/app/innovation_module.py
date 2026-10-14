@@ -1016,7 +1016,7 @@ def get_techin_skill_dev(current_user_id):
         conditions = []
         params = []
         if filters['category'] and filters['category'] != 'All':
-            conditions.append("category = %s")
+            conditions.append("category::TEXT = %s")
             params.append(filters['category'])
         if filters['association'] and filters['association'] != 'All':
             conditions.append("association = %s")
@@ -1204,7 +1204,7 @@ def get_home_ground_summary(current_user_id):
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        internal_filter = "LOWER(COALESCE(startup_origin, '')) = 'internal'"
+        internal_filter = "LOWER(COALESCE(startup_origin::TEXT, '')) = 'internal'"
 
         union_base = f"""
             SELECT revenue, number_of_jobs FROM {IPTIF_STARTUP_TABLE}
@@ -1269,7 +1269,7 @@ def get_home_ground_startups(current_user_id):
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        conditions = ["LOWER(COALESCE(startup_origin, '')) = 'internal'"]
+        conditions = ["LOWER(COALESCE(startup_origin::TEXT, '')) = 'internal'"]
         params = []
         if filters['domain'] and filters['domain'] != 'All':
             conditions.append("domain = %s")
@@ -1332,7 +1332,7 @@ def get_home_ground_filter_options(current_user_id):
 
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        internal_filter = "LOWER(COALESCE(startup_origin, '')) = 'internal'"
+        internal_filter = "LOWER(COALESCE(startup_origin::TEXT, '')) = 'internal'"
 
         cur.execute(f"""
             SELECT DISTINCT domain FROM (
