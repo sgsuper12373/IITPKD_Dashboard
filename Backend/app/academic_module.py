@@ -344,7 +344,7 @@ def get_courses(current_user_id):
 
         # Filter by active_only
         if active_only:
-            conditions.append("UPPER(COALESCE(course_status_currentay, '')) IN ('ACTIVE', 'RUNNING', 'YES')")
+            conditions.append("UPPER(COALESCE(course_status_currentay::TEXT, '')) IN ('ACTIVE', 'RUNNING', 'YES')")
 
         category = filters.get('category')
         if category not in (None, '', 'All'):
@@ -360,9 +360,9 @@ def get_courses(current_user_id):
         #         'Inactive' → everything else (including NULL)
         status = filters.get('status')
         if status == 'Active':
-            conditions.append("UPPER(COALESCE(course_status_currentay, '')) IN ('ACTIVE', 'RUNNING', 'YES')")
+            conditions.append("UPPER(COALESCE(course_status_currentay::TEXT, '')) IN ('ACTIVE', 'RUNNING', 'YES')")
         elif status == 'Inactive':
-            conditions.append("UPPER(COALESCE(course_status_currentay, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES')")
+            conditions.append("UPPER(COALESCE(course_status_currentay::TEXT, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES')")
 
         # proposal_type: normalised match; 'old' also matches blank/NULL rows
         proposal_type = filters.get('proposal_type')
@@ -402,7 +402,7 @@ def get_courses(current_user_id):
                 industry_partner,
                 industry_coordinator_name,
                 CASE 
-                    WHEN UPPER(course_status_currentay) IN ('ACTIVE', 'RUNNING', 'YES') THEN 'Active'
+                    WHEN UPPER(course_status_currentay::TEXT) IN ('ACTIVE', 'RUNNING', 'YES') THEN 'Active'
                     ELSE 'Inactive'
                 END AS status,
                 proposal_type
@@ -458,14 +458,14 @@ def get_course_counts(current_user_id):
             SELECT
                 COUNT(CASE WHEN UPPER(COALESCE(is_industry_course, '')) NOT IN ('YES', 'TRUE', 'T') THEN 1 END) AS total_all,
                 COUNT(CASE WHEN UPPER(COALESCE(is_industry_course, '')) NOT IN ('YES', 'TRUE', 'T')
-                           AND UPPER(COALESCE(course_status_currentay, '')) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_all,
+                           AND UPPER(COALESCE(course_status_currentay::TEXT, '')) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_all,
                 COUNT(CASE WHEN UPPER(COALESCE(is_industry_course, '')) NOT IN ('YES', 'TRUE', 'T')
-                           AND UPPER(COALESCE(course_status_currentay, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS inactive_all,
+                           AND UPPER(COALESCE(course_status_currentay::TEXT, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS inactive_all,
                 COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T') THEN 1 END) AS total_industry,
                 COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
-                           AND UPPER(COALESCE(course_status_currentay, '')) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_industry,
+                           AND UPPER(COALESCE(course_status_currentay::TEXT, '')) IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS active_industry,
                 COUNT(CASE WHEN UPPER(is_industry_course) IN ('YES', 'TRUE', 'T')
-                           AND UPPER(COALESCE(course_status_currentay, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS inactive_industry
+                           AND UPPER(COALESCE(course_status_currentay::TEXT, '')) NOT IN ('ACTIVE', 'RUNNING', 'YES') THEN 1 END) AS inactive_industry
             FROM {COURSES_TABLE}
         """)
         row = cur.fetchone() or {}
