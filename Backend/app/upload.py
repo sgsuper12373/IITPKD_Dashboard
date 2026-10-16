@@ -96,6 +96,7 @@ TABLE_UPLOAD_ROLES = {
     'icc_yearwise':                     (3, 8),   # ICC
     'ewd_yearwise':                     (3, 6),   # EWD
     'iar_mous':                         (3, 5),   # IAR
+    'alumni':                           (3, 5),   # IAR
     'placement_summary':                (3, 11),  # CDC / Placements
     'placement_companies':              (3, 11),
     'placement_packages':               (3, 11),
@@ -123,7 +124,7 @@ TABLE_UPLOAD_ROLES = {
     'outreach_pale_blue_dot':           (3, 20),  # PBD
     'outreach_institute_visits':        (3, 21),  # Institute Visits
     'outreach_nss_activities':          (3, 22),  # NSS
-    # department, alumni, icsr_csr, outreach (bare), nirf_ranking:
+    # department, icsr_csr, outreach (bare), nirf_ranking:
     # intentionally absent — no dedicated frontend section claims these,
     # so they stay master-admin-only via the default below.
 }
