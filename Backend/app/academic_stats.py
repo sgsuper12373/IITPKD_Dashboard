@@ -745,17 +745,17 @@ def get_onroll_summary(current_user_id):
             SELECT
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'UG'
-                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE', 'SLOW-PACED', 'SLOWPACED')
                 ) AS ug_onroll,
 
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'PG'
-                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'SLOW-PACE', 'SLOW-PACED', 'SLOWPACED')
                 ) AS pg_onroll,
 
                 COUNT(*) FILTER (
                     WHERE UPPER(COALESCE(academic_program_type::TEXT, '')) = 'RESEARCH'
-                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED')
+                      AND UPPER(COALESCE(student_status::TEXT, '')) IN ('ON ROLL', 'ON LEAVE', 'VIVA VOCE COMPLETED', 'THESIS SUBMITTED', 'SLOW-PACE', 'SLOW-PACED', 'SLOWPACED')
                 ) AS research_onroll
 
             FROM {table};
