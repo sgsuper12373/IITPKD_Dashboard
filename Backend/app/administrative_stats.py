@@ -231,10 +231,8 @@ def get_filter_options(current_user_id):
         return jsonify(filter_options), 200
 
     except Exception as e:
-        import traceback
-        tb = traceback.format_exc()
-        print(f"Error fetching filter options: {e}\n{tb}")
-        return jsonify({'message': f'Error fetching filter options: {e}', 'traceback': tb}), 500
+        print(f"Error fetching filter options: {e}")
+        return jsonify({'message': 'An error occurred while fetching filter options.'}), 500
     finally:
         if cur:
             cur.close()

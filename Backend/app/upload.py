@@ -7,6 +7,7 @@ interaction. Column names come from information_schema, not raw user input.
 import csv
 import hashlib
 import io
+import re
 import secrets
 import traceback
 
@@ -214,6 +215,12 @@ def _friendly_check_violation(table_name, constraint_name):
             "Please check that the related numeric fields are consistent with each other.")
 
 
+def _extract_bad_value(msg):
+    """Extract the offending value from a Postgres 'invalid input syntax' message."""
+    m = re.search(r'invalid input syntax for type \w+: "([^"]*)"', msg)
+    return m.group(1) if m else None
+
+
 def _friendly_row_exception(exc, table_name):
     """
     Converts a psycopg2 exception raised while inserting a single row into a
@@ -231,12 +238,30 @@ def _friendly_row_exception(exc, table_name):
         col = getattr(exc.diag, 'column_name', None)
         return (f"'{col}' cannot be empty." if col else "A required value is missing."), col
     if isinstance(exc, psycopg2.errors.InvalidTextRepresentation):
-        return ("A value does not match the expected type for its column "
-                "(e.g. text where a number or date is expected)."), None
+        col = getattr(exc.diag, 'column_name', None)
+        msg_primary = getattr(exc.diag, 'message_primary', '') or str(exc).split('\n')[0]
+        bad_value = _extract_bad_value(msg_primary)
+        parts = []
+        if col:
+            parts.append(f"Column '{col}':")
+        if bad_value:
+            parts.append(f"the value '{bad_value}' does not match the expected type")
+        else:
+            parts.append("a value does not match the expected type for its column")
+        parts.append("(e.g. text where a number or date is expected).")
+        return ' '.join(parts), col
     if isinstance(exc, psycopg2.errors.DatatypeMismatch):
-        return "A value's type does not match its column (check numbers, dates and true/false fields).", None
+        col = getattr(exc.diag, 'column_name', None)
+        msg = "A value's type does not match its column (check numbers, dates and true/false fields)."
+        if col:
+            msg = f"Column '{col}': {msg}"
+        return msg, col
     if isinstance(exc, psycopg2.errors.StringDataRightTruncation):
-        return "A value is too long for its column.", None
+        col = getattr(exc.diag, 'column_name', None)
+        msg = "A value is too long for its column."
+        if col:
+            msg = f"Column '{col}': {msg}"
+        return msg, col
     return "This row could not be saved due to a data error.", None
 
 
@@ -1170,9 +1195,12 @@ def upload_csv(current_user_id):
                                  _friendly_check_violation(table_name, constraint))
     except psycopg2.errors.InvalidTextRepresentation as e:
         safe_rollback(conn)
+        msg_primary = getattr(e.diag, 'message_primary', '') or str(e).split('\n')[0]
+        bad_value = _extract_bad_value(msg_primary)
         print(f"DATABASE ERROR - Invalid Text Representation | Table: {table_name} | {e}")
+        hint = f" The value '{bad_value}' cannot be stored in a numeric/date column." if bad_value else ''
         return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
-                                 'Data format error. Check that values match expected types (numbers, dates, true/false).')
+                                 f'Data format error.{hint} Check that values match expected types (numbers, dates, true/false).')
     except psycopg2.errors.NotNullViolation as e:
         safe_rollback(conn)
         print(f"DATABASE ERROR - Not Null Violation | Table: {table_name} | {e}")
