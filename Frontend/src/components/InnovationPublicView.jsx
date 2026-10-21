@@ -41,7 +41,7 @@ function InnovationPublicView({ user, embedded }) {
       id: 'startup-portfolio',
       title: 'Startup Portfolio',
       subtitle: '',
-      expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TechIN',
+      expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TECHIN',
       icon: '📇',
       component: StartupPortfolio
     }

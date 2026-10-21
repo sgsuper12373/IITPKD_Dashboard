@@ -17,7 +17,7 @@ import './StartupPortfolio.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const ORIGIN_LABELS = { iptif: 'IPTIF', techin: 'TechIN' };
+const ORIGIN_LABELS = { iptif: 'IPTIF', techin: 'TECHIN' };
 const ORIGIN_TABLES = { iptif: 'iptif_startup_table', techin: 'techin_startup_table' };
 
 // Logos can be an external URL (http…) or a server path (/uploads/startups/…).
@@ -465,7 +465,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
           <div>
             <h1 className="sp-h1">Startup Portfolio</h1>
             <p className="sp-subtitle">
-              Startups incubated and supported across IPTIF and TechIN at IIT Palakkad.
+              Startups incubated and supported across IPTIF and TECHIN at IIT Palakkad.
             </p>
             <LastUpdated tables={['iptif_startup_table', 'techin_startup_table']} />
           </div>
