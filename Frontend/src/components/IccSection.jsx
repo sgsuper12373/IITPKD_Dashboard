@@ -138,7 +138,7 @@ function IccSection({ user, isPublicView = false }) {
 
   return (
     <>
-      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+      {(!!user && user.role_id !== 0) && (
         <div className={isPublicView ? "" : "page-container"}>
           <div className={isPublicView ? "" : "page-content"}>
             {!isReadOnlyView && (

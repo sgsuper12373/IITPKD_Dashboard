@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
 import './Page.css';
 import './PeopleCampus.css';
 import './PeopleCampusMinimal.css';
@@ -11,7 +12,9 @@ import EwdSection from './EwdSection';
 import IarSection from './IarSection';
 import SectionSuggestions from '../home/SectionSuggestions';
 
-function PeopleCampusPublicView({ user, embedded }) {
+function PeopleCampusPublicView({ user: realUser, embedded }) {
+  // embedded = opened via "View Public Page": render as a public (role 0) visitor
+  const user = embedded ? PUBLIC_PREVIEW_USER : realUser;
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -31,7 +34,7 @@ function PeopleCampusPublicView({ user, embedded }) {
       icon: '🏛️',
       component: AdministrativeSection
     },
-    {
+    /*{
       id: 'grievances',
       title: 'Grievances',
       subtitle: '',
@@ -46,7 +49,7 @@ function PeopleCampusPublicView({ user, embedded }) {
       expandedTitle: 'Sustaining Today. Developing for Tomorrow.',
       icon: '🏗️',
       component: EwdSection
-    },
+    },*/
     {
       id: 'iar',
       title: 'Our Alumni',
@@ -58,7 +61,7 @@ function PeopleCampusPublicView({ user, embedded }) {
   ];
 
   // Hide Grievances and Infrastructure for non-admin users (role_id !== 0) or unauthenticated users
-  const visibleSections = (typeof user === 'undefined' || user?.role_id === 0)
+  const visibleSections = (!user || user.role_id === 0)
     ? sections.filter(s => s.id !== 'grievances' && s.id !== 'ewd')
     : sections;
 
@@ -149,7 +152,7 @@ function PeopleCampusPublicView({ user, embedded }) {
     </>
   );
 
-  if (embedded) return inner;
+  if (embedded) return <PublicPreviewContext.Provider value={true}>{inner}</PublicPreviewContext.Provider>;
   return (
     <div className="page-container">
       <div className="page-content">

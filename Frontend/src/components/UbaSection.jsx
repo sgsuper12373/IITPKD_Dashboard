@@ -326,7 +326,7 @@ function UbaSection({ user, isPublicView = false }) {
             </div>
           ) : (
             <div className="uba-table-wrapper">
-              {(typeof user === 'undefined' || user?.role_id !== 0) && (
+              {(!!user && user.role_id !== 0) && (
                 <table className="uba-table">
                   <thead>
                     <tr>

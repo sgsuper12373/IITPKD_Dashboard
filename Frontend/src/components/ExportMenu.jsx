@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './ExportMenu.css';
+import { useIsPublicPreview } from '../utils/publicPreview';
 
 const ExportMenu = ({
   elementId,
@@ -12,6 +13,7 @@ const ExportMenu = ({
   const isGuest = !localStorage.getItem('authToken');
   const storedUser = localStorage.getItem('authUser');
   const roleId = storedUser ? JSON.parse(storedUser)?.role_id : undefined;
+  const isPublicPreview = useIsPublicPreview();
 
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -84,7 +86,7 @@ const ExportMenu = ({
     setIsOpen(false);
   };
 
-  if (isGuest || roleId === 0) return null;
+  if (isGuest || roleId === 0 || isPublicPreview) return null;
 
   return (
     <div ref={menuRef} className="em-wrapper">

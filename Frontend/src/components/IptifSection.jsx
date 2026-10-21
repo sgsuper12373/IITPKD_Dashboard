@@ -113,7 +113,7 @@ function IptifSection({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
-  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestricted = !user || user.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 14;
   // Facilities Revenue is internal data — hide it from guests / public viewers.

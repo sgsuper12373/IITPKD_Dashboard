@@ -160,7 +160,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
   const viewButtons = [
     { key: 'trend', label: '📈 Trend', color: '#6366f1' },
-    { key: 'department', label: '🏚 Department', color: '#22c55e' },
+    { key: 'department', label: ' Department', color: '#22c55e' },
     { key: 'publicationsTable', label: '📋 Directory', color: '#a855f7' },
   ];
 
@@ -298,7 +298,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           {[
             { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
             { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
-            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '🏚', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
+            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
           ].map(({ gradient, shadow, icon, label, value, sub }) => (
             <div
               key={label}

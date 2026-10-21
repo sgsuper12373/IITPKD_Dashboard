@@ -81,7 +81,7 @@ function PlacementSection({ user, isPublicView = false }) {
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 11;
-  const isRestrictedUser = typeof user === 'undefined' || !user || user?.role_id === 0;
+  const isRestrictedUser = !user || user.role_id === 0;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [activeUploadTable, setActiveUploadTable] = useState('');

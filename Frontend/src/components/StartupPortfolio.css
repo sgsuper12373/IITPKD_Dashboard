@@ -29,13 +29,6 @@
   flex-shrink: 0;
 }
 
-.sp-upload-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
 .sp-empty {
   color: var(--color-text-light);
   font-size: 0.95rem;
@@ -570,11 +563,6 @@ button.sp-card:hover {
   font-size: 0.72rem;
   font-weight: 400;
   color: var(--color-text-light);
-}
-
-.sp-req {
-  color: #ef4444;
-  margin-left: 2px;
 }
 
 .sp-form-check {

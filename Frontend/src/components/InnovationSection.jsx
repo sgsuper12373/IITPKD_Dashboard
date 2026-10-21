@@ -57,7 +57,7 @@ function InnovationSection({ user, isPublicView }) {
               ← Back to Admin View
             </button>
           </div>
-          <InnovationPublicView user={user} />
+          <InnovationPublicView user={user} embedded />
         </div>
       </div>
     );

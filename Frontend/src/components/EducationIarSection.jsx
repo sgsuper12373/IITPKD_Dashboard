@@ -194,7 +194,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 >
                   &#128200; Trend Overview
                 </button>
-                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                {(!!user && user.role_id !== 0) && (
                   <button
                     onClick={() => setViewType('directory')}
                     className={`eiar-view-btn${viewType === 'directory' ? ' eiar-view-btn--dir-active' : ''}`}
@@ -265,7 +265,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 <>
                   <p className="eiar-dir-count">{mouList.length} records found</p>
                   <div id="iar-mou-directory-table" className="table-responsive eiar-dir-table-wrap">
-                    {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                    {(!!user && user.role_id !== 0) && (
                       <table className="eiar-dir-table">
                         <thead>
                           <tr>

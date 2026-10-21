@@ -483,7 +483,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           <label className="shared-filter-label">View Type</label>
           <div className="view-type-bar">
             {isEdu
-              ? EDU_VIEWS.filter(view => !(view.value === 'details' && (typeof user === 'undefined' || user?.role_id === 0)))
+              ? EDU_VIEWS.filter(view => !(view.value === 'details' && (!user || user.role_id === 0)))
                 .map(({ value, label, color }) => (
                   <button
                     key={value}
@@ -1285,7 +1285,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
               <div className="chart-title-row">
                 <div>
-                  <h2 className="adm-chart-h2--lg">&#127962; Department-wise Breakdown</h2>
+                  <h2 className="adm-chart-h2--lg">Department-wise Breakdown</h2>
                   <p className="chart-description">Active external academic engagements by department</p>
                 </div>
                 <ExportMenu
@@ -1538,7 +1538,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {/* ── EDUCATION: Engagement Details ── */}
-          {(typeof user === 'undefined' || user?.role_id !== 0) && section === 'education' && eduView === 'details' && (
+          {(!!user && user.role_id !== 0) && section === 'education' && eduView === 'details' && (
             <>
               <div className="chart-title-row">
                 <div>
@@ -1563,7 +1563,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <p>No engagement data available for the selected filters.</p>
                   </div>
                 )}
-                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                {(!!user && user.role_id !== 0) && (
                   <table className="data-table performance-table">
                     <thead>
                       <tr>

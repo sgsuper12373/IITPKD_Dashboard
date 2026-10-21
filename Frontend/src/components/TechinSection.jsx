@@ -110,7 +110,7 @@ function TechinSection({ user, isPublicView = false }) {
   const token = localStorage.getItem('authToken');
 
   const isGuestUser = !user;
-  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestricted = !user || user.role_id === 0;
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 13;
   // Startup revenue metrics (total / highest / average) are hidden from guests only.

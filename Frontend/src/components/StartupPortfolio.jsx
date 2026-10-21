@@ -5,20 +5,17 @@ import { Rocket, Globe, ExternalLink, User } from 'lucide-react';
 import {
   fetchPortfolio,
   fetchManageList,
-  createStartup,
   updateStartupShowcase,
 } from '../services/startupPortfolio';
 import { canModifySection } from '../utils/rolePermissions';
 import { safeHref } from '../utils/safeUrl';
 import LastUpdated from './LastUpdated';
-import DataUploadModal from './LazyDataUploadModal';
 
 import './StartupPortfolio.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ORIGIN_LABELS = { iptif: 'IPTIF', techin: 'TECHIN' };
-const ORIGIN_TABLES = { iptif: 'iptif_startup_table', techin: 'techin_startup_table' };
 
 // Logos can be an external URL (http…) or a server path (/uploads/startups/…).
 const logoSrc = (startup) => {
@@ -188,15 +185,11 @@ const SHOWCASE_KEYS = [
   'startup_website_link', 'startup_summary', 'startup_logo',
 ];
 
-function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, onCancel }) {
+function StartupForm({ initial, onSave, onCancel }) {
   const externalLogo =
     initial?.startup_logo && initial.startup_logo.startsWith('http') ? initial.startup_logo : '';
 
   const [form, setForm] = useState({
-    startup_name: initial?.startup_name ?? '',
-    domain: initial?.domain ?? '',
-    status: initial?.status ?? '',
-    incubated_date: '',
     startup_tagline: initial?.startup_tagline ?? '',
     startup_founder_name: initial?.startup_founder_name ?? '',
     startup_founder_profile_line: initial?.startup_founder_profile_line ?? '',
@@ -204,7 +197,6 @@ function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, 
     startup_summary: initial?.startup_summary ?? '',
     startup_logo: externalLogo,
   });
-  const [origin, setOrigin] = useState(editableOrigins[0] ?? 'iptif');
   const [file, setFile] = useState(null);
   const [isPublished, setIsPublished] = useState(!!initial?.is_published);
   const [saving, setSaving] = useState(false);
@@ -214,18 +206,14 @@ function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isCreate && !form.startup_name.trim()) { setError('Startup name is required.'); return; }
     setSaving(true);
     setError('');
     try {
       const fd = new FormData();
-      if (isCreate) {
-        ['startup_name', 'domain', 'status', 'incubated_date'].forEach((k) => fd.append(k, form[k].trim()));
-      }
       SHOWCASE_KEYS.forEach((k) => fd.append(k, form[k].trim()));
       fd.append('is_published', isPublished ? 'true' : 'false');
       if (file) fd.append('image', file);
-      await onSave(fd, isCreate ? origin : undefined);
+      await onSave(fd);
     } catch (err) {
       setError(err.message || 'Save failed.');
     } finally {
@@ -244,61 +232,19 @@ function StartupForm({ initial, isCreate = false, editableOrigins = [], onSave, 
     >
       <div className="sp-form-panel">
         <h3 className="sp-form-title">
-          {isCreate
-            ? 'Add Startup'
-            : <>Edit “{initial?.startup_name}” <OriginBadge origin={initial?.origin} /></>}
+          Edit “{initial?.startup_name}” <OriginBadge origin={initial?.origin} />
         </h3>
         <form onSubmit={handleSubmit} className="sp-form">
-          {isCreate && (
-            <>
-              <label className="sp-form-label">
-                Startup name<span className="sp-req">*</span>
-                <input className="sp-form-input" value={form.startup_name}
-                  onChange={setField('startup_name')} placeholder="e.g. AgroNova Solutions" autoFocus />
-              </label>
-
-              {editableOrigins.length > 1 ? (
-                <label className="sp-form-label">
-                  Incubator
-                  <select className="sp-form-input" value={origin} onChange={(e) => setOrigin(e.target.value)}>
-                    {editableOrigins.map((o) => <option key={o} value={o}>{ORIGIN_LABELS[o]}</option>)}
-                  </select>
-                </label>
-              ) : (
-                <p className="sp-form-hint">Incubator: <strong>{ORIGIN_LABELS[origin]}</strong></p>
-              )}
-
-              <div className="sp-form-grid">
-                <label className="sp-form-label">
-                  Domain / sector
-                  <input className="sp-form-input" value={form.domain}
-                    onChange={setField('domain')} placeholder="e.g. AgriTech" />
-                </label>
-                <label className="sp-form-label">
-                  Status
-                  <input className="sp-form-input" value={form.status}
-                    onChange={setField('status')} placeholder="e.g. Active" />
-                </label>
-              </div>
-
-              <label className="sp-form-label">
-                Incubated date
-                <input type="date" className="sp-form-input" value={form.incubated_date}
-                  onChange={setField('incubated_date')} />
-              </label>
-            </>
-          )}
-
           <label className="sp-form-label">
             Tagline / slogan
-            <input className="sp-form-input" value={form.startup_tagline}
-              onChange={setField('startup_tagline')} placeholder="e.g. Drones for precision agriculture" autoFocus={!isCreate} />
+            <input className="sp-form-input" value={form.startup_tagline} maxLength={300}
+              onChange={setField('startup_tagline')} placeholder="e.g. Drones for precision agriculture" autoFocus />
           </label>
 
           <div className="sp-form-grid">
             <label className="sp-form-label">
               Founder name
-              <input className="sp-form-input" value={form.startup_founder_name}
+              <input className="sp-form-input" value={form.startup_founder_name} maxLength={200}
                 onChange={setField('startup_founder_name')} placeholder="e.g. A. Sharma" />
             </label>
             <label className="sp-form-label">
@@ -373,9 +319,6 @@ function StartupPortfolio({ user, isPublicView = false }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [openStartup, setOpenStartup] = useState(null);
   const [editing, setEditing] = useState(null);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [activeUploadTable, setActiveUploadTable] = useState('');
   const [originFilter, setOriginFilter] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -426,12 +369,6 @@ function StartupPortfolio({ user, isPublicView = false }) {
     await Promise.all([loadManage(), loadPortfolio()]);
   };
 
-  const handleAdd = async (formData, origin) => {
-    await createStartup(origin, formData, token);
-    setShowAddForm(false);
-    await Promise.all([loadManage(), loadPortfolio()]);
-  };
-
   // Public showcase (not editing) always offers all three — it's a shared
   // cross-team listing, open to everyone regardless of role. The "Manage
   // Startups" workspace is scoped to what this admin can actually touch: a
@@ -472,33 +409,13 @@ function StartupPortfolio({ user, isPublicView = false }) {
           {isAdmin && (
             <div className="sp-admin-controls">
               {isEditMode ? (
-                <>
-                  <button className="sp-btn sp-btn--primary" onClick={() => setShowAddForm(true)}>
-                    + Add Startup
-                  </button>
-                  <button className="sp-btn" onClick={exitEditMode}>Done</button>
-                </>
+                <button className="sp-btn" onClick={exitEditMode}>Done</button>
               ) : (
                 <button className="sp-btn" onClick={enterEditMode}>Manage Startups</button>
               )}
             </div>
           )}
         </div>
-
-        {/* CSV upload — one button per incubator the admin may edit (role 14 → IPTIF, 13 → TechIN, 3 → both) */}
-        {isAdmin && (
-          <div className="sp-upload-row">
-            {editableOrigins.map((o) => (
-              <button
-                key={o}
-                className="page-upload-btn"
-                onClick={() => { setActiveUploadTable(ORIGIN_TABLES[o]); setIsUploadModalOpen(true); }}
-              >
-                &#128228; Upload {ORIGIN_LABELS[o]} Startups
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Filters */}
         <div className="sp-filters">
@@ -529,7 +446,7 @@ function StartupPortfolio({ user, isPublicView = false }) {
         ) : visible.length === 0 ? (
           <p className="sp-empty">
             {isEditMode
-              ? 'No startups available to manage for your section yet.'
+              ? 'No startups available to manage yet. Upload startups from the IPTIF / TECHIN section first.'
               : isAdmin
                 ? 'No published startups yet. Use “Manage Startups” to enrich and publish them.'
                 : 'No startups have been published yet.'}
@@ -557,25 +474,6 @@ function StartupPortfolio({ user, isPublicView = false }) {
           onCancel={() => setEditing(null)}
         />
       )}
-      {showAddForm && (
-        <StartupForm
-          isCreate
-          editableOrigins={editableOrigins}
-          onSave={handleAdd}
-          onCancel={() => setShowAddForm(false)}
-        />
-      )}
-
-      <DataUploadModal
-        isOpen={isUploadModalOpen}
-        onClose={() => {
-          setIsUploadModalOpen(false);
-          loadPortfolio();
-          if (isEditMode) loadManage();
-        }}
-        tableName={activeUploadTable}
-        token={token}
-      />
     </div>
   );
 }

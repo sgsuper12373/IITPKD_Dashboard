@@ -11,6 +11,7 @@ import os
 import uuid
 
 from flask import Blueprint, current_app, jsonify, request
+import psycopg2
 from psycopg2 import errors as pg_errors, extras
 
 from .auth import token_optional, token_required
@@ -43,9 +44,6 @@ _EDITABLE_FIELDS = (
     'startup_website_link', 'startup_founder_name', 'startup_founder_profile_line',
     'startup_summary', 'startup_tagline',
 )
-
-# Extra fields collected only when creating a brand-new startup inline (normally filled by the CSV pipeline).
-_CREATE_EXTRA = ('domain', 'status', 'incubated_date')
 
 # Of _EDITABLE_FIELDS, the ones rendered as a clickable link (see safeHref()
 # call sites in StartupPortfolio.jsx) rather than plain text — these get the
@@ -118,12 +116,14 @@ def _parse_bool(value):
     return str(value).strip().lower() in ('true', '1', 'on', 'yes')
 
 
-def _new_id(cur, origin):
-    """Generate a fresh PK for an inline-created startup (tables have no id default)."""
-    if origin == 'techin':  # integer PK — next sequential id
-        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 AS nid FROM techin_startup_table")
-        return cur.fetchone()['nid']
-    return 'IPTIF-ST-' + uuid.uuid4().hex[:10].upper()  # varchar PK
+def _db_error_response(conn, exc):
+    """Roll back and turn a DB error into a JSON message the form can show,
+    instead of letting it escape as a bare HTML 500."""
+    conn.rollback()
+    if isinstance(exc, pg_errors.StringDataRightTruncation):
+        return jsonify({'error': 'One of the fields is too long (tagline max 300, founder name max 200 characters).'}), 400
+    current_app.logger.exception('Startup portfolio DB error')
+    return jsonify({'error': f'Database error while saving the startup ({exc.__class__.__name__}).'}), 500
 
 
 # ── GET / ──────────────────────────────────────────────────────────────────────
@@ -184,72 +184,11 @@ def get_manage_list(current_user_id):
         release_db_connection(conn)
 
 
-# ── POST /<origin> ─────────────────────────────────────────────────────────────
-
-@startup_portfolio_bp.route('/<origin>', methods=['POST'])
-@token_required
-def create_startup(current_user_id, origin):
-    """Inline-create a new startup in the given incubator's table (admin-only)."""
-    if origin not in ORIGINS:
-        return jsonify({'error': 'Unknown startup origin.'}), 404
-
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({'error': 'Database connection failed.'}), 503
-    try:
-        if origin not in _editable_origins(conn, current_user_id):
-            return jsonify({'error': f'{origin.upper()} admin access required.'}), 403
-
-        startup_name = (request.form.get('startup_name') or '').strip()
-        if not startup_name:
-            return jsonify({'error': 'startup_name is required.'}), 400
-
-        table = ORIGINS[origin]['table']
-        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-        values = _form_values()
-        extra = {f: (request.form.get(f) or '').strip() or None for f in _CREATE_EXTRA}
-
-        logo = None
-        if 'image' in request.files and request.files['image'].filename:
-            logo, err = _save_image(request.files['image'])
-            if err:
-                return jsonify({'error': err}), 400
-        else:
-            posted_logo = (request.form.get('startup_logo') or '').strip()
-            if posted_logo:
-                logo = safe_url_or_none(posted_logo)
-                if logo is None:
-                    return jsonify({'error': 'startup_logo must be a valid http(s) URL.'}), 400
-
-        cols = ['id', 'startup_name', *_CREATE_EXTRA, *_EDITABLE_FIELDS, 'startup_logo', 'is_published']
-        vals = [
-            _new_id(cur, origin), startup_name,
-            *(extra[f] for f in _CREATE_EXTRA),
-            *(values[f] for f in _EDITABLE_FIELDS),
-            logo, _parse_bool(request.form.get('is_published')),
-        ]
-        cur.execute(
-            f"""
-            INSERT INTO {table} ({', '.join(cols)})
-            VALUES ({', '.join(['%s'] * len(cols))})
-            RETURNING {_MANAGE_COLUMNS}
-            """,
-            vals,
-        )
-        row = cur.fetchone()
-        conn.commit()
-        cur.close()
-        result = dict(row)
-        result['origin'] = origin
-        return jsonify(result), 201
-    finally:
-        release_db_connection(conn)
-
-
 # ── PUT /<origin>/<id> ─────────────────────────────────────────────────────────
 
-@startup_portfolio_bp.route('/<origin>/<startup_id>', methods=['PUT'])
+# <path:> because CSV-uploaded IPTIF ids are free text and may contain '/';
+# Apache rejects an encoded %2F, so the frontend sends slashes as-is.
+@startup_portfolio_bp.route('/<origin>/<path:startup_id>', methods=['PUT'])
 @token_required
 def update_startup(current_user_id, origin, startup_id):
     """Enrich an existing startup's showcase fields, logo, and publish state."""
@@ -313,5 +252,7 @@ def update_startup(current_user_id, origin, startup_id):
         result = dict(row)
         result['origin'] = origin
         return jsonify(result), 200
+    except psycopg2.Error as exc:
+        return _db_error_response(conn, exc)
     finally:
         release_db_connection(conn)

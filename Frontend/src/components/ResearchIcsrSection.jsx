@@ -96,7 +96,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
     patent_statuses: []
   });
 
-  const isRestrictedUser = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestrictedUser = !user || user.role_id === 0;
 
   const [viewType, setViewType] = useState(mouOnly ? 'mou' : (location.state?.view || 'projects'));
 

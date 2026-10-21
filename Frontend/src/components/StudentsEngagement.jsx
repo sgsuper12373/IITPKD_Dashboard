@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PUBLIC_PREVIEW_USER, PREVIEW_QUERY, PublicPreviewContext, isPreviewSearch } from '../utils/publicPreview';
 import './StudentsEngagement.css';
 
 import NptelSection from './NptelSection';
@@ -61,7 +62,11 @@ const SECTIONS = [
   },
 ];
 
-function StudentsEngagementSection({ user }) {
+function StudentsEngagementSection({ user: realUser }) {
+  // Opened from the Outreach "View Public Page" preview: render as a public (role 0) visitor
+  const [searchParams] = useSearchParams();
+  const isPreview = isPreviewSearch(searchParams);
+  const user = isPreview ? PUBLIC_PREVIEW_USER : realUser;
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
 
@@ -137,10 +142,10 @@ function StudentsEngagementSection({ user }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        <button className="page-back-btn" onClick={() => navigate('/outreach-extension')}>
+        <button className="page-back-btn" onClick={() => navigate(isPreview ? '/outreach-extension' + PREVIEW_QUERY : '/outreach-extension')}>
           &#8592; Back to Outreach Extension
         </button>
-        {content}
+        <PublicPreviewContext.Provider value={isPreview}>{content}</PublicPreviewContext.Provider>
       </div>
     </div>
   );

@@ -222,7 +222,7 @@ function EwdSection({ user, isPublicView = false }) {
               />
             </div>
 
-            {(typeof user === 'undefined' || user?.role_id !== 0) && (
+            {(!!user && user.role_id !== 0) && (
               <div id="ewd-summary-cards-container" className="ewd-cards-grid">
                 <div className="ewd-stat-card ewd-stat-card--indigo">
                   <div className="ewd-stat-card-decor" />
@@ -411,7 +411,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <BarChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -446,7 +446,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <LineChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -525,7 +525,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                           <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -572,7 +572,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                           <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -651,7 +651,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
                           <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -686,7 +686,7 @@ function EwdSection({ user, isPublicView = false }) {
                         )
                       })}
                     >
-                      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      {(!!user && user.role_id !== 0) && (
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
                           <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                             <defs>

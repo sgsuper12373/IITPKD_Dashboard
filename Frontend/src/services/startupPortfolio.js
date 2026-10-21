@@ -11,7 +11,9 @@ const authHeaders = (token) => ({
 const handleError = (error, defaultMessage) => {
   console.error(defaultMessage, error);
   if (error.response) {
-    throw new Error(error.response.data.error || error.response.data.message || defaultMessage);
+    const data = error.response.data;
+    // A non-JSON reply (HTML 404/500) has no message — surface the status so it's diagnosable.
+    throw new Error(data?.error || data?.message || `${defaultMessage} (HTTP ${error.response.status})`);
   }
   throw new Error('Network error. Please verify the backend server is reachable.');
 };
@@ -36,21 +38,13 @@ export const fetchManageList = async (token) => {
   }
 };
 
-// Inline-create a brand-new startup in the given incubator's table.
-export const createStartup = async (origin, formData, token) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/${origin}`, formData, authHeaders(token));
-    axios.clearByPrefix(API_BASE_URL);
-    return response.data;
-  } catch (error) {
-    handleError(error, 'Failed to add startup.');
-  }
-};
-
 // Enrich a single startup's showcase fields / logo / publish state.
 export const updateStartupShowcase = async (origin, id, formData, token) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/${origin}/${id}`, formData, authHeaders(token));
+    // IPTIF ids are free text from CSV upload: encode each segment but keep '/' literal
+    // (Apache rejects an encoded %2F; the backend route accepts slashes).
+    const idPath = String(id).split('/').map(encodeURIComponent).join('/');
+    const response = await axios.put(`${API_BASE_URL}/${origin}/${idPath}`, formData, authHeaders(token));
     axios.clearByPrefix(API_BASE_URL); // drop cached lists so the next fetch is fresh
     return response.data;
   } catch (error) {

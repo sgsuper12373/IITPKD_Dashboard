@@ -611,7 +611,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 />
               </div>
 
-              <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+              <>{(!!user && user.role_id !== 0) && (
                 <div id="education-summary-cards-container" className="engagement-cards-grid">
                   {summaryCards.filter((card) => card.type !== 'FacultyFellow').map((card) => (
                     <div
@@ -689,7 +689,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         </div>
                       ) : (
                         <div className="table-responsive">
-                          <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                          <>{(!!user && user.role_id !== 0) && (
                             <table className="data-table">
                               <thead>
                                 <tr>
@@ -1113,7 +1113,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <p>No distribution data available for the selected filters.</p>
                   </div>
                 )}
-                <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                <>{(!!user && user.role_id !== 0) && (
 <ResponsiveContainer width="100%" height={400}>
                   <PieChart>
                     <Pie
@@ -1237,7 +1237,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                         <p>No engagement data available for the selected filters.</p>
                       </div>
                     )}
-                    <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                    <>{(!!user && user.role_id !== 0) && (
                       <table className="data-table">
                         <thead className="edu-adm-sticky-thead">
                           <tr>
@@ -1360,7 +1360,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           <p>No honorary professor data available for the selected filters.</p>
                         </div>
                       )}
-                      <>{(typeof user === 'undefined' || user?.role_id !== 0) && (
+                      <>{(!!user && user.role_id !== 0) && (
                         <table className="data-table">
                           <thead className="edu-adm-sticky-thead">
                             <tr>

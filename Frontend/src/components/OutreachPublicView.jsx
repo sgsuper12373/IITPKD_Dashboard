@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PREVIEW_QUERY } from '../utils/publicPreview';
 import './Page.css';
 import './PeopleCampus.css';
 import './OutreachMinimal.css';
@@ -28,7 +29,7 @@ function OutreachPublicView({ embedded }) {
         {sections.map((section, index) => (
           <Link
             key={section.id}
-            to={section.to}
+            to={embedded ? section.to + PREVIEW_QUERY : section.to}
             className="people-campus-card"
             style={{ animationDelay: `${index * 0.1}s` }}
           >

@@ -104,7 +104,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
   const isReadOnlyView = isPublicView || isGuestUser;
   const isAdmin = user?.role_id === 3 || user?.role_id === 2;
 
-  const canViewDirectory = user !== undefined && user?.role_id !== 0;
+  const canViewDirectory = !!user && user.role_id !== 0;
 
   const serializedFilters = JSON.stringify(filters);
   useEffect(() => {

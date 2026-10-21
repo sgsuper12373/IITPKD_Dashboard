@@ -118,7 +118,7 @@ function IgrcSection({ user, isPublicView = false }) {
 
   return (
     <>
-      {(typeof user === 'undefined' || user?.role_id !== 0) && (
+      {(!!user && user.role_id !== 0) && (
         <div className={isPublicView ? "" : "page-container"}>
           <div className={isPublicView ? "" : "page-content"}>
             {!isReadOnlyView && (
@@ -163,7 +163,7 @@ function IgrcSection({ user, isPublicView = false }) {
                   />
                 </div>
 
-                {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                {(!!user && user.role_id !== 0) && (
                   <div id="igrc-summary-cards-container" className="summary-cards-grid-4">
                     {/* Total Grievances — purple */}
                     <div className="metric-card" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
@@ -363,7 +363,7 @@ function IgrcSection({ user, isPublicView = false }) {
                             )
                           })}
                         >
-                          {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                          {(!!user && user.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
                               <BarChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
@@ -406,7 +406,7 @@ function IgrcSection({ user, isPublicView = false }) {
                             )
                           })}
                         >
-                          {(typeof user === 'undefined' || user?.role_id !== 0) && (
+                          {(!!user && user.role_id !== 0) && (
                             <ResponsiveContainer width="100%" height={420}>
                               <LineChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}

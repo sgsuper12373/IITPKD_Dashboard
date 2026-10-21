@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { PREVIEW_PARAM, PREVIEW_VALUE, isPreviewSearch } from '../utils/publicPreview';
 import OutreachPublicView from './OutreachPublicView';
 
 import './Page.css';
@@ -65,7 +65,10 @@ const OUTREACH_EXTENSION_SECTIONS = [
 ];
 
 function OutreachExtension({ user }) {
-  const [showPublicView, setShowPublicView] = useState(false);
+  // Kept in the URL so returning from an Outreach sub-page lands back in the preview
+  const [searchParams, setSearchParams] = useSearchParams();
+  const showPublicView = isPreviewSearch(searchParams);
+  const setShowPublicView = (on) => setSearchParams(on ? { [PREVIEW_PARAM]: PREVIEW_VALUE } : {});
   const roleId = user?.role_id;
 
   if (!user || roleId === 0 || roleId === 1) {

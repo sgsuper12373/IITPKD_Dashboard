@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
 import './Page.css';
 import './PeopleCampus.css';
 import './InnovationMinimal.css';
@@ -9,7 +10,9 @@ import HomeGroundStartup from './HomeGroundStartup';
 import StartupPortfolio from './StartupPortfolio';
 import SectionSuggestions from '../home/SectionSuggestions';
 
-function InnovationPublicView({ user, embedded }) {
+function InnovationPublicView({ user: realUser, embedded }) {
+  // embedded = opened via "View Public Page": render as a public (role 0) visitor
+  const user = embedded ? PUBLIC_PREVIEW_USER : realUser;
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -117,7 +120,7 @@ function InnovationPublicView({ user, embedded }) {
     </>
   );
 
-  if (embedded) return inner;
+  if (embedded) return <PublicPreviewContext.Provider value={true}>{inner}</PublicPreviewContext.Provider>;
   return (
     <div className="page-container">
       <div className="page-content">

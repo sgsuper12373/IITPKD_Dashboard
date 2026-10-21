@@ -52,7 +52,7 @@ function Patents({ user, isPublicView = false }) {
   // Backend/app/upload.py; a button here previously offered uploads to
   // role 4, which doesn't own this table.
   const isReadOnlyView = isPublicView || !user;
-  const isRestrictedUser = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestrictedUser = !user || user.role_id === 0;
 
   const [filterOptions, setFilterOptions] = useState({ patent_years: [], patent_statuses: [] });
   const [filters, setFilters] = useState({ patent_year: 'All', patent_status: 'All' });

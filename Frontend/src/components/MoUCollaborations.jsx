@@ -50,7 +50,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
   // EducationIarSection.jsx). Matches TABLE_UPLOAD_ROLES in
   // Backend/app/upload.py; a duplicate button here previously offered
   // uploads to role 4, which owns neither table.
-  const isRestricted = typeof user === 'undefined' || user?.role_id === 0;
+  const isRestricted = !user || user.role_id === 0;
   const isReadOnlyView = isPublicView || !user;
 
   const [activeTab, setActiveTab] = useState('industry');
