@@ -92,7 +92,7 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   const isGuestUser = !user;
   const isReadOnlyView = isPublicView || isGuestUser;
-  // TechIn (13) + IPTIF (14) — innovation_projects is the shared base table
+  // TECHIN (13) + IPTIF (14) — innovation_projects is the shared base table
   // both startup portfolios draw from. Matches TABLE_UPLOAD_ROLES in
   // Backend/app/upload.py.
   const isAdmin = user?.role_id === 3 || user?.role_id === 13 || user?.role_id === 14;

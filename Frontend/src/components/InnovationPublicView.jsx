@@ -17,7 +17,7 @@ function InnovationPublicView({ user, embedded }) {
       id: 'home-ground-startup',
       title: 'Home Grown Startup',
       subtitle: '',
-      expandedTitle: 'Internal startups incubated through IPTIF and TechIn programs',
+      expandedTitle: 'Internal startups incubated through IPTIF and TECHIN programs',
       icon: '🏠',
       component: HomeGroundStartup
     },

@@ -21,7 +21,7 @@ function InnovationEntrepreneurship({ user }) {
       allowedRoles: [3, 14]
     },
     {
-      title: 'TechIn',
+      title: 'TECHIN',
       route: '/innovation-entrepreneurship/techin',
       description: 'Entrepreneurship',
       allowedRoles: [3, 13]
@@ -29,7 +29,7 @@ function InnovationEntrepreneurship({ user }) {
     {
       title: 'Startup Portfolio',
       route: '/innovation-entrepreneurship/startup-portfolio',
-      description: 'Showcase of IPTIF & TechIn startups',
+      description: 'Showcase of IPTIF & TECHIN startups',
       allowedRoles: [3, 13, 14]
     }
   ];

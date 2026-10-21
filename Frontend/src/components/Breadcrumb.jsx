@@ -20,7 +20,7 @@ const LABELS = {
   'conclave':                   'Conclave',
   'innovation-entrepreneurship':'Innovation & Entrepreneurship',
   'iptif':                      'IPTIF',
-  'techin':                     'TechIn',
+  'techin':                     'TECHIN',
   'home-ground-startup':        'Home Ground Startup',
   'outreach-extension':         'Outreach & Extension',
   'open-house':                 'Open House',

@@ -170,7 +170,7 @@ function TechinSection({ user, isPublicView = false }) {
         ]);
         if (sumData) setSummary(sumData);
         if (filterOps) setFilterOptions(filterOps);
-      } catch (err) { setError(err.message || 'Failed to initialize TechIn data'); }
+      } catch (err) { setError(err.message || 'Failed to initialize TECHIN data'); }
     };
     load();
   }, [serializedProgramFilters, programFilters, token, uploadVersion]);
@@ -515,7 +515,7 @@ function TechinSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        <h1 className="techin-h1">TechIn</h1>
+        <h1 className="techin-h1">TECHIN</h1>
 
         {!isReadOnlyView && isAdmin && (
           <div className="techin-upload-row">
@@ -545,7 +545,7 @@ function TechinSection({ user, isPublicView = false }) {
             headers={['Total Programs', 'Skill Dev Programs', 'Total Startups']}
             keys={['total_programs', 'total_skill_dev_programs', 'total_startups']}
             filename="techin_summary"
-            title="TechIn Summary"
+            title="TECHIN Summary"
           />
         </div>
 
@@ -698,7 +698,7 @@ function TechinSection({ user, isPublicView = false }) {
         <div className="techin-cta-banner">
           <div className="techin-cta-left">
             <div>
-              <h3 className="techin-cta-h3">Explore More on TechIn</h3>
+              <h3 className="techin-cta-h3">Explore More on TECHIN</h3>
               <p className="techin-cta-p">Visit our website to explore our services and solutions.</p>
             </div>
           </div>

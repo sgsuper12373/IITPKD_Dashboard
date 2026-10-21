@@ -241,7 +241,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
 
         <h1 className="hg-page-h1">Home Grown Startups</h1>
         <p className="hg-page-sub">
-          Internal startups incubated through IPTIF and TechIn programs
+          Internal startups incubated through IPTIF and TECHIN programs
         </p>
 
         {error && <div className="hg-error">{error}</div>}
@@ -270,7 +270,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
               shadow: '0 10px 20px rgba(249,115,22,0.2)',
               label: 'Total Startups',
               value: formatNumber(summary.total_startups),
-              sub: 'Internal origin (IPTIF + TechIn)'
+              sub: 'Internal origin (IPTIF + TECHIN)'
             },
             {
               bg: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
@@ -365,7 +365,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
                 Startup Growth
               </h2>
               <p className="hg-chart-desc">
-                Yearly growth of internal-origin startups across IPTIF and TechIn
+                Yearly growth of internal-origin startups across IPTIF and TECHIN
               </p>
             </div>
             <div className="hg-chart-actions">
