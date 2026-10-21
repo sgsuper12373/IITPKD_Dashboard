@@ -215,6 +215,25 @@ def _friendly_check_violation(table_name, constraint_name):
             "Please check that the related numeric fields are consistent with each other.")
 
 
+_DATE_FORMATS = ('%d-%m-%Y', '%d/%m/%Y', '%d-%m-%y', '%d/%m/%y',
+                 '%m-%d-%Y', '%m/%d/%Y', '%Y-%m-%d', '%Y/%m/%d',
+                 '%d %b %Y', '%d %B %Y', '%b %d, %Y', '%B %d, %Y')
+
+
+def _normalise_date(val):
+    """Try common date formats and return YYYY-MM-DD, or None if unparseable."""
+    from datetime import datetime
+    s = str(val).strip()
+    if not s:
+        return None
+    for fmt in _DATE_FORMATS:
+        try:
+            return datetime.strptime(s, fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+    return None
+
+
 def _extract_bad_value(msg):
     """Extract the offending value from a Postgres 'invalid input syntax' message."""
     m = re.search(r'invalid input syntax for type \w+: "([^"]*)"', msg)
@@ -237,6 +256,15 @@ def _friendly_row_exception(exc, table_name):
     if isinstance(exc, psycopg2.errors.NotNullViolation):
         col = getattr(exc.diag, 'column_name', None)
         return (f"'{col}' cannot be empty." if col else "A required value is missing."), col
+    if isinstance(exc, psycopg2.errors.DatetimeFieldOverflow):
+        col = getattr(exc.diag, 'column_name', None)
+        msg_primary = getattr(exc.diag, 'message_primary', '') or str(exc).split('\n')[0]
+        bad_date = re.search(r'out of range: "([^"]*)"', msg_primary)
+        bad_date = bad_date.group(1) if bad_date else None
+        msg = f"'{bad_date}' is not a valid date — use YYYY-MM-DD format (e.g. 2023-06-24)." if bad_date else "Invalid date format — use YYYY-MM-DD."
+        if col:
+            msg = f"Column '{col}': {msg}"
+        return msg, col
     if isinstance(exc, psycopg2.errors.InvalidTextRepresentation):
         col = getattr(exc.diag, 'column_name', None)
         msg_primary = getattr(exc.diag, 'message_primary', '') or str(exc).split('\n')[0]
@@ -259,6 +287,21 @@ def _friendly_row_exception(exc, table_name):
     if isinstance(exc, psycopg2.errors.StringDataRightTruncation):
         col = getattr(exc.diag, 'column_name', None)
         msg = "A value is too long for its column."
+        if col:
+            msg = f"Column '{col}': {msg}"
+        return msg, col
+    if isinstance(exc, psycopg2.errors.NumericValueOutOfRange):
+        col = getattr(exc.diag, 'column_name', None)
+        msg = "A number is too large (or too small) for its column."
+        if col:
+            msg = f"Column '{col}': {msg}"
+        return msg, col
+    if isinstance(exc, psycopg2.errors.InvalidDatetimeFormat):
+        col = getattr(exc.diag, 'column_name', None)
+        msg_primary = getattr(exc.diag, 'message_primary', '') or str(exc).split('\n')[0]
+        bad_val = re.search(r'"([^"]*)"', msg_primary)
+        bad_val = bad_val.group(1) if bad_val else None
+        msg = f"'{bad_val}' is not a valid date/time." if bad_val else "Invalid date/time format."
         if col:
             msg = f"Column '{col}': {msg}"
         return msg, col
@@ -1026,6 +1069,7 @@ def upload_csv(current_user_id):
         # of surfacing as an opaque DB error after insert.
         enum_cols = _get_enum_columns(cur, table_name)
         col_max_lengths = {r['column_name'].lower(): r['character_maximum_length'] for r in col_rows if r.get('character_maximum_length')}
+        date_cols = {r['column_name'].lower() for r in col_rows if r.get('data_type') in ('date', 'timestamp without time zone', 'timestamp with time zone')}
 
         # Collect, normalise and validate rows.
         # `reader` is always the correct stream to use: either the original
@@ -1085,6 +1129,12 @@ def upload_csv(current_user_id):
                 if table_name == 'student_table' and col_l == 'status' and vs.lower() == 'active':
                     norm[idx] = 'Ongoing'
                     vs = str(norm[idx]).strip()
+
+                if col_l in date_cols and vs:
+                    parsed = _normalise_date(vs)
+                    if parsed:
+                        norm[idx] = parsed
+                        vs = parsed
 
                 # Enum validation — after normalisation/aliasing above, so
                 # 'General' having already become 'Gen' is checked as 'Gen'.
@@ -1193,6 +1243,15 @@ def upload_csv(current_user_id):
         print(f"DATABASE ERROR - Check Violation ({constraint}) | Table: {table_name} | {e}")
         return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
                                  _friendly_check_violation(table_name, constraint))
+    except psycopg2.errors.DatetimeFieldOverflow as e:
+        safe_rollback(conn)
+        msg_primary = getattr(e.diag, 'message_primary', '') or str(e).split('\n')[0]
+        bad_date = re.search(r'out of range: "([^"]*)"', msg_primary)
+        bad_date = bad_date.group(1) if bad_date else None
+        print(f"DATABASE ERROR - Date Format Error | Table: {table_name} | {e}", flush=True)
+        hint = f" The value '{bad_date}' is not a recognised date." if bad_date else ''
+        return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
+                                 f'Date format error.{hint} Please use YYYY-MM-DD format (e.g. 2023-06-24) for all date columns.')
     except psycopg2.errors.InvalidTextRepresentation as e:
         safe_rollback(conn)
         msg_primary = getattr(e.diag, 'message_primary', '') or str(e).split('\n')[0]
@@ -1216,6 +1275,35 @@ def upload_csv(current_user_id):
         print(f"DATABASE ERROR - Foreign Key Violation | Table: {table_name} | {e}")
         return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
                                  'Reference error. A referenced record does not exist.')
+    except psycopg2.errors.NumericValueOutOfRange as e:
+        safe_rollback(conn)
+        print(f"DATABASE ERROR - Numeric Value Out of Range | Table: {table_name} | {e}", flush=True)
+        return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
+                                 'A number is too large (or too small) for its column. Check numeric fields for typos or extra digits.')
+    except psycopg2.errors.InvalidDatetimeFormat as e:
+        safe_rollback(conn)
+        msg_primary = getattr(e.diag, 'message_primary', '') or str(e).split('\n')[0]
+        bad_val = re.search(r'"([^"]*)"', msg_primary)
+        bad_val = bad_val.group(1) if bad_val else None
+        print(f"DATABASE ERROR - Invalid Datetime Format | Table: {table_name} | {e}", flush=True)
+        hint = f" The value '{bad_val}' is not recognised as a date." if bad_val else ''
+        return _handle_db_error(cur, conn, query, data, use_truncate, table_name,
+                                 f'Invalid date/time format.{hint} Please use YYYY-MM-DD (e.g. 2023-06-24).')
+    except psycopg2.errors.InsufficientPrivilege as e:
+        safe_rollback(conn)
+        print(f"DATABASE ERROR - Insufficient Privilege | Table: {table_name} | {e}", flush=True)
+        return jsonify({
+            'message': f"Permission denied: the system does not have write access to '{table_name}'. Please contact an administrator.",
+            'error_type': 'permission_error',
+        }), 403
+    except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+        safe_rollback(conn)
+        print(f"DATABASE ERROR - Connection Error | Table: {table_name} | "
+              f"{type(e).__name__}: {e}", flush=True)
+        return jsonify({
+            'message': 'Database connection was lost while processing your file. Please try again.',
+            'error_type': 'connection_error',
+        }), 503
     except Exception as e:
         safe_rollback(conn)
         # A short, random reference — logged here next to the full traceback,
