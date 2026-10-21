@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChartCard,
   ComboChart,
@@ -9,7 +9,6 @@ import {
   PillarRadar,
   ProgressRow,
   RankedBars,
-  SegmentedControl,
 } from '../charts';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
 import { useGlanceWidgets } from '../hooks/useGlanceWidgets';
@@ -157,18 +156,59 @@ function WidgetRenderer({ widget, data, year, loading }) {
   }
 }
 
+/* ── Paginate widgets into slides (max 3 column-units per slide) ── */
+
+const SIZE_UNITS = { sm: 1, md: 2, lg: 3 };
+
+function paginateWidgets(widgets) {
+  const pages = [];
+  let page = [];
+  let units = 0;
+  for (const w of widgets) {
+    const u = SIZE_UNITS[w.size] ?? 1;
+    if (units + u > 3 && page.length > 0) {
+      pages.push(page);
+      page = [];
+      units = 0;
+    }
+    page.push(w);
+    units += u;
+  }
+  if (page.length > 0) pages.push(page);
+  return pages;
+}
+
+const SLIDE_MS = 6000;
+
 /* ── Main page ── */
 
 export default function QuickGlance({ user }) {
-  const [pickedYear, setPickedYear] = useState(null);
-  const { status, partial, year, years, data } = useInstitutePulse(pickedYear);
+  const { status, partial, year, data } = useInstitutePulse(null);
   const { widgets, loading: widgetsLoading, addWidget, updateWidget, deleteWidget, reorder } = useGlanceWidgets();
 
   const loading = status === 'loading';
-  const yearOptions = useMemo(() => years.map((y) => ({ value: y, label: ayLabel(y) })), [years]);
   const isAdmin = user?.role_id === 3;
 
   const [editing, setEditing] = useState(false);
+  const [page, setPage] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef(null);
+
+  const pages = useMemo(() => paginateWidgets(widgets ?? []), [widgets]);
+  const totalPages = pages.length;
+
+  const safePage = page >= totalPages ? 0 : page;
+
+  const goTo = useCallback((p) => setPage(p), []);
+  const prev = useCallback(() => setPage((p) => (p <= 0 ? totalPages - 1 : p - 1)), [totalPages]);
+  const next = useCallback(() => setPage((p) => (p >= totalPages - 1 ? 0 : p + 1)), [totalPages]);
+
+  useEffect(() => {
+    if (totalPages <= 1 || paused) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    timerRef.current = setInterval(() => setPage((p) => (p >= totalPages - 1 ? 0 : p + 1)), SLIDE_MS);
+    return () => clearInterval(timerRef.current);
+  }, [totalPages, paused]);
 
   return (
     <div className="qg">
@@ -182,12 +222,6 @@ export default function QuickGlance({ user }) {
               {editing ? '✕ Done' : '⚙ Edit layout'}
             </button>
           )}
-          <div className="qg-year">
-            <span className="ds-label">Academic year</span>
-            {yearOptions.length > 0 && (
-              <SegmentedControl label="Academic year" options={yearOptions} value={year} onChange={setPickedYear} />
-            )}
-          </div>
         </div>
       </header>
 
@@ -216,14 +250,39 @@ export default function QuickGlance({ user }) {
 
       {widgetsLoading && <p className="qg-note" role="status">Loading layout…</p>}
 
-      {!widgetsLoading && widgets && widgets.length > 0 && (
-        <section className="qg-grid" aria-label="Dashboard widgets">
-          {widgets.map((w) => (
-            <div key={w.id} className={`qg-cell qg-cell--${w.size}`}>
-              <WidgetRenderer widget={w} data={data} year={year} loading={loading} />
-            </div>
-          ))}
-        </section>
+      {!widgetsLoading && pages.length > 0 && (
+        <div
+          className="qg-slider"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <section className="qg-grid" aria-label="Dashboard widgets">
+            {pages[safePage].map((w) => (
+              <div key={w.id} className={`qg-cell qg-cell--${w.size}`}>
+                <WidgetRenderer widget={w} data={data} year={year} loading={loading} />
+              </div>
+            ))}
+          </section>
+
+          {totalPages > 1 && (
+            <nav className="qg-slider-nav" aria-label="Widget pages">
+              <button type="button" className="qg-slider-arrow" onClick={prev} aria-label="Previous page">&lsaquo;</button>
+              <div className="qg-slider-dots">
+                {pages.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`qg-slider-dot${i === safePage ? ' is-active' : ''}`}
+                    onClick={() => goTo(i)}
+                    aria-label={`Page ${i + 1}`}
+                    aria-current={i === safePage ? 'true' : undefined}
+                  />
+                ))}
+              </div>
+              <button type="button" className="qg-slider-arrow" onClick={next} aria-label="Next page">&rsaquo;</button>
+            </nav>
+          )}
+        </div>
       )}
 
       {!widgetsLoading && widgets && widgets.length === 0 && (

@@ -1,21 +1,20 @@
 import { useState, lazy, Suspense } from 'react';
-import { Link } from 'react-router-dom';
 import './Page.css';
 import './HomePage.css';
 import SplashScreen from './SplashScreen';
 import NirfRankingSection from './NirfRankingSection';
 import HomeIntro from '../home/HomeIntro';
 import HomeTour from '../home/HomeTour';
-import { Highlights, JourneyPicker, MostVisited, NumbersStory, RecentPages } from '../home/HomeDiscover';
+import { JourneyPicker, MostVisited } from '../home/HomeDiscover';
 import PillarCard from '../home/PillarCard';
 import { PILLARS } from '../home/pillars';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
-
-const LivePreview = lazy(() => import('../home/LivePreview'));
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 // ImageSlider carries its own CSS and animation logic; defer it so it doesn't
 // block the initial paint of the welcome text and splash screen.
 const ImageSlider = lazy(() => import('./ImageSlider'));
+const QuickGlance = lazy(() => import('../pages/QuickGlance'));
 
 import dashboardBanner from '../assets/iit_palakkad_dashboard_banner.avif';
 
@@ -41,8 +40,13 @@ function HomePage({ user }) {
   );
 
   const [showTour, setShowTour] = useState(false);
+  const [showJourneys, setShowJourneys] = useState(false);
   // One data load shared by the preview cards, pillar teasers and highlights.
-  const { status, data } = useInstitutePulse(null);
+  const { data } = useInstitutePulse(null);
+  const { settings, toggle } = useSiteSettings();
+  const isAdmin = user?.role_id === 3;
+  const showSlider = settings.show_image_slider === 'true';
+  const showNirf = settings.show_nirf === 'true';
 
   const handleSplashComplete = () => {
     sessionStorage.setItem('splashShown', '1');
@@ -64,20 +68,30 @@ function HomePage({ user }) {
       <div className="page-container">
         <div className="page-content">
           <div className="welcome-section">
-            <HomeIntro onStartTour={() => setShowTour(true)} data={data} />
+            <HomeIntro data={data} onNotSure={() => setShowJourneys(v => !v)} />
 
-            <Suspense fallback={null}>
-              <LivePreview status={status} data={data} />
-            </Suspense>
-
-            <RecentPages />
-
-            <Highlights data={data} />
+            {showJourneys && <JourneyPicker />}
 
             {/* Image Slider - IIT Palakkad Images */}
-            <Suspense fallback={<div className="hp-slider-fallback" />}>
-              <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
-            </Suspense>
+            {isAdmin && (
+              <div className="hp-admin-toggle">
+                <button type="button" className="hp-toggle-btn" onClick={() => toggle('show_image_slider')}>
+                  {showSlider ? '⊘ Hide Image Slider' : '⊕ Show Image Slider'}
+                </button>
+              </div>
+            )}
+            {showSlider && (
+              <Suspense fallback={<div className="hp-slider-fallback" />}>
+                <ImageSlider images={iitPalakkadImages} autoSlideInterval={4000} />
+              </Suspense>
+            )}
+
+            {/* Quick Glance — embedded directly */}
+            <section id="quick-glance" className="hp-quick-glance-section">
+              <Suspense fallback={null}>
+                <QuickGlance user={user} />
+              </Suspense>
+            </section>
 
             {/* ── Six Dimensions of Our Vision ── */}
             <div className="vision-pillars-section" data-tour="pillars">
@@ -98,14 +112,20 @@ function HomePage({ user }) {
               </div>
 
             </div>
-            <NumbersStory data={data} />
 
             <MostVisited />
 
-            <JourneyPicker />
-
             {/* NIRF Ranking Section */}
-            <div data-tour="nirf"><NirfRankingSection user={user} /></div>
+            {isAdmin && (
+              <div className="hp-admin-toggle">
+                <button type="button" className="hp-toggle-btn" onClick={() => toggle('show_nirf')}>
+                  {showNirf ? '⊘ Hide NIRF Section' : '⊕ Show NIRF Section'}
+                </button>
+              </div>
+            )}
+            {showNirf && (
+              <div data-tour="nirf"><NirfRankingSection user={user} /></div>
+            )}
 
             {/* Main Sections Overview 
             <div className="content-card">

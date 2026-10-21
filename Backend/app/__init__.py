@@ -158,7 +158,7 @@ def create_app():
         industry_connect_module, outreach_extension_module, nirf_stats, export_db,
         mou_partners, last_updated, iptif_facilities, startup_portfolio,
         icsr_consultancy, icsr_sponsored, feedback, analytics, security_api,
-        glance_widgets,
+        glance_widgets, site_settings,
     )
 
     app.register_blueprint(auth.auth_bp,                              url_prefix='/auth')
@@ -188,6 +188,7 @@ def create_app():
     app.register_blueprint(analytics.analytics_bp,                         url_prefix='/api/analytics')
     app.register_blueprint(security_api.security_bp,                       url_prefix='/api/security')
     app.register_blueprint(glance_widgets.glance_widgets_bp,               url_prefix='/api/glance-widgets')
+    app.register_blueprint(site_settings.site_settings_bp,                 url_prefix='/api/site-settings')
 
     from .security_log import init_security_logging
     init_security_logging(app)

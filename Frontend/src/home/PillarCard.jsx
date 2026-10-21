@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, FreshnessBadge } from './Badges';
+import { Badge } from './Badges';
 import { CountUp } from './motion';
 import { fmtDelta, fmtInt, fmtNum, isFiniteNumber } from '../charts/format';
 import './PillarCard.css';
@@ -164,7 +164,6 @@ export default function PillarCard({ pillar, data, index }) {
       <div className="vision-pillar-foot">
         <span className="vision-pillar-badges">
           {nirf && <Badge tone="gold">NIRF {nirf.value}</Badge>}
-          <FreshnessBadge path={path} />
         </span>
         <span className="vision-pillar-cta" aria-hidden="true">Explore →</span>
       </div>
