@@ -1225,7 +1225,7 @@ def upload_csv(current_user_id):
         # other users' data that happens to share the same log stream.
         error_ref = secrets.token_hex(4)
         print(f"GENERAL ERROR - CSV Upload | Table: {table_name} | Ref: {error_ref} | "
-              f"{type(e).__name__}: {e}\n{traceback.format_exc()}")
+              f"{type(e).__name__}: {e}\n{traceback.format_exc()}", flush=True)
         return jsonify({
             'message': 'An unexpected error occurred while processing your file. '
                         f'Please try again, or contact an administrator with reference {error_ref} '
