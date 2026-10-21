@@ -242,17 +242,22 @@ export function buildPulse(series, year, extras = {}) {
       sub: intakeNow === null ? 'Current strength' : `Current strength · intake ${ay}: ${fmtInt(intakeNow)}`,
       to: SOURCE_ROUTES.students,
     }),
-    kpi({
-      key: 'faculty',
-      label: 'Faculty strength',
-      value: at('faculty'),
-      text: fmtInt(at('faculty')),
-      delta: yoy(series.faculty, year),
-      series: series.faculty,
-      years,
-      sub: 'Teaching staff, year end',
-      to: SOURCE_ROUTES.faculty,
-    }),
+    (() => {
+      const fYears = Object.keys(series.faculty || {}).map(Number).sort((a, b) => a - b);
+      const fYear = fYears.length ? fYears[fYears.length - 1] : year;
+      const fVal = at('faculty', fYear);
+      return kpi({
+        key: 'faculty',
+        label: 'Faculty strength',
+        value: fVal,
+        text: fmtInt(fVal),
+        delta: yoy(series.faculty, fYear),
+        series: series.faculty,
+        years,
+        sub: 'Teaching staff, year end',
+        to: SOURCE_ROUTES.faculty,
+      });
+    })(),
     kpi({
       key: 'publications',
       label: 'Publications',

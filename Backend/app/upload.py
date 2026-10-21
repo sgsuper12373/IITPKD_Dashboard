@@ -857,7 +857,20 @@ def upload_csv(current_user_id):
 
     conn = None
     try:
-        csv_text = io.StringIO(file.stream.read().decode('utf-8'))
+        raw = file.stream.read()
+        try:
+            decoded = raw.decode('utf-8')
+        except UnicodeDecodeError:
+            try:
+                decoded = raw.decode('cp1252')
+            except UnicodeDecodeError:
+                return jsonify({
+                    'message': 'Unable to read your file — it contains characters in an '
+                               'unrecognised encoding. Please re-save the CSV as UTF-8 '
+                               '(in Excel: Save As → CSV UTF-8) and try again.',
+                    'error_type': 'encoding_error',
+                }), 400
+        csv_text = io.StringIO(decoded)
         reader   = csv.DictReader(csv_text)
         csv_headers = [h.strip() for h in reader.fieldnames] if reader.fieldnames else []
         reader.fieldnames = csv_headers
