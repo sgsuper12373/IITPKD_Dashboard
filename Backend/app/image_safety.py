@@ -70,14 +70,13 @@ def validate_and_reencode(raw_bytes):
         raise ImageRejected('Image is too small to be a valid screenshot.')
 
     # Re-encode from decoded pixels → strips EXIF / trailing payload / polyglot data.
-    # Flatten transparency onto a white background so logos stay readable on any
-    # page background (dark mode, card surfaces, etc.).
-    if 'A' in img.getbands():
-        bg = Image.new('RGBA', img.size, (255, 255, 255, 255))
-        bg.paste(img, mask=img)
-        img = bg
+    # Always composite onto white so transparent regions never render as black.
+    img = img.convert('RGBA')
+    bg = Image.new('RGBA', img.size, (255, 255, 255, 255))
+    img = Image.alpha_composite(bg, img).convert('RGB')
 
     out = io.BytesIO()
-    img.convert('RGB').save(out, format='PNG' if fmt == 'PNG' else 'JPEG',
-                            **(dict(optimize=True) if fmt == 'PNG' else dict(quality=85, optimize=True)))
+    save_fmt = 'PNG' if fmt == 'PNG' else 'JPEG'
+    save_opts = dict(optimize=True) if fmt == 'PNG' else dict(quality=85, optimize=True)
+    img.save(out, format=save_fmt, **save_opts)
     return out.getvalue(), 'image/png' if fmt == 'PNG' else 'image/jpeg', 'png' if fmt == 'PNG' else 'jpg'
