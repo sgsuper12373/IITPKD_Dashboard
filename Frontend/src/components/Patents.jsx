@@ -12,6 +12,8 @@ import {
   fetchPatentStats,
   fetchPatentList,
 } from '../services/researchStats';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
@@ -24,7 +26,7 @@ import './ResearchSection.css';
 import './Patents.css';
 
 const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
-const PATENT_COLORS = { Filed: '#6366f1', Granted: '#22c55e' };
+const PATENT_COLORS = { Filed: '#066A75', Granted: '#22c55e' };
 
 const formatDate = (value) => {
   if (!value) return '–';
@@ -150,7 +152,7 @@ function Patents({ user, isPublicView = false }) {
           <div className="pat-summary-card pat-summary-card--indigo">
             <div className="pat-card-inner">
               <div className="pat-card-header">
-                <span className="pat-card-icon">&#128221;</span>
+                <DashboardIcon name="file" className="pat-card-icon" />
                 <h3 className="pat-card-h3">Patents Filed</h3>
               </div>
               <div className="pat-card-value">{patentStats.overall.Filed}</div>
@@ -160,7 +162,7 @@ function Patents({ user, isPublicView = false }) {
           <div className="pat-summary-card pat-summary-card--green">
             <div className="pat-card-inner">
               <div className="pat-card-header">
-                <span className="pat-card-icon">&#9989;</span>
+                <DashboardIcon name="check" className="pat-card-icon" />
                 <h3 className="pat-card-h3">Patents Granted</h3>
               </div>
               <div className="pat-card-value">{patentStats.overall.Granted}</div>
@@ -176,14 +178,14 @@ function Patents({ user, isPublicView = false }) {
                   onClick={() => safeSetViewType('trend')}
                   className={`pat-view-btn${viewType === 'trend' ? ' pat-view-btn--trend-active' : ''}`}
                 >
-                  &#128200; Trend Analysis
+                  <LineChartOutlined /> Trend Analysis
                 </button>
                 {!isRestrictedUser && (
                   <button
                     onClick={() => safeSetViewType('directory')}
                     className={`pat-view-btn${viewType === 'directory' ? ' pat-view-btn--dir-active' : ''}`}
                   >
-                    &#128203; Patent Directory
+                    <ProfileOutlined /> Patent Directory
                   </button>
                 )}
               </div>
@@ -232,7 +234,7 @@ function Patents({ user, isPublicView = false }) {
                   {['bar', 'trend'].map((mode) => (
                     <button key={mode} onClick={() => setChartMode(mode)}
                       className={`pat-mode-btn${chartMode === mode ? ' pat-mode-btn--active' : ''}`}>
-                      {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                      {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                     </button>
                   ))}
                 </div>

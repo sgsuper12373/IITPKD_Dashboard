@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
 import {
   ResponsiveContainer,
   LineChart,
@@ -57,17 +58,7 @@ const TRANSITION_STYLE = `
   }
   .hg-summary-card:hover  { transform: translateY(-4px) scale(1.02); }
   .hg-summary-card:active { transform: scale(0.97); }
-  .hg-mode-btn {
-    padding: 6px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
-  }
-  .hg-mode-btn:hover  { transform: translateY(-1px); }
-  .hg-mode-btn:active { transform: translateY(0); }
+  /* hg-mode-btn styles moved to HomeGroundStartup.css */
 `;
 
 function injectStyle() {
@@ -78,7 +69,7 @@ function injectStyle() {
   document.head.appendChild(s);
 }
 
-const CHART_COLOR = '#f97316';
+const CHART_COLOR = '#087E8B';
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 function HomeGroundStartup({ user, isPublicView = false }) {
@@ -159,7 +150,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
     <div className="hg-chart-wrapper">
       {data.length === 0 && (
         <div className="hg-no-data-overlay">
-          <span className="hg-no-data-icon">&#128202;</span>
+          <DashboardIcon name="chart" className="hg-no-data-icon" />
           <p className="hg-no-data-text">No data available for the selected filters.</p>
         </div>
       )}
@@ -195,7 +186,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
     if (!startupsTable.length && !loadingStartups) {
       return (
         <div className="hg-table-empty">
-          <span className="hg-table-empty-icon">&#128193;</span>
+          <DashboardIcon name="folder" className="hg-table-empty-icon" />
           <p className="hg-table-empty-text">No data available for the selected filters.</p>
         </div>
       );
@@ -266,14 +257,14 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         <div id="hg-summary-cards-container" className="hg-cards-row">
           {[
             {
-              bg: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-              shadow: '0 10px 20px rgba(249,115,22,0.2)',
+              bg: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)',
+              shadow: '0 10px 20px rgba(8, 126, 139,0.2)',
               label: 'Total Startups',
               value: formatNumber(summary.total_startups),
               sub: 'Internal origin (IPTIF + TECHIN)'
             },
             {
-              bg: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+              bg: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)',
               shadow: '0 10px 20px rgba(14,165,233,0.2)',
               label: 'Total Jobs Created',
               value: formatNumber(summary.total_jobs),
@@ -305,9 +296,9 @@ function HomeGroundStartup({ user, isPublicView = false }) {
 
             <div id="hg-revenue-container" className="hg-revenue-cards">
               {[
-                { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)', label: 'Total Revenue', value: summary.total_revenue },
+                { bg: 'linear-gradient(135deg, #142D4E 0%, #066A75 100%)', shadow: '0 8px 20px rgba(6, 106, 117,0.2)', label: 'Total Revenue', value: summary.total_revenue },
                 { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
-                { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)', label: 'Average Revenue', value: summary.average_revenue }
+                { bg: 'linear-gradient(135deg, #066A75 0%, #142D4E 100%)', shadow: '0 8px 20px rgba(8, 126, 139,0.2)', label: 'Average Revenue', value: summary.average_revenue }
               ].map(({ bg, shadow, label, value }) => (
                 <div key={label} className="hg-revenue-card" style={{ background: bg, boxShadow: shadow }}>
                   <div className="hg-revenue-card-decor" />
@@ -361,7 +352,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
           <div className="hg-chart-header">
             <div>
               <h2 className="hg-chart-h2">
-                <span className="hg-chart-icon">&#127968;</span>
+                <DashboardIcon name="home" className="hg-chart-icon" />
                 Startup Growth
               </h2>
               <p className="hg-chart-desc">

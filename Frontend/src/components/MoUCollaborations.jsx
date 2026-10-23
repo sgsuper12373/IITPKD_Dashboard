@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { LineChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   LineChart, Line,
@@ -30,8 +32,8 @@ import './AcademicSection.css';
 import './ResearchSection.css';
 import './MoUCollaborations.css';
 
-const ICSR_COLOR = '#a855f7';
-const IAR_COLOR = '#14b8a6';
+const ICSR_COLOR = '#142D4E';
+const IAR_COLOR = '#087E8B';
 
 const formatDate = (value) => {
   if (!value) return '–';
@@ -181,19 +183,19 @@ function MoUCollaborations({ user, isPublicView = false }) {
                 onClick={() => setViewType('trend')}
                 className="mou-view-btn"
                 style={{
-                  border: viewType === 'trend' ? `2px solid ${color}` : '1px solid #e2e8f0',
+                  border: viewType === 'trend' ? `2px solid ${color}` : '1px solid #DCE3E7',
                   backgroundColor: viewType === 'trend' ? (color === ICSR_COLOR ? '#faf5ff' : '#ccfbf1') : '#fff',
-                  color: viewType === 'trend' ? (color === ICSR_COLOR ? '#6b21a8' : '#0f766e') : '#333',
+                  color: viewType === 'trend' ? (color === ICSR_COLOR ? '#6b21a8' : '#066A75') : '#333',
                 }}
               >
-                &#128200; MoUs Trend
+                <LineChartOutlined /> MoUs Trend
               </button>
               {!isRestricted && (
                 <button
                   onClick={() => setViewType('directory')}
                   className={`mou-view-btn${viewType === 'directory' ? ' mou-view-btn--directory-active' : ''}`}
                 >
-                  &#128203; MoUs Directory
+                  <ProfileOutlined /> MoUs Directory
                 </button>
               )}
             </div>
@@ -219,7 +221,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
       <div className="mou-body">
         <div className="mou-body-header-row">
           <h2 className="mou-body-h2">
-            <span>{viewType === 'trend' ? '🤝' : '📋'}</span>
+            <span>{viewType === 'trend' ? <DashboardIcon name="people" /> : <DashboardIcon name="profile" />}</span>
             {viewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
           </h2>
           <ExportMenu
@@ -250,11 +252,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                 <button
                   key={mode}
                   onClick={() => setChartMode(mode)}
-                  className="mou-mode-btn"
-                  style={{
-                    backgroundColor: chartMode === mode ? color : '#f1f5f9',
-                    color: chartMode === mode ? '#fff' : '#555',
-                  }}
+                  className={`mou-mode-btn${chartMode === mode ? ' mou-mode-btn--active' : ''}`}
                 >
                   {mode === 'bar' ? 'Bar' : 'Trend'}
                 </button>
@@ -440,7 +438,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
           <div className="mou-stat-card mou-stat-card--purple">
             <div className="mou-stat-card-body">
               <div className="mou-stat-card-header">
-                <span className="mou-stat-card-icon">&#127981;</span>
+                <DashboardIcon name="industry" className="mou-stat-card-icon" />
                 <h3 className="mou-stat-card-h3">Industry MoUs</h3>
               </div>
               <div className="metric-value">{icsrTotalMous}</div>
@@ -454,7 +452,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
           <div className="mou-stat-card mou-stat-card--teal">
             <div className="mou-stat-card-body">
               <div className="mou-stat-card-header">
-                <span className="mou-stat-card-icon">&#127891;</span>
+                <DashboardIcon name="education" className="mou-stat-card-icon" />
                 <h3 className="mou-stat-card-h3">Education MoUs</h3>
               </div>
               <div className="metric-value">{iarTotalMous}</div>
@@ -468,7 +466,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
           <div className="mou-stat-card mou-stat-card--blue">
             <div className="mou-stat-card-body">
               <div className="mou-stat-card-header">
-                <span className="mou-stat-card-icon">&#129309;</span>
+                <DashboardIcon name="link" className="mou-stat-card-icon" />
                 <h3 className="mou-stat-card-h3">Total MoUs</h3>
               </div>
               <div className="metric-value">{icsrTotalMous + iarTotalMous}</div>
@@ -493,7 +491,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
               boxShadow: activeTab === 'industry' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
             }}
           >
-            &#127981; Research Collaborations
+            <DashboardIcon name="industry" size={14} /> Research Collaborations
           </button>
           <button
             onClick={() => setActiveTab('education')}
@@ -504,7 +502,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
               boxShadow: activeTab === 'education' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
             }}
           >
-            &#127891; Academic Collaborations
+            <DashboardIcon name="education" size={14} /> Academic Collaborations
           </button>
         </div>
 

@@ -187,6 +187,27 @@
 .ds-kpi__spark { height: 2.75rem; min-width: 0; }
 .ds-kpi__sub { margin: 0; font-size: 0.6875rem; letter-spacing: var(--ds-label-tracking); text-transform: uppercase; color: var(--ds-slate-60); }
 
+/* ───────────── VU meter ───────────── */
+.vu { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.vu__plot { position: relative; width: 100%; max-width: 22rem; }
+.vu__seg { transition: opacity 150ms ease-out; }
+.vu__glow { transition: opacity 600ms ease-out; }
+.vu__needle { transition: transform 750ms ease-out; }
+.vu__tick { font-size: 0.5625rem; fill: var(--ds-slate-60); font-variant-numeric: tabular-nums; }
+.vu__read { display: flex; flex-direction: column; align-items: center; gap: 0.125rem; text-align: center; }
+.vu__val {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-text-strong);
+}
+.vu__val--success { color: var(--ds-success); }
+.vu__val--warning { color: var(--ds-warning); }
+.vu__val--danger { color: var(--ds-danger); }
+.vu__sub { font-size: 0.75rem; color: var(--ds-slate-60); }
+
 /* ───────────── Donut + legend ───────────── */
 .ds-donut__plot { position: relative; }
 .ds-donut__center {
@@ -306,4 +327,5 @@
 @media (prefers-reduced-motion: reduce) {
   .ds-card, .ds-progress__fill, .ds-ranked__fill, .ds-funnel__fill { transition: none; }
   .ds-skeleton { animation: none; }
+  .vu__seg, .vu__glow, .vu__needle { transition: none; }
 }

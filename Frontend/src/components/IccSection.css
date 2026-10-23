@@ -26,7 +26,7 @@
 .icc-view-btn {
   padding: 10px 24px;
   background-color: #f8f9fa;
-  color: #333;
+  color: #142D4E;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -38,7 +38,7 @@
   gap: 8px;
 }
 .icc-view-btn--active {
-  background-color: #667eea;
+  background-color: #142D4E;
   color: white;
   font-weight: 600;
 }
@@ -57,7 +57,7 @@
 /* ── Table section heading ── */
 .icc-table-h2 {
   margin: 0 0 5px 0;
-  color: #333;
+  color: #142D4E;
   font-size: 20px;
 }
 .icc-table-h2-wrap { margin-bottom: 20px; }
@@ -89,7 +89,7 @@
 }
 .icc-mobile-card-year {
   font-weight: 700;
-  color: #667eea;
+  color: #142D4E;
   font-size: 16px;
 }
 .icc-mobile-card-fields {
@@ -124,7 +124,7 @@
 .icc-table th {
   padding: 16px;
   text-align: left;
-  color: #555;
+  color: #64748b;
   font-size: 14px;
   font-weight: 600;
 }

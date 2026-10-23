@@ -38,12 +38,12 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .uba-stat-card--purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #142D4E 0%, #0F1F36 100%);
+  box-shadow: 0 15px 35px rgba(20, 45, 78,0.3);
 }
 .uba-stat-card--pink {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 15px 35px rgba(240, 147, 251, 0.3);
+  background: linear-gradient(135deg, #066A75 0%, #087E8B 100%);
+  box-shadow: 0 15px 35px rgba(8, 126, 139,0.3);
 }
 .uba-stat-card-decor-top {
   position: absolute;
@@ -130,7 +130,7 @@
 }
 .uba-panel-h2 {
   margin: 0;
-  color: #333;
+  color: #142D4E;
   font-size: 24px;
 }
 .uba-panel-header-right {
@@ -147,8 +147,8 @@
   font-size: 14px;
   font-weight: 500;
 }
-.uba-count-badge--purple { background-color: #667eea; }
-.uba-count-badge--pink   { background-color: #f093fb; }
+.uba-count-badge--purple { background-color: #142D4E; }
+.uba-count-badge--pink   { background-color: #066A75; }
 
 /* ── Empty state ── */
 .uba-empty-state {
@@ -177,12 +177,12 @@
 .uba-project-card {
   background-color: #fff;
   border-radius: 16px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #EDE9DF;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 .uba-project-card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #142D4E 0%, #0F1F36 100%);
   padding: 20px;
   color: white;
 }
@@ -205,7 +205,7 @@
   gap: 8px;
   margin-bottom: 10px;
   font-size: 14px;
-  color: #555;
+  color: #64748b;
 }
 .uba-project-info-row--sm { font-size: 13px; color: #666; }
 
@@ -222,16 +222,16 @@
 }
 .uba-exp-thead-tr {
   background-color: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid #EDE9DF;
 }
 .uba-exp-th {
   padding: 12px 10px;
   text-align: left;
   font-weight: 600;
-  color: #555;
+  color: #64748b;
 }
 .uba-exp-td { padding: 10px; }
-.uba-exp-td--year  { color: #667eea; font-weight: 500; }
+.uba-exp-td--year  { color: #142D4E; font-weight: 500; }
 .uba-exp-td--center { text-align: center; }
 .uba-exp-tr { border-bottom: 1px solid #f0f0f0; }
 
@@ -255,7 +255,7 @@
 }
 .uba-mobile-card-year {
   font-weight: 700;
-  color: #667eea;
+  color: #142D4E;
   font-size: 14px;
 }
 .uba-mobile-card-type {
@@ -300,13 +300,13 @@
 }
 .uba-table thead tr {
   background-color: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid #EDE9DF;
 }
 .uba-table th {
   padding: 12px 10px;
   text-align: left;
   font-weight: 600;
-  color: #555;
+  color: #64748b;
   white-space: nowrap;
   position: sticky;
   top: 0;
@@ -314,7 +314,7 @@
   z-index: 2;
 }
 .uba-table td { padding: 10px; }
-.uba-table td.uba-td-year    { color: #667eea; font-weight: 500; white-space: nowrap; }
+.uba-table td.uba-td-year    { color: #142D4E; font-weight: 500; white-space: nowrap; }
 .uba-table td.uba-td-wrap    { max-width: 260px; line-height: 1.4; }
 .uba-table td.uba-td-nowrap  { white-space: nowrap; }
 .uba-table td.uba-td-date    { white-space: nowrap; font-size: 13px; color: #666; }
@@ -322,7 +322,7 @@
 .uba-table td.uba-td-audience{ max-width: 160px; font-size: 13px; }
 .uba-table td.uba-td-center  { text-align: center; }
 .uba-table td.uba-td-reach   { max-width: 140px; font-size: 13px; }
-.uba-table td.uba-td-remarks { max-width: 160px; font-size: 13px; color: #888; }
+.uba-table td.uba-td-remarks { max-width: 160px; font-size: 13px; color: #94a3b8; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

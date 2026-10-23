@@ -2,6 +2,7 @@ export { default as ChartCard } from './ChartCard';
 export { default as ChartTooltip } from './ChartTooltip';
 export { default as GaugeChart } from './GaugeChart';
 export { default as KpiSparkCard } from './KpiSparkCard';
+export { default as VuMeter } from './VuMeter';
 export { default as ComboChart } from './ComboChart';
 export { default as PillarRadar } from './PillarRadar';
 export { default as DonutChart } from './DonutChart';

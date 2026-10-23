@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './InnovationMinimal.css';
@@ -21,7 +22,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       title: 'Home Grown Startup',
       subtitle: '',
       expandedTitle: 'Internal startups incubated through IPTIF and TECHIN programs',
-      icon: '🏠',
+      icon: <DashboardIcon name="home" />,
       component: HomeGroundStartup
     },
     {
@@ -29,7 +30,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
       subtitle: '',
       expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
-      icon: '💡',
+      icon: <DashboardIcon name="innovation" />,
       component: IptifSection
     },
     {
@@ -37,7 +38,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       title: 'Technology Innovation Foundation of IIT Palakkad (TECHIN)',
       subtitle: '',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
-      icon: '🚀',
+      icon: <DashboardIcon name="startup" />,
       component: TechinSection
     },
     {
@@ -45,7 +46,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       title: 'Startup Portfolio',
       subtitle: '',
       expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TECHIN',
-      icon: '📇',
+      icon: <DashboardIcon name="profile" />,
       component: StartupPortfolio
     }
   ];

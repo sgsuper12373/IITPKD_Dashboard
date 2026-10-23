@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import DashboardIcon from './DashboardIcon';
 import useDebounce from '../utils/useDebounce';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
@@ -22,11 +23,11 @@ import { getOrderedLegend } from '../utils/chartUtils';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb'];
+const COLORS = ['#142D4E', '#0F1F36', '#066A75'];
 
-const GROUP_COLORS = { UG: '#4f46e5', PG: '#f97316', Research: '#06b6d4', Total: '#22c55e' };
+const GROUP_COLORS = { UG: '#142D4E', PG: '#087E8B', Research: '#06b6d4', Total: '#22c55e' };
 
-const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316'];
+const PIE_COLORS = ['#142D4E', '#10b981', '#066A75', '#ef4444', '#066A75', '#06b6d4', '#066A75', '#087E8B'];
 
 // ── Pie distribution table (desktop: table / mobile: card list) ─────────────
 function PieDistributionTable({ data, nameKey, total, colors }) {
@@ -99,10 +100,10 @@ function getProgramGroup(prog) {
 }
 
 const AREA_COLORS = {
-  Total:       { stroke: '#667eea', fill: 'url(#colorTotal)' },
-  Male:        { stroke: '#667eea', fill: 'url(#colorMale)' },
-  Female:      { stroke: '#764ba2', fill: 'url(#colorFemale)' },
-  Transgender: { stroke: '#f093fb', fill: 'url(#colorTransgender)' },
+  Total:       { stroke: '#142D4E', fill: 'url(#colorTotal)' },
+  Male:        { stroke: '#142D4E', fill: 'url(#colorMale)' },
+  Female:      { stroke: '#0F1F36', fill: 'url(#colorFemale)' },
+  Transgender: { stroke: '#066A75', fill: 'url(#colorTransgender)' },
 };
 
 const BAR_ANIMATION = {
@@ -116,20 +117,20 @@ const AXIS_LABEL_STYLE = { textAnchor: 'middle', fill: '#555', fontSize: 13, fon
 const AreaGradients = () => (
   <defs>
     <linearGradient id="colorTotal"       x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#667eea" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#667eea" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#142D4E" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#142D4E" stopOpacity={0} />
     </linearGradient>
     <linearGradient id="colorMale"        x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#667eea" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#667eea" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#142D4E" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#142D4E" stopOpacity={0} />
     </linearGradient>
     <linearGradient id="colorFemale"      x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#764ba2" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#764ba2" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#0F1F36" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#0F1F36" stopOpacity={0} />
     </linearGradient>
     <linearGradient id="colorTransgender" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#f093fb" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#f093fb" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#066A75" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#066A75" stopOpacity={0} />
     </linearGradient>
   </defs>
 );
@@ -531,14 +532,14 @@ function AcademicSection({ user, isPublicView = false }) {
       ];
     }
     return [
-      { key: 'UG_Male',          name: 'UG Male',          stackId: 'UG',       fill: '#4f46e5' },
+      { key: 'UG_Male',          name: 'UG Male',          stackId: 'UG',       fill: '#142D4E' },
       { key: 'UG_Female',        name: 'UG Female',        stackId: 'UG',       fill: '#818cf8' },
       { key: 'UG_Transgender',   name: 'UG Transgender',   stackId: 'UG',       fill: '#c7d2fe' },
-      { key: 'PG_Male',          name: 'PG Male',          stackId: 'PG',       fill: '#f97316' },
+      { key: 'PG_Male',          name: 'PG Male',          stackId: 'PG',       fill: '#087E8B' },
       { key: 'PG_Female',        name: 'PG Female',        stackId: 'PG',       fill: '#fb923c' },
       { key: 'PG_Transgender',   name: 'PG Transgender',   stackId: 'PG',       fill: '#fed7aa' },
       { key: 'Research_Male',    name: 'Research Male',    stackId: 'Research', fill: '#06b6d4' },
-      { key: 'Research_Female',  name: 'Research Female',  stackId: 'Research', fill: '#22d3ee' },
+      { key: 'Research_Female',  name: 'Research Female',  stackId: 'Research', fill: '#087E8B' },
       { key: 'Research_Transgender', name: 'Research Transgender', stackId: 'Research', fill: '#a5f3fc' },
       { key: 'Total',            name: 'Total',            stackId: 'Total',    fill: GROUP_COLORS.Total },
     ];
@@ -546,18 +547,18 @@ function AcademicSection({ user, isPublicView = false }) {
 
   // On-roll card data
   const onrollCards = [
-    { label: 'Total Students On Roll', icon: '🎯', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)', shadow: 'rgba(17,153,142,0.25)',   subtitle: 'Total on roll students' },
-    { label: 'UG',       icon: '📘', value: onrollSummary.ug_onroll,       grad: 'linear-gradient(135deg,#4f46e5 0%,#6366f1 100%)', shadow: 'rgba(79,70,229,0.2)',    subtitle: 'BTech — On Roll' },
-    { label: 'PG',       icon: '🎓', value: onrollSummary.pg_onroll,       grad: 'linear-gradient(135deg,#f97316 0%,#ea580c 100%)', shadow: 'rgba(249,115,22,0.2)',   subtitle: 'MTech and MSc — On Roll' },
-    { label: 'Research', icon: '🔬', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'PhD and MS (By Research) — On Roll' },
+    { label: 'Total Students On Roll', icon: 'total-students', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)', shadow: 'rgba(15, 31, 54,0.25)',   subtitle: 'Total on roll students' },
+    { label: 'UG',       icon: 'ug', value: onrollSummary.ug_onroll,       grad: 'linear-gradient(135deg,#142D4E 0%,#066A75 100%)', shadow: 'rgba(20, 45, 78,0.2)',    subtitle: 'BTech — On Roll' },
+    { label: 'PG',       icon: 'pg', value: onrollSummary.pg_onroll,       grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)',   subtitle: 'MTech and MSc — On Roll' },
+    { label: 'Research', icon: 'research', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'PhD and MS (By Research) — On Roll' },
   ];
 
   // Summary card data
   const summaryCards = [
-    { label: 'Total Students', icon: '👥', value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg,#667eea 0%,#764ba2 100%)', shadow: 'rgba(102,126,234,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
-    { label: 'UG',             icon: '📘', value: cumulativeSummary.ug_total,       grad: 'linear-gradient(135deg,#4f46e5 0%,#6366f1 100%)', shadow: 'rgba(79,70,229,0.2)',    subtitle: 'BTech' },
-    { label: 'PG',             icon: '🎓', value: cumulativeSummary.pg_total,       grad: 'linear-gradient(135deg,#f97316 0%,#ea580c 100%)', shadow: 'rgba(249,115,22,0.2)',   subtitle: 'MTech and MSc' },
-    { label: 'Research',       icon: '📖', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'MS and PHD' },
+    { label: 'Total Students', icon: 'students', value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg,#142D4E 0%,#0F1F36 100%)', shadow: 'rgba(15, 31, 54,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
+    { label: 'UG',             icon: 'ug', value: cumulativeSummary.ug_total,       grad: 'linear-gradient(135deg,#142D4E 0%,#066A75 100%)', shadow: 'rgba(20, 45, 78,0.2)',    subtitle: 'BTech' },
+    { label: 'PG',             icon: 'pg', value: cumulativeSummary.pg_total,       grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)',   subtitle: 'MTech and MSc' },
+    { label: 'Research',       icon: 'phd', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'MS and PHD' },
   ];
 
   // Pie tooltip
@@ -623,7 +624,7 @@ function AcademicSection({ user, isPublicView = false }) {
                 <div className="metric-card-glow" />
                 <div className="metric-card-inner">
                   <div className="metric-card-icon-row">
-                    <span className="metric-card-icon">{icon}</span>
+                    <DashboardIcon name={icon} className="metric-card-icon" />
                     <span className="metric-card-label">{label}</span>
                   </div>
                   <div
@@ -660,7 +661,7 @@ function AcademicSection({ user, isPublicView = false }) {
             <div className="metric-card-glow" />
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">📅</span>
+                <DashboardIcon name="calendar" className="metric-card-icon" />
                 <span className="metric-card-label">Filter by Year</span>
               </div>
               <select
@@ -668,7 +669,7 @@ function AcademicSection({ user, isPublicView = false }) {
                 onChange={e => setSummaryYear(e.target.value)}
                 className="metric-card-filter-select"
               >
-                {availableYears.map(y => <option key={y} value={y} style={{ color: '#333', background: '#fff' }}>{y === 'All' ? 'All Years' : y}</option>)}
+                {availableYears.map(y => <option key={y} value={y} style={{ color: '#142D4E', background: '#fff' }}>{y === 'All' ? 'All Years' : y}</option>)}
               </select>
               <div className="metric-card-footer ac-year-card-footer">
                 <span className="metric-card-dot" />
@@ -687,7 +688,7 @@ function AcademicSection({ user, isPublicView = false }) {
                 <div className="metric-card-glow" />
                 <div className="metric-card-inner">
                   <div className="metric-card-icon-row">
-                    <span className="metric-card-icon">{icon}</span>
+                    <DashboardIcon name={icon} className="metric-card-icon" />
                     <span className="metric-card-label">{label}</span>
                   </div>
                   <div
@@ -740,7 +741,7 @@ function AcademicSection({ user, isPublicView = false }) {
             <div className="chart-mode-row">
               {['Bar', 'Trend'].map(mode => (
                 <button key={mode} onClick={() => setChartType(mode)} className={`mode-btn${chartType === mode ? ' active' : ''}`}>
-                  {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                  {mode === 'Bar' ? <><DashboardIcon name="chart" size={14} /> Bar</> : <><DashboardIcon name="line-chart" size={14} /> Trend</>}
                 </button>
               ))}
             </div>
@@ -777,8 +778,8 @@ function AcademicSection({ user, isPublicView = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
-                          <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#667eea'} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#667eea' }} />
+                          <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#142D4E'} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
+                            <LabelList dataKey={key} position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
                           </Line>
                         ))}
                       </LineChart>
@@ -797,8 +798,8 @@ function AcademicSection({ user, isPublicView = false }) {
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={areaKeys} isMobile={chartIsMobile} />}
                     />
                     {areaKeys.map(key => (
-                      <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#667eea'} strokeWidth={2.5} dot={{ fill: AREA_COLORS[key]?.stroke || '#667eea', r: 4, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} animationEasing="ease-in-out">
-                        <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#667eea' }} />
+                      <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#142D4E'} strokeWidth={2.5} dot={{ fill: AREA_COLORS[key]?.stroke || '#142D4E', r: 4, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} animationEasing="ease-in-out">
+                        <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
                       </Line>
                     ))}
                   </LineChart>
@@ -820,8 +821,8 @@ function AcademicSection({ user, isPublicView = false }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
-                          <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.stroke || '#667eea'} radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#1a2744' }} />
+                          <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.stroke || '#142D4E'} radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#142D4E' }} />
                           </Bar>
                         ))}
                       </BarChart>
@@ -838,7 +839,7 @@ function AcademicSection({ user, isPublicView = false }) {
                     <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }}
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={areaKeys} isMobile={chartIsMobile} />}
                     />
-                    {selectedGender === 'Total'       && <Bar dataKey="Total"       fill="#667eea" radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Total"       position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} /></Bar>}
+                    {selectedGender === 'Total'       && <Bar dataKey="Total"       fill="#142D4E" radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Total"       position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} /></Bar>}
                     {selectedGender === 'All' && <>
                       <Bar dataKey="Male"        fill={COLORS[0]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Male"        position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[0] }} /></Bar>
                       <Bar dataKey="Female"      fill={COLORS[1]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Female"      position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[1] }} /></Bar>
@@ -989,7 +990,7 @@ function AcademicSection({ user, isPublicView = false }) {
               <div className="state-dist-wrap">
                 {stateTop10.length === 0 && (
                   <div className="no-data-overlay">
-                    <span className="no-data-overlay-icon">🗺️</span>
+                    <DashboardIcon name="global" size={32} className="no-data-overlay-icon" />
                     <p className="no-data-overlay-text">No state distribution data to display.</p>
                   </div>
                 )}

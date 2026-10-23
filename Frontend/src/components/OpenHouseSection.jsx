@@ -11,6 +11,8 @@ import {
   Tooltip,
   Legend, LabelList
 } from 'recharts';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined, CameraOutlined } from '@ant-design/icons';
 import CustomTooltip from './CustomTooltip';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
@@ -123,7 +125,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
         <h1 className="oh-header-h1">Open House &amp; Campus Events</h1>
         {!isReadOnlyView && isAdmin && (
           <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-            <span>&#128228;</span> Upload Event Data
+            <UploadOutlined /> Upload Event Data
           </button>
         )}
       </div>
@@ -183,7 +185,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                       <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                      <Bar dataKey="event_count" name="Events" fill="#667eea" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="event_count" name="Events" fill="#142D4E" radius={[6, 6, 0, 0]} />
                       <Bar dataKey="total_visitors" name="Visitors" fill="#22c55e" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -196,7 +198,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="event_count" fill="#667eea" name="Events" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="event_count" fill="#142D4E" name="Events" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="total_visitors" fill="#22c55e" name="Visitors" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -265,7 +267,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                     <td className="oh-td-bold">{formatNumber(event.total_visitors)}</td>
                     <td>
                       {safeHref(event.photos_url) && (
-                        <a href={safeHref(event.photos_url)} target="_blank" rel="noreferrer" className="oh-td-link">&#128248; View</a>
+                        <a href={safeHref(event.photos_url)} target="_blank" rel="noreferrer" className="oh-td-link"><CameraOutlined /> View</a>
                       )}
                     </td>
                   </tr>

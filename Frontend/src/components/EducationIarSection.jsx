@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined, LineChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   LineChart,
@@ -30,7 +32,7 @@ import './ResearchSection.css';
 import '../DesignSystem.css';
 import './EducationIarSection.css';
 
-const IAR_MOU_COLOR = '#14b8a6';
+const IAR_MOU_COLOR = '#087E8B';
 
 const formatDate = (value) => {
   if (!value) return '–';
@@ -119,7 +121,7 @@ function EducationIarSection({ user, isPublicView = false }) {
           <div className="section-header-left">
             <h1 className="eiar-h1">
               <span className="icon-wrapper eiar-icon-wrapper">
-                🤝
+                <DashboardIcon name="link" size={24} />
               </span>
               {isPublicView
                 ? 'Academic Collaborations'
@@ -134,7 +136,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 className="page-upload-btn"
                 onClick={() => setIsUploadModalOpen(true)}
               >
-                <span>&#128228;</span> Upload MoUs
+                <UploadOutlined /> Upload MoUs
               </button>
             </div>
           )}
@@ -156,7 +158,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                 <div className="eiar-card-decor" />
                 <div className="eiar-card-inner">
                   <div className="eiar-card-header">
-                    <span className="eiar-card-icon">🤝</span>
+                    <DashboardIcon name="link" className="eiar-card-icon" />
                     <span className="eiar-card-title">Total Academic MoUs</span>
                   </div>
                   <div className="eiar-card-value">{totalMous}</div>
@@ -192,14 +194,14 @@ function EducationIarSection({ user, isPublicView = false }) {
                   onClick={() => setViewType('trend')}
                   className={`eiar-view-btn${viewType === 'trend' ? ' eiar-view-btn--trend-active' : ''}`}
                 >
-                  &#128200; Trend Overview
+                  <LineChartOutlined /> Trend Overview
                 </button>
                 {(!!user && user.role_id !== 0) && (
                   <button
                     onClick={() => setViewType('directory')}
                     className={`eiar-view-btn${viewType === 'directory' ? ' eiar-view-btn--dir-active' : ''}`}
                   >
-                    &#128203; MoUs Directory
+                    <ProfileOutlined /> MoUs Directory
                   </button>
                 )}
               </div>

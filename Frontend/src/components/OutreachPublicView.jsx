@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { PREVIEW_QUERY } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './OutreachMinimal.css';
@@ -9,14 +10,14 @@ const sections = [
     id: 'social-engagement',
     title: 'Social Engagements',
     subtitle: 'Community outreach and extension activities',
-    icon: '🤝',
+    icon: <DashboardIcon name="link" />,
     to: '/outreach-extension/social-engagement',
   },
   {
     id: 'students-engagement',
     title: 'Students Engagement',
     subtitle: 'Student-led initiatives and programmes',
-    icon: '🎓',
+    icon: <DashboardIcon name="education" />,
     to: '/outreach-extension/students-engagement',
   },
 ];

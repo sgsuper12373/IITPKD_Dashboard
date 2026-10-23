@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
 import InnovationPublicView from './InnovationPublicView';
 import './Page.css';
 import './PeopleCampus.css';
@@ -82,7 +83,7 @@ function InnovationEntrepreneurship({ user }) {
                 className="people-campus-card"
               >
                 <div className="card-icon">
-                  {section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? '💡' : section.title === 'Startup Portfolio' ? '📇' : section.title === 'Home Grown Startup' ? '🏠' : '🚀'}
+                  <DashboardIcon name={section.title === 'IIT Palakkad Technology IHub Foundation (IPTIF)' ? 'innovation' : section.title === 'Startup Portfolio' ? 'profile' : section.title === 'Home Grown Startup' ? 'home' : 'startup'} />
                 </div>
                 <h3 className="card-title">{section.title}</h3>
                 <p className="card-description">{section.description}</p>

@@ -23,7 +23,7 @@
 
 /* ── Icon wrapper ── */
 .eiar-icon-wrapper {
-  background: #14b8a6;
+  background: #087E8B;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -48,10 +48,10 @@
 
 /* ── Summary card ── */
 .eiar-summary-card {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  background: linear-gradient(135deg, #087E8B 0%, #066A75 100%);
   border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 8px 16px rgba(8, 126, 139, 0.2);
   position: relative;
   overflow: hidden;
   max-width: 400px;
@@ -108,41 +108,60 @@
 .eiar-filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
 /* ── Filters label ── */
-.eiar-filter-h4 { margin: 0; color: #333; font-size: 14px; }
+.eiar-filter-h4 { margin: 0; color: #142D4E; font-size: 14px; }
 
 /* ── Clear/reset button ── */
 .eiar-clear-btn {
-  padding: 6px 12px;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--color-error);
+  border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: var(--transition);
 }
+.eiar-clear-btn:hover { background: var(--color-error); color: #fff; box-shadow: 0 2px 8px rgba(220,38,38,0.25); transform: translateY(-1px); }
 
 /* ── View toggle row ── */
-.eiar-view-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.eiar-view-row {
+  display: inline-flex;
+  gap: 3px;
+  background: var(--color-bg-2);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
 
 /* ── View buttons base ── */
 .eiar-view-btn {
   padding: 6px 14px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background-color: #fff;
-  color: #333;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
   cursor: pointer;
+  transition: color var(--dur-mid) var(--ease-spring),
+              background-color var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
-.eiar-view-btn--trend-active { border-color: #14b8a6; background-color: #ccfbf1; color: #0f766e; }
-.eiar-view-btn--dir-active   { border-color: #0ea5e9; background-color: #e0f2fe; color: #0369a1; }
+.eiar-view-btn:hover { color: var(--color-text); background: rgba(255,255,255,0.6); }
+.eiar-view-btn--trend-active { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
+.eiar-view-btn--dir-active   { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
 
 /* ── Chart mode row ── */
-.eiar-mode-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.eiar-mode-row { display: inline-flex; gap: 3px; background: var(--color-bg-2); padding: 3px; border-radius: var(--radius-sm); margin-bottom: 16px; }
 
 /* ── Chart mode buttons ── */
-.eiar-mode-btn { padding: 6px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: none; background-color: #f1f5f9; color: #555; }
-.eiar-mode-btn--active { background-color: #14b8a6; color: #fff; }
+.eiar-mode-btn { padding: 6px 16px; font-size: var(--text-xs); font-weight: 600; border-radius: 5px; cursor: pointer; border: none; background: transparent; color: var(--color-text-muted); transition: color var(--dur-mid) var(--ease-spring), background-color var(--dur-mid) var(--ease-spring), box-shadow var(--dur-mid) var(--ease-spring); }
+.eiar-mode-btn--active { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
 
 /* ── Chart container ── */
 .eiar-chart-container { position: relative; padding: 10px; }
@@ -155,7 +174,7 @@
 
 /* ── Directory table ── */
 .eiar-dir-table { width: 100%; font-size: 13px; border-collapse: collapse; }
-.eiar-dir-table thead { position: sticky; top: 0; background-color: #0ea5e9; color: white; }
+.eiar-dir-table thead { position: sticky; top: 0; background-color: #087E8B; color: white; }
 .eiar-dir-table th { padding: 10px; }
 .eiar-dir-table td { padding: 8px; }
 .eiar-td-num   { font-weight: 600; }

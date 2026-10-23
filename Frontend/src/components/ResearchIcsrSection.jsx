@@ -23,6 +23,8 @@ import {
   fetchMouList,
 } from '../services/researchStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined, BarChartOutlined, LineChartOutlined, ProfileOutlined, CalendarOutlined, FileTextOutlined, PushpinOutlined } from '@ant-design/icons';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
@@ -38,11 +40,11 @@ import './ResearchIcsrSection.css';
 
 const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
 const PATENT_COLORS = {
-  Filed: '#6366f1',
+  Filed: '#066A75',
   Granted: '#22c55e',
 };
 
-const MOU_COLOR = '#a855f7';
+const MOU_COLOR = '#142D4E';
 
 const formatDate = (value) => {
   if (!value) return '–';
@@ -358,31 +360,31 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           className="page-upload-btn"
                           onClick={() => navigate('/research/icsr_consultancy_prj')}
                         >
-                          <span>&#9881;&#65039;</span> Manage Consultancy
+                          <DashboardIcon name="setting" size={14} /> Manage Consultancy
                         </button>
                         <button
                           className="page-upload-btn"
                           onClick={() => navigate('/research/icsr_sponsered_prj')}
                         >
-                          <span>&#9881;&#65039;</span> Manage Sponsored
+                          <DashboardIcon name="setting" size={14} /> Manage Sponsored
                         </button>
                         <button
                           className="page-upload-btn"
                           onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}
                         >
-                          <span>&#128228;</span> Consultancy
+                          <UploadOutlined /> Consultancy
                         </button>
                         <button
                           className="page-upload-btn"
                           onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}
                         >
-                          <span>&#128228;</span> Sponsored
+                          <UploadOutlined /> Sponsored
                         </button>
                         <button
                           className="page-upload-btn"
                           onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}
                         >
-                          <span>&#128228;</span> Patents
+                          <UploadOutlined /> Patents
                         </button>
                       </>
                     )}
@@ -390,7 +392,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                       className="page-upload-btn"
                       onClick={() => { setActiveUploadTable('research_mous'); setIsUploadModalOpen(true); }}
                     >
-                      <span>&#128228;</span> MoUs
+                      <UploadOutlined /> MoUs
                     </button>
                   </div>
                 )}
@@ -428,7 +430,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-stat-card icsr-stat-card--indigo">
                     <div className="icsr-stat-card-body">
                       <div className="icsr-stat-card-header">
-                        <span className="icsr-stat-card-icon">&#128202;</span>
+                        <span className="icsr-stat-card-icon"><BarChartOutlined /></span>
                         <h3 className="icsr-stat-card-label">Total Projects</h3>
                       </div>
                       <div className="metric-value">{formatNumber(summary.total_projects)}</div>
@@ -442,7 +444,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-stat-card icsr-stat-card--blue">
                     <div className="icsr-stat-card-body">
                       <div className="icsr-stat-card-header">
-                        <span className="icsr-stat-card-icon">&#127919;</span>
+                        <span className="icsr-stat-card-icon"><DashboardIcon name="aim" /></span>
                         <h3 className="icsr-stat-card-label">Sponsored Projects</h3>
                       </div>
                       <div className="metric-value">{formatNumber(summary.funded_projects)}</div>
@@ -456,7 +458,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-stat-card icsr-stat-card--orange">
                     <div className="icsr-stat-card-body">
                       <div className="icsr-stat-card-header">
-                        <span className="icsr-stat-card-icon">&#128188;</span>
+                        <span className="icsr-stat-card-icon"><DashboardIcon name="briefcase" /></span>
                         <h3 className="icsr-stat-card-label">Consultancy</h3>
                       </div>
                       <div className="metric-value">{formatNumber(summary.consultancy_projects)}</div>
@@ -470,7 +472,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-stat-card icsr-stat-card--teal">
                     <div className="icsr-stat-card-body">
                       <div className="icsr-stat-card-header">
-                        <span className="icsr-stat-card-icon">&#128176;</span>
+                        <span className="icsr-stat-card-icon"><DashboardIcon name="dollar" /></span>
                         <h3 className="icsr-stat-card-label">Total Project Value</h3>
                       </div>
                       <div className="metric-value-sm" title={'₹' + formatNumber(summary.consultancy_revenue)}>
@@ -515,7 +517,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           className={`icsr-nav-tab${viewType === 'projects' ? ' icsr-nav-tab--active' : ''}`}
                           onClick={() => safeSetViewType('projects')}
                         >
-                          &#128202; Projects Trend
+                          <BarChartOutlined /> Projects Trend
                         </button>
                         {/* Patents Trend, Projects Directory, MoUs tabs removed per request */}
                       </div>
@@ -611,16 +613,16 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <strong>Active Filters:</strong>{' '}
                   {(viewType === 'projects' || viewType === 'projectsTable') && (
                     <>
-                      {filters.department !== 'All' && <span>&#127970; {filters.department}</span>}
-                      {filters.project_year !== 'All' && <span> &#128197; {filters.project_year}</span>}
-                      {filters.project_type !== 'All' && <span> &#128203; {filters.project_type}</span>}
-                      {filters.status !== 'All' && <span> &#9889; {filters.status}</span>}
+                      {filters.department !== 'All' && <span><DashboardIcon name="bank" size={14} /> {filters.department}</span>}
+                      {filters.project_year !== 'All' && <span> <CalendarOutlined /> {filters.project_year}</span>}
+                      {filters.project_type !== 'All' && <span> <ProfileOutlined /> {filters.project_type}</span>}
+                      {filters.status !== 'All' && <span> <DashboardIcon name="thunder" size={14} /> {filters.status}</span>}
                     </>
                   )}
                   {viewType === 'patents' && !isRestrictedUser && (
                     <>
-                      {filters.patent_year !== 'All' && <span>&#128197; {filters.patent_year}</span>}
-                      {filters.patent_status !== 'All' && <span> &#128204; {filters.patent_status}</span>}
+                      {filters.patent_year !== 'All' && <span><CalendarOutlined /> {filters.patent_year}</span>}
+                      {filters.patent_status !== 'All' && <span> <PushpinOutlined /> {filters.patent_status}</span>}
                     </>
                   )}
                 </div>
@@ -634,7 +636,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-chart-header-row">
                     <div className="chart-header">
                       <h2 className="icsr-chart-title">
-                        <span className="icsr-chart-icon">&#128202;</span> Projects Trend
+                        <span className="icsr-chart-icon"><BarChartOutlined /></span> Projects Trend
                       </h2>
                       <p className="chart-description">
                         Annual count of sponsored and consultancy projects.
@@ -676,8 +678,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                               <Tooltip content={<CustomTooltip />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                              <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="funded" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#6366f1" }} />
+                              <Bar dataKey="funded" name="Sponsored Projects" fill="#066A75" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="funded" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                               </Bar>
                               <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[6, 6, 0, 0]}>
                                 <LabelList dataKey="consultancy" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
@@ -690,7 +692,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                               <Tooltip content={<CustomTooltip />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                              <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={3} dot={{ r: 6 }} />
+                              <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} />
                               <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={3} dot={{ r: 6 }} />
                             </LineChart>
                           )}
@@ -709,8 +711,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} width={32} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
-                          <Bar dataKey="funded" name="Sponsored Projects" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={18}>
-                            <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                          <Bar dataKey="funded" name="Sponsored Projects" fill="#066A75" radius={[4, 4, 0, 0]} barSize={18}>
+                            <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                           </Bar>
                           <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18}>
                             <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
@@ -723,8 +725,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
-                            <LabelList dataKey="funded" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                          <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#066A75" strokeWidth={2.5} dot={{ r: 3 }}>
+                            <LabelList dataKey="funded" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                           </Line>
                           <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }}>
                             <LabelList dataKey="consultancy" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
@@ -742,7 +744,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-chart-header-row">
                     <div className="chart-header">
                       <h2 className="icsr-chart-title">
-                        <span className="icsr-chart-icon">&#128221;</span> Knowledge Transfer
+                        <span className="icsr-chart-icon"><FileTextOutlined /></span> Knowledge Transfer
                       </h2>
                       <p className="chart-description">
                         Year-wise patent filings, grants, and publications.
@@ -854,7 +856,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                   <div className="icsr-chart-header-row">
                     <div className="chart-header">
                       <h2 className="icsr-dir-title">
-                        <span>&#128203;</span> Projects Directory
+                        <ProfileOutlined /> Projects Directory
                       </h2>
                       <p className="icsr-dir-count">
                         {projectList.length} projects found
@@ -961,7 +963,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                               className={`icsr-nav-tab${viewType === 'projects' ? ' icsr-nav-tab--active' : ''}`}
                               onClick={() => safeSetViewType('projects')}
                             >
-                              &#128202; Projects Trend
+                              <BarChartOutlined /> Projects Trend
                             </button>
                             {/* Patents Trend, Projects Directory, MoUs tabs removed per request */}
                           </div>
@@ -983,7 +985,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           className={`icsr-mou-tab${mouViewType === 'trend' ? ' icsr-mou-tab--active-trend' : ''}`}
                           onClick={() => safeSetMouViewType('trend')}
                         >
-                          &#128200; MoUs Trend
+                          <LineChartOutlined /> MoUs Trend
                         </button>
 
                         {/* Directory button hidden for guest/restricted users */}
@@ -992,7 +994,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                             className={`icsr-mou-tab${mouViewType === 'directory' ? ' icsr-mou-tab--active-directory' : ''}`}
                             onClick={() => safeSetMouViewType('directory')}
                           >
-                            &#128203; MoUs Directory
+                            <ProfileOutlined /> MoUs Directory
                           </button>
                         )}
                       </div>

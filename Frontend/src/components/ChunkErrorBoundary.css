@@ -16,8 +16,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 4px solid #e9ecef;
-  border-top-color: #667eea;
+  border: 4px solid #EDE9DF;
+  border-top-color: #142D4E;
   animation: cberr-spin 0.75s linear infinite;
 }
 
@@ -33,14 +33,14 @@
   padding: 24px;
   text-align: center;
 }
-.cberr-h2 { margin-bottom: 12px; color: #333; }
+.cberr-h2 { margin-bottom: 12px; color: #142D4E; }
 .cberr-p  { margin-bottom: 24px; color: #666; max-width: 480px; }
 .cberr-reload-btn {
   padding: 10px 24px;
   font-size: 16px;
   border-radius: 6px;
   border: none;
-  background: #667eea;
+  background: #142D4E;
   color: #fff;
   cursor: pointer;
 }

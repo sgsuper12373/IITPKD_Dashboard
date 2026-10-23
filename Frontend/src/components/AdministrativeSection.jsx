@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, PieChartOutlined, BankOutlined, ProfileOutlined, UploadOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend,
@@ -31,27 +33,27 @@ const BAR_ANIMATION = {
   animationEasing: 'ease-out', animationBegin: 80
 };
 
-const GENDER_COLORS = { Male: '#667eea', Female: '#764ba2', Transgender: '#43e97b', Other: '#f093fb' };
+const GENDER_COLORS = { Male: '#142D4E', Female: '#0F1F36', Transgender: '#087E8B', Other: '#066A75' };
 
 // SERIES_META order defines both bar render order AND legend order for Regular section
 const SERIES_META = [
-  { key: 'Total', color: '#667eea', gradientId: 'colorEmpTotal', label: 'Total' },
-  { key: 'Male', color: '#43e97b', gradientId: 'colorEmpMale', label: 'Male' },
-  { key: 'Female', color: '#fa709a', gradientId: 'colorEmpFemale', label: 'Female' },
-  { key: 'Other', color: '#f093fb', gradientId: 'colorEmpOther', label: 'Transgender' },
+  { key: 'Total', color: '#142D4E', gradientId: 'colorEmpTotal', label: 'Total' },
+  { key: 'Male', color: '#087E8B', gradientId: 'colorEmpMale', label: 'Male' },
+  { key: 'Female', color: '#066A75', gradientId: 'colorEmpFemale', label: 'Female' },
+  { key: 'Other', color: '#066A75', gradientId: 'colorEmpOther', label: 'Transgender' },
 ];
 
 const REGULAR_VIEWS = [
-  { value: 'yearwise', label: 'Yearwise Strength', icon: '📈' },
-  { value: 'department', label: 'Faculty Strength', icon: '📊' },
-  { value: 'gender', label: 'Gender Ratio', icon: '🥧' },
+  { value: 'yearwise', label: 'Yearwise Strength', icon: <LineChartOutlined /> },
+  { value: 'department', label: 'Faculty Strength', icon: <BarChartOutlined /> },
+  { value: 'gender', label: 'Gender Ratio', icon: <PieChartOutlined /> },
 ];
 
 const EDU_VIEWS = [
-  { value: 'department', label: '🏢 Department', color: '#22c55e' },
-  { value: 'trend', label: '📈 Trend', color: '#f97316' },
-  { value: 'distribution', label: '🥧 Distribution', color: '#a855f7' },
-  { value: 'details', label: '📋 Details', color: '#0ea5e9' },
+  { value: 'department', label: <><BankOutlined /> Department</>, color: '#22c55e' },
+  { value: 'trend', label: <><LineChartOutlined /> Trend</>, color: '#087E8B' },
+  { value: 'distribution', label: <><PieChartOutlined /> Distribution</>, color: '#142D4E' },
+  { value: 'details', label: <><ProfileOutlined /> Details</>, color: '#087E8B' },
 ];
 
 const NUM_YEARS_OPTIONS = [
@@ -63,17 +65,17 @@ const NUM_YEARS_OPTIONS = [
 ];
 
 const ENGAGEMENT_COLORS = {
-  Adjunct: '#667eea', Honorary: '#764ba2', Visiting: '#f093fb',
-  FacultyFellow: '#4facfe', PoP: '#00f2fe'
+  Adjunct: '#142D4E', Honorary: '#0F1F36', Visiting: '#066A75',
+  FacultyFellow: '#066A75', PoP: '#087E8B'
 };
 
 // ✅ FIXED: ENGAGEMENT_CARD_META and EDU_ENGAGEMENT_ORDER MUST match exactly
 // This order is: Adjunct → Honorary → Visiting → PoP
 const ENGAGEMENT_CARD_META = [
-  { type: 'Adjunct', label: 'Adjunct Faculty', icon: '👨‍🏫', grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: 'rgba(102,126,234,0.25)' },
-  { type: 'Honorary', label: 'Honorary Faculty', icon: '🏅', grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.25)' },
-  { type: 'Visiting', label: 'Visiting Faculty', icon: '✈️', grad: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.25)' },
-  { type: 'PoP', label: 'Professor of Practice', icon: '🎓', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.25)' },
+  { type: 'Adjunct', label: 'Adjunct Faculty', icon: 'people', grad: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)', shadow: 'rgba(102,126,234,0.25)' },
+  { type: 'Honorary', label: 'Honorary Faculty', icon: 'trophy', grad: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: 'rgba(8, 126, 139,0.25)' },
+  { type: 'Visiting', label: 'Visiting Faculty', icon: 'global', grad: 'linear-gradient(135deg, #087E8B 0%, #087E8B 100%)', shadow: 'rgba(8, 126, 139,0.25)' },
+  { type: 'PoP', label: 'Professor of Practice', icon: 'education', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.25)' },
 ];
 
 const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 'Visiting', PoP: 'PoP' };
@@ -82,7 +84,7 @@ const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 
 // MUST be: Adjunct → Honorary → Visiting → PoP (matches ENGAGEMENT_CARD_META)
 const EDU_ENGAGEMENT_ORDER = ['Adjunct', 'Honorary', 'Visiting', 'PoP'];
 
-const EDU_COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'];
+const EDU_COLORS = ['#142D4E', '#0F1F36', '#066A75', '#066A75', '#087E8B'];
 
 const formatNumber = (v) => new Intl.NumberFormat('en-IN').format(Number(v) || 0);
 
@@ -102,7 +104,7 @@ function ChartLegendContent({ payload, orderedKeys, size = 'compact' }) {
         <li key={entry.dataKey ?? entry.value} className="chart-legend-item">
           <span className="chart-legend-swatch"
             style={{ backgroundColor: entry.color, width: large ? 12 : 10, height: large ? 12 : 10, borderRadius: large ? 3 : 2 }} />
-          <span style={large ? { fontWeight: 600, color: '#334155' } : undefined}>{entry.value}</span>
+          <span style={large ? { fontWeight: 600, color: '#142D4E' } : undefined}>{entry.value}</span>
         </li>
       ))}
     </ul>
@@ -460,18 +462,13 @@ function AdministrativeSection({ user, isPublicView = false }) {
         {/* ── Section Toggle ── */}
         <div className="mode-toggle-row">
           {[
-            { key: 'regular', label: '👥 Regular Employees', color: '#667eea' },
-            { key: 'education', label: '🎓 Non-Regular Faculty', color: '#22c55e' },
-          ].map(({ key, label, color }) => (
+            { key: 'regular', label: <><DashboardIcon name="students" size={14} /> Regular Employees</>, color: '#142D4E' },
+            { key: 'education', label: <><DashboardIcon name="education" size={14} /> Non-Regular Faculty</>, color: '#22c55e' },
+          ].map(({ key, label }) => (
             <button
               key={key}
-              className="section-toggle-btn"
+              className={`section-toggle-btn${section === key ? ' section-toggle-btn--active' : ''}`}
               onClick={() => setSection(key)}
-              style={{
-                backgroundColor: section === key ? color : '#f1f5f9',
-                color: section === key ? 'white' : '#475569',
-                boxShadow: section === key ? `0 4px 12px ${color}40` : 'none',
-              }}
             >
               {label}
             </button>
@@ -491,7 +488,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     onClick={() => setEduView(value)}
                     style={{
                       backgroundColor: eduView === value ? color : 'transparent',
-                      color: eduView === value ? 'white' : '#475569',
+                      color: eduView === value ? 'white' : '#142D4E',
                     }}
                   >
                     {label}
@@ -694,7 +691,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <div className="metric-card-glow" />
               <div className="metric-card-inner">
                 <div className="metric-card-icon-row adm-metric-icon-row--mb">
-                  <span className="metric-card-icon">📅</span>
+                  <DashboardIcon name="calendar" className="metric-card-icon" />
                   <span className="metric-card-label adm-metric-label--lg">Filter by Year</span>
                 </div>
                 <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="metric-card-filter-select">
@@ -708,9 +705,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
             </div>
 
             {[
-              { label: 'Total Employees', icon: '👥', data: allYearwise, grad: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)' },
-              { label: 'Faculty', icon: '🎓', data: teachingYearwise, grad: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)' },
-              { label: 'Staff', icon: '🏢', data: nonTeachingYearwise, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.2)' },
+              { label: 'Total Employees', icon: 'students', data: allYearwise, grad: 'linear-gradient(135deg, #087E8B 0%, #087E8B 100%)', shadow: 'rgba(8, 126, 139,0.2)' },
+              { label: 'Faculty', icon: 'education', data: teachingYearwise, grad: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)' },
+              { label: 'Staff', icon: 'bank', data: nonTeachingYearwise, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.2)' },
             ].map(({ label, icon, data, grad, shadow }) => {
               const val = selectedYear === 'All'
                 ? data.reduce((s, r) => s + (r.Total || 0), 0)
@@ -720,7 +717,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <div className="metric-card-glow" />
                   <div className="metric-card-inner">
                     <div className="metric-card-icon-row">
-                      <span className="metric-card-icon">{icon}</span>
+                      <DashboardIcon name={icon} className="metric-card-icon" />
                       <span className="metric-card-label">{label}</span>
                     </div>
                     <div className="metric-card-value">{data.length === 0 ? '—' : val}</div>
@@ -834,7 +831,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             <div className="metric-card-glow" />
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">🎓</span>
+                <DashboardIcon name="education" className="metric-card-icon" />
                 <span className="metric-card-label">Total Non-Regular</span>
               </div>
               <div className="metric-card-value">
@@ -891,7 +888,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
         {selectedCardType && section === 'education' && (
           <DrilldownTable
             typeLabel={isAllSelected ? 'All Non-Regular' : (ENGAGEMENT_LABELS[selectedCardType] || selectedCardType)}
-            typeColor={isAllSelected ? '#667eea' : (ENGAGEMENT_COLORS[selectedCardType] || '#667eea')}
+            typeColor={isAllSelected ? '#142D4E' : (ENGAGEMENT_COLORS[selectedCardType] || '#142D4E')}
             data={cardDetailsData}
             exportId="nonreg-drilldown-table"
             exportFilename={isAllSelected ? 'all_non_regular_faculty' : `faculty_list_${selectedCardType}`}
@@ -975,11 +972,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
             <div className="section-header-actions">
               {section === 'education' ? (
                 <button className="page-upload-btn" onClick={() => setIsFacultyUploadModalOpen(true)}>
-                  <span>📤</span> Upload Faculty Engagement Data
+                  <UploadOutlined /> Upload Faculty Engagement Data
                 </button>
               ) : (
                 <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <span>📤</span> Upload Employee Data
+                  <UploadOutlined /> Upload Employee Data
                 </button>
               )}
             </div>
@@ -1008,7 +1005,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                 {['Bar', 'Trend'].map(mode => (
                   <button key={mode} type="button" onClick={() => setYearwiseChartType(mode)}
                     className={`chart-toggle-btn${yearwiseChartType === mode ? ' active' : ''}`}>
-                    {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                    {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                   </button>
                 ))}
               </div>
@@ -1037,7 +1034,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <div id="admin-yearwise-chart-container" className="state-dist-wrap">
                 {yearwiseData.length === 0 && (
                   <div className="no-data-overlay">
-                    <span className="no-data-overlay-icon">📊</span>
+                    <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
                     <p className="no-data-overlay-text">No employee records match the current filters.</p>
                   </div>
                 )}
@@ -1157,7 +1154,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               <div className="state-dist-wrap">
                 {!hasDeptData && (
                   <div className="no-data-overlay">
-                    <span className="no-data-overlay-icon">📊</span>
+                    <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
                     <p className="no-data-overlay-text">No active faculty match the current filters.</p>
                   </div>
                 )}
@@ -1173,8 +1170,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} interval={0} />
                           <YAxis tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey="count" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#667eea' }} />
+                          <Bar dataKey="count" name="Faculty" fill="#142D4E" radius={[6, 6, 0, 0]}>
+                            <LabelList dataKey="count" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#142D4E' }} />
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
@@ -1187,8 +1184,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
                       <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                       <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                      <Bar dataKey="count" name="Faculty" fill="#667eea" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
-                        <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
+                      <Bar dataKey="count" name="Faculty" fill="#142D4E" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
+                        <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -1236,7 +1233,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
               >
                 {genderData.length === 0 && (
                   <div className="no-data-overlay">
-                    <span className="no-data-overlay-icon">📊</span>
+                    <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
                     <p className="no-data-overlay-text">No gender data matches the current filters.</p>
                   </div>
                 )}
@@ -1275,7 +1272,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {section === 'education' && eduView === 'department' && (
             <>
               <div className="mode-toggle-row adm-toggle-bar">
-                {[{ mode: 'Bar', icon: '📊' }, { mode: 'Trend', icon: '📈' }].map(({ mode, icon }) => (
+                {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Trend', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
                   <button key={mode} type="button" onClick={() => setEduDeptChartType(mode)}
                     className={`chart-toggle-btn${eduDeptChartType === mode ? ' active' : ''}`}>
                     {icon} {mode}
@@ -1360,7 +1357,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {section === 'education' && eduView === 'trend' && (
             <>
               <div className="mode-toggle-row adm-toggle-bar">
-                {[{ mode: 'Bar', icon: '📊' }, { mode: 'Line', icon: '📈' }].map(({ mode, icon }) => (
+                {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Line', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
                   <button key={mode} type="button" onClick={() => setEduTrendChartType(mode)}
                     className={`chart-toggle-btn${eduTrendChartType === mode ? ' active' : ''}`}>
                     {icon} {mode}
@@ -1370,7 +1367,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
               <div className="chart-title-row">
                 <div>
-                  <h2 className="adm-chart-h2--lg">&#128200; Year-wise Trends</h2>
+                  <h2 className="adm-chart-h2--lg"><LineChartOutlined /> Year-wise Trends</h2>
                   <p className="chart-description">
                     Active faculty engagement trends over multiple years
                     <span className="trend-badge">Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span>
@@ -1446,7 +1443,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             <>
               <div className="chart-title-row">
                 <div>
-                  <h2 className="adm-chart-h2--lg">&#129383; Type Distribution</h2>
+                  <h2 className="adm-chart-h2--lg"><PieChartOutlined /> Type Distribution</h2>
                   <p className="chart-description">Active faculty by engagement type</p>
                 </div>
                 <ExportMenu
@@ -1542,7 +1539,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             <>
               <div className="chart-title-row">
                 <div>
-                  <h2 className="adm-chart-h2--lg">&#128203; Engagement Details</h2>
+                  <h2 className="adm-chart-h2--lg"><ProfileOutlined /> Engagement Details</h2>
                   <p className="chart-description">
                     Detailed list of all external academic engagements · {eduEngagementList.length} records
                   </p>

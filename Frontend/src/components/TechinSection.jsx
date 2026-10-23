@@ -28,6 +28,8 @@ import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
 import './TechinSection.css';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined } from '@ant-design/icons';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 
@@ -64,17 +66,7 @@ const TRANSITION_STYLE = `
   }
   .techin-tab-btn:hover  { transform: translateY(-1px); }
   .techin-tab-btn:active { transform: translateY(0); }
-  .techin-mode-btn {
-    padding: 6px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
-  }
-  .techin-mode-btn:hover  { transform: translateY(-1px); }
-  .techin-mode-btn:active { transform: translateY(0); }
+  /* mode-btn styles moved to TechinSection.css */
   .techin-summary-card {
     border-radius: 20px;
     padding: 24px;
@@ -97,9 +89,9 @@ function injectStyle() {
 }
 
 const VIEWS = [
-  { id: 'programs',  label: 'Programs Trend',   color: '#667eea', icon: '📊' },
-  { id: 'skillDev',  label: 'Skill Dev Trend',  color: '#f093fb', icon: '🎯' },
-  { id: 'startups',  label: 'Startups Growth',  color: '#43e97b', icon: '🚀' },
+  { id: 'programs',  label: 'Programs Trend',   color: '#142D4E', icon: 'chart' },
+  { id: 'skillDev',  label: 'Skill Dev Trend',  color: '#066A75', icon: 'aim' },
+  { id: 'startups',  label: 'Startups Growth',  color: '#087E8B', icon: 'startup' },
 ];
 
 function TechinSection({ user, isPublicView = false }) {
@@ -275,7 +267,7 @@ function TechinSection({ user, isPublicView = false }) {
     >
       {data.length === 0 && (
         <div className="techin-no-data-overlay">
-          <span className="techin-no-data-icon">&#128202;</span>
+          <span className="techin-no-data-icon"><DashboardIcon name="chart" size={32} /></span>
           <p className="techin-no-data-text">No data available for the selected filters.</p>
         </div>
       )}
@@ -308,7 +300,7 @@ function TechinSection({ user, isPublicView = false }) {
   );
 
   const currentView = VIEWS.find(v => v.id === viewType);
-  const color = currentView?.color || '#667eea';
+  const color = currentView?.color || '#142D4E';
 
   const renderFilters = () => {
     if (viewType === 'programs') return (
@@ -399,7 +391,7 @@ function TechinSection({ user, isPublicView = false }) {
         );
       }
       return (
-        <TableShell headerBg="#667eea" columns="2fr 1.2fr 1.2fr 1fr 1fr">
+        <TableShell headerBg="#142D4E" columns="2fr 1.2fr 1.2fr 1fr 1fr">
           {[
             <><div>Program Name</div><div>Type</div><div>Association</div><div>Date</div><div>Attendees</div></>,
             <>
@@ -437,7 +429,7 @@ function TechinSection({ user, isPublicView = false }) {
         );
       }
       return (
-        <TableShell headerBg="#f093fb" columns="2fr 1.2fr 1.2fr 1fr 1fr">
+        <TableShell headerBg="#066A75" columns="2fr 1.2fr 1.2fr 1fr 1fr">
           {[
             <><div>Program Name</div><div>Category</div><div>Association</div><div>Date</div><div>Attendees</div></>,
             <>
@@ -476,7 +468,7 @@ function TechinSection({ user, isPublicView = false }) {
       }
       const startupCols = hideRevenue ? '1.8fr 1.5fr 1fr 1fr' : '1.8fr 1.5fr 1fr 1fr 1.2fr';
       return (
-        <TableShell headerBg="#43e97b" columns={startupCols}>
+        <TableShell headerBg="#087E8B" columns={startupCols}>
           {[
             <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs</div>{!hideRevenue && <div>Revenue (₹)</div>}</>,
             <>
@@ -525,7 +517,7 @@ function TechinSection({ user, isPublicView = false }) {
               { label: 'Upload Startups',  table: 'techin_startup_table' },
             ].map(({ label, table }) => (
               <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
-                &#128228; {label}
+                <UploadOutlined /> {label}
               </button>
             ))}
           </div>
@@ -551,9 +543,9 @@ function TechinSection({ user, isPublicView = false }) {
 
         <div id="techin-summary-cards-container" className="techin-cards-grid">
           {[
-            { view: 'programs', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Programs',     value: summary.total_programs },
-            { view: 'skillDev', bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
-            { view: 'startups', bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)',  label: 'Total Startups',     value: summary.total_startups },
+            { view: 'programs', bg: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)', shadow: '0 10px 20px rgba(15, 31, 54,0.2)', label: 'Total Programs',     value: summary.total_programs },
+            { view: 'skillDev', bg: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)', shadow: '0 10px 20px rgba(8, 126, 139,0.2)', label: 'Skill Dev Programs', value: summary.total_skill_dev_programs },
+            { view: 'startups', bg: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: '0 10px 20px rgba(8, 126, 139,0.2)',  label: 'Total Startups',     value: summary.total_startups },
           ].map(({ view, bg, shadow, label, value }) => (
             <div
               key={view}
@@ -583,9 +575,9 @@ function TechinSection({ user, isPublicView = false }) {
             </div>
             <div id="techin-revenue-metrics-container" className="techin-revenue-grid">
               {[
-                { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', shadow: '0 8px 20px rgba(59,130,246,0.2)',  label: 'Total Revenue',   value: summary.total_startup_revenue },
+                { bg: 'linear-gradient(135deg, #142D4E 0%, #066A75 100%)', shadow: '0 8px 20px rgba(6, 106, 117,0.2)',  label: 'Total Revenue',   value: summary.total_startup_revenue },
                 { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)',  label: 'Highest Revenue', value: summary.highest_revenue },
-                { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', shadow: '0 8px 20px rgba(245,158,11,0.2)',  label: 'Average Revenue', value: summary.average_revenue }
+                { bg: 'linear-gradient(135deg, #066A75 0%, #142D4E 100%)', shadow: '0 8px 20px rgba(8, 126, 139,0.2)',  label: 'Average Revenue', value: summary.average_revenue }
               ].map(({ bg, shadow, label, value }) => (
                 <div key={label} className="techin-revenue-card" style={{ background: bg, boxShadow: shadow }}>
                   <div className="techin-revenue-card-decor" />
@@ -620,7 +612,7 @@ function TechinSection({ user, isPublicView = false }) {
                     fontWeight: active ? 600 : 500,
                   }}
                 >
-                  <span className="techin-tab-icon">{icon}</span>{label}
+                  <span className="techin-tab-icon"><DashboardIcon name={icon} size={16} /></span>{label}
                 </button>
               );
             })}
@@ -638,7 +630,7 @@ function TechinSection({ user, isPublicView = false }) {
           <div className="techin-chart-header-row">
             <div>
               <h2 className="techin-chart-h2">
-                <span className="techin-chart-icon">{currentView?.icon}</span>
+                <span className="techin-chart-icon"><DashboardIcon name={currentView?.icon} size={20} /></span>
                 {currentView?.label}
               </h2>
               <p className="techin-chart-desc">
@@ -656,13 +648,8 @@ function TechinSection({ user, isPublicView = false }) {
                   return (
                     <button
                       key={mode}
-                      className="techin-mode-btn"
+                      className={`techin-mode-btn${modeActive ? ' techin-mode-btn--active' : ''}`}
                       onClick={() => switchMode(mode)}
-                      style={{
-                        backgroundColor: modeActive ? color : '#e9ecef',
-                        color: modeActive ? '#fff' : '#333',
-                        boxShadow: modeActive ? `0 4px 10px ${color}40` : 'none',
-                      }}
                     >
                       {modeLabel}
                     </button>
@@ -734,7 +721,7 @@ function TechinSection({ user, isPublicView = false }) {
 function EmptyState({ msg }) {
   return (
     <div className="techin-empty-state" style={{ height: `${CONTENT_HEIGHT}px` }}>
-      <span className="techin-empty-icon">&#128193;</span>
+      <span className="techin-empty-icon"><DashboardIcon name="folder" size={32} /></span>
       <p className="techin-empty-text">{msg || 'No data available for the selected filters.'}</p>
     </div>
   );

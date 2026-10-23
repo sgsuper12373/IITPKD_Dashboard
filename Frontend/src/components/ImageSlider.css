@@ -20,7 +20,7 @@
   overflow: hidden;
   border-radius: 18px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-  background: #faf9f7; /* warm off-white — visible only for contain slides */
+  background: #F7F5EF; /* warm off-white — visible only for contain slides */
 }
 
 /* ================= SLIDER TRACK ================= */
@@ -92,15 +92,15 @@
 .slider-button:focus,
 .slider-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(247, 166, 0, 0.35);
+  box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.35);
 }
 
 .slider-button:hover {
-  background: #f7a600;
-  border-color: #f7a600;
+  background: #087E8B;
+  border-color: #087E8B;
   color: #fff;
   transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(247, 166, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(8, 126, 139, 0.4);
 }
 
 .slider-button:active {
@@ -134,7 +134,7 @@
 }
 
 .slider-dot.active {
-  background: var(--accent, #f7a600);
+  background: var(--accent, #087E8B);
   width: 24px;
   height: 10px;
   border-radius: 6px;
@@ -153,7 +153,7 @@
 .image-slider-instructions {
   margin-top: 1rem;
   font-size: 0.9rem;
-  color: #888;
+  color: #94a3b8;
 }
 
 .image-slider-instructions code {

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   BarChart,
@@ -29,10 +31,10 @@ import SectionSkeleton from './SectionSkeleton';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const ENERGY_BAR_COLOR = '#667eea';
-const ELECTRICITY_LINE_COLOR = '#f59e0b';
-const WATER_LINE_COLOR = '#43e97b';
-const RECYCLED_LINE_COLOR = '#fa709a';
+const ENERGY_BAR_COLOR = '#142D4E';
+const ELECTRICITY_LINE_COLOR = '#066A75';
+const WATER_LINE_COLOR = '#087E8B';
+const RECYCLED_LINE_COLOR = '#066A75';
 const GREEN_AREA_STROKE = '#34d399';
 const GREEN_AREA_FILL = 'rgba(52, 211, 153, 0.35)';
 
@@ -193,7 +195,7 @@ function EwdSection({ user, isPublicView = false }) {
                   className="page-upload-btn"
                   onClick={() => setIsUploadModalOpen(true)}
                 >
-                  <span>&#128228;</span> Upload Data
+                  <UploadOutlined /> Upload Data
                 </button>
               )}
             </div>
@@ -228,7 +230,7 @@ function EwdSection({ user, isPublicView = false }) {
                   <div className="ewd-stat-card-decor" />
                   <div className="ewd-stat-card-body">
                     <div className="ewd-stat-card-header">
-                      <span className="ewd-stat-card-icon">&#9889;</span>
+                      <DashboardIcon name="thunder" className="ewd-stat-card-icon" />
                       <span className="ewd-stat-card-label">Total Annual Electricity</span>
                     </div>
                     <div className="ewd-stat-card-value">{formatNumber(summary.totalAnnualElectricity)}</div>
@@ -243,7 +245,7 @@ function EwdSection({ user, isPublicView = false }) {
                   <div className="ewd-stat-card-decor" />
                   <div className="ewd-stat-card-body">
                     <div className="ewd-stat-card-header">
-                      <span className="ewd-stat-card-icon">&#128161;</span>
+                      <DashboardIcon name="innovation" className="ewd-stat-card-icon" />
                       <span className="ewd-stat-card-label">Avg. Per Capita Electricity</span>
                     </div>
                     <div className="ewd-stat-card-value">{formatDecimal(summary.averagePerCapitaElectricity)}</div>
@@ -258,7 +260,7 @@ function EwdSection({ user, isPublicView = false }) {
                   <div className="ewd-stat-card-decor" />
                   <div className="ewd-stat-card-body">
                     <div className="ewd-stat-card-header">
-                      <span className="ewd-stat-card-icon">&#128167;</span>
+                      <DashboardIcon name="cloud" className="ewd-stat-card-icon" />
                       <span className="ewd-stat-card-label">Avg. Per Capita Water</span>
                     </div>
                     <div className="ewd-stat-card-value">{formatDecimal(summary.averagePerCapitaWater)}</div>
@@ -275,7 +277,7 @@ function EwdSection({ user, isPublicView = false }) {
               <div className="ewd-indicators-panel">
                 <div className="ewd-indicators-header">
                   <div className="ewd-indicators-title-group">
-                    <span className="ewd-indicators-icon">&#128202;</span>
+                    <DashboardIcon name="chart" className="ewd-indicators-icon" />
                     <h2 className="ewd-indicators-h2">Current Year Indicators</h2>
                   </div>
                   <div className="ewd-indicators-controls">
@@ -307,25 +309,25 @@ function EwdSection({ user, isPublicView = false }) {
 
                 <div id="ewd-current-year-indicators-container" className="ewd-indicators-grid">
                   <div className="ewd-indicator-card ewd-indicator-card--amber">
-                    <div className="ewd-indicator-label ewd-indicator-label--amber">&#9889; Per Capita Electricity</div>
+                    <div className="ewd-indicator-label ewd-indicator-label--amber"><DashboardIcon name="thunder" size={14} /> Per Capita Electricity</div>
                     <div className="ewd-indicator-value ewd-indicator-value--amber">{formatDecimal(selectedYearData.perCapitaElectricity)}</div>
                     <div className="ewd-indicator-unit">kWh</div>
                   </div>
 
                   <div className="ewd-indicator-card ewd-indicator-card--green">
-                    <div className="ewd-indicator-label ewd-indicator-label--green">&#128167; Per Capita Water</div>
+                    <div className="ewd-indicator-label ewd-indicator-label--green"><DashboardIcon name="cloud" size={14} /> Per Capita Water</div>
                     <div className="ewd-indicator-value ewd-indicator-value--green">{formatDecimal(selectedYearData.perCapitaWater)}</div>
                     <div className="ewd-indicator-unit">Litres</div>
                   </div>
 
                   <div className="ewd-indicator-card ewd-indicator-card--pink">
-                    <div className="ewd-indicator-label ewd-indicator-label--pink">&#128260; Per Capita Recycled</div>
+                    <div className="ewd-indicator-label ewd-indicator-label--pink"><DashboardIcon name="sync" size={14} /> Per Capita Recycled</div>
                     <div className="ewd-indicator-value ewd-indicator-value--pink">{formatDecimal(selectedYearData.perCapitaRecycled)}</div>
                     <div className="ewd-indicator-unit">Litres</div>
                   </div>
 
                   <div className="ewd-indicator-card ewd-indicator-card--teal">
-                    <div className="ewd-indicator-label ewd-indicator-label--teal">&#127795; Green Coverage</div>
+                    <div className="ewd-indicator-label ewd-indicator-label--teal"><DashboardIcon name="tree" size={14} /> Green Coverage</div>
                     <div className="ewd-indicator-value ewd-indicator-value--teal">{formatDecimal(selectedYearData.greenCoverage)}</div>
                     <div className="ewd-indicator-unit">sq.m</div>
                   </div>
@@ -339,21 +341,21 @@ function EwdSection({ user, isPublicView = false }) {
                 onClick={() => setActiveView('electricity')}
                 className={`ewd-view-tab${activeView === 'electricity' ? ' ewd-view-tab--active-electricity' : ''}`}
               >
-                <span>&#9889;</span> Annual Electricity
+                <DashboardIcon name="thunder" size={14} /> Annual Electricity
               </button>
               <button
                 type="button"
                 onClick={() => setActiveView('perCapita')}
                 className={`ewd-view-tab${activeView === 'perCapita' ? ' ewd-view-tab--active-perCapita' : ''}`}
               >
-                <span>&#128202;</span> Per Capita Trends
+                <DashboardIcon name="chart" size={14} /> Per Capita Trends
               </button>
               <button
                 type="button"
                 onClick={() => setActiveView('environment')}
                 className={`ewd-view-tab${activeView === 'environment' ? ' ewd-view-tab--active-environment' : ''}`}
               >
-                <span>&#127795;</span> Environmental Summary
+                <DashboardIcon name="tree" size={14} /> Environmental Summary
               </button>
             </div>
 
@@ -378,14 +380,14 @@ function EwdSection({ user, isPublicView = false }) {
                   {['Bar', 'Trend'].map(mode => (
                     <button key={mode} type="button" onClick={() => setChartType(mode)}
                       className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
-                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                      {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
                   <div className="ewd-no-data">
-                    <span className="ewd-no-data-icon">&#9889;</span>
+                    <DashboardIcon name="thunder" className="ewd-no-data-icon" />
                     <p className="ewd-no-data-text">No EWD records available.</p>
                   </div>
                 ) : (
@@ -403,8 +405,8 @@ function EwdSection({ user, isPublicView = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 600 } }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '13px', paddingBottom: '20px' }} />
-                              <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#667eea" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#667eea" }} />
+                              <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#142D4E" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#142D4E" }} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -419,8 +421,8 @@ function EwdSection({ user, isPublicView = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                            <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#667eea" radius={[4, 4, 0, 0]} barSize={30}>
-                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                            <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#142D4E" radius={[4, 4, 0, 0]} barSize={30}>
+                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -438,8 +440,8 @@ function EwdSection({ user, isPublicView = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 600 } }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '13px', paddingBottom: '20px' }} />
-                              <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#667eea" strokeWidth={4} dot={{ r: 6, fill: '#667eea' }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#667eea" }} />
+                              <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#142D4E" strokeWidth={4} dot={{ r: 6, fill: '#142D4E' }} activeDot={{ r: 8 }}>
+                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#142D4E" }} />
                               </Line>
                             </LineChart>
                           </ResponsiveContainer>
@@ -454,8 +456,8 @@ function EwdSection({ user, isPublicView = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                            <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#667eea" strokeWidth={3} dot={{ r: 5, fill: '#667eea', strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#667eea" }} />
+                            <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#142D4E" strokeWidth={3} dot={{ r: 5, fill: '#142D4E', strokeWidth: 0 }} activeDot={{ r: 7 }}>
+                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
@@ -487,14 +489,14 @@ function EwdSection({ user, isPublicView = false }) {
                   {['Bar', 'Trend'].map(mode => (
                     <button key={mode} type="button" onClick={() => setChartType(mode)}
                       className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
-                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                      {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
                   <div className="ewd-no-data">
-                    <span className="ewd-no-data-icon">&#128202;</span>
+                    <DashboardIcon name="chart" className="ewd-no-data-icon" />
                     <p className="ewd-no-data-text">No per capita consumption records available.</p>
                   </div>
                 ) : (
@@ -511,14 +513,14 @@ function EwdSection({ user, isPublicView = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '13px', paddingBottom: '20px' }} />
-                              <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#f59e0b" }} />
+                              <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#066A75" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                               </Bar>
-                              <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#43e97b" }} />
+                              <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#087E8B" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#087E8B" }} />
                               </Bar>
-                              <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#fa709a" }} />
+                              <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#066A75" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -533,14 +535,14 @@ function EwdSection({ user, isPublicView = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                            <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                            <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#066A75" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                             </Bar>
-                            <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#43e97b" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                            <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#087E8B" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                             </Bar>
-                            <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#fa709a" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                            <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#066A75" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -558,14 +560,14 @@ function EwdSection({ user, isPublicView = false }) {
                               <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '13px', paddingBottom: '20px' }} />
-                              <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#f59e0b" }} />
+                              <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
+                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                               </Line>
-                              <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#43e97b" }} />
+                              <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#087E8B" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
+                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#087E8B" }} />
                               </Line>
-                              <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#fa709a" }} />
+                              <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
+                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                               </Line>
                             </LineChart>
                           </ResponsiveContainer>
@@ -580,14 +582,14 @@ function EwdSection({ user, isPublicView = false }) {
                             <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                             <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
-                            <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 4, fill: '#f59e0b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                            <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#066A75" strokeWidth={2.5} dot={{ r: 4, fill: '#066A75', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                             </Line>
-                            <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#43e97b" strokeWidth={2.5} dot={{ r: 4, fill: '#43e97b', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#43e97b" }} />
+                            <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#087E8B" strokeWidth={2.5} dot={{ r: 4, fill: '#087E8B', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                             </Line>
-                            <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#fa709a" strokeWidth={2.5} dot={{ r: 4, fill: '#fa709a', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#fa709a" }} />
+                            <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#066A75" strokeWidth={2.5} dot={{ r: 4, fill: '#066A75', strokeWidth: 0 }} activeDot={{ r: 6 }}>
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
@@ -619,14 +621,14 @@ function EwdSection({ user, isPublicView = false }) {
                   {['Bar', 'Trend'].map(mode => (
                     <button key={mode} type="button" onClick={() => setChartType(mode)}
                       className={`ewd-mode-btn${chartType === mode ? ' ewd-mode-btn--active' : ''}`}>
-                      {mode === 'Bar' ? '📊 Bar' : '📈 Trend'}
+                      {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                     </button>
                   ))}
                 </div>
 
                 {filteredYearlyData.length === 0 ? (
                   <div className="ewd-no-data">
-                    <span className="ewd-no-data-icon">&#127795;</span>
+                    <DashboardIcon name="tree" className="ewd-no-data-icon" />
                     <p className="ewd-no-data-text">No environmental records available.</p>
                   </div>
                 ) : (

@@ -3,13 +3,13 @@
 .profile-actions {
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 2px solid #e3e1dc;
+  border-top: 2px solid #DCE3E7;
 }
 
 .upload-data-btn {
   background-color: #ffffff;
-  color: #92400e;
-  border: 1px solid rgba(247, 166, 0, 0.4);
+  color: #066A75;
+  border: 1px solid rgba(8, 126, 139, 0.4);
 
   padding: 0.75rem 1.75rem;
   border-radius: 8px;
@@ -33,7 +33,7 @@
 
   box-shadow:
     0 10px 22px rgba(0, 0, 0, 0.15),
-    0 0 0 2px rgba(247, 166, 0, 0.25);
+    0 0 0 2px rgba(8, 126, 139, 0.25);
 }
 
 
@@ -43,7 +43,7 @@
   margin-top: 1.5rem;
   padding: 1.5rem;
   background: #fafafa;
-  border: 1px solid #e3e1dc;
+  border: 1px solid #DCE3E7;
   border-radius: 12px;
   animation: rolesPanelIn 0.3s ease;
 }
@@ -94,11 +94,11 @@
   background: #ffffff;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e3e1dc;
+  border: 1px solid #DCE3E7;
 }
 
 .roles-table thead th {
-  background: linear-gradient(135deg, #f7a600 0%, #e89500 100%);
+  background: linear-gradient(135deg, #087E8B 0%, #066A75 100%);
   color: #fff;
   padding: 0.75rem 1rem;
   text-align: left;
@@ -120,13 +120,13 @@
 .roles-table td {
   padding: 0.7rem 1rem;
   font-size: 0.9rem;
-  color: #333;
+  color: #142D4E;
   vertical-align: middle;
 }
 
 .roles-id-cell {
   font-weight: 700;
-  color: #f7a600;
+  color: #087E8B;
   font-size: 0.95rem;
 }
 
@@ -143,15 +143,15 @@
   font-size: 0.9rem;
   font-family: inherit;
   background: #fff;
-  color: #333;
+  color: #142D4E;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
 }
 
 .roles-edit-input:focus {
   outline: none;
-  border-color: #f7a600;
-  box-shadow: 0 0 0 3px rgba(247, 166, 0, 0.15);
+  border-color: #087E8B;
+  box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.15);
 }
 
 /* Action Buttons */
@@ -173,14 +173,14 @@
 
 .roles-btn-edit {
   background: #fff7ed;
-  color: #92400e;
-  border-color: rgba(247, 166, 0, 0.3);
+  color: #066A75;
+  border-color: rgba(8, 126, 139, 0.3);
 }
 
 .roles-btn-edit:hover {
-  background: #f7a600;
+  background: #087E8B;
   color: #fff;
-  border-color: #f7a600;
+  border-color: #087E8B;
 }
 
 .roles-btn-save {
@@ -251,7 +251,7 @@
 }
 
 .roles-btn-add {
-  background: linear-gradient(135deg, #f7a600 0%, #e89500 100%);
+  background: linear-gradient(135deg, #087E8B 0%, #066A75 100%);
   color: #fff;
   border: none;
   padding: 0.5rem 1.25rem;
@@ -259,7 +259,7 @@
 }
 
 .roles-btn-add:hover {
-  box-shadow: 0 4px 12px rgba(247, 166, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(8, 126, 139, 0.3);
   transform: translateY(-1px);
 }
 
@@ -368,7 +368,7 @@
   }
 
   .truncate-list-row {
-    border: 1px solid #e3e1dc;
+    border: 1px solid #DCE3E7;
     border-radius: 8px;
     margin-bottom: 0.6rem;
     padding: 0.75rem;
@@ -426,7 +426,7 @@
 .profile-btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 /* ── Active panel button states ── */
-.page-upload-btn--active       { background-color: #f7a600 !important; color: #fff !important; }
+.page-upload-btn--active       { background-color: #087E8B !important; color: #fff !important; }
 .page-upload-btn--active-danger { background-color: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; }
 
 /* ── Loading / status text ── */
@@ -462,8 +462,8 @@
   border: 1px solid #bbf7d0;
 }
 .profile-status-pending_verification {
-  background: #fffbeb;
-  color: #92400e;
+  background: rgba(8, 126, 139, 0.06);
+  color: #066A75;
   border: 1px solid #fde68a;
 }
 .profile-status-deactivated {
@@ -480,7 +480,7 @@
 .profile-role-select { width: auto; }
 
 /* ── Role ID display in table ── */
-.profile-role-id { font-weight: 600; color: #333; }
+.profile-role-id { font-weight: 600; color: #142D4E; }
 
 /* ── Password edit column ── */
 .profile-pw-col   { display: flex; flex-direction: column; gap: 5px; }
@@ -493,7 +493,7 @@
 .profile-export-grid        { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .profile-export-grid > *    { flex: 1 1 min(200px, 100%); }
 .profile-export-label       { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.profile-table-name         { font-size: 14px; color: #333; }
+.profile-table-name         { font-size: 14px; color: #142D4E; }
 
 /* ── Export action row ── */
 .profile-export-actions      { display: flex; gap: 10px; align-items: center; }

@@ -30,5 +30,5 @@
 
 /* Optional hover for readability */
 .csv-preview tbody tr:hover {
-  background-color: rgba(247, 166, 0, 0.08);
+  background-color: rgba(8, 126, 139, 0.08);
 }

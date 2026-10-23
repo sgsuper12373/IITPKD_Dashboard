@@ -29,6 +29,8 @@ import {
   fetchTopRecruiters
 } from '../services/placementStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined, SearchOutlined } from '@ant-design/icons';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 
@@ -41,8 +43,8 @@ import ChartExpandModal from './ChartExpandModal';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const GENDER_COLORS = ['#6366f1', '#ec4899', '#f97316'];
-const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
+const GENDER_COLORS = ['#066A75', '#066A75', '#087E8B'];
+const SECTOR_COLORS = ['#142D4E', '#22c55e', '#087E8B', '#087E8B', '#142D4E', '#066A75', '#087E8B', '#087E8B'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -449,13 +451,13 @@ function PlacementSection({ user, isPublicView = false }) {
   }, [packageTrend, chartIsMobile]);
 
   const ALL_RADIO_BUTTONS = [
-    { id: 'placementTrend', label: 'Placement Trend', color: '#6366f1' },
-    { id: 'genderWise', label: 'Gender Breakdown', color: '#ec4899' },
-    { id: 'programWise', label: 'Program-wise', color: '#f97316' },
-    { id: 'recruiters', label: 'Recruiters', color: '#f59e0b' },
-    { id: 'sectorWise', label: 'Sector-wise', color: '#4f46e5' },
+    { id: 'placementTrend', label: 'Placement Trend', color: '#066A75' },
+    { id: 'genderWise', label: 'Gender Breakdown', color: '#066A75' },
+    { id: 'programWise', label: 'Program-wise', color: '#087E8B' },
+    { id: 'recruiters', label: 'Recruiters', color: '#066A75' },
+    { id: 'sectorWise', label: 'Sector-wise', color: '#142D4E' },
     { id: 'packageTrend', label: 'Package Trends', color: '#10b981' },
-    { id: 'topRecruiters', label: 'Top Recruiters', color: '#8b5cf6' },
+    { id: 'topRecruiters', label: 'Top Recruiters', color: '#066A75' },
   ];
 
   const radioButtons = ALL_RADIO_BUTTONS.filter(
@@ -467,7 +469,7 @@ function PlacementSection({ user, isPublicView = false }) {
   const renderFilterPanel = () => (
     <div className="filter-panel">
       <div className="filter-panel-header">
-        <h4 className="shared-filter-panel-title">&#128269; Filters</h4>
+        <h4 className="shared-filter-panel-title"><SearchOutlined /> Filters</h4>
         <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
       </div>
 
@@ -615,19 +617,19 @@ function PlacementSection({ user, isPublicView = false }) {
                   className="page-upload-btn"
                   onClick={() => { setActiveUploadTable('placement_summary'); setIsUploadModalOpen(true); }}
                 >
-                  <span>&#128228;</span> Upload Summary
+                  <UploadOutlined /> Upload Summary
                 </button>
                 <button
                   className="page-upload-btn"
                   onClick={() => { setActiveUploadTable('placement_companies'); setIsUploadModalOpen(true); }}
                 >
-                  <span>&#128228;</span> Upload Companies
+                  <UploadOutlined /> Upload Companies
                 </button>
                 <button
                   className="page-upload-btn"
                   onClick={() => { setActiveUploadTable('placement_packages'); setIsUploadModalOpen(true); }}
                 >
-                  <span>&#128228;</span> Upload Packages
+                  <UploadOutlined /> Upload Packages
                 </button>
               </div>
             )}
@@ -651,7 +653,7 @@ function PlacementSection({ user, isPublicView = false }) {
           <div className="metric-card pls-metric-card--indigo">
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">&#127891;</span>
+                <DashboardIcon name="education" className="metric-card-icon" />
                 <h3 className="metric-card-label">Registered {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-card-value">{formatNumber(summary.registered)}</div>
@@ -665,7 +667,7 @@ function PlacementSection({ user, isPublicView = false }) {
           <div className="metric-card pls-metric-card--green">
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">&#128188;</span>
+                <DashboardIcon name="briefcase" className="metric-card-icon" />
                 <h3 className="metric-card-label">Placed {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-card-value">{formatNumber(summary.placed)}</div>
@@ -679,7 +681,7 @@ function PlacementSection({ user, isPublicView = false }) {
           <div className="metric-card pls-metric-card--amber">
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">&#128200;</span>
+                <DashboardIcon name="line-chart" className="metric-card-icon" />
                 <h3 className="metric-card-label">Placement % {summary.year && `(${summary.year})`}</h3>
               </div>
               <div className="metric-card-value">{formatPercentage(summary.placement_percentage)}</div>
@@ -695,7 +697,7 @@ function PlacementSection({ user, isPublicView = false }) {
               <div className="metric-card-glow" />
               <div className="metric-card-inner">
                 <div className="metric-card-icon-row">
-                  <span className="metric-card-icon">&#127942;</span>
+                  <DashboardIcon name="trophy" className="metric-card-icon" />
                   <span className="metric-card-label">Highest {summary.year && `(${summary.year})`}</span>
                 </div>
                 <div className="metric-card-value">{formatCurrency(summary.highest_package)}</div>
@@ -711,7 +713,7 @@ function PlacementSection({ user, isPublicView = false }) {
             <div className="metric-card-glow" />
             <div className="metric-card-inner">
               <div className="metric-card-icon-row">
-                <span className="metric-card-icon">&#128200;</span>
+                <DashboardIcon name="line-chart" className="metric-card-icon" />
                 <span className="metric-card-label">Average {summary.year && `(${summary.year})`}</span>
               </div>
               <div className="metric-card-value">{formatCurrency(summary.average_package)}</div>
@@ -778,7 +780,7 @@ function PlacementSection({ user, isPublicView = false }) {
                             <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
                             <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                             <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                            <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                            <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[6, 6, 0, 0]} />
                             <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
@@ -792,8 +794,8 @@ function PlacementSection({ user, isPublicView = false }) {
                         <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                         <Legend wrapperStyle={{ fontSize: '11px' }} iconType="rect" />
-                        <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16}>
-                          <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                        <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                         </Bar>
                         <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
                           <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
@@ -809,14 +811,14 @@ function PlacementSection({ user, isPublicView = false }) {
                       <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                       <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                       <Legend wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="linear" dataKey="percentage" name="Placement %" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }}>
-                        <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                      <Line type="linear" dataKey="percentage" name="Placement %" stroke="#087E8B" strokeWidth={2.5} dot={{ r: 3 }}>
+                        <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                       </Line>
                       <Line type="linear" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }}>
                         <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
                       </Line>
-                      <Line type="linear" dataKey="registered" name="Registered" stroke="#6366f1" strokeWidth={2} dot={{ r: 3 }}>
-                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                      <Line type="linear" dataKey="registered" name="Registered" stroke="#066A75" strokeWidth={2} dot={{ r: 3 }}>
+                        <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                       </Line>
                     </LineChart>
                   </ResponsiveContainer>
@@ -941,8 +943,8 @@ function PlacementSection({ user, isPublicView = false }) {
                         <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                         <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                        <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#6366f1" }} />
+                        <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                         </Bar>
                         <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]}>
                           <LabelList dataKey="placed" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
@@ -961,8 +963,8 @@ function PlacementSection({ user, isPublicView = false }) {
                     <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                    <Bar dataKey="registered" name="Registered" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#6366f1" }} />
+                    <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[4, 4, 0, 0]} barSize={30}>
+                      <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                     </Bar>
                     <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30}>
                       <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
@@ -1010,11 +1012,11 @@ function PlacementSection({ user, isPublicView = false }) {
                         <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
                         <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                        <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="companies" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#f59e0b" }} />
+                        <Bar dataKey="companies" name="Companies" fill="#066A75" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="companies" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
                         </Bar>
-                        <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="offers" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#38bdf8" }} />
+                        <Bar dataKey="offers" name="Offers" fill="#087E8B" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="offers" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -1030,11 +1032,11 @@ function PlacementSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                    <Bar dataKey="companies" name="Companies" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#f59e0b" }} />
+                    <Bar dataKey="companies" name="Companies" fill="#066A75" radius={[4, 4, 0, 0]} barSize={30}>
+                      <LabelList dataKey="companies" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                     </Bar>
-                    <Bar dataKey="offers" name="Offers" fill="#38bdf8" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="offers" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#38bdf8" }} />
+                    <Bar dataKey="offers" name="Offers" fill="#087E8B" radius={[4, 4, 0, 0]} barSize={30}>
+                      <LabelList dataKey="offers" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -1143,7 +1145,7 @@ function PlacementSection({ user, isPublicView = false }) {
                         <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={3} dot={{ r: 6 }} />
-                        <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="linear" dataKey="highest" name="Highest Package" stroke="#142D4E" strokeWidth={3} dot={{ r: 6 }} />
                         <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={3} dot={{ r: 6 }} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -1162,8 +1164,8 @@ function PlacementSection({ user, isPublicView = false }) {
                     <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
                       <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
                     </Line>
-                    <Line type="linear" dataKey="highest" name="Highest Package" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="highest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#3b82f6" }} />
+                    <Line type="linear" dataKey="highest" name="Highest Package" stroke="#142D4E" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                      <LabelList offset={5} dataKey="highest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
                     </Line>
                     <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
                       <LabelList offset={5} dataKey="lowest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#ef4444" }} />

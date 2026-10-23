@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   fetchConclaveSummary,
   fetchConclaveList
@@ -80,7 +82,7 @@ function ConclaveSection({ user, isPublicView = false }) {
             {!isReadOnlyView && isAdmin && (
               <div className="page-header-actions">
                 <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <span>&#128228;</span> Upload Conclave Data
+                  <UploadOutlined /> Upload Conclave Data
                 </button>
               </div>
             )}
@@ -111,7 +113,7 @@ function ConclaveSection({ user, isPublicView = false }) {
             <div className="cncl-stat-card-decor-bottom" />
             <div className="cncl-stat-card-body">
               <div className="cncl-stat-card-header">
-                <span className="cncl-stat-card-icon">&#127919;</span>
+                <DashboardIcon name="aim" className="cncl-stat-card-icon" />
                 <h3 className="cncl-stat-card-h3">Total Conclaves</h3>
               </div>
               <div className="cncl-stat-card-value">{formatNumber(summary.total_conclaves)}</div>
@@ -127,7 +129,7 @@ function ConclaveSection({ user, isPublicView = false }) {
             <div className="cncl-stat-card-decor-bottom" />
             <div className="cncl-stat-card-body">
               <div className="cncl-stat-card-header">
-                <span className="cncl-stat-card-icon">&#127962;</span>
+                <DashboardIcon name="bank" className="cncl-stat-card-icon" />
                 <h3 className="cncl-stat-card-h3">Companies Participated</h3>
               </div>
               <div className="cncl-stat-card-value">{formatNumber(summary.total_companies)}</div>
@@ -161,11 +163,11 @@ function ConclaveSection({ user, isPublicView = false }) {
                 <div key={conclave.conclave_id} className="cncl-card">
                   <div className="cncl-card-header">
                     <div className="cncl-card-header-left">
-                      <span className="cncl-card-year-icon">&#127914;</span>
+                      <DashboardIcon name="calendar" className="cncl-card-year-icon" />
                       <h2 className="cncl-card-year">{conclave.year}</h2>
                     </div>
                     <div className="cncl-card-count-badge">
-                      <span>&#127962;</span>
+                      <DashboardIcon name="bank" size={16} />
                       {formatNumber(conclave.number_of_companies)} Companies
                     </div>
                   </div>
@@ -173,7 +175,7 @@ function ConclaveSection({ user, isPublicView = false }) {
                   <div className="cncl-card-body">
                     <div className="cncl-theme-block">
                       <div className="cncl-theme-header">
-                        <span className="cncl-theme-icon">&#127919;</span>
+                        <DashboardIcon name="aim" className="cncl-theme-icon" />
                         <h3 className="cncl-theme-h3">Theme</h3>
                       </div>
                       <p className="cncl-theme-text">{conclave.theme}</p>
@@ -182,7 +184,7 @@ function ConclaveSection({ user, isPublicView = false }) {
                     {conclave.focus_area && (
                       <div className="cncl-info-block">
                         <div className="cncl-info-header">
-                          <span className="cncl-info-icon">&#128205;</span>
+                          <DashboardIcon name="location" className="cncl-info-icon" />
                           <span className="cncl-info-label">Focus Area</span>
                         </div>
                         <p className="cncl-info-text">{conclave.focus_area}</p>
@@ -195,7 +197,7 @@ function ConclaveSection({ user, isPublicView = false }) {
 
                     {conclave.sessions_held && (
                       <div className="cncl-info-block cncl-info-block--row">
-                        <span className="cncl-info-icon--lg">&#128197;</span>
+                        <DashboardIcon name="calendar" className="cncl-info-icon--lg" />
                         <div>
                           <span className="cncl-info-label">Sessions</span>
                           <p className="cncl-info-text">{conclave.sessions_held}</p>
@@ -205,7 +207,7 @@ function ConclaveSection({ user, isPublicView = false }) {
 
                     {conclave.key_speakers && (
                       <div className="cncl-info-block cncl-info-block--row">
-                        <span className="cncl-info-icon--lg">&#127908;</span>
+                        <DashboardIcon name="sound" className="cncl-info-icon--lg" />
                         <div>
                           <span className="cncl-info-label">Key Speakers</span>
                           <p className="cncl-info-text">{conclave.key_speakers}</p>
@@ -222,7 +224,7 @@ function ConclaveSection({ user, isPublicView = false }) {
                             rel="noopener noreferrer"
                             className="cncl-action-link"
                           >
-                            <span>&#128196;</span> View Brochure
+                            <DashboardIcon name="file" size={14} /> View Brochure
                           </a>
                         )}
                         {safeHref(conclave.event_photos_url) && (
@@ -232,7 +234,7 @@ function ConclaveSection({ user, isPublicView = false }) {
                             rel="noopener noreferrer"
                             className="cncl-action-link"
                           >
-                            <span>&#128247;</span> View Photos
+                            <DashboardIcon name="camera" size={14} /> View Photos
                           </a>
                         )}
                       </div>
@@ -244,7 +246,7 @@ function ConclaveSection({ user, isPublicView = false }) {
           </div>
         ) : (
           <div className="cncl-empty-state">
-            <span className="cncl-empty-icon">&#127914;</span>
+            <DashboardIcon name="calendar" className="cncl-empty-icon" />
             <p className="cncl-empty-text">No conclave data available.</p>
           </div>
         )}

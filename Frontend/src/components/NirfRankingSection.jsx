@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { BarChartOutlined, LineChartOutlined } from '@ant-design/icons';
 import './Page.css';
 import './EwdSection.css';
 import './NirfRankingSection.css';
@@ -88,11 +89,11 @@ const NirfRankingSection = ({ user }) => {
     const recentFirst = recentData[0];
 
     const metrics = [
-        { key: 'tlr', label: 'TLR', fullName: 'Teaching, Learning & Resources', color: '#8884d8', fill: '#ede9fe' },
+        { key: 'tlr', label: 'TLR', fullName: 'Teaching, Learning & Resources', color: '#8884d8', fill: 'rgba(20, 45, 78,0.08)' },
         { key: 'rpc', label: 'RPC', fullName: 'Research & Professional Practice', color: '#22c55e', fill: '#dcfce7' },
-        { key: 'go', label: 'GO', fullName: 'Graduation Outcomes', color: '#f59e0b', fill: '#fef3c7' },
-        { key: 'oi', label: 'OI', fullName: 'Outreach & Inclusivity', color: '#f97316', fill: '#ffedd5' },
-        { key: 'pr', label: 'PR', fullName: 'Perception', color: '#0ea5e9', fill: '#e0f2fe' },
+        { key: 'go', label: 'GO', fullName: 'Graduation Outcomes', color: '#066A75', fill: '#fef3c7' },
+        { key: 'oi', label: 'OI', fullName: 'Outreach & Inclusivity', color: '#087E8B', fill: '#ffedd5' },
+        { key: 'pr', label: 'PR', fullName: 'Perception', color: '#087E8B', fill: 'rgba(8, 126, 139,0.08)' },
     ];
 
     const rankData = recentData.filter(d => d.rank != null);
@@ -117,13 +118,13 @@ const NirfRankingSection = ({ user }) => {
                             onClick={() => setChartType('bar')}
                             className={`nirf-mode-btn${chartType === 'bar' ? ' nirf-mode-btn--active' : ''}`}
                         >
-                            &#128202; Bar
+                            <BarChartOutlined /> Bar
                         </button>
                         <button
                             onClick={() => setChartType('trend')}
                             className={`nirf-mode-btn${chartType === 'trend' ? ' nirf-mode-btn--active' : ''}`}
                         >
-                            &#128200; Trend
+                            <LineChartOutlined /> Trend
                         </button>
                     </div>
                     {canUpload && (

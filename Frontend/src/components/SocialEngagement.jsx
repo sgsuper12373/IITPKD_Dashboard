@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PUBLIC_PREVIEW_USER, PREVIEW_QUERY, PublicPreviewContext, isPreviewSearch } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampusMinimal.css';
 import './SocialEngagement.css';
@@ -12,27 +13,27 @@ import OutreachSection from './OutreachSection';
 const SECTIONS = [
   {
     id: 'uba',
-    icon: '🌾',
+    icon: 'outreach',
     title: 'Unnat Bharat Abhiyan',
     subtitle: 'Rural Development Initiatives',
     expandedTitle: 'Engaging with communities through rural development and village adoption programs.',
     description:
       'Track UBA projects, community engagement events, village adoption programs, and the impact of rural development initiatives.',
-    grad: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    shadow: 'rgba(240,147,251,0.3)',
-    shadowHover: 'rgba(240,147,251,0.45)',
+    grad: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)',
+    shadow: 'rgba(8, 126, 139,0.3)',
+    shadowHover: 'rgba(8, 126, 139,0.45)',
     component: UbaSection,
     programKey: null,
   },
   {
     id: 'open-house',
-    icon: '🏛️',
+    icon: 'bank',
     title: 'Open House',
     subtitle: 'Annual Community Showcase',
     expandedTitle: 'Explore Open House events, visitor statistics, and departmental participation.',
     description:
       'Explore Open House events, visitor statistics, departmental participation, and key highlights from each edition of this prestigious annual event.',
-    grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    grad: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)',
     shadow: 'rgba(102,126,234,0.3)',
     shadowHover: 'rgba(102,126,234,0.45)',
     component: OpenHouseSection,
@@ -40,12 +41,12 @@ const SECTIONS = [
   },
   {
     id: 'institute-visits',
-    icon: '🏫',
+    icon: 'home',
     title: 'Institute Visits',
     subtitle: 'Organised institution visits',
     expandedTitle: 'Organised visits by institutions to the IIT Palakkad campus.',
     description: 'Organised visits by institutions to the IIT Palakkad campus.',
-    grad: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    grad: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)',
     shadow: 'rgba(67,233,123,0.3)',
     shadowHover: 'rgba(67,233,123,0.45)',
     component: OutreachSection,
@@ -53,12 +54,12 @@ const SECTIONS = [
   },
   {
     id: 'nss',
-    icon: '🤝',
+    icon: 'people',
     title: 'NSS Activities',
     subtitle: 'Community service initiatives',
     expandedTitle: 'National Service Scheme community service initiatives.',
     description: 'National Service Scheme community service initiatives.',
-    grad: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    grad: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)',
     shadow: 'rgba(250,112,154,0.3)',
     shadowHover: 'rgba(250,112,154,0.45)',
     component: OutreachSection,
@@ -101,7 +102,7 @@ function SocialEngagementsSection({ user: realUser }) {
 
                   <div className="se-card-content">
                     <div className="se-card-header">
-                      <span className="se-card-icon-wrap">{s.icon}</span>
+                      <span className="se-card-icon-wrap"><DashboardIcon name={s.icon} /></span>
                       <h2 className="se-card-h2">{s.title}</h2>
                       <p className="se-card-subtitle">{s.subtitle}</p>
                     </div>
@@ -130,7 +131,7 @@ function SocialEngagementsSection({ user: realUser }) {
               <span className="back-arrow">&#8592;</span>
               <span>Back</span>
             </button>
-            <div className="section-icon-header">{activeItem.icon}</div>
+            <div className="section-icon-header"><DashboardIcon name={activeItem.icon} size={28} /></div>
             <p className="section-overview-text">{activeItem.expandedTitle}</p>
           </div>
           <div className="expanded-card-content">

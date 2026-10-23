@@ -35,11 +35,11 @@ import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
 const ENGAGEMENT_COLORS = {
-  Adjunct: '#667eea',
-  Honorary: '#764ba2',
-  Visiting: '#f093fb',
-  FacultyFellow: '#4facfe',
-  PoP: '#00f2fe'
+  Adjunct: '#142D4E',
+  Honorary: '#0F1F36',
+  Visiting: '#066A75',
+  FacultyFellow: '#066A75',
+  PoP: '#087E8B'
 };
 
 const ENGAGEMENT_LABELS = {
@@ -50,7 +50,7 @@ const ENGAGEMENT_LABELS = {
   PoP: 'PoP'
 };
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe'];
+const COLORS = ['#142D4E', '#0F1F36', '#066A75', '#066A75', '#087E8B'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
@@ -619,18 +619,18 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       className="engagement-card"
                       onClick={() => setSelectedCardType(card.type)}
                       style={{
-                        border: selectedCardType === card.type ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#667eea'}` : undefined,
+                        border: selectedCardType === card.type ? `2px solid ${ENGAGEMENT_COLORS[card.type] || '#142D4E'}` : undefined,
                         boxShadow: selectedCardType === card.type ? `0 8px 16px ${ENGAGEMENT_COLORS[card.type]}20` : undefined,
                         transform: selectedCardType === card.type ? 'translateY(-4px)' : undefined,
                       }}
                     >
                       <div className="engagement-card-label">{ENGAGEMENT_LABELS[card.type] || card.type}</div>
-                      <div className="engagement-card-value" style={{ color: ENGAGEMENT_COLORS[card.type] || '#667eea' }}>
+                      <div className="engagement-card-value" style={{ color: ENGAGEMENT_COLORS[card.type] || '#142D4E' }}>
                         {formatNumber(card.total)}
                       </div>
                       <div className="engagement-card-subtitle">Active: {formatNumber(card.active)}</div>
                       {selectedCardType === card.type && (
-                        <div className="engagement-card-indicator" style={{ backgroundColor: ENGAGEMENT_COLORS[card.type] || '#667eea' }} />
+                        <div className="engagement-card-indicator" style={{ backgroundColor: ENGAGEMENT_COLORS[card.type] || '#142D4E' }} />
                       )}
                     </div>
                   ))}
@@ -651,7 +651,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 <div className="drilldown-panel">
                   <div className="drilldown-panel-header">
                     <h3 className="edu-adm-drilldown-h3">
-                      <span className="engagement-dot" style={{ backgroundColor: ENGAGEMENT_COLORS[selectedCardType] || '#667eea' }} />
+                      <span className="engagement-dot" style={{ backgroundColor: ENGAGEMENT_COLORS[selectedCardType] || '#142D4E' }} />
                       {ENGAGEMENT_LABELS[selectedCardType] || selectedCardType} Faculty List
                       <span className="edu-adm-year-label">
                         ({summaryFilters.year === 'All' ? 'All Years' : `Year: ${summaryFilters.year}`})

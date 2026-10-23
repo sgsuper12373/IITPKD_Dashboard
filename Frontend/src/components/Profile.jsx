@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import './Page.css';
 import './Profile.css';
+import { WarningOutlined, DeleteOutlined, EditOutlined, UserOutlined } from '@ant-design/icons';
 import TruncateConfirmModal from './TruncateConfirmModal';
 
 const API_AUTH_URL = `${import.meta.env.VITE_API_BASE_URL}/auth`;
@@ -323,7 +324,7 @@ function Profile({ user }) {
                     className={`page-upload-btn${activePanel === 'create-user' ? ' page-upload-btn--active' : ''}`}
                     onClick={handleCreateUserClick}
                   >
-                    👤 Create User
+                    <UserOutlined /> Create User
                   </button>
                   <button
                     className={`page-upload-btn${activePanel === 'users' ? ' page-upload-btn--active' : ''}`}
@@ -347,7 +348,7 @@ function Profile({ user }) {
                     className={`page-upload-btn${activePanel === 'truncate' ? ' page-upload-btn--active-danger' : ''}`}
                     onClick={() => togglePanel('truncate')}
                   >
-                    ⚠ Truncate Tables
+                    <WarningOutlined /> Truncate Tables
                   </button>
                 </div>
 
@@ -539,9 +540,9 @@ function Profile({ user }) {
                                     </div>
                                   ) : (
                                     <div className="roles-action-btns">
-                                      <button className="roles-btn roles-btn-edit" onClick={() => handleEditStart(role)}>✎ Edit</button>
+                                      <button className="roles-btn roles-btn-edit" onClick={() => handleEditStart(role)}><EditOutlined /> Edit</button>
                                       <button className="roles-btn roles-btn-delete" onClick={() => handleDeleteRole(role)} disabled={deletingId === role.id}>
-                                        {deletingId === role.id ? '…' : '🗑'}
+                                        {deletingId === role.id ? '…' : <DeleteOutlined />}
                                       </button>
                                     </div>
                                   )}
@@ -620,7 +621,7 @@ function Profile({ user }) {
                 {/* Truncate Tables Panel */}
                 {activePanel === 'truncate' && (
                   <div className="roles-panel">
-                    <h3 className="roles-panel-title roles-panel-title--danger">⚠ Truncate Tables</h3>
+                    <h3 className="roles-panel-title roles-panel-title--danger"><WarningOutlined /> Truncate Tables</h3>
                     <p className="profile-truncate-desc">
                       Permanently delete all rows from a table. Export the data first to keep a backup.
                     </p>

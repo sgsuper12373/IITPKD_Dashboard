@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './ResearchMinimal.css';
@@ -20,7 +21,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       title: 'Sponsored and Consultancy Projects',
       subtitle: '',
       expandedTitle: 'Driving innovation through industry partnerships and funded research',
-      icon: '🔬',
+      icon: <DashboardIcon name="research" />,
       component: ResearchIcsrSection
     },
     {
@@ -28,7 +29,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       title: 'Research Publications',
       subtitle: '',
       expandedTitle: 'Advancing knowledge through publications and research contributions',
-      icon: '📚',
+      icon: <DashboardIcon name="ug" />,
       component: ResearchLibrarySection
     },
     {
@@ -36,7 +37,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       title: 'Research Collaboration',
       subtitle: '',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
-      icon: '🤝',
+      icon: <DashboardIcon name="link" />,
       component: (props) => <ResearchIcsrSection {...props} mouOnly={true} />
     }
   ];
@@ -46,7 +47,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
     title: 'Patents',
     subtitle: '',
     expandedTitle: 'Explore patents and intellectual property contributions',
-    icon: '💡',
+    icon: <DashboardIcon name="innovation" />,
     component: Patents
   };
 

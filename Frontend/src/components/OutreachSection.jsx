@@ -5,6 +5,8 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import { OUTREACH_PROGRAM_ROLES } from '../utils/rolePermissions';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, UploadOutlined } from '@ant-design/icons';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 import './Page.css';
@@ -40,7 +42,7 @@ const PROGRAM_CONFIGS = [
     key: 'science_quest',
     tableKey: 'outreach_science_quest',
     title: 'Science Quest',
-    icon: '🔬',
+    icon: 'research',
     description: 'Science outreach and laboratory programmes for school students',
     match: (name) => name?.toLowerCase().includes('science quest'),
     specificFields: [
@@ -54,7 +56,7 @@ const PROGRAM_CONFIGS = [
     key: 'palakkad_math_circle',
     tableKey: 'outreach_math_circle',
     title: 'Palakkad Math Circle',
-    icon: '📐',
+    icon: 'aim',
     description: 'Mathematics enrichment sessions for school students',
     match: (name) =>
       name?.toLowerCase().includes('math circle') ||
@@ -69,7 +71,7 @@ const PROGRAM_CONFIGS = [
     key: 'pale_blue_dot',
     tableKey: 'outreach_pale_blue_dot',
     title: 'Pale Blue Dot',
-    icon: '🌍',
+    icon: 'global',
     description: 'Astronomy and space science public lecture series',
     match: (name) => name?.toLowerCase().includes('pale blue dot'),
     specificFields: [
@@ -82,7 +84,7 @@ const PROGRAM_CONFIGS = [
     key: 'institute_visits',
     tableKey: 'outreach_institute_visits',
     title: 'Institute Visits',
-    icon: '🏛️',
+    icon: 'bank',
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     match: (name) => name?.toLowerCase().includes('institute visit'),
     specificFields: [
@@ -95,7 +97,7 @@ const PROGRAM_CONFIGS = [
     key: 'nss_activities',
     tableKey: 'outreach_nss_activities',
     title: 'NSS Activities',
-    icon: '🤝',
+    icon: 'people',
     description: 'National Service Scheme community service initiatives',
     match: (name) => name?.toLowerCase().includes('nss'),
     specificFields: NSS_FIELDS,
@@ -173,7 +175,7 @@ function GridRecordCard({ record, slNo, onClick }) {
 
       {(record.start_date || record.end_date) && (
         <div className="ors-card-dates">
-          <span className="ors-card-date-icon">&#128197;</span>
+          <DashboardIcon name="calendar" className="ors-card-date-icon" />
           {record.start_date ? new Date(record.start_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
           {record.end_date && record.start_date !== record.end_date && ` - ${new Date(record.end_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`}
         </div>
@@ -247,7 +249,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
       <div className="outreach-expanded-container">
         {/* Top bar */}
         <div className="outreach-top-bar">
-          <div className="outreach-icon-header">{programConfig.icon}</div>
+          <div className="outreach-icon-header"><DashboardIcon name={programConfig.icon} size={28} /></div>
           <div className="ors-detail-flex">
             <p className="outreach-overview-text">{programConfig.title}</p>
             <p className="ors-detail-desc">{programConfig.description}</p>
@@ -268,7 +270,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
               className="page-upload-btn ors-upload-shrink"
               onClick={() => setIsUploadOpen(true)}
             >
-              &#128228; Upload Data
+              <UploadOutlined /> Upload Data
             </button>
           )}
         </div>
@@ -281,7 +283,7 @@ function ProgramDetailView({ programConfig, records, user, token, loading }) {
             </div>
           ) : matching.length === 0 ? (
             <div className="ors-empty-state">
-              <div className="ors-empty-icon">&#128237;</div>
+              <div className="ors-empty-icon"><DashboardIcon name="file" size={32} /></div>
               <p className="ors-state-p">No records found for <strong>{programConfig.title}</strong>.</p>
               {canModify && (
                 <p className="ors-empty-note">
@@ -430,7 +432,7 @@ function OutreachSection({ user, isPublicView = false, programKey = null }) {
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && setSelectedProgram(config)}
                 >
-                  <div className="outreach-card-icon">{config.icon}</div>
+                  <div className="outreach-card-icon"><DashboardIcon name={config.icon} /></div>
                   <h3 className="outreach-card-title">{config.title}</h3>
                   <p className="outreach-card-subtitle">{config.description}</p>
                   <div className="ors-card-count">

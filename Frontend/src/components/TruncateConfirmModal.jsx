@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { WarningOutlined, BulbOutlined, DeleteOutlined } from '@ant-design/icons';
 import './TruncateConfirmModal.css';
 
 const API_EXPORT_URL = `${import.meta.env.VITE_API_BASE_URL}/api/export`;
@@ -79,7 +80,7 @@ function TruncateConfirmModal({ isOpen, onClose, tableName, token, onTruncateSuc
         {step === 1 && (
           <>
             <div className="truncate-header truncate-header-warning">
-              <span className="truncate-header-icon">⚠</span>
+              <span className="truncate-header-icon"><WarningOutlined /></span>
               <h2>Destructive Action Warning</h2>
             </div>
 
@@ -91,7 +92,7 @@ function TruncateConfirmModal({ isOpen, onClose, tableName, token, onTruncateSuc
               </div>
 
               <div className="truncate-suggestion-banner">
-                <span className="truncate-suggestion-icon">💡</span>
+                <span className="truncate-suggestion-icon"><BulbOutlined /></span>
                 <div>
                   <strong>Recommendation:</strong> Export the table data as a CSV backup before truncating.
                   Use the button below to download a copy first.
@@ -124,7 +125,7 @@ function TruncateConfirmModal({ isOpen, onClose, tableName, token, onTruncateSuc
         {step === 2 && (
           <>
             <div className="truncate-header truncate-header-danger">
-              <span className="truncate-header-icon">🗑</span>
+              <span className="truncate-header-icon"><DeleteOutlined /></span>
               <h2>Confirm Truncation</h2>
             </div>
 

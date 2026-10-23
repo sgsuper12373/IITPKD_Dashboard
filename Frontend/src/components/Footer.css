@@ -3,12 +3,12 @@
    ================================================================ */
 
 :root {
-  --footer-bg:         #1c1c2e;
-  --footer-bg-bottom:  #14141f;
-  --footer-text:       #c0bfbe;
+  --footer-bg:         #0F1F36;
+  --footer-bg-bottom:  #0a1220;
+  --footer-text:       #c0c8d4;
   --footer-heading:    #ffffff;
-  --footer-link:       #a8a6a3;
-  --footer-link-hover: #f7a600;
+  --footer-link:       #94a3b8;
+  --footer-link-hover: #087E8B;
   --footer-border:     rgba(255, 255, 255, 0.08);
   --footer-icon-size:  16px;
 }
@@ -173,7 +173,7 @@
 }
 
 .footer-social-link:hover {
-  background: rgba(247, 166, 0, 0.18);
+  background: rgba(8, 126, 139, 0.18);
   color: var(--footer-link-hover);
   transform: translateY(-2px);
 }
@@ -244,7 +244,7 @@
 .footer-version {
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: rgba(247, 166, 0, 0.5);
+  color: rgba(8, 126, 139, 0.5);
 }
 
 /* ================================================================

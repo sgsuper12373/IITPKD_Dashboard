@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, UploadOutlined, ProfileOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   BarChart,
@@ -36,7 +38,7 @@ import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const PIE_COLORS = ['#667eea', '#764ba2', '#f093fb', '#43e97b', '#fa709a', '#00f2fe', '#f59e0b', '#a78bfa'];
+const PIE_COLORS = ['#142D4E', '#0F1F36', '#066A75', '#087E8B', '#066A75', '#087E8B', '#066A75', '#066A75'];
 const OTHERS_PIE_COLOR = '#94a3b8';
 
 function makePieTooltip(total) {
@@ -111,11 +113,11 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
   );
 }
 
-const HIGHER_BAR_COLOR = '#43e97b';
-const CORPORATE_BAR_COLOR = '#fa709a';
-const TREND_TOTAL_COLOR = '#667eea';
-const TREND_HIGHER_COLOR = '#22d3ee';
-const TREND_CORPORATE_COLOR = '#f97316';
+const HIGHER_BAR_COLOR = '#087E8B';
+const CORPORATE_BAR_COLOR = '#066A75';
+const TREND_TOTAL_COLOR = '#142D4E';
+const TREND_HIGHER_COLOR = '#087E8B';
+const TREND_CORPORATE_COLOR = '#087E8B';
 
 function ClippedLabel(props) {
   const { x, y, width, value, fill } = props;
@@ -304,7 +306,7 @@ function IarSection({ user, isPublicView = false }) {
             <div className="section-header-actions">
               {!isReadOnlyView && isAdmin && (
                 <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <span>📤</span> Upload Data
+                  <UploadOutlined /> Upload Data
                 </button>
               )}
             </div>
@@ -340,7 +342,7 @@ function IarSection({ user, isPublicView = false }) {
               <div className="iar-stat-card-decor" />
               <div className="iar-stat-card-body">
                 <div className="iar-stat-card-header">
-                  <span className="iar-stat-card-icon">👥</span>
+                  <DashboardIcon name="students" className="iar-stat-card-icon" />
                   <span className="iar-stat-card-label">Total Alumni</span>
                 </div>
                 <div className="metric-value iar-stat-card-value">{summary.total_alumni}</div>
@@ -356,7 +358,7 @@ function IarSection({ user, isPublicView = false }) {
               <div className="iar-stat-card-decor" />
               <div className="iar-stat-card-body">
                 <div className="iar-stat-card-header">
-                  <span className="iar-stat-card-icon">🎓</span>
+                  <DashboardIcon name="education" className="iar-stat-card-icon" />
                   <span className="iar-stat-card-label">Higher Studies</span>
                 </div>
                 <div className="metric-value iar-stat-card-value">{summary.higher_studies}</div>
@@ -372,7 +374,7 @@ function IarSection({ user, isPublicView = false }) {
               <div className="iar-stat-card-decor" />
               <div className="iar-stat-card-body">
                 <div className="iar-stat-card-header">
-                  <span className="iar-stat-card-icon">💼</span>
+                  <DashboardIcon name="briefcase" className="iar-stat-card-icon" />
                   <span className="iar-stat-card-label">Corporate Careers</span>
                 </div>
                 <div className="metric-value iar-stat-card-value">{summary.corporate}</div>
@@ -387,10 +389,10 @@ function IarSection({ user, isPublicView = false }) {
           {/* View Selector */}
           <div className="iar-view-tabs">
             {[
-              { id: 'trend', label: 'Outcome Trend', icon: '📈', activeColor: '#667eea', activeText: 'white' },
-              { id: 'state', label: 'State Distribution', icon: '🗺️', activeColor: '#67e8f9', activeText: '#333' },
-              { id: 'country', label: 'Country Distribution', icon: '🌍', activeColor: '#764ba2', activeText: 'white' },
-              { id: 'outcome', label: 'Department Outcome', icon: '📊', activeColor: '#43e97b', activeText: 'white' },
+              { id: 'trend', label: 'Outcome Trend', icon: <LineChartOutlined />, activeColor: '#142D4E', activeText: 'white' },
+              { id: 'state', label: 'State Distribution', icon: <DashboardIcon name="location" size={14} />, activeColor: '#67e8f9', activeText: '#333' },
+              { id: 'country', label: 'Country Distribution', icon: <DashboardIcon name="global" size={14} />, activeColor: '#0F1F36', activeText: 'white' },
+              { id: 'outcome', label: 'Department Outcome', icon: <BarChartOutlined />, activeColor: '#087E8B', activeText: 'white' },
             ].map(({ id, label, icon, activeColor, activeText }) => (
               <button key={id} type="button" onClick={() => setActiveView(id)} className="iar-view-tab" style={{
                 backgroundColor: activeView === id ? activeColor : undefined,
@@ -439,7 +441,7 @@ function IarSection({ user, isPublicView = false }) {
               <div>
                 <div className="iar-chart-header">
                   <h2>
-                    <span className="iar-icon-span">📈</span> Outcome Trend Over Years
+                    <LineChartOutlined className="iar-icon-span" /> Outcome Trend Over Years
                   </h2>
                   <ExportMenu
                     elementId="iar-outcome-trend-container"
@@ -454,7 +456,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-relative">
                   {trendData.length === 0 && (
                     <div className="no-data-overlay">
-                      <span className="no-data-overlay-icon">📈</span>
+                      <DashboardIcon name="line-chart" size={32} className="no-data-overlay-icon" />
                       <p className="no-data-overlay-text">No trend data available for the selected filters.</p>
                     </div>
                   )}
@@ -573,7 +575,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-chart-header">
                   <div>
                     <h2>
-                      <span className="iar-icon-span">🗺️</span> State-wise Alumni Distribution
+                      <DashboardIcon name="location" size={18} className="iar-icon-span" /> State-wise Alumni Distribution
                     </h2>
                     <p className="chart-description">Top 5 states by alumni count</p>
                   </div>
@@ -589,7 +591,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-relative">
                   {stateDistribution.length === 0 && (
                     <div className="no-data-overlay">
-                      <span className="no-data-overlay-icon">🗺️</span>
+                      <DashboardIcon name="location" size={32} className="no-data-overlay-icon" />
                       <p className="no-data-overlay-text">No state distribution data to display.</p>
                     </div>
                   )}
@@ -648,7 +650,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-chart-header">
                   <div>
                     <h2>
-                      <span className="iar-icon-span">🌍</span> Global Alumni Reach
+                      <DashboardIcon name="global" size={18} className="iar-icon-span" /> Global Alumni Reach
                     </h2>
                     <p className="chart-description">Top 5 countries by alumni count</p>
                   </div>
@@ -664,7 +666,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-relative">
                   {countryDistribution.length === 0 && (
                     <div className="no-data-overlay">
-                      <span className="no-data-overlay-icon">🌍</span>
+                      <DashboardIcon name="global" size={32} className="no-data-overlay-icon" />
                       <p className="no-data-overlay-text">No country distribution data to display.</p>
                     </div>
                   )}
@@ -723,7 +725,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-chart-header">
                   <div>
                     <h2>
-                      <span className="iar-icon-span">📊</span> Outcome by Department
+                      <BarChartOutlined className="iar-icon-span" /> Outcome by Department
                     </h2>
                     <p className="chart-description">
                       Top 10 departments by alumni count — higher studies vs corporate career paths.
@@ -747,7 +749,7 @@ function IarSection({ user, isPublicView = false }) {
                       onClick={() => setOutcomeDisplayMode(mode)}
                       className={`iar-toggle-btn${outcomeDisplayMode === mode ? ' iar-toggle-btn--active' : ''}`}
                     >
-                      {mode === 'Graph' ? '📊 Graph' : '📋 Table'}
+                      {mode === 'Graph' ? <><BarChartOutlined /> Graph</> : <><ProfileOutlined /> Table</>}
                     </button>
                   ))}
                 </div>
@@ -755,7 +757,7 @@ function IarSection({ user, isPublicView = false }) {
                 <div className="iar-relative">
                   {outcomeBreakdown.length === 0 && (
                     <div className="no-data-overlay">
-                      <span className="no-data-overlay-icon">📊</span>
+                      <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
                       <p className="no-data-overlay-text">No departmental breakdown to display.</p>
                     </div>
                   )}

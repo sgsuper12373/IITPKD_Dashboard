@@ -9,7 +9,7 @@
   background: var(--ds-card-bg, #fff); color: var(--ds-slate); border-radius: var(--r-lg);
   border: 1px solid var(--ds-card-border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
-.ht__step { margin: 0 0 0.25rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #c2410c; }
+.ht__step { margin: 0 0 0.25rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #066A75; }
 .ht__title { margin: 0 0 0.35rem; font-size: 1.05rem; }
 .ht__body { margin: 0 0 var(--space-3); font-size: 0.9rem; line-height: 1.5; }
 .ht__actions { display: flex; justify-content: space-between; align-items: center; }

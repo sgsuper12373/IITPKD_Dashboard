@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
+import DashboardIcon from './DashboardIcon';
+import { LineChartOutlined, BarChartOutlined, ProfileOutlined, EnvironmentOutlined, BankOutlined, CalendarOutlined, ReadOutlined, SearchOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import InnovationPublicView from './InnovationPublicView';
 import {
@@ -32,7 +34,7 @@ import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
 
-const SECTOR_COLORS = ['#4f46e5', '#22c55e', '#0ea5e9', '#f97316', '#a855f7', '#facc15', '#fb7185', '#14b8a6'];
+const SECTOR_COLORS = ['#142D4E', '#22c55e', '#087E8B', '#087E8B', '#142D4E', '#066A75', '#087E8B', '#087E8B'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -285,7 +287,7 @@ function InnovationSectionContent({ user, isPublicView }) {
           <div className="inno-stat-card-decor2" />
           <div className="inno-stat-card-body">
             <div className="inno-stat-card-header">
-              <span className="inno-stat-card-icon">🚀</span>
+              <DashboardIcon name="startup" className="inno-stat-card-icon" />
               <h3 className="inno-stat-card-label">Total Incubatees</h3>
             </div>
             <div className="metric-value inno-stat-card-value">{formatNumber(summary.total_incubatees)}</div>
@@ -302,7 +304,7 @@ function InnovationSectionContent({ user, isPublicView }) {
           <div className="inno-stat-card-decor2" />
           <div className="inno-stat-card-body">
             <div className="inno-stat-card-header">
-              <span className="inno-stat-card-icon">💡</span>
+              <DashboardIcon name="innovation" className="inno-stat-card-icon" />
               <h3 className="inno-stat-card-label">Total Startups</h3>
             </div>
             <div className="metric-value inno-stat-card-value">{formatNumber(summary.total_startups)}</div>
@@ -319,7 +321,7 @@ function InnovationSectionContent({ user, isPublicView }) {
           <div className="inno-stat-card-decor2" />
           <div className="inno-stat-card-body">
             <div className="inno-stat-card-header">
-              <span className="inno-stat-card-icon">🔬</span>
+              <DashboardIcon name="research" className="inno-stat-card-icon" />
               <h3 className="inno-stat-card-label">Innovation Projects</h3>
             </div>
             <div className="metric-value inno-stat-card-value">{formatNumber(summary.total_innovation_projects)}</div>
@@ -336,7 +338,7 @@ function InnovationSectionContent({ user, isPublicView }) {
           <div className="inno-stat-card-decor2" />
           <div className="inno-stat-card-body">
             <div className="inno-stat-card-header">
-              <span className="inno-stat-card-icon">🎓</span>
+              <DashboardIcon name="education" className="inno-stat-card-icon" />
               <h3 className="inno-stat-card-label">IITPKD Startups</h3>
             </div>
             <div className="metric-value inno-stat-card-value">{formatNumber(summary.startups_from_iitpkd)}</div>
@@ -378,7 +380,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 className="inno-view-radio inno-view-radio--growth"
               />
               <span className={`inno-view-text${viewType === 'yearlyGrowth' ? ' inno-view-text--active' : ''}`}>
-                📈 Yearly Growth
+                <LineChartOutlined /> Yearly Growth
               </span>
             </label>
 
@@ -392,7 +394,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 className="inno-view-radio inno-view-radio--sector"
               />
               <span className={`inno-view-text${viewType === 'sectorDistribution' ? ' inno-view-text--active' : ''}`}>
-                📊 Sector Distribution
+                <BarChartOutlined /> Sector Distribution
               </span>
             </label>
 
@@ -406,7 +408,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                 className="inno-view-radio inno-view-radio--directory"
               />
               <span className={`inno-view-text${viewType === 'startupsDirectory' ? ' inno-view-text--active' : ''}`}>
-                📋 Startups Directory
+                <ProfileOutlined /> Startups Directory
               </span>
             </label>
           </div>
@@ -482,11 +484,11 @@ function InnovationSectionContent({ user, isPublicView }) {
         {/* Active Filters Summary */}
         <div className="inno-active-filters">
           <strong>Active Filters:</strong>{' '}
-          {filters.status !== 'All' && <span className="inno-filter-tag">📌 Status: {filters.status}</span>}
-          {filters.sector !== 'All' && <span className="inno-filter-tag">🏢 Sector: {filters.sector}</span>}
-          {filters.year !== 'All' && <span className="inno-filter-tag">📅 Year: {filters.year}</span>}
-          {filters.iitpkd_only && <span className="inno-filter-tag">🎓 IITPKD Only</span>}
-          {filters.search && <span className="inno-filter-tag">🔍 Search: &quot;{filters.search}&quot;</span>}
+          {filters.status !== 'All' && <span className="inno-filter-tag"><EnvironmentOutlined /> Status: {filters.status}</span>}
+          {filters.sector !== 'All' && <span className="inno-filter-tag"><BankOutlined /> Sector: {filters.sector}</span>}
+          {filters.year !== 'All' && <span className="inno-filter-tag"><CalendarOutlined /> Year: {filters.year}</span>}
+          {filters.iitpkd_only && <span className="inno-filter-tag"><ReadOutlined /> IITPKD Only</span>}
+          {filters.search && <span className="inno-filter-tag"><SearchOutlined /> Search: &quot;{filters.search}&quot;</span>}
           {filters.status === 'All' && filters.sector === 'All' && filters.year === 'All' && !filters.iitpkd_only && !filters.search &&
             <span>No filters applied (showing all data)</span>
           }
@@ -502,7 +504,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             <div className="inno-chart-header">
               <div>
                 <h2>
-                  <span className="inno-icon-span">📈</span> Year-wise Growth
+                  <LineChartOutlined className="inno-icon-span" /> Year-wise Growth
                 </h2>
                 <p className="chart-description">
                   Growth of incubatees, startups, and innovation projects over time.
@@ -532,9 +534,9 @@ function InnovationSectionContent({ user, isPublicView }) {
                         <YAxis stroke="#666" />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px' }} />
-                        <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#667eea" strokeWidth={3} dot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="startups" name="Startups" stroke="#764ba2" strokeWidth={3} dot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#f093fb" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#142D4E" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="startups" name="Startups" stroke="#0F1F36" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} />
                       </LineChart>
                     </ResponsiveContainer>
                   )
@@ -547,21 +549,21 @@ function InnovationSectionContent({ user, isPublicView }) {
                     <YAxis stroke="#666" />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#667eea" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
-                      <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
+                    <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#142D4E" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                      <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                     </Line>
-                    <Line type="monotone" dataKey="startups" name="Startups" stroke="#764ba2" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
-                      <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#764ba2' }} />
+                    <Line type="monotone" dataKey="startups" name="Startups" stroke="#0F1F36" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                      <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#0F1F36' }} />
                     </Line>
-                    <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#f093fb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
-                      <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#f093fb' }} />
+                    <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                      <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
                     </Line>
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             ) : (
               <div className="inno-no-data">
-                <span className="inno-no-data-icon">📈</span>
+                <DashboardIcon name="line-chart" size={32} className="inno-no-data-icon" />
                 <p className="inno-no-data-text">No yearly growth data available.</p>
               </div>
             )}
@@ -574,7 +576,7 @@ function InnovationSectionContent({ user, isPublicView }) {
             <div className="inno-chart-header">
               <div>
                 <h2>
-                  <span className="inno-icon-span">📊</span> Sector-wise Innovation Distribution
+                  <BarChartOutlined className="inno-icon-span" /> Sector-wise Innovation Distribution
                 </h2>
                 <p className="chart-description">
                   Distribution of startups and innovation projects by sector.
@@ -627,7 +629,7 @@ function InnovationSectionContent({ user, isPublicView }) {
               </div>
             ) : (
               <div className="inno-no-data">
-                <span className="inno-no-data-icon">📊</span>
+                <DashboardIcon name="chart" size={32} className="inno-no-data-icon" />
                 <p className="inno-no-data-text">No sector distribution data available.</p>
               </div>
             )}
@@ -639,7 +641,7 @@ function InnovationSectionContent({ user, isPublicView }) {
           <div>
             <div className="chart-header">
               <h2>
-                <span className="inno-icon-span">📋</span> Startups Directory
+                <ProfileOutlined className="inno-icon-span" /> Startups Directory
               </h2>
               <p className="chart-description">
                 Search and filter through all startups and incubatees.
@@ -769,7 +771,7 @@ function InnovationSectionContent({ user, isPublicView }) {
               </div>
             ) : (
               <div className="inno-no-data inno-no-data--lg">
-                <span className="inno-no-data-icon">📋</span>
+                <DashboardIcon name="profile" size={32} className="inno-no-data-icon" />
                 <p className="inno-no-data-text">No startups found for the selected filters.</p>
               </div>
             )}

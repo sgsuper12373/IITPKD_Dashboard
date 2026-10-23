@@ -6,21 +6,24 @@
  * export need literal values, CSS variables are not reliable there). Keep the
  * two files in step; status colours mirror the global.css semantic tokens.
  *
- * Palette rule: one orange highlight per chart, slate for everything else,
+ * Palette rule: navy structural, teal accent highlight per chart,
  * success / warning / danger for status only.
  */
 
 export const COLORS = {
-  accent: '#FF6B35',
-  slate: '#475569',
-  slateSoft: 'rgba(71, 85, 105, 0.35)',
-  slateFaint: 'rgba(71, 85, 105, 0.15)',
-  grid: 'rgba(71, 85, 105, 0.12)',
-  success: '#22c55e',
-  warning: '#f97316',
-  danger: '#ef4444',
+  accent: '#087E8B',
+  slate: '#142D4E',
+  slateSoft: 'rgba(20, 45, 78, 0.35)',
+  slateFaint: 'rgba(20, 45, 78, 0.15)',
+  grid: 'rgba(20, 45, 78, 0.12)',
+  success: '#16A34A',
+  warning: '#D97706',
+  danger: '#DC2626',
   surface: '#FFFFFF',
-  textStrong: '#1e293b',
+  textStrong: '#0F1F36',
+  teal: '#087E8B',
+  tealSoft: 'rgba(8, 126, 139, 0.35)',
+  gold: '#F5A623',
 };
 
 /** Opacity ladder for ranked slate series (donut slices, secondary bars). */

@@ -52,7 +52,7 @@
 }
 
 .truncate-header-warning {
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, #066A75, #087E8B);
   color: #fff;
 }
 
@@ -82,9 +82,9 @@
 }
 
 .truncate-suggestion-banner {
-  background: #fffbeb;
+  background: rgba(8, 126, 139, 0.06);
   border: 1px solid #fde68a;
-  border-left: 4px solid #f7a600;
+  border-left: 4px solid #087E8B;
   border-radius: 8px;
   padding: 0.85rem 1rem;
   color: #78350f;
@@ -112,7 +112,7 @@
 .truncate-confirm-label {
   margin: 0;
   font-size: 0.9rem;
-  color: #333;
+  color: #142D4E;
 }
 
 /* Error */
@@ -149,7 +149,7 @@
   font-size: 0.95rem;
   font-family: inherit;
   background: #fff;
-  color: #333;
+  color: #142D4E;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -163,7 +163,7 @@
 /* CAPTCHA */
 .truncate-captcha-box {
   background: #f8f8f8;
-  border: 1px solid #e3e1dc;
+  border: 1px solid #DCE3E7;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   display: flex;
@@ -174,7 +174,7 @@
 .truncate-captcha-challenge {
   font-family: monospace;
   font-size: 1rem;
-  color: #333;
+  color: #142D4E;
   letter-spacing: 0.02em;
 }
 
@@ -220,25 +220,25 @@
 
 .truncate-btn-cancel {
   background: #f1f0ee;
-  color: #555;
+  color: #64748b;
   border-color: #ddd;
 }
 
 .truncate-btn-cancel:hover {
   background: #e5e3df;
-  color: #333;
+  color: #142D4E;
 }
 
 .truncate-btn-back {
   background: #fff7ed;
-  color: #92400e;
-  border-color: rgba(247, 166, 0, 0.35);
+  color: #066A75;
+  border-color: rgba(8, 126, 139, 0.35);
 }
 
 .truncate-btn-back:hover {
-  background: #f7a600;
+  background: #087E8B;
   color: #fff;
-  border-color: #f7a600;
+  border-color: #087E8B;
 }
 
 .truncate-btn-export {
@@ -248,21 +248,21 @@
 }
 
 .truncate-btn-export:hover {
-  background: #3b82f6;
+  background: #142D4E;
   color: #fff;
-  border-color: #3b82f6;
+  border-color: #142D4E;
 }
 
 .truncate-btn-proceed {
   background: #fff7ed;
-  color: #92400e;
-  border-color: rgba(247, 166, 0, 0.35);
+  color: #066A75;
+  border-color: rgba(8, 126, 139, 0.35);
 }
 
 .truncate-btn-proceed:hover {
-  background: #f7a600;
+  background: #087E8B;
   color: #fff;
-  border-color: #f7a600;
+  border-color: #087E8B;
 }
 
 .truncate-btn-danger {

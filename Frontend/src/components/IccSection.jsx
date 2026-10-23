@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -21,9 +23,9 @@ import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
 const AREA_COLORS = {
-  total: '#667eea',
-  pending: '#fa709a',
-  resolved: '#43e97b'
+  total: '#142D4E',
+  pending: '#066A75',
+  resolved: '#087E8B'
 };
 
 function IccSection({ user, isPublicView = false }) {
@@ -162,7 +164,7 @@ function IccSection({ user, isPublicView = false }) {
                       className="page-upload-btn"
                       onClick={() => setIsUploadModalOpen(true)}
                     >
-                      <span>&#128228;</span> Upload Data
+                      <UploadOutlined /> Upload Data
                     </button>
                   )}
                 </div>
@@ -193,11 +195,11 @@ function IccSection({ user, isPublicView = false }) {
 
                 <div id="icc-summary-cards-container" className="summary-cards-grid-4">
                   {/* Total Complaints — purple */}
-                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 10px 20px rgba(102, 126, 234, 0.2)' }}>
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)', boxShadow: '0 10px 20px rgba(15, 31, 54,0.2)' }}>
                     <div className="metric-card-glow" />
                     <div className="metric-card-inner">
                       <div className="metric-card-icon-row">
-                        <span className="metric-card-icon">&#128203;</span>
+                        <DashboardIcon name="profile" className="metric-card-icon" />
                         <span className="metric-card-label">Total Complaints</span>
                       </div>
                       <div className="metric-card-value">{displaySummary.total}</div>
@@ -211,11 +213,11 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
 
                   {/* Resolved — green */}
-                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', boxShadow: '0 10px 20px rgba(67, 233, 123, 0.2)' }}>
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', boxShadow: '0 10px 20px rgba(8, 126, 139,0.2)' }}>
                     <div className="metric-card-glow" />
                     <div className="metric-card-inner">
                       <div className="metric-card-icon-row">
-                        <span className="metric-card-icon">&#9989;</span>
+                        <DashboardIcon name="check" className="metric-card-icon" />
                         <span className="metric-card-label">Resolved</span>
                       </div>
                       <div className="metric-card-value">{displaySummary.resolved}</div>
@@ -227,11 +229,11 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
 
                   {/* Pending — pink */}
-                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #feca57 100%)', boxShadow: '0 10px 20px rgba(250, 112, 154, 0.2)' }}>
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)', boxShadow: '0 10px 20px rgba(6, 106, 117,0.2)' }}>
                     <div className="metric-card-glow" />
                     <div className="metric-card-inner">
                       <div className="metric-card-icon-row">
-                        <span className="metric-card-icon">&#9203;</span>
+                        <DashboardIcon name="clock" className="metric-card-icon" />
                         <span className="metric-card-label">Pending</span>
                       </div>
                       <div className="metric-card-value">{displaySummary.pending}</div>
@@ -243,11 +245,11 @@ function IccSection({ user, isPublicView = false }) {
                   </div>
 
                   {/* Filter by Year — violet */}
-                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)', boxShadow: '0 10px 20px rgba(168, 85, 247, 0.2)' }}>
+                  <div className="metric-card" style={{ background: 'linear-gradient(135deg, #142D4E 0%, #0F1F36 100%)', boxShadow: '0 10px 20px rgba(20, 45, 78,0.2)' }}>
                     <div className="metric-card-glow" />
                     <div className="metric-card-inner">
                       <div className="metric-card-icon-row">
-                        <span className="metric-card-icon">&#128197;</span>
+                        <DashboardIcon name="calendar" className="metric-card-icon" />
                         <span className="metric-card-label">Filter by Year</span>
                       </div>
                       <select
@@ -255,9 +257,9 @@ function IccSection({ user, isPublicView = false }) {
                         onChange={(e) => setSelectedYear(e.target.value)}
                         className="metric-card-filter-select"
                       >
-                        <option value="All" style={{ color: '#333', background: '#fff' }}>All Years</option>
+                        <option value="All" style={{ color: '#142D4E', background: '#fff' }}>All Years</option>
                         {yearlyData.map((row) => (
-                          <option key={row.year} value={row.year} style={{ color: '#333', background: '#fff' }}>
+                          <option key={row.year} value={row.year} style={{ color: '#142D4E', background: '#fff' }}>
                             {row.year}
                           </option>
                         ))}
@@ -276,14 +278,14 @@ function IccSection({ user, isPublicView = false }) {
                     onClick={() => setActiveView('chart')}
                     className={`icc-view-btn${activeView === 'chart' ? ' icc-view-btn--active' : ''}`}
                   >
-                    <span>&#128200;</span> Trend View
+                    <DashboardIcon name="line-chart" size={14} /> Trend View
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveView('table')}
                     className={`icc-view-btn${activeView === 'table' ? ' icc-view-btn--active' : ''}`}
                   >
-                    <span>&#128202;</span> Yearly Statistics
+                    <DashboardIcon name="chart" size={14} /> Yearly Statistics
                   </button>
                 </div>
 
@@ -304,8 +306,8 @@ function IccSection({ user, isPublicView = false }) {
                                     <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                                    <Bar dataKey="count" name="Count" fill="#667eea" radius={[6, 6, 0, 0]}>
-                                      <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#667eea' }} />
+                                    <Bar dataKey="count" name="Count" fill="#142D4E" radius={[6, 6, 0, 0]}>
+                                      <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#142D4E' }} />
                                     </Bar>
                                   </BarChart>
                                 </ResponsiveContainer>
@@ -318,8 +320,8 @@ function IccSection({ user, isPublicView = false }) {
                                 <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                                 <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                                 <Tooltip content={<CustomTooltip />} />
-                                <Bar dataKey="count" fill="#667eea" name="Count" radius={[4, 4, 0, 0]}>
-                                  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
+                                <Bar dataKey="count" fill="#142D4E" name="Count" radius={[4, 4, 0, 0]}>
+                                  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -429,7 +431,7 @@ function IccSection({ user, isPublicView = false }) {
                             {displayStats.length === 0 ? (
                               <tr>
                                 <td colSpan="5" className="icc-td-empty">
-                                  <span className="icc-empty-icon">&#128203;</span>
+                                  <DashboardIcon name="profile" className="icc-empty-icon" />
                                   No statistics found
                                 </td>
                               </tr>

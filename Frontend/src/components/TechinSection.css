@@ -51,7 +51,7 @@
 }
 .techin-revenue-h3 {
   margin: 0;
-  color: #333;
+  color: #142D4E;
   font-size: 18px;
   font-weight: 600;
 }
@@ -110,7 +110,7 @@
 }
 .techin-filter-h4 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #142D4E;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -133,32 +133,70 @@
 
 /* ── Clear filters button ── */
 .techin-clear-btn {
-  padding: 5px 12px;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--color-error);
+  border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 12px;
-  transition: opacity 0.2s;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: var(--transition);
 }
-.techin-clear-btn:hover { opacity: 0.85; }
+.techin-clear-btn:hover { background: var(--color-error); color: #fff; box-shadow: 0 2px 8px rgba(220,38,38,0.25); transform: translateY(-1px); }
 
 /* ── Filter label & select ── */
 .techin-filter-label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: #555;
+  color: var(--color-text-muted);
   display: block;
   margin-bottom: 4px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .techin-filter-select {
-  padding: 6px;
-  font-size: 13px;
+  padding: 8px 32px 8px 10px;
+  font-size: var(--text-sm);
+  font-weight: 500;
   width: 100%;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
   font-family: inherit;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23087E8B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center;
+  background-size: 14px;
+  transition: border-color var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
+}
+.techin-filter-select:hover { border-color: var(--color-accent); }
+.techin-filter-select:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-light); }
+
+/* ── Mode buttons ── */
+.techin-mode-btn {
+  padding: 6px 16px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: color var(--dur-mid) var(--ease-spring),
+              background-color var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
+  font-family: inherit;
+}
+.techin-mode-btn--active {
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  font-weight: 700;
 }
 
 /* ── Filter flex grid ── */
@@ -174,7 +212,7 @@
 /* ── Divider ── */
 .techin-divider {
   height: 1px;
-  background: #e9ecef;
+  background: #EDE9DF;
   margin: 16px 0;
 }
 
@@ -189,7 +227,7 @@
 }
 .techin-chart-h2 {
   margin: 0 0 4px 0;
-  color: #333;
+  color: #142D4E;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -200,9 +238,12 @@
 
 /* ── Mode buttons row ── */
 .techin-mode-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
+  background: var(--color-bg-2);
+  padding: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── Chart box (height stays inline) ── */
@@ -223,7 +264,7 @@
   pointer-events: none;
 }
 .techin-no-data-icon { font-size: 40px; margin-bottom: 10px; }
-.techin-no-data-text { color: #888; font-size: 15px; font-weight: 500; margin: 0; }
+.techin-no-data-text { color: #94a3b8; font-size: 15px; font-weight: 500; margin: 0; }
 
 /* ── Mobile list (maxHeight stays inline) ── */
 .techin-mobile-list {
@@ -239,13 +280,13 @@
   background-color: #fff;
   border-radius: 16px;
   padding: 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #DCE3E7;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .techin-mobile-card-title {
   font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
+  color: #0F1F36;
   margin-bottom: 8px;
 }
 .techin-mobile-card-fields {
@@ -290,7 +331,7 @@
 .techin-status-badge--sm      { padding: 2px 8px; border-radius: 10px; }
 .techin-status-badge--md      { padding: 4px 8px; border-radius: 12px; display: inline-block; }
 .techin-status-badge--active  { background-color: #dcfce7; color: #166534; }
-.techin-status-badge--other   { background-color: #fef3c7; color: #92400e; }
+.techin-status-badge--other   { background-color: #fef3c7; color: #066A75; }
 
 /* ── Tooltip ── */
 .techin-tooltip {
@@ -300,7 +341,7 @@
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
-.techin-tooltip-year { margin: 0 0 5px 0; font-weight: bold; color: #333; }
+.techin-tooltip-year { margin: 0 0 5px 0; font-weight: bold; color: #142D4E; }
 .techin-tooltip-entry { margin: 0; }
 
 /* ── CTA banner ── */
@@ -356,7 +397,7 @@
   border: 1px solid #e0e0e0;
 }
 .techin-empty-icon { font-size: 36px; margin-bottom: 10px; }
-.techin-empty-text { color: #888; font-size: 15px; font-weight: 500; margin: 0; }
+.techin-empty-text { color: #94a3b8; font-size: 15px; font-weight: 500; margin: 0; }
 
 /* ============================================================ */
 /* RESPONSIVE                                                   */

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   fetchNptelSummary,
   fetchNptelList
@@ -103,7 +105,7 @@ function NptelSection({ user, isPublicView = false }) {
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('nptel_courses'); setIsUploadModalOpen(true); }}
           >
-            <span>&#128214;</span> Upload NPTEL Data
+            <UploadOutlined /> Upload NPTEL Data
           </button>
         )}
       </div>
@@ -124,14 +126,14 @@ function NptelSection({ user, isPublicView = false }) {
       <div id="nptel-summary-cards-container" className="nptel-cards">
         <div className="nptel-card nptel-card--purple">
           <div className="nptel-card-header">
-            <span className="nptel-card-icon">&#128218;</span>
+            <DashboardIcon name="ug" className="nptel-card-icon" />
             <h3 className="nptel-card-h3">Total Courses Offered</h3>
           </div>
           <div className="nptel-card-value">{formatNumber(summary.total_courses)}</div>
         </div>
         <div className="nptel-card nptel-card--pink">
           <div className="nptel-card-header">
-            <span className="nptel-card-icon">&#128101;</span>
+            <DashboardIcon name="students" className="nptel-card-icon" />
             <h3 className="nptel-card-h3">Total Enrollments</h3>
           </div>
           <div className="nptel-card-value">{formatNumber(summary.total_enrollments)}</div>
@@ -165,8 +167,8 @@ function NptelSection({ user, isPublicView = false }) {
                       <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                      <Bar dataKey="enrollment_count" name="Enrollments" fill="#667eea" radius={[6, 6, 0, 0]}>
-                        <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#667eea' }} />
+                      <Bar dataKey="enrollment_count" name="Enrollments" fill="#142D4E" radius={[6, 6, 0, 0]}>
+                        <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#142D4E' }} />
                       </Bar>
                       <Bar dataKey="certification_count" name="Certifications" fill="#22c55e" radius={[6, 6, 0, 0]}>
                         <LabelList dataKey="certification_count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#22c55e' }} />
@@ -182,8 +184,8 @@ function NptelSection({ user, isPublicView = false }) {
                   <XAxis dataKey="stat_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="enrollment_count" fill="#667eea" name="Enrollments" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#667eea' }} />
+                  <Bar dataKey="enrollment_count" fill="#142D4E" name="Enrollments" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                   </Bar>
                   <Bar dataKey="certification_count" fill="#22c55e" name="Certifications" radius={[4, 4, 0, 0]}>
                     <LabelList dataKey="certification_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#22c55e' }} />

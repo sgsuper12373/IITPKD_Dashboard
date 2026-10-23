@@ -12,8 +12,8 @@
 .eas-cards       { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 36px; }
 .eas-card        { flex: 1 1 min(280px, 100%); border-radius: 20px; padding: 28px; color: white; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
 .eas-card:hover  { transform: translateY(-2px); }
-.eas-card--indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25); }
-.eas-card--orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 10px 20px rgba(249, 115, 22, 0.25); }
+.eas-card--indigo { background: linear-gradient(135deg, #066A75 0%, #142D4E 100%); box-shadow: 0 10px 20px rgba(20, 45, 78, 0.25); }
+.eas-card--orange { background: linear-gradient(135deg, #087E8B 0%, #066A75 100%); box-shadow: 0 10px 20px rgba(8, 126, 139, 0.25); }
 .eas-card-decor  { position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; }
 .eas-card-inner  { position: relative; z-index: 1; }
 .eas-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -42,7 +42,7 @@
 
 /* ── Content toolbar ── */
 .eas-toolbar   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.eas-table-h3  { margin: 0 0 4px 0; color: #333; transition: color 0.3s; }
+.eas-table-h3  { margin: 0 0 4px 0; color: #142D4E; transition: color 0.3s; }
 .eas-table-sub { margin: 0; color: #666; font-size: 14px; }
 
 /* ── CourseTable: empty state ── */
@@ -69,7 +69,7 @@
 .eas-td-name       { font-weight: 500; }
 
 /* ── Category badge ── */
-.eas-cat-badge { background-color: #e0e7ff; color: #4f46e5; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+.eas-cat-badge { background-color: #e0e7ff; color: #142D4E; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
 
 /* ── Status badge ── */
 .eas-status          { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }

@@ -22,16 +22,16 @@
   color: white;
 }
 .ias-stat-card--indigo {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+  background: linear-gradient(135deg, #066A75 0%, #142D4E 100%);
+  box-shadow: 0 10px 20px rgba(20, 45, 78, 0.2);
 }
 .ias-stat-card--green {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+  background: linear-gradient(135deg, #087E8B 0%, #066A75 100%);
+  box-shadow: 0 10px 20px rgba(8, 126, 139, 0.2);
 }
 .ias-stat-card--orange {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+  background: linear-gradient(135deg, #066A75 0%, #087E8B 100%);
+  box-shadow: 0 10px 20px rgba(6, 106, 117, 0.2);
 }
 .ias-stat-card-decor {
   position: absolute;
@@ -108,31 +108,31 @@
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #EDE9DF;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 2;
 }
 .ias-filter-h4 {
   margin: 0;
-  color: #333;
+  color: #142D4E;
   font-size: 14px;
   font-weight: 600;
 }
 
 /* ── Clear button ── */
 .ias-clear-btn {
-  padding: 6px 12px;
-  background-color: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--color-error);
+  border: 1.5px solid var(--color-error);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: var(--transition);
 }
-.ias-clear-btn:hover { background-color: #dc2626; }
+.ias-clear-btn:hover { background: var(--color-error); color: #fff; box-shadow: 0 2px 8px rgba(220,38,38,0.25); transform: translateY(-1px); }
 
 /* ── Filter grid (flex-based, replaces CSS grid) ── */
 .ias-filter-grid {
@@ -147,11 +147,13 @@
 
 /* ── Filter label ── */
 .ias-filter-label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: #555;
+  color: var(--color-text-muted);
   margin-bottom: 4px;
   display: block;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 /* ── Chart header rows ── */
@@ -165,19 +167,20 @@
 }
 .ias-chart-header-row--top { align-items: flex-start; margin-bottom: 24px; }
 .ias-chart-h2 {
-  margin: 0 0 8px 0;
-  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  color: var(--color-text);
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 24px;
+  gap: 8px;
+  font-size: var(--text-xl);
+  font-weight: 700;
 }
-.ias-chart-icon { font-size: 28px; }
+.ias-chart-icon { font-size: 1.25rem; color: var(--color-accent); display: inline-flex; align-items: center; }
 
 /* ── View type button per-tab active states ── */
-.view-type-btn--yearly-active { background-color: #6366f1; color: white; }
-.view-type-btn--dept-active   { background-color: #22c55e; color: white; }
-.view-type-btn--dir-active    { background-color: #f97316; color: white; }
+.view-type-btn--yearly-active { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
+.view-type-btn--dept-active   { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
+.view-type-btn--dir-active    { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
 
 /* ── Dept mode toggle ── */
 .ias-mode-toggle-wrap {
@@ -186,27 +189,31 @@
   align-items: center;
 }
 .ias-mode-toggle {
-  display: flex;
-  gap: 8px;
-  background: #f0f0f0;
-  padding: 4px;
-  border-radius: 8px;
+  display: inline-flex;
+  gap: 3px;
+  background: var(--color-bg-2);
+  padding: 3px;
+  border-radius: var(--radius-sm);
 }
 .ias-mode-btn {
   padding: 6px 16px;
-  border-radius: 6px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--text-xs);
   font-weight: 600;
-  transition: all 0.2s;
-  display: flex;
+  transition: color var(--dur-mid) var(--ease-spring),
+              background-color var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  background: transparent;
+  color: var(--color-text-muted);
 }
 
 /* ── Dept chart mode button active state ── */
-.ias-mode-btn--active { background-color: #fff; color: #22c55e; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.ias-mode-btn--active { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
 
 /* ── Chart container (height stays inline) ── */
 .ias-chart-container { position: relative; }
@@ -245,13 +252,13 @@
   background-color: #fff;
   border-radius: 16px;
   padding: 20px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #DCE3E7;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .ias-mobile-card-name {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: #0F1F36;
   margin-bottom: 4px;
 }
 .ias-mobile-card-dept {
@@ -261,7 +268,7 @@
 }
 .ias-mobile-card-partner {
   font-size: 14px;
-  color: #475569;
+  color: #142D4E;
   margin-bottom: 8px;
 }
 .ias-mobile-partner-label {
@@ -274,11 +281,11 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #EDE9DF;
 }
 .ias-mobile-card-duration {
   font-size: 13px;
-  color: #475569;
+  color: #142D4E;
 }
 .ias-mobile-card-dates {
   font-size: 12px;
@@ -290,7 +297,7 @@
   padding: 4px 8px;
   border-radius: 6px;
   background-color: #fef3c7;
-  color: #92400e;
+  color: #066A75;
   font-size: 11px;
   font-weight: 600;
 }
@@ -322,7 +329,7 @@
   top: 0;
   z-index: 10;
 }
-.ias-table thead tr { background-color: #f97316; }
+.ias-table thead tr { background-color: #142D4E; }
 .ias-table th {
   padding: 16px 12px;
   text-align: left;

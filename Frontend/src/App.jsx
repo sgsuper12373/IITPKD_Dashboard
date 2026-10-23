@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -80,7 +80,7 @@ const PageLoader = () => (
   <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
     <div style={{
       height: 3,
-      background: 'var(--color-primary, #f7a600)',
+      background: 'var(--color-primary, #087E8B)',
       animation: 'page-load-bar 1.2s ease-in-out infinite, page-load-show 0.15s step-end',
       transformOrigin: 'left',
     }} />

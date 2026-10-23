@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { BankOutlined } from '@ant-design/icons';
 import {
   DndContext,
   PointerSensor,
@@ -49,7 +50,7 @@ function SortableCard({ partner, onEdit, onDelete }) {
           className="mpl-logo"
         />
       ) : (
-        <div className="mpl-logo-placeholder">🏢</div>
+        <div className="mpl-logo-placeholder"><BankOutlined /></div>
       )}
       <span className="mpl-name">{partner.name}</span>
       <div className="mpl-edit-actions">
@@ -76,7 +77,7 @@ function PartnerCard({ partner, onClick }) {
           className="mpl-logo"
         />
       ) : (
-        <div className="mpl-logo-placeholder">🏢</div>
+        <div className="mpl-logo-placeholder"><BankOutlined /></div>
       )}
       <span className="mpl-name">{partner.name}</span>
     </button>
@@ -117,7 +118,7 @@ function ZoomModal({ partner, onClose }) {
             className="mpl-zoom-img"
           />
         ) : (
-          <div className="mpl-logo-placeholder mpl-logo-placeholder--large">🏢</div>
+          <div className="mpl-logo-placeholder mpl-logo-placeholder--large"><BankOutlined /></div>
         )}
         <p className="mpl-zoom-name">{partner.name}</p>
         <p className="mpl-zoom-hint">Tap outside or press <kbd>Esc</kbd> to close</p>

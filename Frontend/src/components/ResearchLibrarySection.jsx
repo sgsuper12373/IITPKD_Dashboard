@@ -17,11 +17,13 @@ import './ResearchSection.css';
 import './ResearchLibrarySection.css';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, ProfileOutlined, UploadOutlined } from '@ant-design/icons';
 import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const TYPE_COLORS = ['#6366f1', '#22d3ee', '#f97316', '#a855f7', '#14b8a6', '#facc15'];
+const TYPE_COLORS = ['#066A75', '#087E8B', '#087E8B', '#142D4E', '#087E8B', '#066A75'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
 function ResearchLibrarySection({ user, isPublicView = false }) {
@@ -159,9 +161,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
   const handleClearFilters = () => setFilters({ department: 'All', publication_year: 'All', publication_type: 'All' });
 
   const viewButtons = [
-    { key: 'trend', label: '📈 Trend', color: '#6366f1' },
-    { key: 'department', label: ' Department', color: '#22c55e' },
-    { key: 'publicationsTable', label: '📋 Directory', color: '#a855f7' },
+    { key: 'trend', label: 'Trend', icon: 'line-chart', color: '#066A75' },
+    { key: 'department', label: 'Department', icon: 'chart', color: '#22c55e' },
+    { key: 'publicationsTable', label: 'Directory', icon: 'profile', color: '#142D4E' },
   ];
 
   const FilterBar = ({ showDept = true, showYear = true, showType = true }) => (
@@ -176,17 +178,17 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
       <div className="rls-view-type-wrapper">
         <label className="rls-view-type-label">View Type</label>
         <div className="view-type-bar">
-          {viewButtons.map(({ key, label, color }) => (
+          {viewButtons.map(({ key, label, icon, color }) => (
             <button
               key={key}
               onClick={() => setViewType(key)}
               className="view-type-btn"
               style={{
                 backgroundColor: viewType === key ? color : 'transparent',
-                color: viewType === key ? 'white' : '#475569',
+                color: viewType === key ? 'white' : '#142D4E',
               }}
             >
-              {label}
+              <DashboardIcon name={icon} size={14} /> {label}
             </button>
           ))}
         </div>
@@ -263,7 +265,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             {!isReadOnlyView && isAdmin && (
               <div className="section-header-actions">
                 <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  &#128228; Upload Publications
+                  <UploadOutlined /> Upload Publications
                 </button>
               </div>
             )}
@@ -296,9 +298,9 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
 
         <div id="library-summary-cards-container" className="stat-card-grid">
           {[
-            { gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', shadow: 'rgba(99,102,241,0.2)', icon: '📚', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
-            { gradient: 'linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%)', shadow: 'rgba(34,211,238,0.2)', icon: '📊', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
-            { gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', shadow: 'rgba(249,115,22,0.2)', icon: '', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
+            { gradient: 'linear-gradient(135deg, #066A75 0%, #142D4E 100%)', shadow: 'rgba(20, 45, 78,0.2)', icon: 'education', label: 'Total Publications', value: formatNumber(summary.total), sub: 'Scholarly outputs' },
+            { gradient: 'linear-gradient(135deg, #087E8B 0%, #087E8B 100%)', shadow: 'rgba(8, 126, 139,0.2)', icon: 'chart', label: 'Journal / Conference', value: journalVsConference, sub: 'Journals/Conferences' },
+            { gradient: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)', icon: 'bank', label: 'Departments', value: participatingDepartments, sub: 'Active departments' },
           ].map(({ gradient, shadow, icon, label, value, sub }) => (
             <div
               key={label}
@@ -308,7 +310,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
               <div className="rls-card-decor" />
               <div className="rls-card-body">
                 <div className="rls-card-header">
-                  <span className="rls-card-icon">{icon}</span>
+                  <DashboardIcon name={icon} className="rls-card-icon" />
                   <span className="stat-card-label">{label}</span>
                 </div>
                 <div className="stat-card-value rls-card-value">{value}</div>
@@ -328,7 +330,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div className="rls-chart-header-row">
               <div>
                 <h2 className="rls-chart-h2">
-                  <span className="rls-chart-icon">&#128200;</span> Publication Trend
+                  <DashboardIcon name="line-chart" className="rls-chart-icon" /> Publication Trend
                 </h2>
                 <p className="rls-chart-desc">Year-wise publication count</p>
               </div>
@@ -349,7 +351,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                   onClick={() => setTrendChartMode(mode)}
                   className={`rls-mode-btn${trendChartMode === mode ? ' rls-mode-btn--active' : ''}`}
                 >
-                  {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                  {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                 </button>
               ))}
             </div>
@@ -366,8 +368,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
-                    <Bar dataKey="publications" name="Publications" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={28}>
-                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
+                    <Bar dataKey="publications" name="Publications" fill="#066A75" radius={[4, 4, 0, 0]} barSize={28}>
+                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
                     </Bar>
                   </BarChart>
                 ) : (
@@ -377,8 +379,8 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                    <Line type="linear" dataKey="publications" name="Publications" stroke="#6366f1" strokeWidth={2.5} dot={{ r: 3 }}>
-                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#6366f1' }} />
+                    <Line type="linear" dataKey="publications" name="Publications" stroke="#066A75" strokeWidth={2.5} dot={{ r: 3 }}>
+                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
                     </Line>
                   </LineChart>
                 )}
@@ -394,7 +396,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div className="rls-chart-header-row">
               <div>
                 <h2 className="rls-chart-h2">
-                  <span className="rls-chart-icon">&#127962;</span> Department-wise Publications
+                  <DashboardIcon name="bank" className="rls-chart-icon" /> Department-wise Publications
                 </h2>
                 <p className="rls-chart-desc">Publications by department</p>
               </div>
@@ -434,7 +436,7 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
             <div className="rls-chart-header-row">
               <div>
                 <h2 className="rls-chart-h2">
-                  <span className="rls-chart-icon">&#128203;</span> Publications Directory
+                  <span className="rls-chart-icon"><ProfileOutlined /></span> Publications Directory
                 </h2>
                 <p className="rls-chart-desc">{publicationList.length} publications found</p>
               </div>

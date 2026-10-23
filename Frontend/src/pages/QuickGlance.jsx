@@ -1,20 +1,34 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { SettingOutlined, CloseOutlined } from '@ant-design/icons';
 import {
   ChartCard,
   ComboChart,
   DonutChart,
   FunnelBars,
-  GaugeChart,
-  KpiSparkCard,
   PillarRadar,
   ProgressRow,
   RankedBars,
+  VuMeter,
 } from '../charts';
+import { isFiniteNumber } from '../charts/format';
 import { useInstitutePulse } from '../hooks/useInstitutePulse';
 import { useGlanceWidgets } from '../hooks/useGlanceWidgets';
 import { ayLabel } from '../utils/pulseModel';
 import { DATA_KEYS } from '../utils/widgetCatalog';
 import './QuickGlance.css';
+
+const KPI_BANDS = [0.4, 0.7];
+
+function niceMax(raw, series) {
+  const nums = (series || []).filter(Number.isFinite);
+  if (Number.isFinite(raw)) nums.push(raw);
+  if (!nums.length) return 100;
+  const m = Math.max(...nums);
+  if (m <= 0) return 10;
+  const t = m * 1.4;
+  const mag = Math.pow(10, Math.floor(Math.log10(t)));
+  return Math.ceil(t / mag) * mag;
+}
 
 const WidgetEditor = lazy(() => import('./WidgetEditor'));
 
@@ -32,25 +46,40 @@ function WidgetRenderer({ widget, data, year, loading }) {
       const empty = !loading && props.value == null;
       return (
         <ChartCard title={title} to={props.to} compact expandable={false} loading={loading} empty={empty}>
-          {() => <GaugeChart {...props} />}
+          {() => <VuMeter {...props} />}
         </ChartCard>
       );
     }
 
-    case 'kpi':
+    case 'kpi': {
+      const raw = props.raw;
+      const gaugeMax = niceMax(raw, props.series);
+      const empty = !loading && !isFiniteNumber(raw);
       return (
-        <KpiSparkCard
-          label={props.label ?? title}
-          value={props.value}
-          delta={props.delta}
-          deltaLabel={props.deltaLabel}
-          invert={props.invert}
-          series={props.series}
-          sub={props.sub}
+        <ChartCard
+          title={props.label ?? title}
           to={props.to}
+          compact
+          expandable={false}
           loading={loading}
-        />
+          empty={empty}
+        >
+          {() => (
+            <VuMeter
+              value={raw}
+              display={props.value}
+              min={0}
+              max={gaugeMax}
+              bands={KPI_BANDS}
+              sub={props.sub}
+              delta={props.delta}
+              deltaLabel={props.deltaLabel}
+              invert={props.invert}
+            />
+          )}
+        </ChartCard>
       );
+    }
 
     case 'combo': {
       const { view, combo } = props;
@@ -219,7 +248,7 @@ export default function QuickGlance({ user }) {
         <div className="qg-head-actions">
           {isAdmin && (
             <button type="button" className="qg-edit-btn" onClick={() => setEditing((e) => !e)}>
-              {editing ? '✕ Done' : '⚙ Edit layout'}
+              {editing ? <><CloseOutlined /> Done</> : <><SettingOutlined /> Edit layout</>}
             </button>
           )}
         </div>

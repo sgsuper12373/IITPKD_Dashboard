@@ -4,20 +4,15 @@ import axios from 'axios';
 import { GoogleLogin } from '@react-oauth/google';
 import './Login.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
-// The Login component receives a prop `onLoginSuccess` from App.jsx
-// which it will call with the token and user data after a successful login.
+import CampusClipart from './CampusClipart';
+
 function Login({ onLoginSuccess }) {
   const navigate = useNavigate();
-
-  // Form fields state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // GoogleLogin component calls this with { credential } — the Google ID token.
-  // The raw ID token is sent to the backend for cryptographic verification.
   const handleGoogleSuccess = async ({ credential }) => {
     setError('');
     setIsLoading(true);
@@ -29,7 +24,7 @@ function Login({ onLoginSuccess }) {
       onLoginSuccess(response.data.token, response.data.user);
       navigate('/');
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError('Google sign-in failed. Please try again.');
@@ -43,22 +38,15 @@ function Login({ onLoginSuccess }) {
     event.preventDefault();
     setError('');
     setIsLoading(true);
-
-    const url = `${import.meta.env.VITE_API_BASE_URL}/auth/login`;
-    const payload = { email, password };
-
     try {
-      const response = await axios.post(url, payload);
-
-      // On success, call the function passed from App.jsx
-      // This will set the token in the parent component and update the UI
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        { email, password }
+      );
       onLoginSuccess(response.data.token, response.data.user);
-
-      // Navigate to home page after successful login
       navigate('/');
-
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError('An unknown error occurred. Is the backend server running?');
@@ -69,55 +57,69 @@ function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-page">
-      {/* Page heading */}
-      <h1 className="login-page-title">
-        Indian Institute of Technology Palakkad
-      </h1>
-
-      <div className="card">
-        {/* Logo */}
-        <div className="login-logo">
-          <img src={IIPKD_Logo} alt="IIT Palakkad Logo" />
+    <div className="login-split">
+      {/* ── Left: dark navy branding panel ── */}
+      <div className="login-brand">
+        <div className="login-brand__content">
+          <img src={IIPKD_Logo} alt="" className="login-brand__logo" />
+          <h1 className="login-brand__title">IIT Palakkad</h1>
+          <p className="login-brand__tagline">Institutional Dashboard</p>
+          <p className="login-brand__desc">
+            Explore data on people, research, education, industry connections,
+            innovation and outreach — all in one place.
+          </p>
         </div>
+        <CampusClipart className="login-brand__clipart" />
+      </div>
 
-        <h2>Sign in to Dashboard</h2>
+      {/* ── Right: sign-in form panel ── */}
+      <div className="login-form-panel">
+        <div className="login-form-wrap">
+          <h2 className="login-form__heading">Sign in</h2>
+          <p className="login-form__sub">Access the institutional dashboard</p>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <form onSubmit={handleSubmit} className="login-form">
+            <label className="login-field">
+              <span className="login-field__label">Email</span>
+              <input
+                type="email"
+                placeholder="you@iitpkd.ac.in"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </label>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+            <label className="login-field">
+              <span className="login-field__label">Password</span>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </label>
 
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Loading...' : 'Login'}
-          </button>
+            <button type="submit" className="login-submit" disabled={isLoading}>
+              {isLoading ? 'Signing in…' : 'Sign in'}
+            </button>
 
-          {error && <p className="login-error">{error}</p>}
-        </form>
+            {error && <p className="login-error">{error}</p>}
+          </form>
 
-        <div className="login-divider">or</div>
+          <div className="login-divider"><span>or</span></div>
 
-        <div className="login-google-wrap">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => setError('Google sign-in was cancelled or failed.')}
-            width="320"
-            text="signin_with"
-            shape="rectangular"
-            theme="outline"
-          />
+          <div className="login-google-wrap">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google sign-in was cancelled or failed.')}
+              width="320"
+              text="signin_with"
+              shape="rectangular"
+              theme="outline"
+            />
+          </div>
         </div>
       </div>
     </div>

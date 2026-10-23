@@ -60,7 +60,7 @@
 
 .people-campus-card:hover {
   transform: translateY(-5px) scale(1.01);
-  border-color: rgba(247, 166, 0, 0.45);
+  border-color: rgba(8, 126, 139, 0.45);
   box-shadow: var(--shadow-lg);
   background: linear-gradient(140deg, #fffdf9 0%, #fef5d6 100%);
 }
@@ -87,7 +87,7 @@
   height: 56px;
   border-radius: 12px;
 
-  background: rgba(247, 166, 0, 0.12);
+  background: rgba(8, 126, 139, 0.12);
   color: var(--color-primary);
 
   display: flex;
@@ -105,7 +105,7 @@
 
 .people-campus-card:hover .card-icon {
   transform: scale(1.12);
-  background: rgba(247, 166, 0, 0.22);
+  background: rgba(8, 126, 139, 0.22);
 }
 
 /* ===================================================== */
@@ -192,7 +192,7 @@
     transform: scale(0.97);
     box-shadow: var(--shadow-md);
     background: linear-gradient(140deg, #fffdf9 0%, #fef5d6 100%);
-    border-color: rgba(247, 166, 0, 0.45);
+    border-color: rgba(8, 126, 139, 0.45);
   }
 }
 

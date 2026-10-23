@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BarChartOutlined, LineChartOutlined, RocketOutlined, BuildOutlined, UploadOutlined } from '@ant-design/icons';
+import DashboardIcon from './DashboardIcon';
 import {
   ResponsiveContainer,
   LineChart,
@@ -66,17 +68,7 @@ const TRANSITION_STYLE = `
   }
   .iptif-tab-btn:hover  { transform: translateY(-1px); }
   .iptif-tab-btn:active { transform: translateY(0); }
-  .iptif-mode-btn {
-    padding: 6px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
-  }
-  .iptif-mode-btn:hover  { transform: translateY(-1px); }
-  .iptif-mode-btn:active { transform: translateY(0); }
+  /* mode-btn styles moved to IptifSection.css */
   .iptif-summary-card {
     border-radius: 20px;
     padding: 24px;
@@ -99,10 +91,10 @@ function injectStyle() {
 }
 
 const VIEWS = [
-  { id: 'projects',   label: 'Projects Trend',    color: '#667eea', icon: '📊' },
-  { id: 'programs',   label: 'Programs Trend',    color: '#f093fb', icon: '🎓' },
-  { id: 'startups',   label: 'Startups Growth',   color: '#43e97b', icon: '🚀' },
-  { id: 'facilities', label: 'Facilities Revenue', color: '#f97316', icon: '🏭' },
+  { id: 'projects',   label: 'Projects Trend',    color: '#142D4E', icon: <BarChartOutlined /> },
+  { id: 'programs',   label: 'Programs Trend',    color: '#066A75', icon: <DashboardIcon name="education" size={14} /> },
+  { id: 'startups',   label: 'Startups Growth',   color: '#087E8B', icon: <RocketOutlined /> },
+  { id: 'facilities', label: 'Facilities Revenue', color: '#087E8B', icon: <BuildOutlined /> },
 ];
 
 function IptifSection({ user, isPublicView = false }) {
@@ -289,7 +281,7 @@ function IptifSection({ user, isPublicView = false }) {
     >
       {data.length === 0 && (
         <div className="iptif-no-data-overlay">
-          <span className="iptif-no-data-icon">&#128202;</span>
+          <span className="iptif-no-data-icon"><BarChartOutlined /></span>
           <p className="iptif-no-data-text">No data available for the selected filters.</p>
         </div>
       )}
@@ -322,7 +314,7 @@ function IptifSection({ user, isPublicView = false }) {
   );
 
   const currentView = VIEWS.find(v => v.id === viewType);
-  const color = currentView?.color || '#667eea';
+  const color = currentView?.color || '#142D4E';
 
   const renderFilters = () => {
     if (viewType === 'projects') return (
@@ -435,7 +427,7 @@ function IptifSection({ user, isPublicView = false }) {
         );
       }
       return (
-        <TableShell headerBg="#667eea" columns="2fr 1.5fr 1fr 1.2fr">
+        <TableShell headerBg="#142D4E" columns="2fr 1.5fr 1fr 1.2fr">
           {[
             <><div>Project Name</div><div>Scheme</div><div>Status</div><div>Start Date</div></>,
             <>
@@ -472,7 +464,7 @@ function IptifSection({ user, isPublicView = false }) {
         );
       }
       return (
-        <TableShell headerBg="#f093fb" columns="2fr 1.2fr 1.2fr 1.5fr 1fr">
+        <TableShell headerBg="#066A75" columns="2fr 1.2fr 1.2fr 1.5fr 1fr">
           {[
             <><div>Program Name</div><div>Type</div><div>Association</div><div>Target Audience</div><div>Attendees</div></>,
             <>
@@ -508,7 +500,7 @@ function IptifSection({ user, isPublicView = false }) {
       }
       const startupCols = hideRevenue ? '1.8fr 1.5fr 1fr 1fr' : '1.8fr 1.5fr 1fr 1fr 1.2fr';
       return (
-        <TableShell headerBg="#43e97b" columns={startupCols}>
+        <TableShell headerBg="#087E8B" columns={startupCols}>
           {[
             <><div>Startup Name</div><div>Domain</div><div>Status</div><div>Jobs Created</div>{!hideRevenue && <div>Revenue (&#8377;)</div>}</>,
             <>
@@ -544,7 +536,7 @@ function IptifSection({ user, isPublicView = false }) {
         );
       }
       return (
-        <TableShell headerBg="#f97316" columns="2fr 1.5fr 1.2fr 1.2fr 1.2fr">
+        <TableShell headerBg="#087E8B" columns="2fr 1.5fr 1.2fr 1.2fr 1.2fr">
           {[
             <><div>Facility Name</div><div>Type</div><div>Availability</div><div>Financial Year</div><div>Revenue (&#8377;)</div></>,
             <>
@@ -588,7 +580,7 @@ function IptifSection({ user, isPublicView = false }) {
               { label: 'Upload Facilities', table: 'iptif_facilities_table' },
             ].map(({ label, table }) => (
               <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
-                &#128228; {label}
+                <UploadOutlined /> {label}
               </button>
             ))}
           </div>
@@ -614,9 +606,9 @@ function IptifSection({ user, isPublicView = false }) {
 
         <div id="iptif-summary-cards-container" className="iptif-cards-grid">
           {[
-            { view: 'projects',  bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', shadow: '0 10px 20px rgba(102,126,234,0.2)', label: 'Total Projects',  value: summary.total_projects },
-            { view: 'programs',  bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', shadow: '0 10px 20px rgba(240,147,251,0.2)', label: 'Total Programs',  value: summary.total_programs },
-            { view: 'startups',  bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', shadow: '0 10px 20px rgba(67,233,123,0.2)',  label: 'Total Startups',  value: summary.total_startups },
+            { view: 'projects',  bg: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)', shadow: '0 10px 20px rgba(15, 31, 54,0.2)', label: 'Total Projects',  value: summary.total_projects },
+            { view: 'programs',  bg: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)', shadow: '0 10px 20px rgba(8, 126, 139,0.2)', label: 'Total Programs',  value: summary.total_programs },
+            { view: 'startups',  bg: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: '0 10px 20px rgba(8, 126, 139,0.2)',  label: 'Total Startups',  value: summary.total_startups },
           ].map(({ view, bg, shadow, label, value }) => (
             <div
               key={view}
@@ -691,13 +683,8 @@ function IptifSection({ user, isPublicView = false }) {
                   return (
                     <button
                       key={mode}
-                      className="iptif-mode-btn"
+                      className={`iptif-mode-btn${modeActive ? ' iptif-mode-btn--active' : ''}`}
                       onClick={() => switchMode(mode)}
-                      style={{
-                        backgroundColor: modeActive ? color : '#e9ecef',
-                        color: modeActive ? '#fff' : '#333',
-                        boxShadow: modeActive ? `0 4px 10px ${color}40` : 'none',
-                      }}
                     >
                       {modeLabel}
                     </button>
@@ -787,7 +774,7 @@ function IptifSection({ user, isPublicView = false }) {
 function EmptyState({ msg }) {
   return (
     <div className="iptif-empty-state" style={{ height: `${CONTENT_HEIGHT}px` }}>
-      <span className="iptif-empty-icon">&#128193;</span>
+      <span className="iptif-empty-icon"><DashboardIcon name="folder" size={32} /></span>
       <p className="iptif-empty-text">{msg || 'No data available for the selected filters.'}</p>
     </div>
   );

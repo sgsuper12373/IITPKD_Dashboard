@@ -5,9 +5,9 @@
 .em-btn {
     padding: 8px 14px;
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #DCE3E7;
     border-radius: 8px;
-    color: #475569;
+    color: #142D4E;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -19,7 +19,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
-.em-btn:hover { background-color: #f8fafc; }
+.em-btn:hover { background-color: #EDE9DF; }
 
 /* ── Dropdown panel ── */
 .em-dropdown {
@@ -28,7 +28,7 @@
     right: 0;
     margin-top: 8px;
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #DCE3E7;
     border-radius: 10px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     z-index: 1000;
@@ -53,14 +53,14 @@
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    color: #334155;
+    color: #142D4E;
     display: flex;
     align-items: center;
     gap: 10px;
     min-height: auto;
     transition: background-color 0.1s ease;
 }
-.em-item:hover { background-color: #f1f5f9; }
+.em-item:hover { background-color: #EDE9DF; }
 
 /* ── Icon in menu items ── */
 .em-icon { font-size: 16px; }

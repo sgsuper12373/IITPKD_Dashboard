@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { FileImageOutlined, BarChartOutlined } from '@ant-design/icons';
 import './ExportMenu.css';
 import { useIsPublicPreview } from '../utils/publicPreview';
 
@@ -101,12 +102,12 @@ const ExportMenu = ({
         <div className="em-dropdown">
           {(exportType === 'chart' || exportType === 'both') && (
             <button onClick={downloadPNG} className="em-item">
-              <span className="em-icon">🖼️</span> PNG (Graph)
+              <FileImageOutlined className="em-icon" /> PNG (Graph)
             </button>
           )}
           {(exportType === 'table' || exportType === 'both') && (
             <button onClick={downloadCSV} className="em-item">
-              <span className="em-icon">📊</span> CSV (Data)
+              <BarChartOutlined className="em-icon" /> CSV (Data)
             </button>
           )}
         </div>

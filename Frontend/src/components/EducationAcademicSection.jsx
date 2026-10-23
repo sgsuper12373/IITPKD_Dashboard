@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined } from '@ant-design/icons';
 
 import {
   fetchCourseCounts,
@@ -22,7 +24,7 @@ function CourseTable({ courses, headerColor }) {
   if (!courses.length) {
     return (
       <div className="eas-table-empty">
-        <span className="eas-table-empty-icon">&#128218;</span>
+        <DashboardIcon name="ug" className="eas-table-empty-icon" />
         <p className="eas-table-empty-p">No courses found.</p>
       </div>
     );
@@ -125,7 +127,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             {isAdmin && (
               <div className="page-header-actions">
                 <button className="page-upload-btn" onClick={() => { setActiveUploadTable('courses_table'); setIsUploadModalOpen(true); }}>
-                  <span>&#128228;</span> Upload Course Data
+                  <UploadOutlined /> Upload Course Data
                 </button>
               </div>
             )}
@@ -155,7 +157,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             <div className="eas-card-decor" />
             <div className="eas-card-inner">
               <div className="eas-card-header">
-                <span className="eas-card-icon">&#128202;</span>
+                <DashboardIcon name="chart" className="eas-card-icon" />
                 <span className="eas-card-label">Active Courses</span>
               </div>
               <div className="eas-card-value">{formatNumber(courseCounts.active_all)}</div>
@@ -167,7 +169,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             <div className="eas-card-decor" />
             <div className="eas-card-inner">
               <div className="eas-card-header">
-                <span className="eas-card-icon">&#127981;</span>
+                <DashboardIcon name="bank" className="eas-card-icon" />
                 <span className="eas-card-label">Active Industry Linked Courses</span>
               </div>
               <div className="eas-card-value">{formatNumber(courseCounts.active_industry)}</div>
@@ -209,7 +211,7 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             <div id="education-academic-courses-table">
               <CourseTable
                 courses={viewMode === 'all' ? allCourses : industryCourses}
-                headerColor={viewMode === 'all' ? '#6366f1' : '#f97316'}
+                headerColor={viewMode === 'all' ? '#066A75' : '#087E8B'}
               />
             </div>
           </div>

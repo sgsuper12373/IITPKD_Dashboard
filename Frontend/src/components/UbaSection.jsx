@@ -5,6 +5,8 @@ import {
   fetchUbaEvents
 } from '../services/outreachExtensionStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
+import DashboardIcon from './DashboardIcon';
+import { UploadOutlined, BarChartOutlined, CalendarOutlined, ProfileOutlined, UserOutlined } from '@ant-design/icons';
 import './Page.css';
 import './AcademicSection.css';
 import './UbaSection.css';
@@ -119,13 +121,13 @@ function UbaSection({ user, isPublicView = false }) {
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_projects'); setIsUploadModalOpen(true); }}
           >
-            <span>&#128228;</span> Upload Projects
+            <UploadOutlined /> Upload Projects
           </button>
           <button
             className="page-upload-btn"
             onClick={() => { setActiveUploadTable('uba_events'); setIsUploadModalOpen(true); }}
           >
-            <span>&#128197;</span> Upload Events
+            <CalendarOutlined /> Upload Events
           </button>
         </div>
       )}
@@ -154,7 +156,7 @@ function UbaSection({ user, isPublicView = false }) {
           <div className="uba-stat-card-decor-bottom" />
           <div className="uba-stat-card-body">
             <div className="uba-stat-card-header">
-              <span className="uba-stat-card-icon">&#128202;</span>
+              <span className="uba-stat-card-icon"><BarChartOutlined /></span>
               <h3 className="uba-stat-card-h3">Total Projects</h3>
             </div>
             <div className="uba-stat-card-value">
@@ -173,7 +175,7 @@ function UbaSection({ user, isPublicView = false }) {
           <div className="uba-stat-card-decor-bottom" />
           <div className="uba-stat-card-body">
             <div className="uba-stat-card-header">
-              <span className="uba-stat-card-icon">&#128197;</span>
+              <span className="uba-stat-card-icon"><CalendarOutlined /></span>
               <h3 className="uba-stat-card-h3">Total Events</h3>
             </div>
             <div className="uba-stat-card-value">
@@ -217,7 +219,7 @@ function UbaSection({ user, isPublicView = false }) {
           <div id="uba-projects-container">
             {projects.length === 0 ? (
               <div className="uba-empty-state">
-                <span className="uba-empty-icon">&#128203;</span>
+                <span className="uba-empty-icon"><ProfileOutlined /></span>
                 <p className="uba-empty-text">No projects found</p>
               </div>
             ) : (
@@ -231,7 +233,7 @@ function UbaSection({ user, isPublicView = false }) {
                     <div className="uba-project-card-body">
                       {project.coordinator_name && (
                         <div className="uba-project-info-row">
-                          <span>&#128100;</span>
+                          <UserOutlined />
                           <span><strong>Coordinator:</strong> {project.coordinator_name}</span>
                         </div>
                       )}
@@ -304,7 +306,7 @@ function UbaSection({ user, isPublicView = false }) {
         >
           {events.length === 0 ? (
             <div className="uba-empty-state">
-              <span className="uba-empty-icon">&#128197;</span>
+              <span className="uba-empty-icon"><CalendarOutlined /></span>
               <p className="uba-empty-text">No events found</p>
             </div>
           ) : chartIsMobile ? (

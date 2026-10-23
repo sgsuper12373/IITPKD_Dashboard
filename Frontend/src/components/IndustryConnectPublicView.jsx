@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './IndustryConnectMinimal.css';
@@ -20,7 +21,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       title: 'Externship',
       subtitle: 'Faculty Engagement with Industries',
       expandedTitle: 'Bridging academia and industry through Externships',
-      icon: '🏢',
+      icon: <DashboardIcon name="bank" />,
       component: IndustryAdministrativeSection
     },
     {
@@ -28,7 +29,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       title: 'Industry Events',
       subtitle: '',
       expandedTitle: 'Fostering innovation through dynamic industry-academia collaboration.',
-      icon: '🤝',
+      icon: <DashboardIcon name="link" />,
       component: IcsrSection
     },
     {
@@ -36,7 +37,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       title: 'Industry Academic Conclave',
       subtitle: '',
       expandedTitle: 'Building bridges between industry leaders and academic excellence.',
-      icon: '🎯',
+      icon: <DashboardIcon name="aim" />,
       component: ConclaveSection
     }
   ];

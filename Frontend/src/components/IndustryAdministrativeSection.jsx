@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardIcon from './DashboardIcon';
+import { BarChartOutlined, LineChartOutlined, UploadOutlined, ProfileOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   BarChart,
@@ -33,7 +35,7 @@ import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const TYPE_COLORS = ['#6366f1', '#22c55e', '#f97316', '#a855f7', '#14b8a6', '#0ea5e9', '#facc15'];
+const TYPE_COLORS = ['#066A75', '#22c55e', '#087E8B', '#142D4E', '#087E8B', '#087E8B', '#066A75'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
@@ -281,7 +283,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                   className="page-upload-btn"
                   onClick={() => setIsUploadModalOpen(true)}
                 >
-                  <span>&#128228;</span> Upload Externship Data
+                  <UploadOutlined /> Upload Externship Data
                 </button>
               </div>
             )}
@@ -316,7 +318,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             <div className="ias-stat-card-decor" />
             <div className="ias-stat-card-body">
               <div className="ias-stat-card-header">
-                <span className="ias-stat-card-icon">&#128188;</span>
+                <DashboardIcon name="briefcase" className="ias-stat-card-icon" />
                 <span className="ias-stat-card-label">Total No. of Externships</span>
               </div>
               <div className="stat-card-value ias-stat-card-value">
@@ -333,7 +335,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             <div className="ias-stat-card-decor" />
             <div className="ias-stat-card-body">
               <div className="ias-stat-card-header">
-                <span className="ias-stat-card-icon">&#127962;</span>
+                <DashboardIcon name="bank" className="ias-stat-card-icon" />
                 <span className="ias-stat-card-label">Departments</span>
               </div>
               <div className="stat-card-value ias-stat-card-value">
@@ -350,7 +352,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             <div className="ias-stat-card-decor" />
             <div className="ias-stat-card-body">
               <div className="ias-stat-card-header">
-                <span className="ias-stat-card-icon">&#128197;</span>
+                <DashboardIcon name="calendar" className="ias-stat-card-icon" />
                 <span className="ias-stat-card-label">Timeline Coverage</span>
               </div>
               <div className="stat-card-value ias-stat-card-value">
@@ -385,20 +387,20 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                       onClick={() => setViewType('yearly')}
                       className={`view-type-btn${viewType === 'yearly' ? ' view-type-btn--yearly-active' : ''}`}
                     >
-                      &#128202; Year
+                      <BarChartOutlined /> Year
                     </button>
                     <button
                       onClick={() => setViewType('department')}
                       className={`view-type-btn${viewType === 'department' ? ' view-type-btn--dept-active' : ''}`}
                     >
-                      &#127962; Dept
+                      <DashboardIcon name="bank" size={14} /> Dept
                     </button>
                     {canViewDirectory && (
                       <button
                         onClick={() => setViewType('externshipTable')}
                         className={`view-type-btn${viewType === 'externshipTable' ? ' view-type-btn--dir-active' : ''}`}
                       >
-                        &#128203; Dir
+                        <ProfileOutlined /> Dir
                       </button>
                     )}
                   </div>
@@ -442,7 +444,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               <div className="ias-chart-header-row">
                 <div>
                   <h2 className="ias-chart-h2">
-                    <span className="ias-chart-icon">&#128202;</span> Year-wise Faculty Industry Stint
+                    <span className="ias-chart-icon"><BarChartOutlined /></span> Year-wise Faculty Industry Stint
                   </h2>
                   <p className="chart-description">
                     Distribution by externship type across the chosen timeframe
@@ -508,7 +510,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
               <div className="ias-chart-header-row ias-chart-header-row--top">
                 <div>
                   <h2 className="ias-chart-h2">
-                    <span className="ias-chart-icon">&#127962;</span> Department-wise Analysis
+                    <span className="ias-chart-icon"><DashboardIcon name="bank" size={18} /></span> Department-wise Analysis
                   </h2>
                   <p className="chart-description">
                     {deptChartType === 'bar' ? 'Distribution across departments' : 'Yearly trend per department'}
@@ -522,7 +524,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         onClick={() => setDeptChartType(mode)}
                         className={`ias-mode-btn${deptChartType === mode ? ' ias-mode-btn--active' : ''}`}
                       >
-                        {mode === 'bar' ? '📊 Bar' : '📈 Trend'}
+                        {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                       </button>
                     ))}
                   </div>
@@ -632,7 +634,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <div className="ias-dir-header-row">
                   <div className="chart-header">
                     <h2 className="ias-chart-h2">
-                      <span>&#128203;</span> Faculty Industry Stint Directory
+                      <ProfileOutlined /> Faculty Industry Stint Directory
                     </h2>
                     <p className="chart-description">
                       Displaying {externshipList.length} total records

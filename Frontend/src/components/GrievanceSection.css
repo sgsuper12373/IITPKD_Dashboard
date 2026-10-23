@@ -22,7 +22,7 @@
 
 .summary-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 8px 20px rgba(20, 45, 78,0.25);
 }
 
 .summary-card h3 {
@@ -33,18 +33,18 @@
 }
 
 .summary-value {
-  color: #667eea;
+  color: #142D4E;
   font-size: 2.2rem;
   font-weight: 700;
   margin: 0;
 }
 
 .accent-success {
-  color: #43e97b;
+  color: #087E8B;
 }
 
 .accent-warning {
-  color: #fa709a;
+  color: #066A75;
 }
 
 .summary-subtitle {
@@ -264,18 +264,18 @@
 }
 
 .status-pill.pending {
-  background-color: rgba(250, 112, 154, 0.18);
-  color: #fa709a;
+  background-color: rgba(6, 106, 117,0.18);
+  color: #066A75;
 }
 
 .status-pill.resolved {
-  background-color: rgba(67, 233, 123, 0.18);
-  color: #43e97b;
+  background-color: rgba(8, 126, 139,0.18);
+  color: #087E8B;
 }
 
 .status-pill.mixed {
-  background-color: rgba(102, 126, 234, 0.18);
-  color: #8a9eff;
+  background-color: rgba(20, 45, 78,0.18);
+  color: #142D4E;
 }
 
 @media (max-width: 1024px) {

@@ -40,7 +40,7 @@
 }
 
 .cu-input:focus,
-.cu-select:focus { border-color: #f59e0b; }
+.cu-select:focus { border-color: #087E8B; }
 
 .cu-select {
     background-color: #ffffff;
@@ -59,19 +59,19 @@
     font-size: 1rem;
     font-weight: 600;
     color: #ffffff;
-    background-color: #f59e0b;
+    background-color: #087E8B;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
     margin-top: 0.5rem;
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 2px 8px rgba(8, 126, 139,0.25);
 }
 
 .cu-submit:hover {
-    background-color: #d97706;
+    background-color: #066A75;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    box-shadow: 0 4px 12px rgba(8, 126, 139,0.35);
 }
 
 .cu-alert {

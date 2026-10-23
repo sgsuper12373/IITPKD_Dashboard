@@ -38,23 +38,23 @@
   overflow: hidden;
 }
 .icsr-stat-card--indigo {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+  background: linear-gradient(135deg, #142D4E 0%, #066A75 100%);
+  box-shadow: 0 10px 25px rgba(20, 45, 78, 0.2);
 }
 .icsr-stat-card--blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, #0F1F36 0%, #142D4E 100%);
+  box-shadow: 0 10px 25px rgba(15, 31, 54, 0.2);
 }
 .icsr-stat-card--orange {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);
+  background: linear-gradient(135deg, #066A75 0%, #087E8B 100%);
+  box-shadow: 0 10px 25px rgba(8, 126, 139, 0.2);
 }
 .icsr-stat-card--teal {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
-  box-shadow: 0 10px 25px rgba(20, 184, 166, 0.2);
+  background: linear-gradient(135deg, #087E8B 0%, #066A75 100%);
+  box-shadow: 0 10px 25px rgba(8, 126, 139, 0.2);
 }
 .icsr-stat-card--purple {
-  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  background: linear-gradient(135deg, #142D4E 0%, #0F1F36 100%);
   box-shadow: 0 10px 25px rgba(168, 85, 247, 0.2);
 }
 .icsr-stat-card-body {
@@ -108,7 +108,7 @@
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #EDE9DF;
 }
 .icsr-filter-col {
   display: flex;
@@ -117,7 +117,7 @@
 }
 .icsr-filter-h4 {
   margin: 0;
-  color: #333;
+  color: #142D4E;
   font-size: 14px;
 }
 .icsr-nav-tabs {
@@ -130,9 +130,9 @@
 .icsr-nav-tab {
   padding: 5px 12px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  color: #475569;
+  border: 1px solid #DCE3E7;
+  background-color: #EDE9DF;
+  color: #142D4E;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -142,10 +142,10 @@
   font-family: inherit;
 }
 .icsr-nav-tab--active {
-  border: 2px solid #f97316;
-  background-color: #fff7ed;
-  color: #9a3412;
-  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);
+  border: 2px solid #087E8B;
+  background-color: rgba(8, 126, 139,0.08);
+  color: #0F1F36;
+  box-shadow: 0 4px 10px rgba(8, 126, 139,0.25);
   transform: translateY(-1px);
 }
 
@@ -174,7 +174,7 @@
 .icsr-active-filters {
   margin-top: 12px;
   padding: 8px;
-  background-color: #e9ecef;
+  background-color: #EDE9DF;
   border-radius: 4px;
   font-size: 14px;
 }
@@ -195,7 +195,7 @@
 }
 .icsr-chart-title {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #142D4E;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -221,33 +221,44 @@
 
 /* ── Chart mode toggle buttons ── */
 .icsr-mode-btns {
-  display: flex;
-  gap: 8px;
+  display: inline-flex;
+  gap: 3px;
+  background: var(--color-bg-2);
+  padding: 3px;
+  border-radius: var(--radius-sm);
   margin-bottom: 16px;
 }
 .icsr-mode-btn {
   padding: 6px 16px;
-  font-size: 13px;
+  font-size: var(--text-xs);
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   border: none;
-  background-color: #f1f5f9;
-  color: #555;
-  transition: background-color 0.2s;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: color var(--dur-mid) var(--ease-spring),
+              background-color var(--dur-mid) var(--ease-spring),
+              box-shadow var(--dur-mid) var(--ease-spring);
   font-family: inherit;
 }
 .icsr-mode-btn--active-indigo {
-  background-color: #4f46e5;
-  color: #fff;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  font-weight: 700;
 }
 .icsr-mode-btn--active-orange {
-  background-color: #f97316;
-  color: #fff;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  font-weight: 700;
 }
 .icsr-mode-btn--active-purple {
-  background-color: #a855f7;
-  color: #fff;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  font-weight: 700;
 }
 
 /* ── Chart container ── */
@@ -283,8 +294,8 @@
   margin-bottom: 12px;
 }
 .icsr-proj-badge-type {
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: rgba(8, 126, 139,0.08);
+  color: #066A75;
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 11px;
@@ -332,12 +343,12 @@
 .icsr-proj-stat-value {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #142D4E;
 }
 .icsr-proj-stat-amount {
   font-size: 14px;
   font-weight: 700;
-  color: #0ea5e9;
+  color: #087E8B;
 }
 .icsr-empty-state {
   padding: 40px 20px;
@@ -345,7 +356,7 @@
   background-color: #f9fafb;
   border-radius: 12px;
   border: 1px dashed #d1d5db;
-  color: #6b7280;
+  color: #64748b;
 }
 
 /* ── Projects desktop table ── */
@@ -361,7 +372,7 @@
 .icsr-proj-thead tr {
   position: sticky;
   top: 0;
-  background-color: #0ea5e9;
+  background-color: #087E8B;
   color: white;
   z-index: 10;
 }
@@ -414,7 +425,7 @@
 .icsr-mou-filter-bar {
   padding: 16px 20px;
   background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #EDE9DF;
 }
 .icsr-mou-filter-top {
   display: flex;
@@ -442,9 +453,9 @@
 .icsr-mou-tab {
   padding: 8px 12px;
   border-radius: 5px;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  color: #475569;
+  border: 1px solid #DCE3E7;
+  background-color: #EDE9DF;
+  color: #142D4E;
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -452,13 +463,13 @@
   font-family: inherit;
 }
 .icsr-mou-tab--active-trend {
-  border: 2px solid #a855f7;
+  border: 2px solid #142D4E;
   background-color: #faf5ff;
   color: #6b21a8;
 }
 .icsr-mou-tab--active-directory {
   padding: 5px 12px;
-  border: 2px solid #ec4899;
+  border: 2px solid #066A75;
   background-color: #fdf2f8;
   color: #9d174d;
 }
@@ -471,7 +482,7 @@
 .icsr-mou-year-label {
   font-size: 12px;
   font-weight: 500;
-  color: #555;
+  color: #64748b;
 }
 .icsr-mou-body {
   padding: 20px;
@@ -488,7 +499,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #333;
+  color: #142D4E;
 }
 .icsr-mou-count {
   font-size: 13px;
@@ -545,7 +556,7 @@
 .icsr-mou-thead tr {
   position: sticky;
   top: 0;
-  background-color: #a855f7;
+  background-color: #142D4E;
   color: white;
   z-index: 10;
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UploadOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import {
   ResponsiveContainer,
@@ -37,8 +38,8 @@ import '../DesignSystem.css';
 import './IcsrSection.css';
 
 const EVENT_TYPE_COLORS = [
-  '#4f46e5', '#22c55e', '#0ea5e9', '#f97316',
-  '#a855f7', '#facc15', '#fb7185', '#14b8a6', '#ec4899', '#8b5cf6'
+  '#142D4E', '#22c55e', '#087E8B', '#087E8B',
+  '#142D4E', '#066A75', '#087E8B', '#087E8B', '#066A75', '#066A75'
 ];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -155,7 +156,7 @@ function IcsrSection({ user, isPublicView = false }) {
         {error && <div className="icsr-error">{error}</div>}
         {!isReadOnlyView && isAdmin && (
           <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-            <span>&#128228;</span> Upload Events
+            <UploadOutlined /> Upload Events
           </button>
         )}
       </div>
@@ -223,7 +224,7 @@ function IcsrSection({ user, isPublicView = false }) {
                     <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
-                    <Bar dataKey="events" name="Events" fill="#4f46e5" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="events" name="Events" fill="#142D4E" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )
@@ -235,7 +236,7 @@ function IcsrSection({ user, isPublicView = false }) {
                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
                 <YAxis stroke="#666" tick={{ fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="events" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={30} />
+                <Bar dataKey="events" fill="#142D4E" radius={[4, 4, 0, 0]} barSize={30} />
               </BarChart>
             </ResponsiveContainer>
           </div>

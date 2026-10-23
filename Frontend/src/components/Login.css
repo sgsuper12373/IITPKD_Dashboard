@@ -1,235 +1,269 @@
-/* ================= ROOT THEME ================= */
-:root {
-  --off-white: #faf9f7;
-  --off-white-2: #f2f1ee;
-  --text-main: #2b2b2b;
-  --text-muted: #6b7280;
+/* Login.css — split-screen login layout */
 
-  --accent: #f7a600;
-  --accent-dark: #d88f00;
-
-  --border-light: #e3e1dc;
-}
-
-/* ================= PAGE BACKGROUND ================= */
-body {
-  margin: 0;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background: linear-gradient(
-    135deg,
-    rgba(247, 166, 0, 0.15),
-    rgba(255, 255, 255, 1)
-  );
-  color: var(--text-main);
-}
-
-/* ================= LOGIN PAGE LAYOUT ================= */
-.login-page {
+/* ================================================================
+   SPLIT CONTAINER
+   ================================================================ */
+.login-split {
+  display: flex;
   min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ================================================================
+   LEFT: DARK FOREST BRANDING PANEL
+   ================================================================ */
+.login-brand {
+  flex: 0 0 420px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-
-  /* 🔽 top aligned */
-  justify-content: flex-start;
-
-  padding-top: 4.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* ================= INSTITUTE TITLE ================= */
-.login-page-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--accent);
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* ================= LOGIN CARD ================= */
-.card {
-  width: 100%;
-  max-width: 420px;
-  padding: 2.5rem 2.75rem;
-
-  background: #ffffff;
-  border-radius: 16px;
-
-  border: 1px solid rgba(247, 166, 0, 0.35);
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(247, 166, 0, 0.12);
-
-  animation: fadeInUp 0.4s ease;
-}
-
-/* ================= LOGO ================= */
-.login-logo {
-  display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  position: relative;
+  background: linear-gradient(170deg, #0F1F36 0%, #142D4E 60%, #066A75 100%);
+  color: #fff;
+  padding: 3rem 2.5rem;
+  overflow: hidden;
 }
 
-.login-logo img {
+.login-brand__content {
+  position: relative;
+  z-index: 1;
+}
+
+.login-brand__logo {
   height: 64px;
   width: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-}
-
-/* ================= CARD HEADING ================= */
-.card h1 {
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #111111;
   margin-bottom: 1.5rem;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,0.3));
 }
 
-/* ================= FORM INPUTS ================= */
-.card input {
+.login-brand__title {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.login-brand__tagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0 0 2rem;
+}
+
+.login-brand__desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  max-width: 320px;
+}
+
+.login-brand__clipart {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* ================================================================
+   RIGHT: FORM PANEL
+   ================================================================ */
+.login-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--color-bg);
+}
+
+.login-form-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form__heading {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 0.35rem;
+}
+
+.login-form__sub {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0 0 2rem;
+}
+
+/* ================================================================
+   FORM
+   ================================================================ */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.login-field__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.login-field input {
   width: 100%;
   padding: 0.75rem 0.9rem;
   font-size: 0.95rem;
-
-  background: #ffffff;
-  border: 1px solid var(--border-light);
+  background: #fff;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
 }
 
-.card input::placeholder {
-  color: #9ca3af;
-}
+.login-field input::placeholder { color: var(--color-text-light); }
 
-.card input:focus {
+.login-field input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(247, 166, 0, 0.25);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.2);
 }
 
-/* ================= PRIMARY BUTTON ================= */
-.card button[type="submit"] {
-  margin-top: 0.75rem;
-
-  background: linear-gradient(135deg, #f7a600, #f8b225);
-  color: #ffffff;
-
+/* ================================================================
+   SUBMIT BUTTON
+   ================================================================ */
+.login-submit {
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 0.25rem;
+  background: linear-gradient(135deg, #142D4E, #087E8B);
+  color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 0.85rem;
-
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  box-shadow: 0 6px 16px rgba(247, 166, 0, 0.45);
+  font-family: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(20, 45, 78, 0.35);
 }
 
-.card button[type="submit"]:hover {
+.login-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(247, 166, 0, 0.6);
+  box-shadow: 0 8px 22px rgba(20, 45, 78, 0.5);
 }
 
-.card button[type="submit"]:active {
-  transform: translateY(0);
+.login-submit:active { transform: translateY(0); }
+.login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ================================================================
+   DIVIDER & GOOGLE
+   ================================================================ */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  color: var(--color-text-light);
+  font-size: 0.8rem;
 }
 
-.card button[type="submit"]:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
 }
 
-/* ================= ERROR MESSAGE ================= */
+.login-google-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* ================================================================
+   ERROR
+   ================================================================ */
 .login-error {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.85rem;
   text-align: center;
   color: #b91c1c;
   background: rgba(185, 28, 28, 0.08);
-  padding: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
 }
 
-/* ================= TOGGLE LINK ================= */
-.login-toggle {
-  margin-top: 1.25rem;
-  background: none;
-  border: none;
-  width: 100%;
-
-  color: var(--accent-dark);
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-align: center;
-
-  cursor: pointer;
-  transition: color 0.2s ease;
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+  .login-brand { flex: 0 0 340px; padding: 2.5rem 2rem; }
+  .login-brand__title { font-size: 1.6rem; }
 }
 
-.login-toggle:hover {
-  color: #92400e;
-  text-decoration: underline;
-}
+@media (max-width: 768px) {
+  .login-split { flex-direction: column; }
 
-/* ── Login form layout ── */
-.login-form   { display: flex; flex-direction: column; gap: 1rem; }
-
-/* ── "or" divider between password and Google login ── */
-.login-divider { text-align: center; margin: 0.75rem 0 0.25rem; color: #888; font-size: 0.85rem; }
-
-/* ── Google login button wrapper ── */
-.login-google-wrap { display: flex; justify-content: center; }
-
-/* ================= ANIMATION ================= */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
+  .login-brand {
+    flex: none;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    align-items: center;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+
+  .login-brand__desc { display: none; }
+  .login-brand__clipart { height: 50px; }
+  .login-brand__logo { height: 48px; }
+  .login-brand__title { font-size: 1.5rem; }
+
+  .login-form-panel { padding: 2rem 1.25rem; }
 }
 
-/* ================= RESPONSIVE ================= */
 @media (max-width: 480px) {
-  .login-page {
-    padding-top: 3rem;
+  .login-brand {
+    padding: 1.75rem 1rem 1.25rem;
   }
 
-  .login-page-title {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
-  }
+  .login-brand__logo { height: 40px; margin-bottom: 1rem; }
+  .login-brand__title { font-size: 1.25rem; }
+  .login-brand__tagline { margin-bottom: 0; font-size: 0.65rem; }
 
-  .card {
-    padding: 1.75rem 1.5rem;
-  }
-
-  .login-logo img {
-    height: 52px;
-  }
+  .login-form-panel { padding: 1.5rem 1rem; }
+  .login-form__heading { font-size: 1.4rem; }
+  .login-form__sub { font-size: 0.82rem; }
 }
 
 @media (max-width: 360px) {
-  .login-page {
-    padding-top: 2rem;
-  }
+  .login-brand { padding: 1.25rem 0.75rem 1rem; }
+  .login-brand__logo { height: 36px; }
+  .login-brand__title { font-size: 1.1rem; }
 
-  .login-page-title {
-    font-size: 1.1rem;
-  }
+  .login-form-panel { padding: 1.25rem 0.75rem; }
+  .login-form__heading { font-size: 1.2rem; }
+  .login-field input { padding: 0.65rem 0.75rem; font-size: 0.88rem; }
+}
 
-  .card {
-    padding: 1.5rem 1.25rem;
-  }
+@media (max-width: 320px) {
+  .login-brand { padding: 1rem 0.5rem 0.75rem; }
+  .login-brand__logo { height: 30px; }
+  .login-brand__title { font-size: 0.95rem; }
+  .login-brand__tagline { font-size: 0.55rem; }
 
-  .login-logo img {
-    height: 44px;
-  }
+  .login-form-panel { padding: 1rem 0.5rem; }
+  .login-form__heading { font-size: 1rem; }
+  .login-submit { padding: 0.7rem; font-size: 0.9rem; }
 }

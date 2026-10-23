@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PUBLIC_PREVIEW_USER, PREVIEW_QUERY, PublicPreviewContext, isPreviewSearch } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './StudentsEngagement.css';
 
 import NptelSection from './NptelSection';
@@ -9,13 +10,13 @@ import OutreachSection from './OutreachSection';
 const SECTIONS = [
   {
     id: 'nptel',
-    icon: '📚',
+    icon: 'education',
     title: 'CCE',
     subtitle: 'National Programme on Technology Enhanced Learning',
     expandedTitle: 'Track student participation in NPTEL online learning and certification programmes.',
     description:
       'Access NPTEL courses, certifications, local chapters, and student enrollment data. Track student participation in online learning and certification programmes.',
-    grad: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    grad: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)',
     shadow: 'rgba(102,126,234,0.3)',
     shadowHover: 'rgba(102,126,234,0.45)',
     component: NptelSection,
@@ -23,7 +24,7 @@ const SECTIONS = [
   },
   {
     id: 'pmc',
-    icon: '📐',
+    icon: 'aim',
     title: 'Palakkad Math Circle',
     subtitle: 'Mathematics enrichment sessions',
     expandedTitle: 'Mathematics enrichment sessions for school students.',
@@ -36,7 +37,7 @@ const SECTIONS = [
   },
   {
     id: 'pbd',
-    icon: '🌠',
+    icon: 'global',
     title: 'Pale Blue Dot',
     subtitle: 'Public lecture series',
     expandedTitle: 'Astronomy and space science public lecture series.',
@@ -49,12 +50,12 @@ const SECTIONS = [
   },
   {
     id: 'sq',
-    icon: '🔬',
+    icon: 'research',
     title: 'Science Quest',
     subtitle: 'Science outreach for school students',
     expandedTitle: 'Science outreach and laboratory programmes for school students.',
     description: 'Science outreach and laboratory programmes for school students.',
-    grad: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    grad: 'linear-gradient(135deg, #066A75 0%, #087E8B 100%)',
     shadow: 'rgba(79,172,254,0.3)',
     shadowHover: 'rgba(79,172,254,0.45)',
     component: OutreachSection,
@@ -97,7 +98,7 @@ function StudentsEngagementSection({ user: realUser }) {
 
                   <div className="se-card-content">
                     <div className="se-card-header">
-                      <span className="se-card-icon-wrap">{s.icon}</span>
+                      <span className="se-card-icon-wrap"><DashboardIcon name={s.icon} /></span>
                       <h2 className="se-card-h2">{s.title}</h2>
                       <p className="se-card-subtitle">{s.subtitle}</p>
                     </div>
@@ -126,7 +127,7 @@ function StudentsEngagementSection({ user: realUser }) {
               <span className="back-arrow">&#8592;</span>
               <span>Back</span>
             </button>
-            <div className="section-icon-header">{activeItem.icon}</div>
+            <div className="section-icon-header"><DashboardIcon name={activeItem.icon} size={28} /></div>
             <p className="section-overview-text">{activeItem.expandedTitle}</p>
           </div>
           <div className="expanded-card-content">

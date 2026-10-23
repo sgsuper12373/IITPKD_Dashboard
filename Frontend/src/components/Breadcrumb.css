@@ -36,7 +36,7 @@
 }
 
 .breadcrumb-link:hover {
-  color: #f7a600;
+  color: #087E8B;
 }
 
 /* › separator */
@@ -52,7 +52,7 @@
 .breadcrumb-current {
   font-size: 0.76rem;
   font-weight: 600;
-  color: #f7a600;
+  color: #087E8B;
   letter-spacing: 0.01em;
   line-height: 1.4;
 }

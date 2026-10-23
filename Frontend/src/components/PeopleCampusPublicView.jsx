@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './PeopleCampusMinimal.css';
@@ -23,7 +24,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       title: 'Student Overview',
       subtitle: '',
       expandedTitle: 'Meet the minds shaping tomorrow.',
-      icon: '👩‍🎓',
+      icon: <DashboardIcon name="students" />,
       component: AcademicSection
     },
     {
@@ -31,7 +32,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       title: 'Employee Overview',
       subtitle: '',
       expandedTitle: 'Dedicated Professionals. One Shared Mission.',
-      icon: '🏛️',
+      icon: <DashboardIcon name="institute" />,
       component: AdministrativeSection
     },
     /*{
@@ -39,7 +40,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       title: 'Grievances',
       subtitle: '',
       expandedTitle: 'Ensuring fairness, safety, and respect for all members of our community',
-      icon: '⚖️',
+      icon: <DashboardIcon name="audit" />,
       isGrievances: true
     },
     {
@@ -47,7 +48,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       title: 'Infrastructure',
       subtitle: '',
       expandedTitle: 'Sustaining Today. Developing for Tomorrow.',
-      icon: '🏗️',
+      icon: <DashboardIcon name="industry" />,
       component: EwdSection
     },*/
     {
@@ -55,7 +56,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       title: 'Our Alumni',
       subtitle: '',
       expandedTitle: 'Fostering global partnerships and maintaining strong alumni connections',
-      icon: '🌍',
+      icon: <DashboardIcon name="global" />,
       component: IarSection
     }
   ];

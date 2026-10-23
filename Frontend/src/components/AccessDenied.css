@@ -8,7 +8,7 @@
 
 .access-denied-card {
   background: #fff;
-  border: 1px solid #e3e1dc;
+  border: 1px solid #DCE3E7;
   border-radius: 16px;
   padding: 2.5rem 2rem;
   max-width: 520px;
@@ -39,7 +39,7 @@
 
 .access-denied-sections {
   background: #fffbf0;
-  border: 1px solid rgba(247, 166, 0, 0.3);
+  border: 1px solid rgba(8, 126, 139, 0.3);
   border-radius: 10px;
   padding: 1rem 1.25rem;
   text-align: left;
@@ -65,7 +65,7 @@
 
 .access-denied-link {
   font-size: 0.9rem;
-  color: #f7a600;
+  color: #087E8B;
   text-decoration: none;
   font-weight: 500;
   display: inline-flex;
@@ -80,7 +80,7 @@
 }
 
 .access-denied-link:hover {
-  color: #e89500;
+  color: #066A75;
   text-decoration: underline;
 }
 

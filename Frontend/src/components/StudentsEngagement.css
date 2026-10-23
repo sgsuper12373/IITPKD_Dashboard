@@ -140,7 +140,7 @@
 
 .page-content-studentsEngagement .summary-card {
     background-color: #fffaf0 !important;
-    border: 1px solid rgba(247, 166, 0, 0.35);
+    border: 1px solid rgba(8, 126, 139, 0.35);
     border-radius: 14px;
     padding: 1.5rem 1.75rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -157,7 +157,7 @@
 
 /* Label */
 .page-content-studentsEngagement .summary-card-label {
-    color: #92400e !important;
+    color: #066A75 !important;
     font-size: 0.95rem;
     font-weight: 500;
     margin-bottom: 0.4rem;
@@ -174,7 +174,7 @@
 /* Subtitle */
 .page-content-studentsEngagement .summary-subtitle {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: #64748b;
     margin-top: 0.3rem;
 }
 
@@ -186,7 +186,7 @@
     left: 1.25rem;
     right: 1.25rem;
     height: 3px;
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    background: linear-gradient(90deg, #087E8B, #066A75);
 }
 
 /* Hover */
@@ -203,7 +203,7 @@
     background-color: #fffaf0 !important;
     border-radius: 16px;
     padding: 2rem;
-    border: 1px solid rgba(247, 166, 0, 0.35);
+    border: 1px solid rgba(8, 126, 139, 0.35);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
@@ -215,7 +215,7 @@
 
 .page-content-studentsEngagement th {
     background-color: #fff7ed;
-    color: #92400e;
+    color: #066A75;
     padding: 0.85rem;
 }
 

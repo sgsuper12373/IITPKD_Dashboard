@@ -1,24 +1,22 @@
 /* ds-shared.css — design tokens for the shared chart layer (src/charts) and
    the Quick Glance page.
 
-   Palette rule: ONE orange highlight per chart, slate for everything else,
+   Palette rule: Navy primary per chart, teal for accent/highlight,
    semantic success / warning / danger for status only. Status colours are
-   aliases of the existing global.css tokens so a theme change there flows
-   through; orange + slate are defined here and mirrored in
-   src/charts/chartConfig.js (SVG attributes need literal values).
-   No other colours or fonts are introduced. */
+   aliases of the existing global.css tokens. Navy + teal are mirrored in
+   src/charts/chartConfig.js (SVG attributes need literal values). */
 
 :root {
   /* ── Highlight + neutral ── */
-  --ds-accent:        #FF6B35;
-  --ds-slate:         #475569;
+  --ds-accent:        #087E8B;
+  --ds-slate:         #142D4E;
 
-  /* slate tints (alpha only — no new hues) */
-  --ds-slate-06:      rgba(71, 85, 105, 0.06);
-  --ds-slate-12:      rgba(71, 85, 105, 0.12);
-  --ds-slate-35:      rgba(71, 85, 105, 0.35);
-  --ds-slate-60:      rgba(71, 85, 105, 0.60);
-  --ds-accent-12:     rgba(255, 107, 53, 0.12);
+  /* navy tints (alpha only — no new hues) */
+  --ds-slate-06:      rgba(20, 45, 78, 0.06);
+  --ds-slate-12:      rgba(20, 45, 78, 0.12);
+  --ds-slate-35:      rgba(20, 45, 78, 0.35);
+  --ds-slate-60:      rgba(20, 45, 78, 0.60);
+  --ds-accent-12:     rgba(8, 126, 139, 0.12);
 
   /* ── Status (semantic only) ── */
   --ds-success:       var(--color-success);
@@ -27,13 +25,13 @@
 
   /* ── Surfaces ── */
   --ds-card-bg:       #FFFFFF;
-  --ds-card-border:   rgba(71, 85, 105, 0.06);
+  --ds-card-border:   rgba(20, 45, 78, 0.06);
   --ds-text:          var(--ds-slate);
-  --ds-text-strong:   #1e293b;
+  --ds-text-strong:   #0F1F36;
 
   /* ── Shape + type ── */
   --r-lg:             var(--radius-lg);
-  --ds-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ds-font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ds-label-tracking: 0.05em;
 
   /* ── Layout ── */

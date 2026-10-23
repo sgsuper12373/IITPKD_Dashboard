@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
+import { WarningOutlined } from '@ant-design/icons';
 import cachedAxios from '../utils/cachedAxios';
 import { fetchUploadSchema } from '../services/uploadSchema';
 import { parseCSVToRecords, rowsToCSV } from '../utils/csvParse';
@@ -368,7 +369,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                     {!uploadSuccess ? (
                         <>
                             <div className="warning-box">
-                                <span className="warning-icon">⚠️</span>
+                                <WarningOutlined className="warning-icon" />
                                 <div>
                                     <strong>Warning:</strong> You are directly modifying the database.
                                     Ensure the CSV format matches the table schema exactly.
@@ -448,7 +449,7 @@ function DataUploadModal({ isOpen, onClose, tableName, token, onUploadSuccess })
                                     <UploadErrorTable
                                         errors={clientValidation.cellIssues}
                                         truncated={clientValidation.truncated}
-                                        highlightColor="#f59e0b"
+                                        highlightColor="#066A75"
                                     />
                                     {clientValidation.cellIssues.length > 0 && (
                                         <button

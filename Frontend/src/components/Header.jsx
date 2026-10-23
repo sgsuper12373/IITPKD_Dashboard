@@ -2,71 +2,48 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   House, Users, FlaskConical, GraduationCap, Menu,
-  FileText, Handshake, Building2, Factory, Lightbulb, Sprout, X,
+  Factory, Lightbulb, Sprout, X,
+  LayoutGrid, ArrowUpRight, LogIn,
 } from 'lucide-react';
 import './Home.css';
 import './NativeApp.css';
 import IIPKD_Logo from '../assets/IITPKD_Logo.png';
 import FeedbackModal from './FeedbackModal';
 import HeaderSearch from '../home/HeaderSearch';
+import CampusClipart from './CampusClipart';
 import { getRoleName } from '../utils/rolePermissions';
 
-// All top-level nav entries with their page-key for role filtering
-const ALL_NAV_LINKS = [
-  { label: 'People and Campus',            path: '/people-campus',               pageKey: 'people-campus' },
-  { label: 'Research',                     path: '/research',                    pageKey: 'research' },
-  { label: 'Education',                    path: '/education',                   pageKey: 'education' },
-  { label: 'Industry Connect',             path: '/industry-connect',            pageKey: 'industry-connect' },
-  { label: 'Innovation and Entrepreneurship', path: '/innovation-entrepreneurship', pageKey: 'innovation-entrepreneurship' },
-  { label: 'Outreach and Extension',       path: '/outreach-extension',          pageKey: 'outreach-extension' },
+const SIDEBAR_NAV = [
+  { Icon: House,          label: 'Institute overview',           path: '/',                            match: (p) => p === '/' },
+  { Icon: LayoutGrid,     label: 'Quick glance',                 path: '/quick-glance',                match: (p) => p.startsWith('/quick-glance') },
+  { Icon: Users,          label: 'People & campus',              path: '/people-campus',               match: (p) => p.startsWith('/people-campus') },
+  { Icon: FlaskConical,   label: 'Research',                     path: '/research',                    match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
+  { Icon: GraduationCap,  label: 'Education',                    path: '/education',                   match: (p) => p.startsWith('/education') },
+  { Icon: Factory,        label: 'Industry connect',             path: '/industry-connect',            match: (p) => p.startsWith('/industry-connect') },
+  { Icon: Lightbulb,      label: 'Innovation & entrepreneurship', path: '/innovation-entrepreneurship', match: (p) => p.startsWith('/innovation-entrepreneurship') || p.startsWith('/startup-portfolio') },
+  { Icon: Sprout,         label: 'Outreach & extension',         path: '/outreach-extension',          match: (p) => p.startsWith('/outreach-extension') },
 ];
 
-// All potential mobile bottom tabs (excluding More which is always present)
 const ALL_BOTTOM_TABS = [
-  { Icon: House,          label: 'Home',      path: '/',               pageKey: null,             match: (p) => p === '/' },
-  { Icon: Users,          label: 'People',    path: '/people-campus',  pageKey: 'people-campus',  match: (p) => p.startsWith('/people-campus') },
-  { Icon: FlaskConical,   label: 'Research',  path: '/research',       pageKey: 'research',       match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
-  { Icon: GraduationCap,  label: 'Education', path: '/education',      pageKey: 'education',      match: (p) => p.startsWith('/education') },
+  { Icon: House,          label: 'Home',      path: '/',               match: (p) => p === '/' },
+  { Icon: Users,          label: 'People',    path: '/people-campus',  match: (p) => p.startsWith('/people-campus') },
+  { Icon: FlaskConical,   label: 'Research',  path: '/research',       match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
+  { Icon: GraduationCap,  label: 'Education', path: '/education',      match: (p) => p.startsWith('/education') },
 ];
 
 const MORE_TAB = { Icon: Menu, label: 'More', path: null, match: () => false };
 
-// Sidebar "Quick Navigation" items that are always shown regardless of role
-const QUICK_NAV_ITEMS = [
-  { Icon: House,     label: 'Home',           path: '/' },
-  { Icon: FileText,  label: 'Patents',         path: '/patents' },
-  { Icon: Handshake, label: 'Collaborations',  path: '/mou-collaborations' },
-];
-
-// Icons for main section items in the sidebar drawer
-const SECTION_ICONS = {
-  'people-campus':              Building2,
-  'research':                   FlaskConical,
-  'education':                  GraduationCap,
-  'industry-connect':           Factory,
-  'innovation-entrepreneurship': Lightbulb,
-  'outreach-extension':         Sprout,
-};
-
-
 function Header({ user, onLogout, isGuest }) {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
-    const [showNavbar, setShowNavbar] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
-    const lastScrollY = useRef(0);
     const navigate = useNavigate();
     const location = useLocation();
     const dropdownRef = useRef(null);
 
-    // Every user sees all nav links — each page has a public view.
-    const canSeePage = () => true;
+    const visibleBottomTabs = [...ALL_BOTTOM_TABS, MORE_TAB];
 
-    const visibleNavLinks   = ALL_NAV_LINKS.filter((l) => canSeePage(l.pageKey));
-    const visibleBottomTabs = [...ALL_BOTTOM_TABS.filter((t) => canSeePage(t.pageKey)), MORE_TAB];
-
-    // Track whether we're on a breakpoint where the navbar is CSS-hidden
     useEffect(() => {
         const mq = window.matchMedia('(max-width: 768px)');
         const handler = (e) => setIsMobile(e.matches);
@@ -74,25 +51,6 @@ function Header({ user, onLogout, isGuest }) {
         return () => mq.removeEventListener('change', handler);
     }, []);
 
-    // True only when the navbar strip is both visible (not scrolled away) and rendered (not mobile)
-    const navbarActuallyVisible = showNavbar && !isMobile;
-
-    // Handle scroll to hide/show navbar
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-                setShowNavbar(false);
-            } else {
-                setShowNavbar(true);
-            }
-            lastScrollY.current = currentScrollY;
-        };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => { window.removeEventListener('scroll', handleScroll); };
-    }, []);
-
-    // Handle click outside to close profile dropdown
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -105,17 +63,12 @@ function Header({ user, onLogout, isGuest }) {
         return () => { document.removeEventListener('mousedown', handleClickOutside); };
     }, [showProfileDropdown]);
 
-    // Close sidebar on route change
-    useEffect(() => {
-        setSidebarOpen(false);
-    }, [location.pathname]);
+    useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
-    // Prevent body scroll when sidebar is open
     useEffect(() => {
         document.body.style.overflow = sidebarOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [sidebarOpen]);
-
 
     const toggleDropdown = () => setShowProfileDropdown((prev) => !prev);
 
@@ -124,71 +77,94 @@ function Header({ user, onLogout, isGuest }) {
         navigate('/profile');
     };
 
+    const sidebarContent = (
+        <>
+            <div className="ds-logo-area">
+                <div className="ds-title">IIT Palakkad</div>
+                <div className="ds-subtitle">INSTITUTIONAL DASHBOARD</div>
+            </div>
 
+            <p className="ds-section-label">EXPLORE THE INSTITUTE</p>
+
+            <nav className="ds-nav">
+                {SIDEBAR_NAV.map((item) => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`ds-nav-item${item.match(location.pathname) ? ' active' : ''}`}
+                        onClick={() => setSidebarOpen(false)}
+                    >
+                        <item.Icon size={18} strokeWidth={1.75} />
+                        <span>{item.label}</span>
+                    </Link>
+                ))}
+            </nav>
+
+            <CampusClipart className="ds-clipart" />
+
+            <div className="ds-footer">
+                <p className="ds-footer-text">A public view of our people, work and impact.</p>
+                {!isGuest && (
+                    <button className="ds-footer-link" onClick={() => { setSidebarOpen(false); onLogout(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}>
+                        <LogIn size={14} strokeWidth={2} />
+                        <span>Sign out</span>
+                    </button>
+                )}
+                <a href="https://iitpkd.ac.in" target="_blank" rel="noopener noreferrer" className="ds-footer-link">
+                    iitpkd.ac.in
+                    <ArrowUpRight size={12} strokeWidth={2} />
+                </a>
+            </div>
+        </>
+    );
 
     return (
         <>
+            {/* ══ Desktop permanent sidebar ══ */}
+            <aside className="desktop-sidebar" aria-label="Main navigation">
+                {sidebarContent}
+            </aside>
+
+            {/* ══ Top header bar ══ */}
             <div className="app-header-container">
-                {/* Header with Logo and User Profile */}
                 <header className="main-header">
+                    {/* Mobile only: hamburger */}
                     <button
                         className="hamburger-btn"
                         onClick={() => setSidebarOpen(true)}
                         aria-label="Open navigation menu"
                     >
-                        <span />
-                        <span />
-                        <span />
+                        <span /><span /><span />
                     </button>
 
+                    {/* Mobile only: logo */}
                     <Link to="/" className="logo-link">
-                        <img
-                            src={IIPKD_Logo}
-                            alt="IIT Palakkad Logo"
-                            className="logo-image"
-                        />
+                        <img src={IIPKD_Logo} alt="IIT Palakkad" className="logo-image" />
                         <div className="logo-text-group">
-                            <span className="logo-text">
-                                Indian Institute of Technology Palakkad
-                            </span>
-                            <span className="logo-tagline">
-                                Nurturing Minds For a Better World
-                            </span>
+                            <span className="logo-text">IIT Palakkad</span>
+                            <span className="logo-tagline">INSTITUTIONAL DASHBOARD</span>
                         </div>
                     </Link>
 
+                    {/* Desktop only: PUBLIC DASHBOARD indicator */}
+                    <div className="header-indicator">
+                        <span className="header-dot" />
+                        <span>PUBLIC DASHBOARD</span>
+                    </div>
+
+                    {/* Right side: search + user */}
                     <div className="header-right">
                         <HeaderSearch />
-                        {/* Feedback is open to everyone. Guests just enter their
-                            email manually and verify it via the same OTP + CAPTCHA. */}
-                        <div className="feedback-btn-wrapper">
-                            <button
-                                className="feedback-btn"
-                                onClick={() => setShowFeedback(true)}
-                                aria-label="Open feedback form"
-                            >
-                                Feedback
-                            </button>
-                            <div className="feedback-hint-bubble" role="tooltip">
-                                <p>We value your <strong>feedback</strong>, thoughts &amp; suggestions. Click this button to submit it anytime!</p>
-                            </div>
-                        </div>
-                        {/* Profile avatar is hidden for guests — only authenticated
-                            (authorized) users get an account menu. Guests have no
-                            UI path to /login; the login URL is shared by mail. */}
-                        {!isGuest && (
+                        <span className="header-guest-label">
+                            {isGuest ? 'Guest view' : (user?.display_name || '')}
+                        </span>
                         <div ref={dropdownRef} className="user-profile-container">
                             <div
                                 className="user-avatar"
                                 onClick={toggleDropdown}
                                 role="button"
                                 tabIndex={0}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        toggleDropdown();
-                                    }
-                                }}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(); } }}
                             >
                                 {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
@@ -202,13 +178,13 @@ function Header({ user, onLogout, isGuest }) {
                                             <div className="dropdown-user-details">
                                                 <div className="dropdown-name">{user?.display_name || 'User'}</div>
                                                 <div className="dropdown-email">{user?.email || ''}</div>
-                                                <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '2px' }}>
+                                                <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
                                                     Role ID: {user?.role_id ?? 0} — {getRoleName(user?.role_id ?? 0)}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="dropdown-divider"></div>
+                                    <div className="dropdown-divider" />
                                     <button className="dropdown-item" onClick={handleProfileClick}>
                                         {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
                                     </button>
@@ -223,99 +199,29 @@ function Header({ user, onLogout, isGuest }) {
                                 </div>
                             )}
                         </div>
-                        )}
                     </div>
                 </header>
-
-                {/* Navigation Bar */}
-                <nav className={`main-navbar ${showNavbar ? '' : 'navbar-hidden'}`}>
-                    {visibleNavLinks.map((link) => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            className={`nav-link ${location.pathname.startsWith(link.path) ? 'active' : ''}`}
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
-                </nav>
             </div>
 
-            {/* Sidebar Backdrop */}
-            {sidebarOpen && (
-                <div
-                    className="sidebar-backdrop"
-                    onClick={() => setSidebarOpen(false)}
-                    aria-hidden="true"
-                />
+            {/* ══ Mobile: sidebar drawer backdrop ══ */}
+            {sidebarOpen && isMobile && (
+                <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
             )}
 
-            {/* Sidebar Drawer */}
-            {sidebarOpen && (
-                <aside className="sidebar-drawer" role="navigation" aria-label="Quick navigation">
+            {/* ══ Mobile: sidebar drawer ══ */}
+            {sidebarOpen && isMobile && (
+                <aside className="sidebar-drawer" role="navigation" aria-label="Mobile navigation">
                     <div className="sidebar-header">
-                        <span className="sidebar-title">Dashboard Navigation</span>
-                        <button
-                            className="sidebar-close-btn"
-                            onClick={() => setSidebarOpen(false)}
-                            aria-label="Close navigation menu"
-                        >
+                        <span className="sidebar-title">Navigation</span>
+                        <button className="sidebar-close-btn" onClick={() => setSidebarOpen(false)} aria-label="Close">
                             <X size={16} strokeWidth={2} />
                         </button>
                     </div>
-
-                    {/* Main Sections — only show when nav bar is hidden (mobile) or always in sidebar */}
-                    {!navbarActuallyVisible && visibleNavLinks.length > 0 && (
-                        <div>
-                            <p className="sidebar-section-label">Main Sections</p>
-                            {visibleNavLinks.map((link) => (
-                                <button
-                                    key={link.path}
-                                    className={`sidebar-nav-item ${location.pathname.startsWith(link.path) ? 'active' : ''}`}
-                                    onClick={() => { navigate(link.path); setSidebarOpen(false); }}
-                                >
-                                    <span className="sidebar-nav-icon">
-                                        {(() => { const SIcon = SECTION_ICONS[link.pageKey]; return SIcon ? <SIcon size={16} strokeWidth={1.75} /> : null; })()}
-                                    </span>
-                                    <span>{link.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Quick Navigation */}
-                    {!isGuest && (
-                    <>
-                    <div>
-                        <p className="sidebar-section-label">Quick Navigation</p>
-                        {QUICK_NAV_ITEMS.map((item) => (
-                            <button
-                                key={item.path}
-                                className={`sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                                onClick={() => { navigate(item.path); setSidebarOpen(false); }}
-                            >
-                                <span className="sidebar-nav-icon"><item.Icon size={16} strokeWidth={1.75} /></span>
-                                <span>{item.label}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="sidebar-divider" />
-
-                    {/* User info at bottom */}
-                    <div className="sidebar-user-box">
-                        <div className="sidebar-user-label">
-                            Signed in as
-                        </div>
-                        <div className="sidebar-user-name">
-                            {isGuest ? 'Guest' : (user?.display_name || user?.email || 'User')}
-                        </div>
-                    </div>
-                    </>
-                    )}
+                    {sidebarContent}
                 </aside>
             )}
-            {/* Feedback Modal */}
+
+            {/* ══ Feedback Modal ══ */}
             {showFeedback && (
                 <FeedbackModal
                     onClose={() => setShowFeedback(false)}
@@ -325,32 +231,21 @@ function Header({ user, onLogout, isGuest }) {
                 />
             )}
 
-            {/* Bottom Tab Bar — mobile only (≤768px) */}
+            {/* ══ Mobile bottom tab bar ══ */}
             <nav className="mobile-tab-bar" aria-label="Primary navigation" role="navigation">
               <div className="mobile-tab-bar__inner">
                 {visibleBottomTabs.map((tab) => {
                   const isActive = tab.path ? tab.match(location.pathname) : false;
                   if (tab.path === null) {
                     return (
-                      <button
-                        key="more"
-                        className={`mobile-tab-bar__tab${sidebarOpen ? ' active' : ''}`}
-                        onClick={() => setSidebarOpen(true)}
-                        aria-label="Open navigation menu"
-                      >
+                      <button key="more" className={`mobile-tab-bar__tab${sidebarOpen ? ' active' : ''}`} onClick={() => setSidebarOpen(true)} aria-label="Open navigation menu">
                         <span className="mobile-tab-bar__icon"><tab.Icon size={22} strokeWidth={1.75} /></span>
                         <span className="mobile-tab-bar__label">More</span>
                       </button>
                     );
                   }
                   return (
-                    <button
-                      key={tab.path}
-                      className={`mobile-tab-bar__tab${isActive ? ' active' : ''}`}
-                      onClick={() => navigate(tab.path)}
-                      aria-label={tab.label}
-                      aria-current={isActive ? 'page' : undefined}
-                    >
+                    <button key={tab.path} className={`mobile-tab-bar__tab${isActive ? ' active' : ''}`} onClick={() => navigate(tab.path)} aria-label={tab.label} aria-current={isActive ? 'page' : undefined}>
                       <span className="mobile-tab-bar__icon"><tab.Icon size={22} strokeWidth={1.75} /></span>
                       <span className="mobile-tab-bar__label">{tab.label}</span>
                       {isActive && <span className="mobile-tab-bar__indicator" />}

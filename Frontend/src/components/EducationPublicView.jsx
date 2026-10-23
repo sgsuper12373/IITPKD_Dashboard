@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './EducationMinimal.css';
@@ -20,7 +21,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       title: 'Placement Statistics',
       subtitle: '',
       expandedTitle: 'Empowering careers through industry-leading placement opportunities.',
-      icon: '💼',
+      icon: <DashboardIcon name="briefcase" />,
       component: PlacementSection
     },
     {
@@ -28,7 +29,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       title: 'Courses Details',
       subtitle: '',
       expandedTitle: 'Advancing academic excellence through innovative programs.',
-      icon: '🎓',
+      icon: <DashboardIcon name="education" />,
       component: EducationAcademicSection
     },
     {
@@ -36,7 +37,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       title: 'Academic Collaborations',
       subtitle: '',
       expandedTitle: 'Track and manage collaborations with Education Institutes',
-      icon: '🤝',
+      icon: <DashboardIcon name="link" />,
       component: EducationIarSection
     }
   ];

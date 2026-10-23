@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { PREVIEW_PARAM, PREVIEW_VALUE, isPreviewSearch } from '../utils/publicPreview';
+import DashboardIcon from './DashboardIcon';
 import OutreachPublicView from './OutreachPublicView';
 
 import './Page.css';
@@ -7,56 +8,56 @@ import './PeopleCampus.css';
 
 const OUTREACH_EXTENSION_SECTIONS = [
   {
-    code: '🏛️',
+    code: <DashboardIcon name="bank" />,
     title: 'Open House',
     description: 'Community Engagement Events',
     route: '/outreach-extension/open-house',
     allowedRoles: [3, 15]
   },
   {
-    code: '📚',
+    code: <DashboardIcon name="ug" />,
     title: 'CCE',
     description: 'Centre for Continuing Education',
     route: '/outreach-extension/nptel',
     allowedRoles: [3, 16]
   },
   {
-    code: '🌾',
+    code: <DashboardIcon name="outreach" />,
     title: 'Unnat Bharat Abhiyan',
     description: 'Rural Development Initiative',
     route: '/outreach-extension/uba',
     allowedRoles: [3, 17]
   },
   {
-    code: '🔬',
+    code: <DashboardIcon name="research" />,
     title: 'Science Quest',
     description: 'Science outreach and laboratory programmes for school students',
     route: '/outreach-extension/outreach?program=science_quest',
     allowedRoles: [3, 18]
   },
   {
-    code: '📐',
+    code: <DashboardIcon name="fund" />,
     title: 'Palakkad Math Circle',
     description: 'Mathematics enrichment sessions for school students',
     route: '/outreach-extension/outreach?program=palakkad_math_circle',
     allowedRoles: [3, 19]
   },
   {
-    code: '🌠',
+    code: <DashboardIcon name="global" />,
     title: 'Pale Blue Dot',
     description: 'Astronomy and space science public lecture series',
     route: '/outreach-extension/outreach?program=pale_blue_dot',
     allowedRoles: [3, 20]
   },
   {
-    code: '🏫',
+    code: <DashboardIcon name="home" />,
     title: 'Institute Visits',
     description: 'Organised visits by institutions to the IIT Palakkad campus',
     route: '/outreach-extension/outreach?program=institute_visits',
     allowedRoles: [3, 21]
   },
   {
-    code: '🤝',
+    code: <DashboardIcon name="link" />,
     title: 'NSS Activities',
     description: 'National Service Scheme community service initiatives',
     route: '/outreach-extension/outreach?program=nss_activities',

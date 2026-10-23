@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Pencil } from 'lucide-react';
+import { UploadOutlined } from '@ant-design/icons';
 
 import {
   fetchSponsoredProjects,
@@ -339,7 +340,7 @@ function IcsrSponsoredProjects({ user }) {
           </div>
           <div className="icp-admin-controls">
             <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-              <span>&#128228;</span> Upload CSV
+              <UploadOutlined /> Upload CSV
             </button>
             <button className="icp-btn icp-btn--primary" onClick={() => setShowAddForm(true)}>
               + Add Project

@@ -4,8 +4,8 @@
 
 /* ── Year picker metric card ── */
 .adm-metric-card--purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #142D4E 0%, #0F1F36 100%);
+  box-shadow: 0 10px 20px rgba(20, 45, 78,0.3);
 }
 
 /* ── Year picker inner overrides ── */

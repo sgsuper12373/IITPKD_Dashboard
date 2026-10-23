@@ -10,7 +10,7 @@
   -webkit-backdrop-filter: blur(8px);
   font-size: 0.72rem;
   font-weight: 500;
-  color: #475569;
+  color: #142D4E;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   user-select: none;
@@ -19,9 +19,9 @@
 }
 
 .share-btn:hover {
-  background: rgba(247, 166, 0, 0.08);
-  border-color: rgba(247, 166, 0, 0.45);
-  color: #92400e;
+  background: rgba(8, 126, 139, 0.08);
+  border-color: rgba(8, 126, 139, 0.45);
+  color: #066A75;
 }
 
 .share-btn:active {

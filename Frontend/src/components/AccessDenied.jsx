@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { LockOutlined } from '@ant-design/icons';
 import { getRoleAccessibleSections } from '../utils/rolePermissions';
 import './AccessDenied.css';
 
@@ -8,7 +9,7 @@ function AccessDenied({ user }) {
   return (
     <div className="access-denied-container">
       <div className="access-denied-card">
-        <div className="access-denied-icon">🔒</div>
+        <div className="access-denied-icon"><LockOutlined /></div>
         <h2 className="access-denied-title">Access Restricted</h2>
         <p className="access-denied-msg">
           Your role doesn&apos;t have permission to view or manage this section.

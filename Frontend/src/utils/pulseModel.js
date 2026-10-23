@@ -183,6 +183,7 @@ const kpi = ({ key, label, value, text, delta, deltaLabel, series, years, sub, t
   key,
   label,
   value: value === null || value === undefined ? '–' : text,
+  raw: value,
   delta,
   deltaLabel,
   invert,
