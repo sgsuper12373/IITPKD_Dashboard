@@ -26,7 +26,7 @@ import ShareButton from './ShareButton';
 
 const BAR_COLORS = {
   filed: '#142D4E',
-  pending: '#066A75',
+  pending: '#F5A623',
   resolved: '#087E8B'
 };
 
@@ -250,64 +250,36 @@ function IgrcSection({ user, isPublicView = false }) {
                   <h2 className="igrc-chart-h2">
                     Internal Grievance Resolution Cell (IGRC)
                   </h2>
-                  <div className="chart-header">
-                    <div>
-                      <p className="chart-description igrc-chart-desc-p">
-                        Visual comparison of total grievances filed against resolutions and pending cases.
-                      </p>
-                    </div>
-                    <div className="igrc-metric-toggle-group">
-                      <div className="igrc-metric-row">
-                        <span className="igrc-metric-row-label igrc-metric-row-label--active">Active:</span>
-                        {Object.entries(visibleMetrics).map(([key, visible]) => visible && (
+                  <div className="cc-subheader">
+                    <h3 className="cc-title">Yearly Grievances</h3>
+                    <div className="cc-subheader__right">
+                      {Object.entries(visibleMetrics).map(([key, visible]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className="series-toggle-btn"
+                          style={{ backgroundColor: visible ? BAR_COLORS[key] : '#f0f0f0', color: visible ? '#fff' : '#666' }}
+                          onClick={() => setVisibleMetrics(prev => {
+                            const next = { ...prev, [key]: !visible };
+                            if (Object.values(next).every(v => !v)) return prev;
+                            return next;
+                          })}
+                        >
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </button>
+                      ))}
+                      <div className="rls-mode-toggle">
+                        {['Bar', 'Trend'].map(mode => (
                           <button
-                            key={key}
+                            key={mode}
                             type="button"
-                            className="metric-toggle active igrc-metric-btn"
-                            style={{ backgroundColor: BAR_COLORS[key] }}
-                            onClick={() => setVisibleMetrics(prev => {
-                              const next = { ...prev, [key]: false };
-                              if (Object.values(next).every(v => !v)) return prev;
-                              return next;
-                            })}
+                            onClick={() => setChartType(mode)}
+                            className={`rls-mode-btn${chartType === mode ? ' rls-mode-btn--active' : ''}`}
                           >
-                            {key.charAt(0).toUpperCase() + key.slice(1)} &#10005;
+                            {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
                           </button>
                         ))}
                       </div>
-                      {Object.values(visibleMetrics).some(v => !v) && (
-                        <div className="igrc-metric-row igrc-metric-row--animated">
-                          <span className="igrc-metric-row-label igrc-metric-row-label--hidden">Hidden:</span>
-                          {Object.entries(visibleMetrics).map(([key, visible]) => !visible && (
-                            <button
-                              key={key}
-                              type="button"
-                              className="metric-toggle igrc-metric-btn igrc-metric-btn--hidden"
-                              onClick={() => setVisibleMetrics(prev => ({ ...prev, [key]: true }))}
-                            >
-                              + {key.charAt(0).toUpperCase() + key.slice(1)}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bar / Trend toggle */}
-                  <div className="igrc-toggle-toolbar">
-                    <div className="igrc-toggle-left">
-                      {['Bar', 'Trend'].map(mode => (
-                        <button
-                          key={mode}
-                          type="button"
-                          onClick={() => setChartType(mode)}
-                          className={`igrc-mode-btn${chartType === mode ? ' igrc-mode-btn--active' : ''}`}
-                        >
-                          {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="igrc-export-wrapper">
                       <ExportMenu
                         elementId="igrc-yearly-chart-container"
                         data={
@@ -330,11 +302,11 @@ function IgrcSection({ user, isPublicView = false }) {
                       ? yearlyData
                       : yearlyData.filter((row) => String(row.year) === String(selectedYear));
                     const sharedAxisProps = {
-                      xAxis: <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
-                      yAxis: <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 16, fontWeight: 'bold' } }} />,
+                      xAxis: <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />,
+                      yAxis: <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />,
                       tooltip: <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />,
-                      legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />,
-                      grid: <CartesianGrid strokeDasharray="3 3" stroke="#444" />,
+                      legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />,
+                      grid: <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />,
                     };
                     return (
                       <div id="igrc-yearly-chart-container" className="chart-container igrc-chart-container">
@@ -346,19 +318,19 @@ function IgrcSection({ user, isPublicView = false }) {
                             content: (
                               <ResponsiveContainer width="100%" height={500}>
                                 <BarChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                                  <XAxis dataKey="year" stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} interval={0} angle={-40} textAnchor="end" height={60} />
-                                  <YAxis stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#000', fontSize: 16, fontWeight: 'bold' } }} />
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />
                                   <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
-                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                                   <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed}>
-                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                   </Bar>
                                   <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending}>
-                                    <LabelList dataKey="pending" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.pending }} />
+                                    <LabelList dataKey="pending" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.pending }} />
                                   </Bar>
                                   <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved}>
-                                    <LabelList dataKey="resolved" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.resolved }} />
+                                    <LabelList dataKey="resolved" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.resolved }} />
                                   </Bar>
                                 </BarChart>
                               </ResponsiveContainer>
@@ -369,18 +341,18 @@ function IgrcSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={420}>
                               <BarChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
                                 <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed} legendType={visibleMetrics.filed ? "rect" : "none"}>
-                                  {visibleMetrics.filed && <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />}
+                                  {visibleMetrics.filed && <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />}
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending} legendType={visibleMetrics.pending ? "rect" : "none"}>
-                                  {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.pending }} />}
+                                  {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.pending }} />}
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved} legendType={visibleMetrics.resolved ? "rect" : "none"}>
-                                  {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.resolved }} />}
+                                  {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.resolved }} />}
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -395,13 +367,13 @@ function IgrcSection({ user, isPublicView = false }) {
                             content: (
                               <ResponsiveContainer width="100%" height={500}>
                                 <LineChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                                  <XAxis dataKey="year" stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} interval={0} angle={-40} textAnchor="end" height={60} />
-                                  <YAxis stroke="#000" tick={{ fill: '#000', fontSize: 14, fontWeight: 'bold' }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#000', fontSize: 16, fontWeight: 'bold' } }} />
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />
                                   <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
-                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                                  <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                                   <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 6, fill: BAR_COLORS.filed }} activeDot={{ r: 8 }}>
-                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                   </Line>
                                 </LineChart>
                               </ResponsiveContainer>
@@ -412,12 +384,12 @@ function IgrcSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={420}>
                               <LineChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                <XAxis dataKey="year" stroke="#000000" tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
                                 <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 5, fill: BAR_COLORS.filed, strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                                  <LabelList dataKey="filed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: BAR_COLORS.filed }} />
+                                  <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                 </Line>
                               </LineChart>
                             </ResponsiveContainer>

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardIcon from './DashboardIcon';
-import { LineChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import {
   ResponsiveContainer,
   LineChart, Line,
@@ -173,90 +172,47 @@ function MoUCollaborations({ user, isPublicView = false }) {
     showIarColumns = false, chartIsMobile, setExpandedChart
   }) => (
     <section className="mou-section-panel">
-      {/* Filter bar */}
-      <div className="mou-filter-bar">
-        <div className="mou-filter-bar-row">
-          <div className="mou-filter-left">
-            <h4 className="mou-filter-h4">Filters</h4>
-            <div className="mou-view-btns-row">
-              <button
-                onClick={() => setViewType('trend')}
-                className="mou-view-btn"
-                style={{
-                  border: viewType === 'trend' ? `2px solid ${color}` : '1px solid #DCE3E7',
-                  backgroundColor: viewType === 'trend' ? (color === ICSR_COLOR ? '#faf5ff' : '#ccfbf1') : '#fff',
-                  color: viewType === 'trend' ? (color === ICSR_COLOR ? '#6b21a8' : '#066A75') : '#333',
-                }}
-              >
-                <LineChartOutlined /> MoUs Trend
-              </button>
-              {!isRestricted && (
-                <button
-                  onClick={() => setViewType('directory')}
-                  className={`mou-view-btn${viewType === 'directory' ? ' mou-view-btn--directory-active' : ''}`}
-                >
-                  <ProfileOutlined /> MoUs Directory
-                </button>
-              )}
-            </div>
-          </div>
-          <button className="mou-clear-btn" onClick={onClearFilters}>
-            Clear Filters
-          </button>
+      <div className="cc-header">
+        <div className="cc-header__tabs">
+          <button className={`cc-tab${viewType === 'trend' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('trend')}>MoUs Trend</button>
+          {!isRestricted && (
+            <button className={`cc-tab${viewType === 'directory' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('directory')}>MoUs Directory</button>
+          )}
         </div>
-        <div className="mou-year-filter">
-          <label className="mou-year-label">MoU Year</label>
-          <select
-            className="mou-year-select"
-            value={filters.mou_year}
-            onChange={(e) => onFilterChange('mou_year', e.target.value)}
-          >
-            <option value="All">All Years</option>
-            {filterOpts.mou_years.map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
+        <div className="cc-header__filters">
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Year</span>
+            <select className="cc-filter-select" value={filters.mou_year} onChange={(e) => onFilterChange('mou_year', e.target.value)}>
+              <option value="All">All</option>
+              {filterOpts.mou_years.map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Body */}
       <div className="mou-body">
-        <div className="mou-body-header-row">
-          <h2 className="mou-body-h2">
-            <span>{viewType === 'trend' ? <DashboardIcon name="people" /> : <DashboardIcon name="profile" />}</span>
-            {viewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
-          </h2>
-          <ExportMenu
-            elementId={viewType === 'trend' ? trendId : directoryId}
-            data={viewType === 'trend' ? chartData : list}
-            headers={viewType === 'trend'
-              ? ['Year', 'MoUs Signed']
-              : showIarColumns
-                ? ['Sl. No.', 'Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']
-                : ['Partner', 'Focus', 'Signed', 'Valid Till']
-            }
-            keys={viewType === 'trend'
-              ? ['year', 'total']
-              : showIarColumns
-                ? ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']
-                : ['partner_name', 'collaboration_nature', 'date_signed', 'validity_end']
-            }
-            filename={`${filenamePrefix}_${viewType}`}
-            title={viewType === 'trend' ? 'MoUs Trend' : 'MoUs Directory'}
-            exportType={viewType === 'trend' ? 'chart' : 'table'}
-          />
-        </div>
-
         {viewType === 'trend' && (
           <>
-            <div className="mou-mode-btns-row">
-              {['bar', 'trend'].map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setChartMode(mode)}
-                  className={`mou-mode-btn${chartMode === mode ? ' mou-mode-btn--active' : ''}`}
-                >
-                  {mode === 'bar' ? 'Bar' : 'Trend'}
-                </button>
-              ))}
+            <div className="cc-subheader">
+              <h3 className="cc-title">MoUs Trend</h3>
+              <div className="cc-subheader__right">
+                <div className="rls-mode-toggle">
+                  {['bar', 'trend'].map((mode) => (
+                    <button key={mode} onClick={() => setChartMode(mode)} className={`rls-mode-btn${chartMode === mode ? ' rls-mode-btn--active' : ''}`}>
+                      {mode === 'bar' ? 'Bar' : 'Trend'}
+                    </button>
+                  ))}
+                </div>
+                <ExportMenu
+                  elementId={trendId}
+                  data={chartData}
+                  headers={['Year', 'MoUs Signed']}
+                  keys={['year', 'total']}
+                  filename={`${filenamePrefix}_trend`}
+                  title="MoUs Trend"
+                  exportType="chart"
+                />
+              </div>
             </div>
             <div
               id={trendId}
@@ -268,23 +224,23 @@ function MoUCollaborations({ user, isPublicView = false }) {
                     {chartMode === 'bar' ? (
                       <BarChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                         <Bar dataKey="total" name="MoUs Signed" fill={color} radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                          <LabelList dataKey="total" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                         </Bar>
                       </BarChart>
                     ) : (
                       <LineChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                        <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                         <Line type="linear" dataKey="total" name="MoUs Signed" stroke={color} strokeWidth={3} dot={{ r: 6, fill: color }} activeDot={{ r: 8 }}>
-                          <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                          <LabelList dataKey="total" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                         </Line>
                       </LineChart>
                     )}
@@ -302,7 +258,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                     <Bar dataKey="total" name="MoUs Signed" fill={color} radius={[4, 4, 0, 0]} barSize={28}>
                       <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
                     </Bar>
@@ -313,7 +269,7 @@ function MoUCollaborations({ user, isPublicView = false }) {
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (m) => Math.ceil(m * 1.2)]} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                     <Line type="linear" dataKey="total" name="MoUs Signed"
                       stroke={color} strokeWidth={3}
                       dot={{ r: 5, fill: color, strokeWidth: 0 }} activeDot={{ r: 7 }}>
@@ -328,7 +284,27 @@ function MoUCollaborations({ user, isPublicView = false }) {
 
         {viewType === 'directory' && (
           <>
-            <p className="mou-records-count">{list.length} records found</p>
+            <div className="cc-subheader">
+              <h3 className="cc-title">MoUs Directory</h3>
+              <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({list.length} records)</span>
+              <div className="cc-subheader__right">
+                <ExportMenu
+                  elementId={directoryId}
+                  data={list}
+                  headers={showIarColumns
+                    ? ['Sl. No.', 'Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']
+                    : ['Partner', 'Focus', 'Signed', 'Valid Till']
+                  }
+                  keys={showIarColumns
+                    ? ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']
+                    : ['partner_name', 'collaboration_nature', 'date_signed', 'validity_end']
+                  }
+                  filename={`${filenamePrefix}_directory`}
+                  title="MoUs Directory"
+                  exportType="table"
+                />
+              </div>
+            </div>
             {chartIsMobile ? (
               <div className="mou-mobile-list">
                 {list.length === 0 ? (

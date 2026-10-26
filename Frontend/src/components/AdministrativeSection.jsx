@@ -33,14 +33,14 @@ const BAR_ANIMATION = {
   animationEasing: 'ease-out', animationBegin: 80
 };
 
-const GENDER_COLORS = { Male: '#142D4E', Female: '#0F1F36', Transgender: '#087E8B', Other: '#066A75' };
+const GENDER_COLORS = { Male: '#142D4E', Female: '#087E8B', Transgender: '#F5A623', Other: '#6366F1' };
 
 // SERIES_META order defines both bar render order AND legend order for Regular section
 const SERIES_META = [
-  { key: 'Total', color: '#142D4E', gradientId: 'colorEmpTotal', label: 'Total' },
-  { key: 'Male', color: '#087E8B', gradientId: 'colorEmpMale', label: 'Male' },
-  { key: 'Female', color: '#066A75', gradientId: 'colorEmpFemale', label: 'Female' },
-  { key: 'Other', color: '#066A75', gradientId: 'colorEmpOther', label: 'Transgender' },
+  { key: 'Total', color: '#16A34A', gradientId: 'colorEmpTotal', label: 'Total' },
+  { key: 'Male', color: '#142D4E', gradientId: 'colorEmpMale', label: 'Male' },
+  { key: 'Female', color: '#087E8B', gradientId: 'colorEmpFemale', label: 'Female' },
+  { key: 'Other', color: '#F5A623', gradientId: 'colorEmpOther', label: 'Transgender' },
 ];
 
 const REGULAR_VIEWS = [
@@ -50,7 +50,7 @@ const REGULAR_VIEWS = [
 ];
 
 const EDU_VIEWS = [
-  { value: 'department', label: <><BankOutlined /> Department</>, color: '#22c55e' },
+  { value: 'department', label: <><BankOutlined /> Department</>, color: '#16A34A' },
   { value: 'trend', label: <><LineChartOutlined /> Trend</>, color: '#087E8B' },
   { value: 'distribution', label: <><PieChartOutlined /> Distribution</>, color: '#142D4E' },
   { value: 'details', label: <><ProfileOutlined /> Details</>, color: '#087E8B' },
@@ -65,8 +65,8 @@ const NUM_YEARS_OPTIONS = [
 ];
 
 const ENGAGEMENT_COLORS = {
-  Adjunct: '#142D4E', Honorary: '#0F1F36', Visiting: '#066A75',
-  FacultyFellow: '#066A75', PoP: '#087E8B'
+  Adjunct: '#142D4E', Honorary: '#087E8B', Visiting: '#F5A623',
+  FacultyFellow: '#6366F1', PoP: '#16A34A'
 };
 
 // ✅ FIXED: ENGAGEMENT_CARD_META and EDU_ENGAGEMENT_ORDER MUST match exactly
@@ -75,7 +75,7 @@ const ENGAGEMENT_CARD_META = [
   { type: 'Adjunct', label: 'Adjunct Faculty', icon: 'people', grad: 'linear-gradient(135deg, #0F1F36 0%, #142D4E 100%)', shadow: 'rgba(102,126,234,0.25)' },
   { type: 'Honorary', label: 'Honorary Faculty', icon: 'trophy', grad: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: 'rgba(8, 126, 139,0.25)' },
   { type: 'Visiting', label: 'Visiting Faculty', icon: 'global', grad: 'linear-gradient(135deg, #087E8B 0%, #087E8B 100%)', shadow: 'rgba(8, 126, 139,0.25)' },
-  { type: 'PoP', label: 'Professor of Practice', icon: 'education', grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.25)' },
+  { type: 'PoP', label: 'Professor of Practice', icon: 'education', grad: 'linear-gradient(135deg, #16A34A 0%, #15803d 100%)', shadow: 'rgba(22,163,74,0.25)' },
 ];
 
 const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 'Visiting', PoP: 'PoP' };
@@ -84,7 +84,7 @@ const ENGAGEMENT_LABELS = { Adjunct: 'Adjunct', Honorary: 'Honorary', Visiting: 
 // MUST be: Adjunct → Honorary → Visiting → PoP (matches ENGAGEMENT_CARD_META)
 const EDU_ENGAGEMENT_ORDER = ['Adjunct', 'Honorary', 'Visiting', 'PoP'];
 
-const EDU_COLORS = ['#142D4E', '#0F1F36', '#066A75', '#066A75', '#087E8B'];
+const EDU_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1'];
 
 const formatNumber = (v) => new Intl.NumberFormat('en-IN').format(Number(v) || 0);
 
@@ -449,73 +449,36 @@ function AdministrativeSection({ user, isPublicView = false }) {
     const regYears = (filterOptions.years || []).map(String);
 
     return (
-      <div className="filter-panel">
-
-        {/* ── Header row ── */}
-        <div className="filter-panel-header">
-          <span className="shared-filter-panel-title">Dashboard Filters</span>
-          <button className="btn-danger" onClick={isEdu ? handleEduClearFilters : handleClearFilters}>
-            Clear All Filters
-          </button>
-        </div>
-
-        {/* ── Section Toggle ── */}
-        <div className="mode-toggle-row">
+      <div className="cc-header">
+        <div className="cc-header__tabs">
           {[
-            { key: 'regular', label: <><DashboardIcon name="students" size={14} /> Regular Employees</>, color: '#142D4E' },
-            { key: 'education', label: <><DashboardIcon name="education" size={14} /> Non-Regular Faculty</>, color: '#22c55e' },
+            { key: 'regular', label: 'Regular Employees' },
+            { key: 'education', label: 'Non-Regular Faculty' },
           ].map(({ key, label }) => (
-            <button
-              key={key}
-              className={`section-toggle-btn${section === key ? ' section-toggle-btn--active' : ''}`}
-              onClick={() => setSection(key)}
-            >
+            <button key={key} className={`cc-tab${section === key ? ' cc-tab--active' : ''}`} onClick={() => setSection(key)}>
               {label}
             </button>
           ))}
         </div>
-
-        {/* ── View-type pills ── */}
-        <div className="shared-filter-item adm-filter-view-item">
-          <label className="shared-filter-label">View Type</label>
-          <div className="view-type-bar">
-            {isEdu
-              ? EDU_VIEWS.filter(view => !(view.value === 'details' && (!user || user.role_id === 0)))
-                .map(({ value, label, color }) => (
-                  <button
-                    key={value}
-                    className="view-type-btn"
-                    onClick={() => setEduView(value)}
-                    style={{
-                      backgroundColor: eduView === value ? color : 'transparent',
-                      color: eduView === value ? 'white' : '#142D4E',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))
-              : REGULAR_VIEWS.map(({ value, label, icon }) => (
-                <button
-                  key={value}
-                  className={`view-type-btn${activeView === value ? ' active' : ''}`}
-                  onClick={() => { setRegError(null); setActiveView(value); }}
-                >
-                  {icon} {label}
-                </button>
-              ))
-            }
+        <div className="cc-header__filters">
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">View</span>
+            {isEdu ? (
+              <select className="cc-filter-select" value={eduView} onChange={e => setEduView(e.target.value)}>
+                {EDU_VIEWS.filter(view => !(view.value === 'details' && (!user || user.role_id === 0)))
+                  .map(({ value }) => <option key={value} value={value}>{value.charAt(0).toUpperCase() + value.slice(1)}</option>)}
+              </select>
+            ) : (
+              <select className="cc-filter-select" value={activeView} onChange={e => { setRegError(null); setActiveView(e.target.value); }}>
+                {REGULAR_VIEWS.map(({ value, label }) => <option key={value} value={value}>{typeof label === 'string' ? label : value.charAt(0).toUpperCase() + value.slice(1)}</option>)}
+              </select>
+            )}
           </div>
-        </div>
-
-        {/* ── Dimension filters ── */}
-        <div className="filter-grid">
-
-          {/* ══ REGULAR filters ══ */}
 
           {!isEdu && activeView === 'yearwise' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Year</label>
-              <select value={regYearYW} onChange={e => setRegYearYW(e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Year</span>
+              <select className="cc-filter-select" value={regYearYW} onChange={e => setRegYearYW(e.target.value)}>
                 <option value="All">All Years</option>
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -523,28 +486,27 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && activeView === 'department' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Year</label>
-              <select value={regYearFD} onChange={e => setRegYearFD(e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Year</span>
+              <select className="cc-filter-select" value={regYearFD} onChange={e => setRegYearFD(e.target.value)}>
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           )}
 
           {!isEdu && activeView === 'gender' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Year</label>
-              <select value={regYearGR} onChange={e => setRegYearGR(e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Year</span>
+              <select className="cc-filter-select" value={regYearGR} onChange={e => setRegYearGR(e.target.value)}>
                 {regYears.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
           )}
 
           {!isEdu && ['yearwise', 'gender'].includes(activeView) && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Employee Type</label>
-              <select value={filters.emp_type || 'All'}
-                onChange={(e) => handleFilterChange('emp_type', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Type</span>
+              <select className="cc-filter-select" value={filters.emp_type || 'All'} onChange={(e) => handleFilterChange('emp_type', e.target.value)}>
                 <option value="All">All</option>
                 {filterOptions.emp_type?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
@@ -552,10 +514,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Department</label>
-              <select value={filters.department || 'All'}
-                onChange={(e) => handleFilterChange('department', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Dept</span>
+              <select className="cc-filter-select" value={filters.department || 'All'} onChange={(e) => handleFilterChange('department', e.target.value)}>
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.department : filterOptions.department)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -565,10 +526,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Designation</label>
-              <select value={filters.designation || 'All'}
-                onChange={(e) => handleFilterChange('designation', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Desig</span>
+              <select className="cc-filter-select" value={filters.designation || 'All'} onChange={(e) => handleFilterChange('designation', e.target.value)}>
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.designation : filterOptions.designation)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -578,10 +538,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department'].includes(activeView) && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Gender</label>
-              <select value={filters.gender || 'All'}
-                onChange={(e) => handleFilterChange('gender', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Gender</span>
+              <select className="cc-filter-select" value={filters.gender || 'All'} onChange={(e) => handleFilterChange('gender', e.target.value)}>
                 <option value="All">All</option>
                 {filterOptions.gender?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
@@ -589,10 +548,9 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && ['yearwise', 'department', 'gender'].includes(activeView) && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Group</label>
-              <select value={filters.group_name || 'All'}
-                onChange={(e) => handleFilterChange('group_name', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Group</span>
+              <select className="cc-filter-select" value={filters.group_name || 'All'} onChange={(e) => handleFilterChange('group_name', e.target.value)}>
                 <option value="All">All</option>
                 {(activeView === 'department' ? facultyFilterOptions.group_name : filterOptions.group_name)?.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
@@ -602,22 +560,18 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {!isEdu && activeView === 'yearwise' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">No. of Years</label>
-              <select value={filters.num_years}
-                onChange={(e) => handleFilterChange('num_years', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Years</span>
+              <select className="cc-filter-select" value={filters.num_years} onChange={(e) => handleFilterChange('num_years', e.target.value)}>
                 {NUM_YEARS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           )}
 
-          {/* ══ EDUCATION filters ══ */}
-
           {isEdu && eduView !== 'trend' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Year</label>
-              <select value={eduFilters.year}
-                onChange={(e) => handleEduFilterChange('year', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Year</span>
+              <select className="cc-filter-select" value={eduFilters.year} onChange={(e) => handleEduFilterChange('year', e.target.value)}>
                 {(!isReadOnlyView || eduView === 'distribution') && <option value="All">All Years</option>}
                 {eduFilterOptions.years.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -625,31 +579,28 @@ function AdministrativeSection({ user, isPublicView = false }) {
           )}
 
           {isEdu && eduView === 'trend' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">No. of Years</label>
-              <select value={eduTrendNumYears}
-                onChange={(e) => setEduTrendNumYears(Number(e.target.value))} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Years</span>
+              <select className="cc-filter-select" value={eduTrendNumYears} onChange={(e) => setEduTrendNumYears(Number(e.target.value))}>
                 {NUM_YEARS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           )}
 
           {isEdu && eduView !== 'trend' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Department</label>
-              <select value={eduFilters.department}
-                onChange={(e) => handleEduFilterChange('department', e.target.value)} className="filter-select">
-                <option value="All">All Departments</option>
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Dept</span>
+              <select className="cc-filter-select" value={eduFilters.department} onChange={(e) => handleEduFilterChange('department', e.target.value)}>
+                <option value="All">All Depts</option>
                 {eduFilterOptions.departments.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
           )}
 
           {isEdu && eduView !== 'distribution' && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Engagement Type</label>
-              <select value={eduFilters.engagement_type}
-                onChange={(e) => handleEduFilterChange('engagement_type', e.target.value)} className="filter-select">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Engagement</span>
+              <select className="cc-filter-select" value={eduFilters.engagement_type} onChange={(e) => handleEduFilterChange('engagement_type', e.target.value)}>
                 <option value="All">All Types</option>
                 {eduFilterOptions.engagement_types.map(t => (
                   <option key={t} value={t}>{ENGAGEMENT_LABELS[t] || t}</option>
@@ -707,7 +658,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             {[
               { label: 'Total Employees', icon: 'students', data: allYearwise, grad: 'linear-gradient(135deg, #087E8B 0%, #087E8B 100%)', shadow: 'rgba(8, 126, 139,0.2)' },
               { label: 'Faculty', icon: 'education', data: teachingYearwise, grad: 'linear-gradient(135deg, #087E8B 0%, #066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)' },
-              { label: 'Staff', icon: 'bank', data: nonTeachingYearwise, grad: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: 'rgba(16,185,129,0.2)' },
+              { label: 'Staff', icon: 'bank', data: nonTeachingYearwise, grad: 'linear-gradient(135deg, #16A34A 0%, #15803d 100%)', shadow: 'rgba(22,163,74,0.2)' },
             ].map(({ label, icon, data, grad, shadow }) => {
               const val = selectedYear === 'All'
                 ? data.reduce((s, r) => s + (r.Total || 0), 0)
@@ -745,15 +696,12 @@ function AdministrativeSection({ user, isPublicView = false }) {
 
     const DrilldownTable = ({ typeLabel, typeColor, data, exportId, exportFilename, exportTitle }) => (
       <div className="chart-section adm-dt-section">
-        <div className="chart-title-row adm-dt-title-row">
-          <h3 className="adm-dt-h3">
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
-            {typeLabel} Faculty List
-            <span className="adm-dt-year-label">
-              ({eduFilters.year === 'All' ? 'All Years' : `Year: ${eduFilters.year}`})
-            </span>
+        <div className="cc-subheader">
+          <h3 className="cc-title">
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
+            {typeLabel} Faculty List <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({eduFilters.year === 'All' ? 'All Years' : `Year: ${eduFilters.year}`})</span>
           </h3>
-          <div className="mode-toggle-row adm-toggle-row--no-mb">
+          <div className="cc-subheader__right">
             <ExportMenu
               elementId={exportId}
               data={data}
@@ -1001,20 +949,17 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Yearwise Strength ── */}
           {section === 'regular' && activeView === 'yearwise' && (
             <>
-              <div className="mode-toggle-row adm-toggle-bar">
-                {['Bar', 'Trend'].map(mode => (
-                  <button key={mode} type="button" onClick={() => setYearwiseChartType(mode)}
-                    className={`chart-toggle-btn${yearwiseChartType === mode ? ' active' : ''}`}>
-                    {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
-                  </button>
-                ))}
-              </div>
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2">Year-wise Employee Strength</h2>
-                  <p className="chart-description">Total employees and gender-wise breakdown year over year.</p>
-                </div>
-                <div className="mode-toggle-row adm-toggle-row--no-mb">
+              <div className="cc-subheader">
+                <h3 className="cc-title">Year-wise Employee Strength</h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {['Bar', 'Trend'].map(mode => (
+                      <button key={mode} type="button" onClick={() => setYearwiseChartType(mode)}
+                        className={`rls-mode-btn${yearwiseChartType === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {mode === 'Bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
+                      </button>
+                    ))}
+                  </div>
                   {SERIES_META.map(({ key, color, label }) => (
                     <button key={key} type="button" className="series-toggle-btn" onClick={() => toggleSeries(key)}
                       style={{ backgroundColor: visibleSeries[key] ? color : '#f0f0f0', color: visibleSeries[key] ? 'white' : '#666' }}>
@@ -1048,14 +993,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <BarChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
+                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }}
                             content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Bar key={key} dataKey={key} name={label} fill={color} radius={[6, 6, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
-                              <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
+                              <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
                             </Bar>
                           ))}
                         </BarChart>
@@ -1089,14 +1034,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <LineChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
+                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }}
                             content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }} hide={!visibleSeries[key]}>
-                              <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: color }} />
+                              <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
                             </Line>
                           ))}
                         </LineChart>
@@ -1135,13 +1080,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Faculty Department Wise ── */}
           {section === 'regular' && activeView === 'department' && (
             <>
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2">Faculty Department Wise Count</h2>
-                  <p className="chart-description">
-                    Currently active teaching faculty grouped by department. Total: <strong>{expertiseTotal}</strong>
-                  </p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Faculty Department Wise Count <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({expertiseTotal} total)</span></h3>
                 <ExportMenu
                   elementId="admin-expertise-chart-container"
                   data={expertiseData}
@@ -1167,11 +1107,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <BarChart data={expertiseData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} interval={0} />
-                          <YAxis tick={{ fontSize: 13, fontWeight: 600 }} allowDecimals={false} />
+                          <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 10, fontWeight: 500 }} interval={0} />
+                          <YAxis tick={{ fontSize: 11, fontWeight: 500 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                           <Bar dataKey="count" name="Faculty" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey="count" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#142D4E' }} />
+                            <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
@@ -1197,11 +1137,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── REGULAR: Gender Distribution ── */}
           {section === 'regular' && activeView === 'gender' && (
             <>
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2">Gender Distribution</h2>
-                  <p className="chart-description">Gender distribution of currently active employees.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Gender Distribution</h3>
                 <ExportMenu
                   elementId="admin-gender-chart-container"
                   data={genderData}
@@ -1225,7 +1162,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           ))}
                         </Pie>
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   )
@@ -1271,28 +1208,26 @@ function AdministrativeSection({ user, isPublicView = false }) {
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'department' && (
             <>
-              <div className="mode-toggle-row adm-toggle-bar">
-                {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Trend', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
-                  <button key={mode} type="button" onClick={() => setEduDeptChartType(mode)}
-                    className={`chart-toggle-btn${eduDeptChartType === mode ? ' active' : ''}`}>
-                    {icon} {mode}
-                  </button>
-                ))}
-              </div>
-
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2--lg">Department-wise Breakdown</h2>
-                  <p className="chart-description">Active external academic engagements by department</p>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Department-wise Breakdown</h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Trend', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
+                      <button key={mode} type="button" onClick={() => setEduDeptChartType(mode)}
+                        className={`rls-mode-btn${eduDeptChartType === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {icon} {mode}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId="edu-dept-chart-container"
+                    data={eduDeptChartData}
+                    headers={['Department', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t), 'Total']}
+                    keys={['department', ...EDU_ENGAGEMENT_ORDER, 'total']}
+                    filename="faculty_engagement_department_breakdown"
+                    title="Department-wise Breakdown"
+                  />
                 </div>
-                <ExportMenu
-                  elementId="edu-dept-chart-container"
-                  data={eduDeptChartData}
-                  headers={['Department', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t), 'Total']}
-                  keys={['department', ...EDU_ENGAGEMENT_ORDER, 'total']}
-                  filename="faculty_engagement_department_breakdown"
-                  title="Department-wise Breakdown"
-                />
               </div>
 
               <div id="edu-dept-chart-container" className="clickable-chart state-dist-wrap adm-chart-container-lg"
@@ -1302,8 +1237,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={eduDeptChartData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
-                        <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 10, fontWeight: 500 }} />
+                        <YAxis tick={{ fontSize: 11, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }}
                           content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
@@ -1356,31 +1291,26 @@ function AdministrativeSection({ user, isPublicView = false }) {
           ══════════════════════════════════════════════════════════════════ */}
           {section === 'education' && eduView === 'trend' && (
             <>
-              <div className="mode-toggle-row adm-toggle-bar">
-                {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Line', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
-                  <button key={mode} type="button" onClick={() => setEduTrendChartType(mode)}
-                    className={`chart-toggle-btn${eduTrendChartType === mode ? ' active' : ''}`}>
-                    {icon} {mode}
-                  </button>
-                ))}
-              </div>
-
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2--lg"><LineChartOutlined /> Year-wise Trends</h2>
-                  <p className="chart-description">
-                    Active faculty engagement trends over multiple years
-                    <span className="trend-badge">Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span>
-                  </p>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Year-wise Trends <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span></h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Line', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
+                      <button key={mode} type="button" onClick={() => setEduTrendChartType(mode)}
+                        className={`rls-mode-btn${eduTrendChartType === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {icon} {mode}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId="edu-trend-chart-container"
+                    data={eduTrendChartData}
+                    headers={['Year', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t)]}
+                    keys={['year', ...EDU_ENGAGEMENT_ORDER]}
+                    filename="faculty_engagement_trends"
+                    title="Year-wise Trends"
+                  />
                 </div>
-                <ExportMenu
-                  elementId="edu-trend-chart-container"
-                  data={eduTrendChartData}
-                  headers={['Year', ...EDU_ENGAGEMENT_ORDER.map(t => ENGAGEMENT_LABELS[t] || t)]}
-                  keys={['year', ...EDU_ENGAGEMENT_ORDER]}
-                  filename="faculty_engagement_trends"
-                  title="Year-wise Trends"
-                />
               </div>
 
               <div id="edu-trend-chart-container" className="clickable-chart state-dist-wrap adm-chart-container-lg"
@@ -1390,8 +1320,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={eduTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 13, fontWeight: 600 }} />
-                        <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11, fontWeight: 500 }} />
+                        <YAxis tick={{ fontSize: 11, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }}
                           content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
@@ -1441,11 +1371,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── EDUCATION: Type Distribution ── */}
           {section === 'education' && eduView === 'distribution' && (
             <>
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2--lg"><PieChartOutlined /> Type Distribution</h2>
-                  <p className="chart-description">Active faculty by engagement type</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Type Distribution</h3>
                 <ExportMenu
                   elementId="edu-distribution-chart-container"
                   data={eduPieData}
@@ -1469,7 +1396,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           ))}
                         </Pie>
                         <Tooltip formatter={v => formatNumber(v)} />
-                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   )
@@ -1518,8 +1445,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       wrapperStyle={{
                         position: 'relative',
                         paddingTop: '8px',
-                        fontSize: '13px',
-                        fontWeight: '600',
+                        fontSize: '11px',
+                        fontWeight: '500',
                         lineHeight: '20px',
                       }}
                       formatter={(value) => (
@@ -1537,13 +1464,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {/* ── EDUCATION: Engagement Details ── */}
           {(!!user && user.role_id !== 0) && section === 'education' && eduView === 'details' && (
             <>
-              <div className="chart-title-row">
-                <div>
-                  <h2 className="adm-chart-h2--lg"><ProfileOutlined /> Engagement Details</h2>
-                  <p className="chart-description">
-                    Detailed list of all external academic engagements · {eduEngagementList.length} records
-                  </p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Engagement Details <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({eduEngagementList.length} records)</span></h3>
                 <ExportMenu
                   elementId="edu-engagement-details-table"
                   data={eduEngagementList}

@@ -38,8 +38,8 @@ import '../DesignSystem.css';
 import './IcsrSection.css';
 
 const EVENT_TYPE_COLORS = [
-  '#142D4E', '#22c55e', '#087E8B', '#087E8B',
-  '#142D4E', '#066A75', '#087E8B', '#087E8B', '#066A75', '#066A75'
+  '#142D4E', '#087E8B', '#F5A623', '#16A34A',
+  '#6366F1', '#D97706', '#0EA5E9', '#DC2626', '#142D4E', '#087E8B'
 ];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -220,10 +220,10 @@ function IcsrSection({ user, isPublicView = false }) {
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart data={chartIsMobile ? yearlyChartData.slice(-3) : yearlyChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                     <Bar dataKey="events" name="Events" fill="#142D4E" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

@@ -29,7 +29,7 @@
   justify-content: center;
   height: 100vh;
   background: #f8f9fa;
-  font-family: system-ui, sans-serif;
+  font-family: inherit;
   padding: 24px;
   text-align: center;
 }

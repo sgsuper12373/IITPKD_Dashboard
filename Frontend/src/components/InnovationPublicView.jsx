@@ -12,31 +12,26 @@ import StartupPortfolio from './StartupPortfolio';
 import SectionSuggestions from '../home/SectionSuggestions';
 
 function InnovationPublicView({ user: realUser, embedded }) {
-  // embedded = opened via "View Public Page": render as a public (role 0) visitor
   const user = embedded ? PUBLIC_PREVIEW_USER : realUser;
-  const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
     {
       id: 'home-ground-startup',
       title: 'Home Grown Startup',
-      subtitle: '',
       expandedTitle: 'Internal startups incubated through IPTIF and TECHIN programs',
       icon: <DashboardIcon name="home" />,
       component: HomeGroundStartup
     },
     {
       id: 'startups',
-      title: 'IIT Palakkad Technology IHub Foundation (IPTIF)',
-      subtitle: '',
+      title: 'IPTIF',
       expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
       icon: <DashboardIcon name="innovation" />,
       component: IptifSection
     },
     {
       id: 'innovation-hub',
-      title: 'Technology Innovation Foundation of IIT Palakkad (TECHIN)',
-      subtitle: '',
+      title: 'TECHIN',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
       icon: <DashboardIcon name="startup" />,
       component: TechinSection
@@ -44,78 +39,47 @@ function InnovationPublicView({ user: realUser, embedded }) {
     {
       id: 'startup-portfolio',
       title: 'Startup Portfolio',
-      subtitle: '',
       expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TECHIN',
       icon: <DashboardIcon name="profile" />,
       component: StartupPortfolio
     }
   ];
 
-  const handleCardClick = (sectionId) => {
-    setActiveSection(activeSection === sectionId ? null : sectionId);
-  };
-
-  const handleBackClick = () => {
-    setActiveSection(null);
-  };
+  const [activeTab, setActiveTab] = useState(sections[0]?.id);
+  const activeSection = sections.find(s => s.id === activeTab);
 
   const inner = (
     <>
-      {/* Page Header - visible only in card grid view */}
-      {!activeSection && (
-        <div className="innovation-page-header" />
-      )}
+      <nav className="pc-tab-bar" role="tablist" aria-label="Innovation sections">
+        {sections.map((section) => (
+          <button
+            key={section.id}
+            role="tab"
+            aria-selected={activeTab === section.id}
+            className={`pc-tab${activeTab === section.id ? ' pc-tab--active' : ''}`}
+            onClick={() => setActiveTab(section.id)}
+          >
+            <span className="pc-tab__icon">{section.icon}</span>
+            <span className="pc-tab__label">{section.title}</span>
+          </button>
+        ))}
+      </nav>
 
-      {/* Card Grid View */}
-      {!activeSection && (
-        <div className="people-campus-grid">
-          {sections.map((section, index) => (
-            <div
-              key={section.id}
-              className="people-campus-card"
-              onClick={() => handleCardClick(section.id)}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="card-icon">{section.icon}</div>
-              <h3 className="card-title">{section.title}</h3>
-              <p className="card-description">{section.subtitle}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Expanded Section View */}
       {activeSection && (
-        <div className="innovation-expanded-view">
-          {sections.map((section) => {
-            if (section.id === activeSection) {
-              const SectionComponent = section.component;
-              return (
-                <div key={section.id} className="innovation-section-wrapper">
-                  <div className="innovation-expanded-container">
-                    <div className="innovation-top-bar">
-                      <button className="innovation-back-button" onClick={handleBackClick}>
-                        <span className="innovation-back-arrow">←</span>
-                        <span>Back</span>
-                      </button>
-                      <div className="innovation-icon-header">{section.icon}</div>
-                      <p className="innovation-overview-text">{section.expandedTitle}</p>
-                    </div>
-                    <div className="innovation-content-area">
-                      <SectionComponent user={user} isPublicView={true} />
-                    </div>
-                    <SectionSuggestions
-                      pillar="innovation"
-                      sectionId={section.id}
-                      siblings={sections.filter((s) => s.id !== section.id)}
-                      onOpen={setActiveSection}
-                    />
-                  </div>
-                </div>
-              );
-            }
-            return null;
-          })}
+        <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>
+          <p className="pc-tab-panel__subtitle">{activeSection.expandedTitle}</p>
+          <div className="pc-tab-panel__content">
+            {(() => {
+              const SectionComponent = activeSection.component;
+              return <SectionComponent user={user} isPublicView={true} />;
+            })()}
+          </div>
+          <SectionSuggestions
+            pillar="innovation"
+            sectionId={activeSection.id}
+            siblings={sections.filter((s) => s.id !== activeSection.id)}
+            onOpen={setActiveTab}
+          />
         </div>
       )}
     </>

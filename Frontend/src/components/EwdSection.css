@@ -286,7 +286,8 @@
 }
 .ewd-chart-h2 {
   margin: 0 0 5px 0;
-  font-size: 20px;
+  font-size: 13px;
+  font-weight: 600;
   color: #142D4E;
 }
 .ewd-chart-desc {

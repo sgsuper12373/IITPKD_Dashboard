@@ -25,13 +25,13 @@
 
   /* ── Surfaces ── */
   --ds-card-bg:       #FFFFFF;
-  --ds-card-border:   rgba(20, 45, 78, 0.06);
+  --ds-card-border:   rgba(71, 85, 105, 0.08);
   --ds-text:          var(--ds-slate);
   --ds-text-strong:   #0F1F36;
 
   /* ── Shape + type ── */
   --r-lg:             var(--radius-lg);
-  --ds-font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ds-font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ds-label-tracking: 0.05em;
 
   /* ── Layout ── */

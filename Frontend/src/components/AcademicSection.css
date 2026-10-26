@@ -26,7 +26,7 @@
 .academic-section-header h2 {
   color: var(--color-text);
   text-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
 }
@@ -137,12 +137,11 @@
    CHART SECTION (main container)
    ================================================================ */
 .chart-section {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-lg);
-  padding: clamp(0.875rem, 2vw, 1.25rem);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-primary);
-  box-shadow: var(--shadow-md);
+  background: #fff;
+  border-radius: 12px;
+  padding: clamp(1rem, 2.5vw, 1.25rem);
+  border: 1px solid rgba(71, 85, 105, 0.08);
+  box-shadow: 0 1px 2px rgba(20, 45, 78, 0.04);
   position: relative;
   overflow: visible;
 }
@@ -151,8 +150,8 @@
 
 .chart-header h2 {
   color: var(--color-text);
-  font-size: clamp(1.1rem, 3.5vw, 1.75rem);
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   margin: 0 0 var(--space-1) 0;
 }
 
@@ -626,7 +625,7 @@
 /* metric-value inside summary cards */
 .metric-value {
   font-size: clamp(1.3rem, 3.5vw, 2.25rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
 }
 
@@ -788,7 +787,7 @@
 
 .metric-card-value {
   font-size: clamp(1.5rem, 4vw, 2.4rem);
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1;
   margin-bottom: var(--space-1);
@@ -1485,7 +1484,7 @@
   .filter-panel { padding: var(--space-4); }
   .chart-tabs { gap: var(--space-1); }
   .chart-tab { font-size: var(--text-xs); padding: 0.4rem 0.75rem; }
-  .chart-header h2 { font-size: var(--text-lg); }
+  .chart-header h2 { font-size: 13px; }
   .chart-heading { font-size: var(--text-base); }
   .chart-wrapper { min-height: 180px; }
   .clear-filters-btn { padding: 0.35rem 0.75rem; font-size: var(--text-xs); }

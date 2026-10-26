@@ -1,5 +1,5 @@
 .sg { margin: clamp(1.5rem, 4vw, 2.5rem) 0 0; padding-top: var(--space-5); border-top: 1px solid var(--color-border); animation: ex-rise 0.5s var(--ease-spring) both; }
-.sg__title { margin: 0 0 var(--space-4); font-size: clamp(1.15rem, 3vw, 1.5rem); font-weight: 800; color: var(--color-text); }
+.sg__title { margin: 0 0 var(--space-4); font-size: clamp(1.15rem, 3vw, 1.5rem); font-weight: 700; color: var(--color-text); }
 .sg__block { margin-bottom: var(--space-5); }
 .sg__h3 { margin: 0 0 var(--space-2); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #066A75; }
 .sg__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: var(--space-4); }

@@ -43,8 +43,8 @@ import ChartExpandModal from './ChartExpandModal';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const GENDER_COLORS = ['#066A75', '#066A75', '#087E8B'];
-const SECTOR_COLORS = ['#142D4E', '#22c55e', '#087E8B', '#087E8B', '#142D4E', '#066A75', '#087E8B', '#087E8B'];
+const GENDER_COLORS = ['#142D4E', '#087E8B', '#F5A623'];
+const SECTOR_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -456,7 +456,7 @@ function PlacementSection({ user, isPublicView = false }) {
     { id: 'programWise', label: 'Program-wise', color: '#087E8B' },
     { id: 'recruiters', label: 'Recruiters', color: '#066A75' },
     { id: 'sectorWise', label: 'Sector-wise', color: '#142D4E' },
-    { id: 'packageTrend', label: 'Package Trends', color: '#10b981' },
+    { id: 'packageTrend', label: 'Package Trends', color: '#16A34A' },
     { id: 'topRecruiters', label: 'Top Recruiters', color: '#066A75' },
   ];
 
@@ -467,126 +467,65 @@ function PlacementSection({ user, isPublicView = false }) {
   const activeFields = VIEW_FILTER_FIELDS[viewType] || [];
 
   const renderFilterPanel = () => (
-    <div className="filter-panel">
-      <div className="filter-panel-header">
-        <h4 className="shared-filter-panel-title"><SearchOutlined /> Filters</h4>
-        <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
-      </div>
-
-      <div className="mode-toggle-row" style={{
-        marginBottom: activeFields.length ? 'var(--space-4)' : 0,
-        paddingBottom: activeFields.length ? 'var(--space-4)' : 0,
-        borderBottom: activeFields.length ? '1px solid var(--color-border)' : 'none'
-      }}>
+    <div className="cc-header">
+      <div className="cc-header__tabs">
         {radioButtons.map((btn) => (
-          <label
+          <button
             key={btn.id}
-            className="view-radio-label"
-            style={{
-              backgroundColor: viewType === btn.id ? btn.color : 'transparent',
-              color: viewType === btn.id ? 'white' : '#555',
-              border: `2px solid ${viewType === btn.id ? btn.color : '#d1d5db'}`,
-              boxShadow: viewType === btn.id ? `0 3px 10px ${btn.color}40` : 'none',
-            }}
+            className={`cc-tab${viewType === btn.id ? ' cc-tab--active' : ''}`}
+            onClick={() => setViewType(btn.id)}
           >
-            <input
-              type="radio"
-              name="viewType"
-              value={btn.id}
-              checked={viewType === btn.id}
-              onChange={(e) => setViewType(e.target.value)}
-              style={{ accentColor: btn.color, width: '15px', height: '15px', cursor: 'pointer' }}
-            />
-            <span style={{ fontWeight: viewType === btn.id ? '600' : '500', fontSize: '13px' }}>
-              {btn.label}
-            </span>
-          </label>
+            {btn.label}
+          </button>
         ))}
       </div>
-
-      {activeFields.length > 0 && (
-        <div className="filter-grid">
-          {activeFields.includes('year') && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Year</label>
-              <select
-                className="filter-select"
-                value={currentFilters.year}
-                onChange={(e) => handleFilterChange('year', e.target.value)}
-              >
-                <option value="All">All Years</option>
-                {filterOptions.years.map((year) => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {activeFields.includes('program') && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Program</label>
-              <select
-                className="filter-select"
-                value={currentFilters.program}
-                onChange={(e) => handleFilterChange('program', e.target.value)}
-              >
-                <option value="All">All Programs</option>
-                {filterOptions.programs.map((program) => (
-                  <option key={program} value={program}>{program}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {activeFields.includes('gender') && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Gender</label>
-              <select
-                className="filter-select"
-                value={currentFilters.gender}
-                onChange={(e) => handleFilterChange('gender', e.target.value)}
-              >
-                <option value="All">All Genders</option>
-                {filterOptions.genders.map((gender) => (
-                  <option key={gender} value={gender}>{gender}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {activeFields.includes('branch') && !(isRestrictedUser && viewType === 'programWise') && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Branch</label>
-              <select
-                className="filter-select"
-                value={currentFilters.branch}
-                onChange={(e) => handleFilterChange('branch', e.target.value)}
-              >
-                <option value="All">All Branches</option>
-                {filterOptions.branches.map((branch) => (
-                  <option key={branch} value={branch}>{branch}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {activeFields.includes('sector') && (
-            <div className="shared-filter-item">
-              <label className="shared-filter-label">Sector</label>
-              <select
-                className="filter-select"
-                value={currentFilters.sector}
-                onChange={(e) => handleFilterChange('sector', e.target.value)}
-              >
-                <option value="All">All Sectors</option>
-                {filterOptions.sectors.map((sector) => (
-                  <option key={sector} value={sector}>{sector}</option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="cc-header__filters">
+        {activeFields.includes('year') && (
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Year</span>
+            <select className="cc-filter-select" value={currentFilters.year} onChange={(e) => handleFilterChange('year', e.target.value)}>
+              <option value="All">All Years</option>
+              {filterOptions.years.map((year) => <option key={year} value={year}>{year}</option>)}
+            </select>
+          </div>
+        )}
+        {activeFields.includes('program') && (
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Program</span>
+            <select className="cc-filter-select" value={currentFilters.program} onChange={(e) => handleFilterChange('program', e.target.value)}>
+              <option value="All">All Programs</option>
+              {filterOptions.programs.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+        )}
+        {activeFields.includes('gender') && (
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Gender</span>
+            <select className="cc-filter-select" value={currentFilters.gender} onChange={(e) => handleFilterChange('gender', e.target.value)}>
+              <option value="All">All</option>
+              {filterOptions.genders.map((g) => <option key={g} value={g}>{g}</option>)}
+            </select>
+          </div>
+        )}
+        {activeFields.includes('branch') && !(isRestrictedUser && viewType === 'programWise') && (
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Branch</span>
+            <select className="cc-filter-select" value={currentFilters.branch} onChange={(e) => handleFilterChange('branch', e.target.value)}>
+              <option value="All">All</option>
+              {filterOptions.branches.map((b) => <option key={b} value={b}>{b}</option>)}
+            </select>
+          </div>
+        )}
+        {activeFields.includes('sector') && (
+          <div className="cc-filter-pair">
+            <span className="cc-filter-label">Sector</span>
+            <select className="cc-filter-select" value={currentFilters.sector} onChange={(e) => handleFilterChange('sector', e.target.value)}>
+              <option value="All">All</option>
+              {filterOptions.sectors.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -730,21 +669,25 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'placementTrend' && !isRestrictedUser && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Placement Percentage Trend</h2>
-                  <p className="chart-description">
-                    Evolution of students registered vs placed and the resulting placement percentage.
-                  </p>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Placement Percentage Trend</h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {['bar', 'trend'].map((mode) => (
+                      <button key={mode} onClick={() => setTrendChartMode(mode)} className={`rls-mode-btn${trendChartMode === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {mode === 'bar' ? 'Bar' : 'Trend'}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId="placement-trend-container"
+                    data={placementTrendChartData}
+                    headers={['Year', 'Registered', 'Placed', 'Placement %']}
+                    keys={['year', 'registered', 'placed', 'percentage']}
+                    filename="placement_trend"
+                    title="Placement Trend Overview"
+                  />
                 </div>
-                <ExportMenu
-                  elementId="placement-trend-container"
-                  data={placementTrendChartData}
-                  headers={['Year', 'Registered', 'Placed', 'Placement %']}
-                  keys={['year', 'registered', 'placed', 'percentage']}
-                  filename="placement_trend"
-                  title="Placement Trend Overview"
-                />
               </div>
 
               <div
@@ -753,18 +696,6 @@ function PlacementSection({ user, isPublicView = false }) {
               >
                 <div className={`section-empty-state ${placementTrendChartData.length ? 'hidden' : ''}`}>
                   <p>No information available for the selected filter</p>
-                </div>
-
-                <div className="mode-toggle-row">
-                  {['bar', 'trend'].map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setTrendChartMode(mode)}
-                      className={`chart-toggle-btn${trendChartMode === mode ? ' plc-trend-active' : ''}`}
-                    >
-                      {mode === 'bar' ? 'Bar' : 'Trend'}
-                    </button>
-                  ))}
                 </div>
 
                 {trendChartMode === 'bar' ? (
@@ -776,12 +707,12 @@ function PlacementSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={450}>
                           <BarChart data={placementTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                            <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                            <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                             <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
-                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                             <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[6, 6, 0, 0]} />
-                            <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                            <Bar dataKey="placed" name="Placed" fill="#087E8B" radius={[6, 6, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       )
@@ -797,8 +728,8 @@ function PlacementSection({ user, isPublicView = false }) {
                         <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[4, 4, 0, 0]} barSize={16}>
                           <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                         </Bar>
-                        <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16}>
-                          <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        <Bar dataKey="placed" name="Placed" fill="#087E8B" radius={[4, 4, 0, 0]} barSize={16}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -814,8 +745,8 @@ function PlacementSection({ user, isPublicView = false }) {
                       <Line type="linear" dataKey="percentage" name="Placement %" stroke="#087E8B" strokeWidth={2.5} dot={{ r: 3 }}>
                         <LabelList dataKey="percentage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                       </Line>
-                      <Line type="linear" dataKey="placed" name="Placed" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }}>
-                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                      <Line type="linear" dataKey="placed" name="Placed" stroke="#087E8B" strokeWidth={2} dot={{ r: 3 }}>
+                        <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                       </Line>
                       <Line type="linear" dataKey="registered" name="Registered" stroke="#066A75" strokeWidth={2} dot={{ r: 3 }}>
                         <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
@@ -844,11 +775,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'genderWise' && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="section-header-left">
-                  <h2>Gender Breakdown</h2>
-                  <p className="chart-description">Comparison of placement metrics across genders.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Gender Breakdown</h3>
                 <ExportMenu
                   elementId="placement-gender-container"
                   data={genderBarData}
@@ -867,15 +795,15 @@ function PlacementSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={genderBarData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="30%">
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="gender" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
                         <Bar dataKey="registered" name="Registered" fill={GENDER_COLORS[0]} radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: GENDER_COLORS[0] }} />
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: GENDER_COLORS[0] }} />
                         </Bar>
                         <Bar dataKey="placed" name="Placed" fill={GENDER_COLORS[1]} radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="placed" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: GENDER_COLORS[1] }} />
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: GENDER_COLORS[1] }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -916,11 +844,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'programWise' && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="section-header-left">
-                  <h2>Program-wise Status</h2>
-                  <p className="chart-description">Placement performance across different academic programs.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Program-wise Status</h3>
                 <ExportMenu
                   elementId="placement-program-container"
                   data={programStatusChartData}
@@ -939,15 +864,15 @@ function PlacementSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={programStatusChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="program" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip denominatorKey="registered" excludePercentageFor={['Registered']} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="registered" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
+                          <LabelList dataKey="registered" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
                         </Bar>
-                        <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="placed" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
+                        <Bar dataKey="placed" name="Placed" fill="#087E8B" radius={[6, 6, 0, 0]}>
+                          <LabelList dataKey="placed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -966,8 +891,8 @@ function PlacementSection({ user, isPublicView = false }) {
                     <Bar dataKey="registered" name="Registered" fill="#066A75" radius={[4, 4, 0, 0]} barSize={30}>
                       <LabelList dataKey="registered" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                     </Bar>
-                    <Bar dataKey="placed" name="Placed" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30}>
-                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                    <Bar dataKey="placed" name="Placed" fill="#087E8B" radius={[4, 4, 0, 0]} barSize={30}>
+                      <LabelList dataKey="placed" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -985,11 +910,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'recruiters' && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="section-header-left">
-                  <h2>Recruiter Statistics</h2>
-                  <p className="chart-description">Yearly trends of companies visiting and offers made.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Recruiter Statistics</h3>
                 <ExportMenu
                   elementId="placement-recruiters-container"
                   data={recruiterChartData}
@@ -1008,15 +930,15 @@ function PlacementSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={recruiterChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         <Bar dataKey="companies" name="Companies" fill="#066A75" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="companies" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
+                          <LabelList dataKey="companies" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
                         </Bar>
                         <Bar dataKey="offers" name="Offers" fill="#087E8B" radius={[6, 6, 0, 0]}>
-                          <LabelList dataKey="offers" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#087E8B" }} />
+                          <LabelList dataKey="offers" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -1060,11 +982,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'sectorWise' && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Sector-wise Company Split</h2>
-                  <p className="chart-description">Distribution of visiting recruiters by industry sector (Top 5 sectors shown).</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Sector-wise Company Split</h3>
                 <ExportMenu
                   elementId="placement-sector-pie-container"
                   data={sectorPieData}
@@ -1117,11 +1036,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'packageTrend' && !isRestrictedUser && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="section-header-left">
-                  <h2>Salary Package Trends</h2>
-                  <p className="chart-description">Evolution of average, highest, and lowest salary packages.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Salary Package Trends</h3>
                 <ExportMenu
                   elementId="placement-packages-container"
                   data={packageTrendChartData}
@@ -1140,13 +1056,13 @@ function PlacementSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={packageTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} label={{ value: 'LPA', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 600 } }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} label={{ value: 'LPA', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 10, fontWeight: 500 } }} />
                         <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                        <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="linear" dataKey="average" name="Average Package" stroke="#16A34A" strokeWidth={3} dot={{ r: 6 }} />
                         <Line type="linear" dataKey="highest" name="Highest Package" stroke="#142D4E" strokeWidth={3} dot={{ r: 6 }} />
-                        <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#DC2626" strokeWidth={3} dot={{ r: 6 }} />
                       </LineChart>
                     </ResponsiveContainer>
                   )
@@ -1161,14 +1077,14 @@ function PlacementSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                    <Line type="linear" dataKey="average" name="Average Package" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#10b981" }} />
+                    <Line type="linear" dataKey="average" name="Average Package" stroke="#16A34A" strokeWidth={2.5} dot={{ r: 3 }} connectNulls={false}>
+                      <LabelList offset={5} dataKey="average" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#16A34A" }} />
                     </Line>
                     <Line type="linear" dataKey="highest" name="Highest Package" stroke="#142D4E" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
                       <LabelList offset={5} dataKey="highest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
                     </Line>
-                    <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
-                      <LabelList offset={5} dataKey="lowest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#ef4444" }} />
+                    <Line type="linear" dataKey="lowest" name="Lowest Package" stroke="#DC2626" strokeWidth={2} dot={{ r: 3 }} connectNulls={false}>
+                      <LabelList offset={5} dataKey="lowest" position="top" formatter={(value) => value?.toFixed(2)} style={{ fontSize: '10px', fontWeight: 600, fill: "#DC2626" }} />
                     </Line>
                   </LineChart>
                 </ResponsiveContainer>
@@ -1192,11 +1108,8 @@ function PlacementSection({ user, isPublicView = false }) {
 
           {viewType === 'topRecruiters' && !isRestrictedUser && (
             <div className="chart-section">
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Top Recruiters</h2>
-                  <p className="chart-description">Highlights of visiting recruiters, their sectors, and offer volume.</p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Top Recruiters</h3>
                 <ExportMenu
                   elementId="placement-top-recruiters-table"
                   data={topRecruiters}

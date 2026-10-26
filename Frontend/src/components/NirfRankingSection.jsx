@@ -89,11 +89,11 @@ const NirfRankingSection = ({ user }) => {
     const recentFirst = recentData[0];
 
     const metrics = [
-        { key: 'tlr', label: 'TLR', fullName: 'Teaching, Learning & Resources', color: '#8884d8', fill: 'rgba(20, 45, 78,0.08)' },
-        { key: 'rpc', label: 'RPC', fullName: 'Research & Professional Practice', color: '#22c55e', fill: '#dcfce7' },
-        { key: 'go', label: 'GO', fullName: 'Graduation Outcomes', color: '#066A75', fill: '#fef3c7' },
-        { key: 'oi', label: 'OI', fullName: 'Outreach & Inclusivity', color: '#087E8B', fill: '#ffedd5' },
-        { key: 'pr', label: 'PR', fullName: 'Perception', color: '#087E8B', fill: 'rgba(8, 126, 139,0.08)' },
+        { key: 'tlr', label: 'TLR', fullName: 'Teaching, Learning & Resources', color: '#142D4E', fill: 'rgba(20, 45, 78,0.08)' },
+        { key: 'rpc', label: 'RPC', fullName: 'Research & Professional Practice', color: '#16A34A', fill: 'rgba(22, 163, 74, 0.08)' },
+        { key: 'go', label: 'GO', fullName: 'Graduation Outcomes', color: '#F5A623', fill: 'rgba(245, 166, 35, 0.08)' },
+        { key: 'oi', label: 'OI', fullName: 'Outreach & Inclusivity', color: '#087E8B', fill: 'rgba(8, 126, 139, 0.08)' },
+        { key: 'pr', label: 'PR', fullName: 'Perception', color: '#6366F1', fill: 'rgba(99, 102, 241, 0.08)' },
     ];
 
     const rankData = recentData.filter(d => d.rank != null);
@@ -171,18 +171,18 @@ const NirfRankingSection = ({ user }) => {
                                         {chartType === 'bar' ? (
                                             <BarChart data={rankData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                                <XAxis dataKey="year" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                                                <YAxis domain={[0, 'auto']} tick={{ fontSize: 13, fontWeight: 600 }} tickFormatter={(v) => `#${v}`} />
+                                                <XAxis dataKey="year" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                                <YAxis domain={[0, 'auto']} tick={{ fontSize: 10, fontWeight: 500 }} tickFormatter={(v) => `#${v}`} />
                                                 <Tooltip formatter={(v) => [`#${v}`, 'Rank']} />
                                                 <Bar dataKey="rank" fill="#1a237e" radius={[6, 6, 0, 0]}>
-                                                    <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '12px', fontWeight: 700, fill: '#1a237e' }} />
+                                                    <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '9px', fontWeight: 500, fill: '#1a237e' }} />
                                                 </Bar>
                                             </BarChart>
                                         ) : (
                                             <LineChart data={rankData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                                <XAxis dataKey="year" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                                                <YAxis domain={['auto', 'auto']} reversed={true} tick={{ fontSize: 13, fontWeight: 600 }} tickFormatter={(v) => `#${v}`} />
+                                                <XAxis dataKey="year" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                                <YAxis domain={['auto', 'auto']} reversed={true} tick={{ fontSize: 10, fontWeight: 500 }} tickFormatter={(v) => `#${v}`} />
                                                 <Tooltip formatter={(v) => [`#${v}`, 'Rank']} />
                                                 <Line type="linear" dataKey="rank" stroke="#1a237e" strokeWidth={4} dot={{ r: 6, fill: '#1a237e' }} />
                                             </LineChart>
@@ -199,7 +199,7 @@ const NirfRankingSection = ({ user }) => {
                                         <YAxis domain={[0, 'auto']} tick={{ fontSize: 10 }} tickFormatter={(v) => `#${v}`} hide={chartIsMobile} />
                                         <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '6px' }} formatter={(v) => [`#${v}`, 'Rank']} />
                                         <Bar dataKey="rank" fill="#1a237e" radius={[4, 4, 0, 0]} barSize={24}>
-                                            <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '11px', fontWeight: 600, fill: '#1a237e' }} />
+                                            <LabelList dataKey="rank" position="top" formatter={(v) => `#${v}`} style={{ fontSize: '9px', fontWeight: 500, fill: '#1a237e' }} />
                                         </Bar>
                                     </BarChart>
                                 ) : (

@@ -11,15 +11,12 @@ import Patents from './Patents';
 import SectionSuggestions from '../home/SectionSuggestions';
 
 function ResearchPublicView({ user: realUser, embedded }) {
-  // embedded = opened via "View Public Page": render as a public (role 0) visitor
   const user = embedded ? PUBLIC_PREVIEW_USER : realUser;
-  const [activeSection, setActiveSection] = useState(null);
 
   const baseSections = [
     {
       id: 'icsr',
       title: 'Sponsored and Consultancy Projects',
-      subtitle: '',
       expandedTitle: 'Driving innovation through industry partnerships and funded research',
       icon: <DashboardIcon name="research" />,
       component: ResearchIcsrSection
@@ -27,7 +24,6 @@ function ResearchPublicView({ user: realUser, embedded }) {
     {
       id: 'library',
       title: 'Research Publications',
-      subtitle: '',
       expandedTitle: 'Advancing knowledge through publications and research contributions',
       icon: <DashboardIcon name="ug" />,
       component: ResearchLibrarySection
@@ -35,7 +31,6 @@ function ResearchPublicView({ user: realUser, embedded }) {
     {
       id: 'icsr-mous',
       title: 'Research Collaboration',
-      subtitle: '',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
       icon: <DashboardIcon name="link" />,
       component: (props) => <ResearchIcsrSection {...props} mouOnly={true} />
@@ -45,7 +40,6 @@ function ResearchPublicView({ user: realUser, embedded }) {
   const patentsSection = {
     id: 'patents',
     title: 'Patents',
-    subtitle: '',
     expandedTitle: 'Explore patents and intellectual property contributions',
     icon: <DashboardIcon name="innovation" />,
     component: Patents
@@ -56,64 +50,41 @@ function ResearchPublicView({ user: realUser, embedded }) {
       ? [...baseSections, patentsSection]
       : baseSections;
 
-  const handleCardClick = (sectionId) => {
-    setActiveSection(activeSection === sectionId ? null : sectionId);
-  };
-
-  const handleBackClick = () => {
-    setActiveSection(null);
-  };
+  const [activeTab, setActiveTab] = useState(sections[0]?.id);
+  const activeSection = sections.find(s => s.id === activeTab);
 
   const inner = (
     <>
-      <div className={`research-page-header ${activeSection ? 'header-minimized' : ''}`} />
-
-      <div className={`people-campus-grid ${activeSection ? 'grid-hidden' : ''}`}>
-        {sections.map((section, index) => (
-          <div
+      <nav className="pc-tab-bar" role="tablist" aria-label="Research sections">
+        {sections.map((section) => (
+          <button
             key={section.id}
-            className="people-campus-card"
-            onClick={() => handleCardClick(section.id)}
-            style={{ animationDelay: `${index * 0.1}s` }}
+            role="tab"
+            aria-selected={activeTab === section.id}
+            className={`pc-tab${activeTab === section.id ? ' pc-tab--active' : ''}`}
+            onClick={() => setActiveTab(section.id)}
           >
-            <div className="card-icon">{section.icon}</div>
-            <h3 className="card-title">{section.title}</h3>
-            <p className="card-description">{section.subtitle}</p>
-          </div>
+            <span className="pc-tab__icon">{section.icon}</span>
+            <span className="pc-tab__label">{section.title}</span>
+          </button>
         ))}
-      </div>
+      </nav>
 
       {activeSection && (
-        <div className="research-expanded-view">
-          {sections.map((section) => {
-            if (section.id === activeSection) {
-              const SectionComponent = section.component;
-              return (
-                <div key={section.id} className="research-section-wrapper">
-                  <div className="research-expanded-container">
-                    <div className="research-top-bar">
-                      <button className="research-back-button" onClick={handleBackClick}>
-                        <span className="research-back-arrow">←</span>
-                        <span>Back</span>
-                      </button>
-                      <div className="research-icon-header">{section.icon}</div>
-                      <p className="research-overview-text">{section.expandedTitle}</p>
-                    </div>
-                    <div className="research-content-area">
-                      <SectionComponent user={user} isPublicView={true} />
-                    </div>
-                    <SectionSuggestions
-                      pillar="research"
-                      sectionId={section.id}
-                      siblings={sections.filter((s) => s.id !== section.id)}
-                      onOpen={setActiveSection}
-                    />
-                  </div>
-                </div>
-              );
-            }
-            return null;
-          })}
+        <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>
+          <p className="pc-tab-panel__subtitle">{activeSection.expandedTitle}</p>
+          <div className="pc-tab-panel__content">
+            {(() => {
+              const SectionComponent = activeSection.component;
+              return <SectionComponent user={user} isPublicView={true} />;
+            })()}
+          </div>
+          <SectionSuggestions
+            pillar="research"
+            sectionId={activeSection.id}
+            siblings={sections.filter((s) => s.id !== activeSection.id)}
+            onOpen={setActiveTab}
+          />
         </div>
       )}
     </>

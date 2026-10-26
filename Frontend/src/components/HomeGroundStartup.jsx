@@ -297,7 +297,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             <div id="hg-revenue-container" className="hg-revenue-cards">
               {[
                 { bg: 'linear-gradient(135deg, #142D4E 0%, #066A75 100%)', shadow: '0 8px 20px rgba(6, 106, 117,0.2)', label: 'Total Revenue', value: summary.total_revenue },
-                { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
+                { bg: 'linear-gradient(135deg, #16A34A 0%, #15803d 100%)', shadow: '0 8px 20px rgba(22,163,74,0.2)', label: 'Highest Revenue', value: summary.highest_revenue },
                 { bg: 'linear-gradient(135deg, #066A75 0%, #142D4E 100%)', shadow: '0 8px 20px rgba(8, 126, 139,0.2)', label: 'Average Revenue', value: summary.average_revenue }
               ].map(({ bg, shadow, label, value }) => (
                 <div key={label} className="hg-revenue-card" style={{ background: bg, boxShadow: shadow }}>
@@ -315,66 +315,56 @@ function HomeGroundStartup({ user, isPublicView = false }) {
         {/* ══════════════ STARTUP GROWTH PANEL ══════════════ */}
         <div className="hg-panel">
 
-          <div className="hg-filter-header">
-            <h4 className="hg-filter-h4">Filters</h4>
-            <button onClick={() => setFilters({ domain: 'All', status: 'All' })} className="hg-clear-btn">
-              Clear Filters
-            </button>
-          </div>
-
-          <div className="hg-filter-row">
-            <div className="hg-filter-item">
-              <label className="hg-filter-label">Domain</label>
-              <select
-                value={filters.domain}
-                onChange={e => setFilters(prev => ({ ...prev, domain: e.target.value }))}
-                className="hg-filter-select"
-              >
-                <option value="All">All Domains</option>
-                {filterOptions.domains.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <div className="hg-filter-item">
-              <label className="hg-filter-label">Status</label>
-              <select
-                value={filters.status}
-                onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="hg-filter-select"
-              >
-                <option value="All">All Statuses</option>
-                {filterOptions.statuses.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div className="hg-divider" />
-
-          <div className="hg-chart-header">
-            <div>
-              <h2 className="hg-chart-h2">
-                <DashboardIcon name="home" className="hg-chart-icon" />
-                Startup Growth
-              </h2>
-              <p className="hg-chart-desc">
-                Yearly growth of internal-origin startups across IPTIF and TECHIN
-              </p>
-            </div>
-            <div className="hg-chart-actions">
+          <div className="cc-header">
+            <div className="cc-header__tabs">
               {['bar', 'trend', 'table']
                 .filter(mode => !isRestricted || mode !== 'table')
                 .map(mode => {
-                  const active = chartMode === mode;
                   const label = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
                   return (
                     <button
                       key={mode}
-                      className={`hg-mode-btn${active ? ' hg-mode-btn--active' : ''}`}
+                      className={`cc-tab${chartMode === mode ? ' cc-tab--active' : ''}`}
                       onClick={() => switchMode(mode)}
                     >
                       {label}
                     </button>
                   );
                 })}
+            </div>
+            <div className="cc-header__filters">
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Domain</span>
+                <select
+                  value={filters.domain}
+                  onChange={e => setFilters(prev => ({ ...prev, domain: e.target.value }))}
+                  className="cc-filter-select"
+                >
+                  <option value="All">All Domains</option>
+                  {filterOptions.domains.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Status</span>
+                <select
+                  value={filters.status}
+                  onChange={e => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                  className="cc-filter-select"
+                >
+                  <option value="All">All Statuses</option>
+                  {filterOptions.statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="cc-subheader">
+            <h2 className="cc-title">
+              <DashboardIcon name="home" className="cc-title-icon" />
+              Startup Growth
+              <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84', marginLeft: 4 }}>Yearly growth across IPTIF &amp; TECHIN</span>
+            </h2>
+            <div className="cc-subheader__right">
               <ExportMenu
                 elementId={exportId}
                 data={exportData}

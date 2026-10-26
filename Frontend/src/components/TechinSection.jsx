@@ -241,23 +241,23 @@ function TechinSection({ user, isPublicView = false }) {
             {chartMode === 'bar' ? (
               <BarChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                 <Tooltip content={<TechinTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                 <Bar dataKey="count" name={name} fill={color} radius={[6, 6, 0, 0]}>
-                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                 </Bar>
               </BarChart>
             ) : (
               <LineChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                 <Tooltip content={<TechinTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                 <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                 </Line>
               </LineChart>
             )}
@@ -304,58 +304,58 @@ function TechinSection({ user, isPublicView = false }) {
 
   const renderFilters = () => {
     if (viewType === 'programs') return (
-      <div className="techin-filter-grid">
-        <div>
-          <label className="techin-filter-label">Type</label>
-          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} className="techin-filter-select">
-            <option value="All">All Types</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Type</label>
+          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.programs.types.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
-        <div>
-          <label className="techin-filter-label">Association</label>
-          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} className="techin-filter-select">
-            <option value="All">All Associations</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Assoc</label>
+          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.programs.associations.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
     if (viewType === 'skillDev') return (
-      <div className="techin-filter-grid">
-        <div>
-          <label className="techin-filter-label">Category</label>
-          <select value={skillDevFilters.category} onChange={e => handleFilterChange(setSkillDevFilters)('category', e.target.value)} className="techin-filter-select">
-            <option value="All">All Categories</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Category</label>
+          <select value={skillDevFilters.category} onChange={e => handleFilterChange(setSkillDevFilters)('category', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.skill_dev.categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <div>
-          <label className="techin-filter-label">Association</label>
-          <select value={skillDevFilters.association} onChange={e => handleFilterChange(setSkillDevFilters)('association', e.target.value)} className="techin-filter-select">
-            <option value="All">All Associations</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Assoc</label>
+          <select value={skillDevFilters.association} onChange={e => handleFilterChange(setSkillDevFilters)('association', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.skill_dev.associations.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
     if (viewType === 'startups') return (
-      <div className="techin-filter-grid">
-        <div>
-          <label className="techin-filter-label">Domain</label>
-          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} className="techin-filter-select">
-            <option value="All">All Domains</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Domain</label>
+          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.startups.domains.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
-        <div>
-          <label className="techin-filter-label">Status</label>
-          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} className="techin-filter-select">
-            <option value="All">All Statuses</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Status</label>
+          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.startups.statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -576,7 +576,7 @@ function TechinSection({ user, isPublicView = false }) {
             <div id="techin-revenue-metrics-container" className="techin-revenue-grid">
               {[
                 { bg: 'linear-gradient(135deg, #142D4E 0%, #066A75 100%)', shadow: '0 8px 20px rgba(6, 106, 117,0.2)',  label: 'Total Revenue',   value: summary.total_startup_revenue },
-                { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', shadow: '0 8px 20px rgba(16,185,129,0.2)',  label: 'Highest Revenue', value: summary.highest_revenue },
+                { bg: 'linear-gradient(135deg, #16A34A 0%, #15803d 100%)', shadow: '0 8px 20px rgba(22,163,74,0.2)',  label: 'Highest Revenue', value: summary.highest_revenue },
                 { bg: 'linear-gradient(135deg, #066A75 0%, #142D4E 100%)', shadow: '0 8px 20px rgba(8, 126, 139,0.2)',  label: 'Average Revenue', value: summary.average_revenue }
               ].map(({ bg, shadow, label, value }) => (
                 <div key={label} className="techin-revenue-card" style={{ background: bg, boxShadow: shadow }}>
@@ -591,70 +591,32 @@ function TechinSection({ user, isPublicView = false }) {
           </>
         )}
 
-        <div id="techin-content-region" className="techin-content-panel">
-          <div className="techin-filter-heading-row">
-            <h4 className="techin-filter-h4">Filters</h4>
-          </div>
-
-          <div className="techin-tabs-row">
-            {VIEWS.map(({ id, label, color: c, icon }) => {
-              const active = viewType === id;
-              return (
-                <button
-                  key={id}
-                  className="techin-tab-btn"
-                  onClick={() => switchView(id)}
-                  style={{
-                    backgroundColor: active ? c : 'white',
-                    color: active ? 'white' : '#333',
-                    borderColor: active ? c : '#dee2e6',
-                    boxShadow: active ? `0 6px 16px ${c}40` : 'none',
-                    fontWeight: active ? 600 : 500,
-                  }}
-                >
-                  <span className="techin-tab-icon"><DashboardIcon name={icon} size={16} /></span>{label}
+        <section id="techin-content-region" className="rls-chart-section">
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              {VIEWS.map(({ id, label }) => (
+                <button key={id} className={`cc-tab${viewType === id ? ' cc-tab--active' : ''}`} onClick={() => switchView(id)}>
+                  {label}
                 </button>
-              );
-            })}
+              ))}
+            </div>
+            <div className="cc-header__filters">
+              {renderFilters()}
+            </div>
           </div>
 
-          <div className="techin-filter-wrap">
-            <div className="techin-filter-end-row">
-              <button onClick={clearFilters} className="techin-clear-btn">Clear Filters</button>
-            </div>
-            {renderFilters()}
-          </div>
-
-          <div className="techin-divider" />
-
-          <div className="techin-chart-header-row">
-            <div>
-              <h2 className="techin-chart-h2">
-                <span className="techin-chart-icon"><DashboardIcon name={currentView?.icon} size={20} /></span>
-                {currentView?.label}
-              </h2>
-              <p className="techin-chart-desc">
-                {viewType === 'programs' && 'Yearly trend of programs by type and association'}
-                {viewType === 'skillDev' && 'Yearly trend of skill development programs'}
-                {viewType === 'startups' && 'Yearly growth of startups by domain and status'}
-              </p>
-            </div>
-            <div className="techin-mode-row">
-              {['bar', 'trend', 'table']
-                .filter(mode => !isRestricted || mode !== 'table')
-                .map(mode => {
-                  const modeActive = chartMode === mode;
-                  const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
-                  return (
-                    <button
-                      key={mode}
-                      className={`techin-mode-btn${modeActive ? ' techin-mode-btn--active' : ''}`}
-                      onClick={() => switchMode(mode)}
-                    >
-                      {modeLabel}
+          <div className="cc-subheader">
+            <h3 className="cc-title"><span className="cc-title-icon"><DashboardIcon name={currentView?.icon} size={16} /></span> {currentView?.label}</h3>
+            <div className="cc-subheader__right">
+              <div className="rls-mode-toggle">
+                {['bar', 'trend', 'table']
+                  .filter(mode => !isRestricted || mode !== 'table')
+                  .map(mode => (
+                    <button key={mode} className={`rls-mode-btn${chartMode === mode ? ' rls-mode-btn--active' : ''}`} onClick={() => switchMode(mode)}>
+                      {mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table'}
                     </button>
-                  );
-                })}
+                  ))}
+              </div>
               <ExportMenu
                 elementId={exportId}
                 data={exportData}
@@ -680,7 +642,7 @@ function TechinSection({ user, isPublicView = false }) {
               : renderChart(trendData, color, trendLabel)
             }
           </div>
-        </div>
+        </section>
 
         <div className="techin-cta-banner">
           <div className="techin-cta-left">

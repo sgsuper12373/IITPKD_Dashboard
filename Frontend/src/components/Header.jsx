@@ -155,50 +155,54 @@ function Header({ user, onLogout, isGuest }) {
                     {/* Right side: search + user */}
                     <div className="header-right">
                         <HeaderSearch />
-                        <span className="header-guest-label">
-                            {isGuest ? 'Guest view' : (user?.display_name || '')}
-                        </span>
-                        <div ref={dropdownRef} className="user-profile-container">
-                            <div
-                                className="user-avatar"
-                                onClick={toggleDropdown}
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(); } }}
-                            >
-                                {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
-                            </div>
-                            {showProfileDropdown && (
-                                <div className="profile-dropdown">
-                                    <div className="dropdown-header">
-                                        <div className="dropdown-user-info">
-                                            <div className="dropdown-avatar">
-                                                {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
-                                            </div>
-                                            <div className="dropdown-user-details">
-                                                <div className="dropdown-name">{user?.display_name || 'User'}</div>
-                                                <div className="dropdown-email">{user?.email || ''}</div>
-                                                <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
-                                                    Role ID: {user?.role_id ?? 0} — {getRoleName(user?.role_id ?? 0)}
+                        {(user?.role_id ?? 0) !== 0 && (
+                            <>
+                                <span className="header-guest-label">
+                                    {isGuest ? 'Guest view' : (user?.display_name || '')}
+                                </span>
+                                <div ref={dropdownRef} className="user-profile-container">
+                                    <div
+                                        className="user-avatar"
+                                        onClick={toggleDropdown}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDropdown(); } }}
+                                    >
+                                        {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                                    </div>
+                                    {showProfileDropdown && (
+                                        <div className="profile-dropdown">
+                                            <div className="dropdown-header">
+                                                <div className="dropdown-user-info">
+                                                    <div className="dropdown-avatar">
+                                                        {user?.display_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
+                                                    </div>
+                                                    <div className="dropdown-user-details">
+                                                        <div className="dropdown-name">{user?.display_name || 'User'}</div>
+                                                        <div className="dropdown-email">{user?.email || ''}</div>
+                                                        <div className="dropdown-role" style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                                                            Role ID: {user?.role_id ?? 0} — {getRoleName(user?.role_id ?? 0)}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <div className="dropdown-divider" />
+                                            <button className="dropdown-item" onClick={handleProfileClick}>
+                                                {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
+                                            </button>
+                                            {user?.role_id === 3 && (
+                                                <button className="dropdown-item" onClick={() => { setShowProfileDropdown(false); navigate('/site-monitor'); }}>
+                                                    Site Monitor
+                                                </button>
+                                            )}
+                                            <button className="dropdown-item" onClick={onLogout}>
+                                                Logout
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div className="dropdown-divider" />
-                                    <button className="dropdown-item" onClick={handleProfileClick}>
-                                        {user?.role_id === 3 ? 'Profile & Admin Actions' : 'Profile'}
-                                    </button>
-                                    {user?.role_id === 3 && (
-                                        <button className="dropdown-item" onClick={() => { setShowProfileDropdown(false); navigate('/site-monitor'); }}>
-                                            Site Monitor
-                                        </button>
                                     )}
-                                    <button className="dropdown-item" onClick={onLogout}>
-                                        Logout
-                                    </button>
                                 </div>
-                            )}
-                        </div>
+                            </>
+                        )}
                     </div>
                 </header>
             </div>

@@ -47,7 +47,7 @@ export default function ComboChart({
           }
         />
         <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: FONT.label, color: COLORS.slate }} />
-        <Bar yAxisId="left" dataKey={barKey} name={barName} fill={COLORS.slateSoft} radius={[3, 3, 0, 0]} maxBarSize={36} {...anim}>
+        <Bar yAxisId="left" dataKey={barKey} name={barName} fill={COLORS.slateSoft} radius={[4, 4, 0, 0]} maxBarSize={40} {...anim}>
           {rows.map((r) => (
             <Cell key={r.year} fill={r.year === selectedYear ? COLORS.accent : COLORS.slateSoft} />
           ))}

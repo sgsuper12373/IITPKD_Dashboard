@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import DashboardIcon from './DashboardIcon';
-import { LineChartOutlined, BarChartOutlined, ProfileOutlined, EnvironmentOutlined, BankOutlined, CalendarOutlined, ReadOutlined, SearchOutlined } from '@ant-design/icons';
+import { LineChartOutlined, BarChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import InnovationPublicView from './InnovationPublicView';
 import {
@@ -34,7 +34,7 @@ import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
 
-const SECTOR_COLORS = ['#142D4E', '#22c55e', '#087E8B', '#087E8B', '#142D4E', '#066A75', '#087E8B', '#087E8B'];
+const SECTOR_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -350,174 +350,75 @@ function InnovationSectionContent({ user, isPublicView }) {
         </div>
       </div>
 
-      {/* Filter Panel */}
-      <div className="inno-filter-panel">
-        <div className="inno-filter-header">
-          <h3>Filters &amp; Visualization Options</h3>
-          <div className="inno-filter-actions">
-            <button className="clear-filters-btn" onClick={handleClearFilters}>
-              Clear Filters
-            </button>
-            {!isReadOnlyView && isAdmin && (
-              <button className="inno-upload-btn page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                Upload Startups
-              </button>
-            )}
-          </div>
+      {!isReadOnlyView && isAdmin && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <button className="inno-upload-btn page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+            Upload Startups
+          </button>
         </div>
-
-        {/* View Type Selection */}
-        <div className="inno-view-selector">
-          <span className="inno-view-selector-title">Select View Type:</span>
-          <div className="inno-view-grid">
-            <label className={`inno-view-label${viewType === 'yearlyGrowth' ? ' inno-view-label--active-yearly' : ''}`}>
-              <input
-                type="radio"
-                name="viewType"
-                value="yearlyGrowth"
-                checked={viewType === 'yearlyGrowth'}
-                onChange={(e) => setViewType(e.target.value)}
-                className="inno-view-radio inno-view-radio--growth"
-              />
-              <span className={`inno-view-text${viewType === 'yearlyGrowth' ? ' inno-view-text--active' : ''}`}>
-                <LineChartOutlined /> Yearly Growth
-              </span>
-            </label>
-
-            <label className={`inno-view-label${viewType === 'sectorDistribution' ? ' inno-view-label--active-sector' : ''}`}>
-              <input
-                type="radio"
-                name="viewType"
-                value="sectorDistribution"
-                checked={viewType === 'sectorDistribution'}
-                onChange={(e) => setViewType(e.target.value)}
-                className="inno-view-radio inno-view-radio--sector"
-              />
-              <span className={`inno-view-text${viewType === 'sectorDistribution' ? ' inno-view-text--active' : ''}`}>
-                <BarChartOutlined /> Sector Distribution
-              </span>
-            </label>
-
-            <label className={`inno-view-label${viewType === 'startupsDirectory' ? ' inno-view-label--active-directory' : ''}`}>
-              <input
-                type="radio"
-                name="viewType"
-                value="startupsDirectory"
-                checked={viewType === 'startupsDirectory'}
-                onChange={(e) => setViewType(e.target.value)}
-                className="inno-view-radio inno-view-radio--directory"
-              />
-              <span className={`inno-view-text${viewType === 'startupsDirectory' ? ' inno-view-text--active' : ''}`}>
-                <ProfileOutlined /> Startups Directory
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <div className="inno-filter-grid">
-          <div className="inno-filter-group">
-            <label className="inno-filter-label">Status</label>
-            <select
-              className="inno-filter-select filter-select"
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-            >
-              <option value="All">All Status</option>
-              {filterOptions.statuses.map(status => (
-                <option key={status} value={status}>{status}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="inno-filter-group">
-            <label className="inno-filter-label">Sector</label>
-            <select
-              className="inno-filter-select filter-select"
-              value={filters.sector}
-              onChange={(e) => handleFilterChange('sector', e.target.value)}
-            >
-              <option value="All">All Sectors</option>
-              {filterOptions.sectors.map(sector => (
-                <option key={sector} value={sector}>{sector}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="inno-filter-group">
-            <label className="inno-filter-label">Year</label>
-            <select
-              className="inno-filter-select filter-select"
-              value={filters.year}
-              onChange={(e) => handleFilterChange('year', e.target.value)}
-            >
-              <option value="All">All Years</option>
-              {filterOptions.years.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="inno-filter-group inno-checkbox-group">
-            <label className="inno-checkbox-label">
-              <input
-                type="checkbox"
-                checked={filters.iitpkd_only}
-                onChange={(e) => handleFilterChange('iitpkd_only', e.target.checked)}
-                className="inno-checkbox-input"
-              />
-              <span className="inno-checkbox-text">IIT Palakkad Only</span>
-            </label>
-          </div>
-
-          <div className="inno-filter-group-full">
-            <label className="inno-filter-label">Search</label>
-            <input
-              type="text"
-              placeholder="Search by startup name, founder, or innovation area..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="inno-filter-select filter-select"
-            />
-          </div>
-        </div>
-
-        {/* Active Filters Summary */}
-        <div className="inno-active-filters">
-          <strong>Active Filters:</strong>{' '}
-          {filters.status !== 'All' && <span className="inno-filter-tag"><EnvironmentOutlined /> Status: {filters.status}</span>}
-          {filters.sector !== 'All' && <span className="inno-filter-tag"><BankOutlined /> Sector: {filters.sector}</span>}
-          {filters.year !== 'All' && <span className="inno-filter-tag"><CalendarOutlined /> Year: {filters.year}</span>}
-          {filters.iitpkd_only && <span className="inno-filter-tag"><ReadOutlined /> IITPKD Only</span>}
-          {filters.search && <span className="inno-filter-tag"><SearchOutlined /> Search: &quot;{filters.search}&quot;</span>}
-          {filters.status === 'All' && filters.sector === 'All' && filters.year === 'All' && !filters.iitpkd_only && !filters.search &&
-            <span>No filters applied (showing all data)</span>
-          }
-        </div>
-      </div>
+      )}
 
       {/* Main Chart Section */}
       <div className="chart-section inno-main-section">
 
+        <div className="cc-header">
+          <div className="cc-header__tabs">
+            <button className={`cc-tab${viewType === 'yearlyGrowth' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('yearlyGrowth')}>Yearly Growth</button>
+            <button className={`cc-tab${viewType === 'sectorDistribution' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('sectorDistribution')}>Sector Distribution</button>
+            <button className={`cc-tab${viewType === 'startupsDirectory' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('startupsDirectory')}>Startups Directory</button>
+          </div>
+          <div className="cc-header__filters">
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Status</span>
+              <select className="cc-filter-select" value={filters.status} onChange={(e) => handleFilterChange('status', e.target.value)}>
+                <option value="All">All</option>
+                {filterOptions.statuses.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Sector</span>
+              <select className="cc-filter-select" value={filters.sector} onChange={(e) => handleFilterChange('sector', e.target.value)}>
+                <option value="All">All</option>
+                {filterOptions.sectors.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="cc-filter-pair">
+              <span className="cc-filter-label">Year</span>
+              <select className="cc-filter-select" value={filters.year} onChange={(e) => handleFilterChange('year', e.target.value)}>
+                <option value="All">All</option>
+                {filterOptions.years.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </div>
+            <div className="cc-filter-pair">
+              <label className="cc-filter-label" style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                <input type="checkbox" checked={filters.iitpkd_only} onChange={(e) => handleFilterChange('iitpkd_only', e.target.checked)} style={{ accentColor: '#087E8B' }} />
+                IITPKD Only
+              </label>
+            </div>
+            {viewType === 'startupsDirectory' && (
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Search</span>
+                <input type="text" placeholder="Name, founder…" value={filters.search} onChange={(e) => handleFilterChange('search', e.target.value)} className="cc-filter-select" style={{ minWidth: 140 }} />
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Yearly Growth Chart */}
         {viewType === 'yearlyGrowth' && (
           <div>
-            <div className="inno-chart-header">
-              <div>
-                <h2>
-                  <LineChartOutlined className="inno-icon-span" /> Year-wise Growth
-                </h2>
-                <p className="chart-description">
-                  Growth of incubatees, startups, and innovation projects over time.
-                </p>
+            <div className="cc-subheader">
+              <h3 className="cc-title"><LineChartOutlined className="cc-title-icon" /> Year-wise Growth</h3>
+              <div className="cc-subheader__right">
+                <ExportMenu
+                  elementId="innovation-yearly-growth-container"
+                  data={yearlyChartData}
+                  headers={['Year', 'Incubatees', 'Startups', 'Innovation Projects']}
+                  keys={['year', 'incubatees', 'startups', 'innovationProjects']}
+                  filename="innovation_yearly_growth"
+                  title="Year-wise Growth"
+                />
               </div>
-              <ExportMenu
-                elementId="innovation-yearly-growth-container"
-                data={yearlyChartData}
-                headers={['Year', 'Incubatees', 'Startups', 'Innovation Projects']}
-                keys={['year', 'incubatees', 'startups', 'innovationProjects']}
-                filename="innovation_yearly_growth"
-                title="Year-wise Growth"
-              />
             </div>
 
             {yearlyChartData.length > 0 ? (
@@ -535,7 +436,7 @@ function InnovationSectionContent({ user, isPublicView }) {
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px' }} />
                         <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#142D4E" strokeWidth={3} dot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="startups" name="Startups" stroke="#0F1F36" strokeWidth={3} dot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="startups" name="Startups" stroke="#142D4E" strokeWidth={3} dot={{ r: 6 }} />
                         <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -552,8 +453,8 @@ function InnovationSectionContent({ user, isPublicView }) {
                     <Line type="monotone" dataKey="incubatees" name="Incubatees" stroke="#142D4E" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
                       <LabelList dataKey="incubatees" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                     </Line>
-                    <Line type="monotone" dataKey="startups" name="Startups" stroke="#0F1F36" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
-                      <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#0F1F36' }} />
+                    <Line type="monotone" dataKey="startups" name="Startups" stroke="#142D4E" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
+                      <LabelList dataKey="startups" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
                     </Line>
                     <Line type="monotone" dataKey="innovationProjects" name="Innovation Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }}>
                       <LabelList dataKey="innovationProjects" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
@@ -573,23 +474,18 @@ function InnovationSectionContent({ user, isPublicView }) {
         {/* Sector Distribution Chart */}
         {viewType === 'sectorDistribution' && (
           <div>
-            <div className="inno-chart-header">
-              <div>
-                <h2>
-                  <BarChartOutlined className="inno-icon-span" /> Sector-wise Innovation Distribution
-                </h2>
-                <p className="chart-description">
-                  Distribution of startups and innovation projects by sector.
-                </p>
+            <div className="cc-subheader">
+              <h3 className="cc-title"><BarChartOutlined className="cc-title-icon" /> Sector Distribution</h3>
+              <div className="cc-subheader__right">
+                <ExportMenu
+                  elementId="innovation-sector-dist-container"
+                  data={sectorPieData}
+                  headers={['Sector', 'Count', 'Startups', 'Projects']}
+                  keys={['name', 'value', 'startups', 'projects']}
+                  filename="innovation_sector_distribution"
+                  title="Sector-wise Innovation Distribution"
+                />
               </div>
-              <ExportMenu
-                elementId="innovation-sector-dist-container"
-                data={sectorPieData}
-                headers={['Sector', 'Count', 'Startups', 'Projects']}
-                keys={['name', 'value', 'startups', 'projects']}
-                filename="innovation_sector_distribution"
-                title="Sector-wise Innovation Distribution"
-              />
             </div>
 
             {sectorPieData.length > 0 ? (
@@ -639,13 +535,9 @@ function InnovationSectionContent({ user, isPublicView }) {
         {/* Startups Directory Table */}
         {viewType === 'startupsDirectory' && (
           <div>
-            <div className="chart-header">
-              <h2>
-                <ProfileOutlined className="inno-icon-span" /> Startups Directory
-              </h2>
-              <p className="chart-description">
-                Search and filter through all startups and incubatees.
-              </p>
+            <div className="cc-subheader">
+              <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Startups Directory</h3>
+              <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({startupsList.length} records)</span>
             </div>
 
             {startupsList.length > 0 ? (

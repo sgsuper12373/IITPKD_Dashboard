@@ -1,49 +1,127 @@
-import { Link } from 'react-router-dom';
-import { PREVIEW_QUERY } from '../utils/publicPreview';
+import { useState } from 'react';
+import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
 import DashboardIcon from './DashboardIcon';
 import './Page.css';
 import './PeopleCampus.css';
 import './OutreachMinimal.css';
 
+import UbaSection from './UbaSection';
+import OpenHouseSection from './OpenHouseSection';
+import OutreachSection from './OutreachSection';
+import NptelSection from './NptelSection';
+import SectionSuggestions from '../home/SectionSuggestions';
+
 const sections = [
   {
-    id: 'social-engagement',
-    title: 'Social Engagements',
-    subtitle: 'Community outreach and extension activities',
-    icon: <DashboardIcon name="link" />,
-    to: '/outreach-extension/social-engagement',
+    id: 'uba',
+    title: 'Unnat Bharat Abhiyan',
+    expandedTitle: 'Engaging with communities through rural development and village adoption programs.',
+    icon: <DashboardIcon name="outreach" />,
+    component: UbaSection,
+    programKey: null,
   },
   {
-    id: 'students-engagement',
-    title: 'Students Engagement',
-    subtitle: 'Student-led initiatives and programmes',
+    id: 'open-house',
+    title: 'Open House',
+    expandedTitle: 'Explore Open House events, visitor statistics, and departmental participation.',
+    icon: <DashboardIcon name="bank" />,
+    component: OpenHouseSection,
+    programKey: null,
+  },
+  {
+    id: 'institute-visits',
+    title: 'Institute Visits',
+    expandedTitle: 'Organised visits by institutions to the IIT Palakkad campus.',
+    icon: <DashboardIcon name="home" />,
+    component: OutreachSection,
+    programKey: 'institute_visits',
+  },
+  {
+    id: 'nss',
+    title: 'NSS Activities',
+    expandedTitle: 'National Service Scheme community service initiatives.',
+    icon: <DashboardIcon name="people" />,
+    component: OutreachSection,
+    programKey: 'nss_activities',
+  },
+  {
+    id: 'nptel',
+    title: 'CCE',
+    expandedTitle: 'Track student participation in NPTEL online learning and certification programmes.',
     icon: <DashboardIcon name="education" />,
-    to: '/outreach-extension/students-engagement',
+    component: NptelSection,
+    programKey: null,
+  },
+  {
+    id: 'pmc',
+    title: 'Palakkad Math Circle',
+    expandedTitle: 'Mathematics enrichment sessions for school students.',
+    icon: <DashboardIcon name="aim" />,
+    component: OutreachSection,
+    programKey: 'palakkad_math_circle',
+  },
+  {
+    id: 'pbd',
+    title: 'Pale Blue Dot',
+    expandedTitle: 'Astronomy and space science public lecture series.',
+    icon: <DashboardIcon name="global" />,
+    component: OutreachSection,
+    programKey: 'pale_blue_dot',
+  },
+  {
+    id: 'sq',
+    title: 'Science Quest',
+    expandedTitle: 'Science outreach and laboratory programmes for school students.',
+    icon: <DashboardIcon name="research" />,
+    component: OutreachSection,
+    programKey: 'science_quest',
   },
 ];
 
-function OutreachPublicView({ embedded }) {
+function OutreachPublicView({ user: realUser, embedded }) {
+  const user = embedded ? PUBLIC_PREVIEW_USER : realUser;
+
+  const [activeTab, setActiveTab] = useState(sections[0]?.id);
+  const activeSection = sections.find(s => s.id === activeTab);
+
   const inner = (
     <>
-      <div className="outreach-page-header" />
-      <div className="people-campus-grid">
-        {sections.map((section, index) => (
-          <Link
+      <nav className="pc-tab-bar" role="tablist" aria-label="Outreach & Extension sections">
+        {sections.map((section) => (
+          <button
             key={section.id}
-            to={embedded ? section.to + PREVIEW_QUERY : section.to}
-            className="people-campus-card"
-            style={{ animationDelay: `${index * 0.1}s` }}
+            role="tab"
+            aria-selected={activeTab === section.id}
+            className={`pc-tab${activeTab === section.id ? ' pc-tab--active' : ''}`}
+            onClick={() => setActiveTab(section.id)}
           >
-            <div className="card-icon">{section.icon}</div>
-            <h3 className="card-title">{section.title}</h3>
-            <p className="card-description">{section.subtitle}</p>
-          </Link>
+            <span className="pc-tab__icon">{section.icon}</span>
+            <span className="pc-tab__label">{section.title}</span>
+          </button>
         ))}
-      </div>
+      </nav>
+
+      {activeSection && (
+        <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>
+          <p className="pc-tab-panel__subtitle">{activeSection.expandedTitle}</p>
+          <div className="pc-tab-panel__content">
+            {(() => {
+              const SectionComponent = activeSection.component;
+              return <SectionComponent user={user} isPublicView={true} programKey={activeSection.programKey} />;
+            })()}
+          </div>
+          <SectionSuggestions
+            pillar="outreach"
+            sectionId={activeSection.id}
+            siblings={sections.filter((s) => s.id !== activeSection.id)}
+            onOpen={setActiveTab}
+          />
+        </div>
+      )}
     </>
   );
 
-  if (embedded) return inner;
+  if (embedded) return <PublicPreviewContext.Provider value={true}>{inner}</PublicPreviewContext.Provider>;
   return (
     <div className="page-container">
       <div className="page-content">

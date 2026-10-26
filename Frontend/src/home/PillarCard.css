@@ -11,7 +11,7 @@
 
 .pc__metric { margin: 0 0 var(--space-2); min-height: 3.4rem; }
 .pc__metric-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
-.pc__value { font-size: clamp(1.4rem, 3.2vw, 1.8rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--color-text); font-variant-numeric: tabular-nums; }
+.pc__value { font-size: clamp(1.4rem, 3.2vw, 1.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; color: var(--color-text); font-variant-numeric: tabular-nums; }
 .pc__spark { width: 5.5rem; height: 1.8rem; flex-shrink: 0; color: var(--ds-slate); }
 .pc__metric-label { margin: 0.15rem 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 600; color: var(--ds-slate); }
 .pc__metric-label--idle { min-height: 3.4rem; align-items: center; font-weight: 500; opacity: 0.8; }

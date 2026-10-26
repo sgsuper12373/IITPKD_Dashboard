@@ -13,7 +13,6 @@ import {
   fetchPatentList,
 } from '../services/researchStats';
 import DashboardIcon from './DashboardIcon';
-import { BarChartOutlined, LineChartOutlined, ProfileOutlined } from '@ant-design/icons';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
@@ -26,7 +25,7 @@ import './ResearchSection.css';
 import './Patents.css';
 
 const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
-const PATENT_COLORS = { Filed: '#066A75', Granted: '#22c55e' };
+const PATENT_COLORS = { Filed: '#142D4E', Granted: '#16A34A' };
 
 const formatDate = (value) => {
   if (!value) return '–';
@@ -171,52 +170,25 @@ function Patents({ user, isPublicView = false }) {
         </div>
 
         <section className="pat-panel">
-          <div className="pat-panel-header">
-            <div className="pat-panel-toolbar">
-              <div className="pat-view-tabs">
-                <button
-                  onClick={() => safeSetViewType('trend')}
-                  className={`pat-view-btn${viewType === 'trend' ? ' pat-view-btn--trend-active' : ''}`}
-                >
-                  <LineChartOutlined /> Trend Analysis
-                </button>
-                {!isRestrictedUser && (
-                  <button
-                    onClick={() => safeSetViewType('directory')}
-                    className={`pat-view-btn${viewType === 'directory' ? ' pat-view-btn--dir-active' : ''}`}
-                  >
-                    <ProfileOutlined /> Patent Directory
-                  </button>
-                )}
-              </div>
-              <button
-                onClick={() => setFilters({ patent_year: 'All', patent_status: 'All' })}
-                className="pat-reset-btn"
-              >
-                Reset Filters
-              </button>
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              <button className={`cc-tab${viewType === 'trend' ? ' cc-tab--active' : ''}`} onClick={() => safeSetViewType('trend')}>Trend Analysis</button>
+              {!isRestrictedUser && (
+                <button className={`cc-tab${viewType === 'directory' ? ' cc-tab--active' : ''}`} onClick={() => safeSetViewType('directory')}>Patent Directory</button>
+              )}
             </div>
-
-            <div className="pat-filter-grid">
-              <div className="pat-filter-item">
-                <label className="pat-filter-label">Filing Year</label>
-                <select
-                  value={filters.patent_year}
-                  onChange={(e) => setFilters((p) => ({ ...p, patent_year: e.target.value }))}
-                  className="pat-filter-select"
-                >
-                  <option value="All">All Years</option>
+            <div className="cc-header__filters">
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Year</span>
+                <select className="cc-filter-select" value={filters.patent_year} onChange={(e) => setFilters((p) => ({ ...p, patent_year: e.target.value }))}>
+                  <option value="All">All</option>
                   {filterOptions.patent_years.map((y) => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
-              <div className="pat-filter-item">
-                <label className="pat-filter-label">Patent Status</label>
-                <select
-                  value={filters.patent_status}
-                  onChange={(e) => setFilters((p) => ({ ...p, patent_status: e.target.value }))}
-                  className="pat-filter-select"
-                >
-                  <option value="All">All Statuses</option>
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Status</span>
+                <select className="cc-filter-select" value={filters.patent_status} onChange={(e) => setFilters((p) => ({ ...p, patent_status: e.target.value }))}>
+                  <option value="All">All</option>
                   {filterOptions.patent_statuses.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
@@ -226,17 +198,18 @@ function Patents({ user, isPublicView = false }) {
           <div className="pat-panel-body">
             {viewType === 'trend' && (
               <>
-                <div className="pat-section-header">
-                  <h3 className="pat-section-h3">Yearly Statistics</h3>
-                  <ExportMenu elementId="patents-trend-chart" data={chartData} headers={['Year', 'Filed', 'Granted', 'Total']} keys={['year', 'Filed', 'Granted', 'total']} filename="patents_trend" title="Patents Trend" />
-                </div>
-                <div className="pat-chart-mode-row">
-                  {['bar', 'trend'].map((mode) => (
-                    <button key={mode} onClick={() => setChartMode(mode)}
-                      className={`pat-mode-btn${chartMode === mode ? ' pat-mode-btn--active' : ''}`}>
-                      {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
-                    </button>
-                  ))}
+                <div className="cc-subheader">
+                  <h3 className="cc-title">Yearly Statistics</h3>
+                  <div className="cc-subheader__right">
+                    <div className="rls-mode-toggle">
+                      {['bar', 'trend'].map((mode) => (
+                        <button key={mode} onClick={() => setChartMode(mode)} className={`rls-mode-btn${chartMode === mode ? ' rls-mode-btn--active' : ''}`}>
+                          {mode === 'bar' ? 'Bar' : 'Trend'}
+                        </button>
+                      ))}
+                    </div>
+                    <ExportMenu elementId="patents-trend-chart" data={chartData} headers={['Year', 'Filed', 'Granted', 'Total']} keys={['year', 'Filed', 'Granted', 'total']} filename="patents_trend" title="Patents Trend" />
+                  </div>
                 </div>
                 <div
                   id="patents-trend-chart"
@@ -247,13 +220,13 @@ function Patents({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={450}>
                         <BarChart data={chartIsMobile ? chartData.slice(-3) : chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                           {PATENT_STATUS_ORDER.map((s) => (
                             <Bar key={s} dataKey={s} name={s} fill={PATENT_COLORS[s]} radius={[6, 6, 0, 0]}>
-                              <LabelList dataKey={s} position="top" style={{ fontSize: '11px', fontWeight: 700, fill: PATENT_COLORS[s] }} />
+                              <LabelList dataKey={s} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: PATENT_COLORS[s] }} />
                             </Bar>
                           ))}
                         </BarChart>
@@ -292,8 +265,15 @@ function Patents({ user, isPublicView = false }) {
               </>
             )}
 
-            {viewType === 'directory' && !isRestrictedUser && (
-              chartIsMobile ? (
+            {viewType === 'directory' && !isRestrictedUser && (<>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Patent Directory</h3>
+                <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({patentList.length} records)</span>
+                <div className="cc-subheader__right">
+                  <ExportMenu elementId="patents-directory-table" data={patentList} headers={['Patent Title', 'Inventors', 'Status', 'Filed', 'Granted']} keys={['patent_title', 'inventors', 'patent_status', 'filing_date', 'grant_date']} filename="patents_directory" title="Patent Directory" />
+                </div>
+              </div>
+              {chartIsMobile ? (
                 <div className="pat-mobile-list">
                   {patentList.length === 0 ? (
                     <div className="pat-mobile-empty">No patents found</div>
@@ -317,6 +297,7 @@ function Patents({ user, isPublicView = false }) {
                 </div>
               ) : (
                 <div id="patents-directory-table" className="pat-table-wrap">
+
                   <table className="pat-table">
                     <thead>
                       <tr>
@@ -344,8 +325,8 @@ function Patents({ user, isPublicView = false }) {
                     </tbody>
                   </table>
                 </div>
-              )
-            )}
+              )}
+            </>)}
           </div>
         </section>
       </div>

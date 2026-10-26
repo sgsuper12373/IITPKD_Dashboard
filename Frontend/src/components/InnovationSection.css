@@ -311,8 +311,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: clamp(1rem, 3vw, 1.4rem);
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 }
 .inno-chart-header .chart-description {
   color: #666;

@@ -23,7 +23,7 @@ import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const TYPE_COLORS = ['#066A75', '#087E8B', '#087E8B', '#142D4E', '#087E8B', '#066A75'];
+const TYPE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
 function ResearchLibrarySection({ user, isPublicView = false }) {
@@ -161,90 +161,10 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
   const handleClearFilters = () => setFilters({ department: 'All', publication_year: 'All', publication_type: 'All' });
 
   const viewButtons = [
-    { key: 'trend', label: 'Trend', icon: 'line-chart', color: '#066A75' },
-    { key: 'department', label: 'Department', icon: 'chart', color: '#22c55e' },
-    { key: 'publicationsTable', label: 'Directory', icon: 'profile', color: '#142D4E' },
+    { key: 'trend', label: 'Trend' },
+    { key: 'department', label: 'Department' },
+    { key: 'publicationsTable', label: 'Directory' },
   ];
-
-  const FilterBar = ({ showDept = true, showYear = true, showType = true }) => (
-    <div className="rls-filter-bar">
-      <div className="filter-panel-header">
-        <h4 className="rls-filter-h4">Dashboard Filters</h4>
-        <button className="rls-clear-btn" onClick={handleClearFilters}>
-          Clear All Filters
-        </button>
-      </div>
-
-      <div className="rls-view-type-wrapper">
-        <label className="rls-view-type-label">View Type</label>
-        <div className="view-type-bar">
-          {viewButtons.map(({ key, label, icon, color }) => (
-            <button
-              key={key}
-              onClick={() => setViewType(key)}
-              className="view-type-btn"
-              style={{
-                backgroundColor: viewType === key ? color : 'transparent',
-                color: viewType === key ? 'white' : '#142D4E',
-              }}
-            >
-              <DashboardIcon name={icon} size={14} /> {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="rls-filter-grid">
-        {showDept && (
-          <div>
-            <label className="rls-filter-label">Department</label>
-            <select
-              className="rls-filter-select"
-              value={filters.department}
-              onChange={(e) => handleFilterChange('department', e.target.value)}
-            >
-              <option value="All">All Departments</option>
-              {filterOptions.publication_departments.map((dept) => (
-                <option key={dept} value={dept}>{dept}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {showYear && (
-          <div>
-            <label className="rls-filter-label">Publication Year</label>
-            <select
-              className="rls-filter-select"
-              value={filters.publication_year}
-              onChange={(e) => handleFilterChange('publication_year', e.target.value)}
-            >
-              <option value="All">All Years</option>
-              {filterOptions.publication_years.map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {showType && (
-          <div>
-            <label className="rls-filter-label">Publication Type</label>
-            <select
-              className="rls-filter-select"
-              value={filters.publication_type}
-              onChange={(e) => handleFilterChange('publication_type', e.target.value)}
-            >
-              <option value="All">All Types</option>
-              {filterOptions.publication_types.map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className={isPublicView ? "" : "page-container"}>
@@ -323,164 +243,186 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           ))}
         </div>
 
-        {viewType === 'trend' && (
-          <section className="rls-chart-section">
-            <FilterBar showDept showYear showType />
-
-            <div className="rls-chart-header-row">
-              <div>
-                <h2 className="rls-chart-h2">
-                  <DashboardIcon name="line-chart" className="rls-chart-icon" /> Publication Trend
-                </h2>
-                <p className="rls-chart-desc">Year-wise publication count</p>
-              </div>
-              <ExportMenu
-                elementId="library-trend-chart-container"
-                data={trendChartData}
-                headers={['Year', 'Publications']}
-                keys={['year', 'publications']}
-                filename="publication_trend"
-                title="Publication Trend"
-              />
-            </div>
-
-            <div className="rls-mode-toggle">
-              {['bar', 'trend'].map((mode) => (
+        <section className="rls-chart-section">
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              {viewButtons.map(({ key, label }) => (
                 <button
-                  key={mode}
-                  onClick={() => setTrendChartMode(mode)}
-                  className={`rls-mode-btn${trendChartMode === mode ? ' rls-mode-btn--active' : ''}`}
+                  key={key}
+                  onClick={() => setViewType(key)}
+                  className={`cc-tab${viewType === key ? ' cc-tab--active' : ''}`}
                 >
-                  {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
+                  {label}
                 </button>
               ))}
             </div>
+            <div className="cc-header__filters">
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Dept</span>
+                <select className="cc-filter-select" value={filters.department} onChange={(e) => handleFilterChange('department', e.target.value)}>
+                  <option value="All">All Departments</option>
+                  {filterOptions.publication_departments.map((dept) => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Year</span>
+                <select className="cc-filter-select" value={filters.publication_year} onChange={(e) => handleFilterChange('publication_year', e.target.value)}>
+                  <option value="All">All Years</option>
+                  {filterOptions.publication_years.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Type</span>
+                <select className="cc-filter-select" value={filters.publication_type} onChange={(e) => handleFilterChange('publication_type', e.target.value)}>
+                  <option value="All">All Types</option>
+                  {filterOptions.publication_types.map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
 
-            <div id="library-trend-chart-container" className="rls-chart-container">
-              {!trendChartData.length && (
-                <div className="rls-no-data">No information available for the selected filter</div>
-              )}
-              <ResponsiveContainer width="100%" height={300}>
-                {trendChartMode === 'bar' ? (
-                  <BarChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
+          {viewType === 'trend' && (
+            <>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><DashboardIcon name="line-chart" className="cc-title-icon" /> Publication Trend</h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {['bar', 'trend'].map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setTrendChartMode(mode)}
+                        className={`rls-mode-btn${trendChartMode === mode ? ' rls-mode-btn--active' : ''}`}
+                      >
+                        {mode === 'bar' ? <><BarChartOutlined /> Bar</> : <><LineChartOutlined /> Trend</>}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId="library-trend-chart-container"
+                    data={trendChartData}
+                    headers={['Year', 'Publications']}
+                    keys={['year', 'publications']}
+                    filename="publication_trend"
+                    title="Publication Trend"
+                  />
+                </div>
+              </div>
+              <div id="library-trend-chart-container" className="rls-chart-container">
+                {!trendChartData.length && (
+                  <div className="rls-no-data">No information available for the selected filter</div>
+                )}
+                <ResponsiveContainer width="100%" height={300}>
+                  {trendChartMode === 'bar' ? (
+                    <BarChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
+                      <Bar dataKey="publications" name="Publications" fill="#066A75" radius={[4, 4, 0, 0]} barSize={28}>
+                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
+                      </Bar>
+                    </BarChart>
+                  ) : (
+                    <LineChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
+                      <Line type="linear" dataKey="publications" name="Publications" stroke="#066A75" strokeWidth={2.5} dot={{ r: 3 }}>
+                        <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
+                      </Line>
+                    </LineChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </>
+          )}
+
+          {viewType === 'department' && (
+            <>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><DashboardIcon name="bank" className="cc-title-icon" /> Department-wise Publications</h3>
+                <ExportMenu
+                  elementId="library-dept-chart-container"
+                  data={departmentChartData}
+                  headers={['Department', 'Publications']}
+                  keys={['department', 'total']}
+                  filename="publication_department_breakdown"
+                  title="Department-wise Publications"
+                />
+              </div>
+              <div id="library-dept-chart-container" className="rls-chart-container">
+                {!departmentChartData.length && (
+                  <div className="rls-no-data">No information available for the selected filter</div>
+                )}
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={departmentChartData} margin={{ top: 26, right: 20, left: 40, bottom: 50 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
                     <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend iconType="rect" wrapperStyle={{ fontSize: '11px' }} />
-                    <Bar dataKey="publications" name="Publications" fill="#066A75" radius={[4, 4, 0, 0]} barSize={28}>
-                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
+                    <Bar dataKey="total" name="Publications" fill="#087E8B" radius={[4, 4, 0, 0]} barSize={20}>
+                      <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#087E8B' }} />
                     </Bar>
                   </BarChart>
-                ) : (
-                  <LineChart data={trendChartData} margin={{ top: 26, right: 20, left: 40, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                    <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend iconType="plainline" wrapperStyle={{ fontSize: '11px' }} />
-                    <Line type="linear" dataKey="publications" name="Publications" stroke="#066A75" strokeWidth={2.5} dot={{ r: 3 }}>
-                      <LabelList dataKey="publications" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#066A75' }} />
-                    </Line>
-                  </LineChart>
-                )}
-              </ResponsiveContainer>
-            </div>
-          </section>
-        )}
-
-        {viewType === 'department' && (
-          <section className="rls-chart-section">
-            <FilterBar showDept={false} showYear showType />
-
-            <div className="rls-chart-header-row">
-              <div>
-                <h2 className="rls-chart-h2">
-                  <DashboardIcon name="bank" className="rls-chart-icon" /> Department-wise Publications
-                </h2>
-                <p className="rls-chart-desc">Publications by department</p>
+                </ResponsiveContainer>
               </div>
-              <ExportMenu
-                elementId="library-dept-chart-container"
-                data={departmentChartData}
-                headers={['Department', 'Publications']}
-                keys={['department', 'total']}
-                filename="publication_department_breakdown"
-                title="Department-wise Publications"
-              />
-            </div>
+            </>
+          )}
 
-            <div id="library-dept-chart-container" className="rls-chart-container">
-              {!departmentChartData.length && (
-                <div className="rls-no-data">No information available for the selected filter</div>
-              )}
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={departmentChartData} margin={{ top: 26, right: 20, left: 40, bottom: 50 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="department" tick={renderDepartmentTick} interval={0} height={80} />
-                  <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="total" name="Publications" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={20}>
-                    <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#22c55e' }} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        )}
-
-        {viewType === 'publicationsTable' && (
-          <section className="rls-chart-section">
-            <FilterBar showDept showYear showType />
-
-            <div className="rls-chart-header-row">
-              <div>
-                <h2 className="rls-chart-h2">
-                  <span className="rls-chart-icon"><ProfileOutlined /></span> Publications Directory
-                </h2>
-                <p className="rls-chart-desc">{publicationList.length} publications found</p>
+          {viewType === 'publicationsTable' && (
+            <>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Publications Directory <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({publicationList.length} records)</span></h3>
+                <ExportMenu
+                  elementId="library-publications-table-container"
+                  data={publicationList}
+                  headers={['Title', 'Faculty', 'Department', 'Type', 'Year', 'Journal']}
+                  keys={['publication_title', 'faculty_name', 'department', 'publication_type', 'publication_year', 'journal_name']}
+                  filename="publications_directory"
+                  title="Publications Directory"
+                />
               </div>
-              <ExportMenu
-                elementId="library-publications-table-container"
-                data={publicationList}
-                headers={['Title', 'Faculty', 'Department', 'Type', 'Year', 'Journal']}
-                keys={['publication_title', 'faculty_name', 'department', 'publication_type', 'publication_year', 'journal_name']}
-                filename="publications_directory"
-                title="Publications Directory"
-              />
-            </div>
-
-            <div id="library-publications-table-container" className="rls-table-wrapper">
-              <table className="rls-table">
-                <thead>
-                  <tr>
-                    {['Title', 'Faculty', 'Dept', 'Type', 'Year', 'Journal'].map(h => (
-                      <th key={h}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {publicationList.length > 0 ? publicationList.map((p, i) => (
-                    <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                      <td>{p.publication_title}</td>
-                      <td>{p.faculty_name}</td>
-                      <td>{p.department}</td>
-                      <td>{p.publication_type}</td>
-                      <td>{p.publication_year}</td>
-                      <td>{p.journal_name}</td>
-                    </tr>
-                  )) : (
+              <div id="library-publications-table-container" className="rls-table-wrapper">
+                <table className="rls-table">
+                  <thead>
                     <tr>
-                      <td colSpan={6} className="rls-table-empty-td">
-                        No information available for the selected filter
-                      </td>
+                      {['Title', 'Faculty', 'Dept', 'Type', 'Year', 'Journal'].map(h => (
+                        <th key={h}>{h}</th>
+                      ))}
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
+                  </thead>
+                  <tbody>
+                    {publicationList.length > 0 ? publicationList.map((p, i) => (
+                      <tr key={p.publication_id} style={{ backgroundColor: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+                        <td>{p.publication_title}</td>
+                        <td>{p.faculty_name}</td>
+                        <td>{p.department}</td>
+                        <td>{p.publication_type}</td>
+                        <td>{p.publication_year}</td>
+                        <td>{p.journal_name}</td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan={6} className="rls-table-empty-td">
+                          No information available for the selected filter
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </section>
 
         <div className="rls-cta-banner">
           <div className="rls-cta-left">

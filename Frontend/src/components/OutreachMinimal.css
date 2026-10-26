@@ -3,8 +3,6 @@
 /* Matching Research & Innovation style for uniformity */
 /* ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
-
 :root {
   --accent-teal: #087E8B;
   --accent-teal-light: rgba(8, 126, 139, 0.15);
@@ -192,7 +190,7 @@
 /* ===================================================== */
 
 .outreach-card-title {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: inherit;
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -202,7 +200,7 @@
 }
 
 .outreach-card-subtitle {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: inherit;
   font-size: 0.95rem;
   font-weight: 400;
   color: var(--text-secondary);
@@ -308,7 +306,7 @@
   border: 1px solid var(--border-light);
   border-radius: 100px;
 
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: inherit;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -372,7 +370,7 @@
 
 /* Expanded title text */
 .outreach-overview-text {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: inherit;
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--text-primary);

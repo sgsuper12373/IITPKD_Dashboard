@@ -116,7 +116,7 @@
   letter-spacing: 3px;
   /* ⚙️ ADJUST LETTER SPACING: Increase/decrease spacing between letters */
   text-align: center;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: inherit;
   /* ⚙️ ADJUST FONT: Change font family */
 }
 

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 .page-content-studentsEngagement {
     width: 100%;
     max-width: 1500px;
@@ -10,7 +8,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     box-sizing: border-box;
     overflow: clip;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family: inherit;
     color: #1f1f1f;
     line-height: 1.6;
 }
@@ -18,7 +16,7 @@
 /* Title */
 .page-content-studentsEngagement>h1 {
     font-size: var(--text-2xl);
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.25;
     letter-spacing: -0.4px;
     color: #1a0800;

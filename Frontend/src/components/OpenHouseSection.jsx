@@ -181,12 +181,12 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={chartIsMobile ? timeline.slice(-3) : timeline} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                      <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                      <XAxis dataKey="event_year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                      <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                       <Bar dataKey="event_count" name="Events" fill="#142D4E" radius={[6, 6, 0, 0]} />
-                      <Bar dataKey="total_visitors" name="Visitors" fill="#22c55e" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="total_visitors" name="Visitors" fill="#087E8B" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )
@@ -199,7 +199,7 @@ function OpenHouseSection({ user, isPublicView = false }) {
                   <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="event_count" fill="#142D4E" name="Events" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="total_visitors" fill="#22c55e" name="Visitors" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="total_visitors" fill="#087E8B" name="Visitors" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

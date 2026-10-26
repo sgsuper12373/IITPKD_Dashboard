@@ -24,7 +24,7 @@ import ShareButton from './ShareButton';
 
 const AREA_COLORS = {
   total: '#142D4E',
-  pending: '#066A75',
+  pending: '#F5A623',
   resolved: '#087E8B'
 };
 
@@ -302,12 +302,12 @@ function IccSection({ user, isPublicView = false }) {
                                 <ResponsiveContainer width="100%" height={400}>
                                   <BarChart data={summary.grievance_status} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                    <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                                    <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                                     <Tooltip content={<CustomTooltip />} />
-                                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                                    <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                                     <Bar dataKey="count" name="Count" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                                      <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#142D4E' }} />
+                                      <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
                                     </Bar>
                                   </BarChart>
                                 </ResponsiveContainer>
@@ -339,7 +339,7 @@ function IccSection({ user, isPublicView = false }) {
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} interval={0} angle={-40} textAnchor="end" height={60} />
                                 <YAxis stroke="#666" tick={{ fontSize: 12 }} allowDecimals={false} label={{ value: 'Complaints', angle: -90, position: 'insideLeft' }} />
                                 <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                                <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} />
+                                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }} />
                                 <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[6, 6, 0, 0]}>
                                   <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.total }} />
                                 </Bar>

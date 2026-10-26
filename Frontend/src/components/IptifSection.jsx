@@ -255,23 +255,23 @@ function IptifSection({ user, isPublicView = false }) {
             {chartMode === 'bar' ? (
               <BarChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                 <Tooltip content={<IptifTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                 <Bar dataKey="count" name={name} fill={color} radius={[6, 6, 0, 0]}>
-                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                 </Bar>
               </BarChart>
             ) : (
               <LineChart data={data} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                 <Tooltip content={<IptifTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                 <Line type="linear" dataKey="count" name={name} stroke={color} strokeWidth={3} dot={{ r: 6, fill: color, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-                  <LabelList dataKey="count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: color }} />
+                  <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: color }} />
                 </Line>
               </LineChart>
             )}
@@ -318,71 +318,71 @@ function IptifSection({ user, isPublicView = false }) {
 
   const renderFilters = () => {
     if (viewType === 'projects') return (
-      <div className="iptif-filter-grid">
-        <div>
-          <label className="iptif-filter-label">Scheme</label>
-          <select value={projectFilters.scheme} onChange={e => handleFilterChange(setProjectFilters)('scheme', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Schemes</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Scheme</label>
+          <select value={projectFilters.scheme} onChange={e => handleFilterChange(setProjectFilters)('scheme', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.projects.schemes.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div>
-          <label className="iptif-filter-label">Status</label>
-          <select value={projectFilters.status} onChange={e => handleFilterChange(setProjectFilters)('status', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Statuses</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Status</label>
+          <select value={projectFilters.status} onChange={e => handleFilterChange(setProjectFilters)('status', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.projects.statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div>
-          <label className="iptif-filter-label">Start Year</label>
-          <select value={projectFilters.year} onChange={e => handleFilterChange(setProjectFilters)('year', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Years</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Year</label>
+          <select value={projectFilters.year} onChange={e => handleFilterChange(setProjectFilters)('year', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.projects.years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
     if (viewType === 'programs') return (
-      <div className="iptif-filter-grid">
-        <div>
-          <label className="iptif-filter-label">Type</label>
-          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Types</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Type</label>
+          <select value={programFilters.type} onChange={e => handleFilterChange(setProgramFilters)('type', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.programs.types.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
-        <div>
-          <label className="iptif-filter-label">Association</label>
-          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Associations</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Assoc</label>
+          <select value={programFilters.association} onChange={e => handleFilterChange(setProgramFilters)('association', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.programs.associations.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
     if (viewType === 'startups') return (
-      <div className="iptif-filter-grid">
-        <div>
-          <label className="iptif-filter-label">Domain</label>
-          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Domains</option>
+      <>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Domain</label>
+          <select value={startupFilters.domain} onChange={e => handleFilterChange(setStartupFilters)('domain', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.startups.domains.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
-        <div>
-          <label className="iptif-filter-label">Status</label>
-          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} className="iptif-filter-select">
-            <option value="All">All Statuses</option>
+        <div className="cc-filter-pair">
+          <label className="cc-filter-label">Status</label>
+          <select value={startupFilters.status} onChange={e => handleFilterChange(setStartupFilters)('status', e.target.value)} className="cc-filter-select">
+            <option value="All">All</option>
             {filterOptions.startups.statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-      </div>
+      </>
     );
     if (viewType === 'facilities') return (
-      <div>
-        <label className="iptif-filter-label">Facility Type</label>
-        <select value={facilityFilters.facility_type} onChange={e => handleFilterChange(setFacilityFilters)('facility_type', e.target.value)} className="iptif-filter-select iptif-filter-select--narrow">
-          <option value="All">All Facility Types</option>
+      <div className="cc-filter-pair">
+        <label className="cc-filter-label">Facility</label>
+        <select value={facilityFilters.facility_type} onChange={e => handleFilterChange(setFacilityFilters)('facility_type', e.target.value)} className="cc-filter-select">
+          <option value="All">All</option>
           {filterOptions.facilities.types.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </div>
@@ -623,73 +623,32 @@ function IptifSection({ user, isPublicView = false }) {
           ))}
         </div>
 
-        <div id="iptif-content-region" className="iptif-content-panel">
-          <div className="iptif-filter-heading-row">
-            <h4 className="iptif-filter-h4">Filters</h4>
-          </div>
-
-          <div className="iptif-tabs-row">
-            {VIEWS.filter(v => !hideFacilities || v.id !== 'facilities').map(({ id, label, color: c, icon }) => {
-              const active = viewType === id;
-              return (
-                <button
-                  key={id}
-                  className="iptif-tab-btn"
-                  onClick={() => switchView(id)}
-                  style={{
-                    backgroundColor: active ? c : 'white',
-                    color: active ? 'white' : '#333',
-                    borderColor: active ? c : '#dee2e6',
-                    boxShadow: active ? `0 6px 16px ${c}40` : 'none',
-                    fontWeight: active ? 600 : 500,
-                  }}
-                >
-                  <span className="iptif-tab-icon">{icon}</span>{label}
+        <section id="iptif-content-region" className="rls-chart-section">
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              {VIEWS.filter(v => !hideFacilities || v.id !== 'facilities').map(({ id, label }) => (
+                <button key={id} className={`cc-tab${viewType === id ? ' cc-tab--active' : ''}`} onClick={() => switchView(id)}>
+                  {label}
                 </button>
-              );
-            })}
-          </div>
-
-          <div className="iptif-filter-panel">
-            <div className="iptif-filter-inner">
-              <div className="iptif-filter-end-row">
-                <button onClick={clearFilters} className="iptif-clear-btn">Clear Filters</button>
-              </div>
+              ))}
+            </div>
+            <div className="cc-header__filters">
               {renderFilters()}
             </div>
           </div>
 
-          <div className="iptif-divider" />
-
-          <div className="iptif-chart-header-row">
-            <div>
-              <h2 className="iptif-chart-h2">
-                <span className="iptif-chart-icon">{currentView?.icon}</span>
-                {currentView?.label}
-              </h2>
-              <p className="iptif-chart-desc">
-                {viewType === 'projects'   && 'Yearly trend of projects by scheme and status'}
-                {viewType === 'programs'   && 'Yearly trend of programs by type and association'}
-                {viewType === 'startups'   && 'Yearly growth of startups by domain and status'}
-                {viewType === 'facilities' && 'Yearly revenue trend from facilities by type'}
-              </p>
-            </div>
-            <div className="iptif-mode-row">
-              {['bar', 'trend', 'table']
-                .filter(mode => !isRestricted || mode !== 'table')
-                .map(mode => {
-                  const modeActive = chartMode === mode;
-                  const modeLabel = mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table';
-                  return (
-                    <button
-                      key={mode}
-                      className={`iptif-mode-btn${modeActive ? ' iptif-mode-btn--active' : ''}`}
-                      onClick={() => switchMode(mode)}
-                    >
-                      {modeLabel}
+          <div className="cc-subheader">
+            <h3 className="cc-title"><span className="cc-title-icon">{currentView?.icon}</span> {currentView?.label}</h3>
+            <div className="cc-subheader__right">
+              <div className="rls-mode-toggle">
+                {['bar', 'trend', 'table']
+                  .filter(mode => !isRestricted || mode !== 'table')
+                  .map(mode => (
+                    <button key={mode} className={`rls-mode-btn${chartMode === mode ? ' rls-mode-btn--active' : ''}`} onClick={() => switchMode(mode)}>
+                      {mode === 'bar' ? 'Bar' : mode === 'trend' ? 'Trend' : 'Table'}
                     </button>
-                  );
-                })}
+                  ))}
+              </div>
               <ExportMenu
                 elementId={exportId}
                 data={exportData}
@@ -717,7 +676,7 @@ function IptifSection({ user, isPublicView = false }) {
               : renderChart(trendData, color, trendLabel)
             }
           </div>
-        </div>
+        </section>
 
         <div className="iptif-cta-banner iptif-cta-banner--facilities">
           <div className="iptif-cta-left">

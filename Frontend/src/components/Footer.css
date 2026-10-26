@@ -19,7 +19,7 @@
   background: var(--footer-bg);
   color: var(--footer-text);
   margin-top: auto;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: inherit;
 }
 
 /* ── Main content row ── */

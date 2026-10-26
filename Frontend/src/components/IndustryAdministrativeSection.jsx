@@ -35,7 +35,7 @@ import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const TYPE_COLORS = ['#066A75', '#22c55e', '#087E8B', '#142D4E', '#087E8B', '#087E8B', '#066A75'];
+const TYPE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
@@ -368,88 +368,47 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
         <div className="contain-layout">
           <section className="chart-section">
-            {/* Common Filters Section */}
-            <div className="ias-filter-panel">
-              <div className="filter-panel-header">
-                <h4 className="ias-filter-h4">Dashboard Filters</h4>
-                <button className="ias-clear-btn" onClick={handleClearFilters}>
-                  Clear All Filters
+            {/* ── Unified card header ── */}
+            <div className="cc-header">
+              <div className="cc-header__tabs">
+                <button onClick={() => setViewType('yearly')} className={`cc-tab${viewType === 'yearly' ? ' cc-tab--active' : ''}`}>
+                  <BarChartOutlined /> Year
                 </button>
+                <button onClick={() => setViewType('department')} className={`cc-tab${viewType === 'department' ? ' cc-tab--active' : ''}`}>
+                  <DashboardIcon name="bank" size={14} /> Dept
+                </button>
+                {canViewDirectory && (
+                  <button onClick={() => setViewType('externshipTable')} className={`cc-tab${viewType === 'externshipTable' ? ' cc-tab--active' : ''}`}>
+                    <ProfileOutlined /> Dir
+                  </button>
+                )}
               </div>
-
-              <div className="ias-filter-grid">
-
-                {/* View Type Buttons */}
-                <div className="filter-group">
-                  <label className="ias-filter-label">View Type</label>
-                  <div className="view-type-bar">
-                    <button
-                      onClick={() => setViewType('yearly')}
-                      className={`view-type-btn${viewType === 'yearly' ? ' view-type-btn--yearly-active' : ''}`}
-                    >
-                      <BarChartOutlined /> Year
-                    </button>
-                    <button
-                      onClick={() => setViewType('department')}
-                      className={`view-type-btn${viewType === 'department' ? ' view-type-btn--dept-active' : ''}`}
-                    >
-                      <DashboardIcon name="bank" size={14} /> Dept
-                    </button>
-                    {canViewDirectory && (
-                      <button
-                        onClick={() => setViewType('externshipTable')}
-                        className={`view-type-btn${viewType === 'externshipTable' ? ' view-type-btn--dir-active' : ''}`}
-                      >
-                        <ProfileOutlined /> Dir
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Department Filter */}
-                <div className="filter-group">
-                  <label className="ias-filter-label">Department</label>
-                  <select
-                    className="filter-select"
-                    value={filters.department}
-                    onChange={(e) => handleFilterChange('department', e.target.value)}
-                  >
+              <div className="cc-header__filters">
+                <div className="cc-filter-pair">
+                  <span className="cc-filter-label">DEPT</span>
+                  <select className="cc-filter-select" value={filters.department} onChange={(e) => handleFilterChange('department', e.target.value)}>
                     <option value="All">All Departments</option>
                     {filterOptions.externship_departments.map((dept) => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
                 </div>
-
-                {/* Year Filter */}
-                <div className="filter-group">
-                  <label className="ias-filter-label">Faculty Externship Year</label>
-                  <select
-                    className="filter-select"
-                    value={filters.externship_year}
-                    onChange={(e) => handleFilterChange('externship_year', e.target.value)}
-                  >
+                <div className="cc-filter-pair">
+                  <span className="cc-filter-label">YEAR</span>
+                  <select className="cc-filter-select" value={filters.externship_year} onChange={(e) => handleFilterChange('externship_year', e.target.value)}>
                     <option value="All">All Years</option>
                     {filterOptions.externship_years.map((year) => (
                       <option key={year} value={year}>{year}</option>
                     ))}
                   </select>
                 </div>
-
               </div>
             </div>
 
             {/* 1. Year-wise Externships */}
             <div className={`chart-view ${viewType === 'yearly' ? 'active' : 'inactive'}`}>
-              <div className="ias-chart-header-row">
-                <div>
-                  <h2 className="ias-chart-h2">
-                    <span className="ias-chart-icon"><BarChartOutlined /></span> Year-wise Faculty Industry Stint
-                  </h2>
-                  <p className="chart-description">
-                    Distribution by externship type across the chosen timeframe
-                  </p>
-                </div>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><span className="cc-title-icon"><BarChartOutlined /></span> Year-wise Faculty Industry Stint</h3>
                 <ExportMenu
                   elementId="externships-yearly-container"
                   data={yearlyChartData}
@@ -507,16 +466,9 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
 
             {/* 2. Department-wise Analysis */}
             <div className={`chart-view ${viewType === 'department' ? 'active' : 'inactive'}`}>
-              <div className="ias-chart-header-row ias-chart-header-row--top">
-                <div>
-                  <h2 className="ias-chart-h2">
-                    <span className="ias-chart-icon"><DashboardIcon name="bank" size={18} /></span> Department-wise Analysis
-                  </h2>
-                  <p className="chart-description">
-                    {deptChartType === 'bar' ? 'Distribution across departments' : 'Yearly trend per department'}
-                  </p>
-                </div>
-                <div className="ias-mode-toggle-wrap">
+              <div className="cc-subheader">
+                <h3 className="cc-title"><span className="cc-title-icon"><DashboardIcon name="bank" size={14} /></span> Department-wise Analysis</h3>
+                <div className="cc-subheader__right">
                   <div className="ias-mode-toggle">
                     {['bar', 'trend'].map((mode) => (
                       <button
@@ -553,8 +505,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                             <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={100} interval={0} />
                             <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Bar dataKey="count" name="Externships" fill="#22c55e" radius={[4, 4, 0, 0]}>
-                              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                            <Bar dataKey="count" name="Externships" fill="#087E8B" radius={[4, 4, 0, 0]}>
+                              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -586,8 +538,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
                         <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="count" name="Externships" fill="#22c55e" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000}>
-                          <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                        <Bar dataKey="count" name="Externships" fill="#087E8B" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000}>
+                          <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -631,15 +583,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             {/* 3. Externship Directory Table */}
             {canViewDirectory && viewType === 'externshipTable' && (
               <div className="chart-view active performance-render-auto">
-                <div className="ias-dir-header-row">
-                  <div className="chart-header">
-                    <h2 className="ias-chart-h2">
-                      <ProfileOutlined /> Faculty Industry Stint Directory
-                    </h2>
-                    <p className="chart-description">
-                      Displaying {externshipList.length} total records
-                    </p>
-                  </div>
+                <div className="cc-subheader">
+                  <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Faculty Industry Stint Directory <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({externshipList.length} records)</span></h3>
                   <ExportMenu
                     elementId="externship-directory-table"
                     data={externshipList}

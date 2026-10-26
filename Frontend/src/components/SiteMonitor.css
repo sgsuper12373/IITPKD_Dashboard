@@ -8,7 +8,7 @@
 .sm-range select { padding: 0.35rem 0.5rem; font: inherit; }
 .sm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
 .sm-stat { display: flex; flex-direction: column; padding: var(--space-3) var(--space-4); background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: var(--r-lg); }
-.sm-stat__value { font-size: 1.6rem; font-weight: 800; color: var(--color-text); }
+.sm-stat__value { font-size: 1.6rem; font-weight: 700; color: var(--color-text); }
 .sm-stat__label { font-size: 0.8rem; }
 .sm-block { margin-bottom: var(--space-5); }
 .sm-h3 { margin: 0 0 var(--space-2); font-size: 1rem; color: var(--color-text); }

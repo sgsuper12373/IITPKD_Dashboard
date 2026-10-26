@@ -40,8 +40,8 @@ import './ResearchIcsrSection.css';
 
 const PATENT_STATUS_ORDER = ['Filed', 'Granted'];
 const PATENT_COLORS = {
-  Filed: '#066A75',
-  Granted: '#22c55e',
+  Filed: '#142D4E',
+  Granted: '#16A34A',
 };
 
 const MOU_COLOR = '#142D4E';
@@ -633,35 +633,29 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               {/* Projects Trend */}
               {viewType === 'projects' && (
                 <section className="icsr-chart-section">
-                  <div className="icsr-chart-header-row">
-                    <div className="chart-header">
-                      <h2 className="icsr-chart-title">
-                        <span className="icsr-chart-icon"><BarChartOutlined /></span> Projects Trend
-                      </h2>
-                      <p className="chart-description">
-                        Annual count of sponsored and consultancy projects.
-                      </p>
+                  <div className="cc-subheader">
+                    <h3 className="cc-title">Projects Trend</h3>
+                    <div className="cc-subheader__right">
+                      <div className="rls-mode-toggle">
+                        {['bar', 'trend'].map((mode) => (
+                          <button
+                            key={mode}
+                            onClick={() => setProjectsChartMode(mode)}
+                            className={`rls-mode-btn${projectsChartMode === mode ? ' rls-mode-btn--active' : ''}`}
+                          >
+                            {mode === 'bar' ? 'Bar' : 'Trend'}
+                          </button>
+                        ))}
+                      </div>
+                      <ExportMenu
+                        elementId="research-projects-trend-container"
+                        data={projectTrendChartData}
+                        headers={['Year', 'Sponsored Projects', 'Consultancy Projects']}
+                        keys={['year', 'funded', 'consultancy']}
+                        filename="research_projects_trend"
+                        title="Projects Trend"
+                      />
                     </div>
-                    <ExportMenu
-                      elementId="research-projects-trend-container"
-                      data={projectTrendChartData}
-                      headers={['Year', 'Sponsored Projects', 'Consultancy Projects']}
-                      keys={['year', 'funded', 'consultancy']}
-                      filename="research_projects_trend"
-                      title="Projects Trend"
-                    />
-                  </div>
-
-                  <div className="icsr-mode-btns">
-                    {['bar', 'trend'].map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setProjectsChartMode(mode)}
-                        className={`icsr-mode-btn${projectsChartMode === mode ? ' icsr-mode-btn--active-indigo' : ''}`}
-                      >
-                        {mode === 'bar' ? 'Bar' : 'Trend'}
-                      </button>
-                    ))}
                   </div>
 
                   <div
@@ -674,26 +668,26 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           {projectsChartMode === 'bar' ? (
                             <BarChart data={projectTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Bar dataKey="funded" name="Sponsored Projects" fill="#066A75" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="funded" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#066A75" }} />
+                                <LabelList dataKey="funded" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
                               </Bar>
-                              <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="consultancy" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: "#22c55e" }} />
+                              <Bar dataKey="consultancy" name="Consultancy Projects" fill="#087E8B" radius={[6, 6, 0, 0]}>
+                                <LabelList dataKey="consultancy" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#087E8B" }} />
                               </Bar>
                             </BarChart>
                           ) : (
                             <LineChart data={projectTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} />
-                              <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={3} dot={{ r: 6 }} />
+                              <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#087E8B" strokeWidth={3} dot={{ r: 6 }} />
                             </LineChart>
                           )}
                         </ResponsiveContainer>
@@ -710,12 +704,12 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} width={32} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                           <Bar dataKey="funded" name="Sponsored Projects" fill="#066A75" radius={[4, 4, 0, 0]} barSize={18}>
                             <LabelList dataKey="funded" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                           </Bar>
-                          <Bar dataKey="consultancy" name="Consultancy Projects" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={18}>
-                            <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                          <Bar dataKey="consultancy" name="Consultancy Projects" fill="#087E8B" radius={[4, 4, 0, 0]} barSize={18}>
+                            <LabelList dataKey="consultancy" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                           </Bar>
                         </BarChart>
                       ) : (
@@ -728,8 +722,8 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <Line type="linear" dataKey="funded" name="Sponsored Projects" stroke="#066A75" strokeWidth={2.5} dot={{ r: 3 }}>
                             <LabelList dataKey="funded" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
                           </Line>
-                          <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#22c55e" strokeWidth={2.5} dot={{ r: 3 }}>
-                            <LabelList dataKey="consultancy" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#22c55e" }} />
+                          <Line type="linear" dataKey="consultancy" name="Consultancy Projects" stroke="#087E8B" strokeWidth={2.5} dot={{ r: 3 }}>
+                            <LabelList dataKey="consultancy" position="top" offset={10} style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
                           </Line>
                         </LineChart>
                       )}
@@ -741,35 +735,29 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               {/* Patents Trend */}
               {viewType === 'patents' && !isRestrictedUser && (
                 <section className="icsr-chart-section">
-                  <div className="icsr-chart-header-row">
-                    <div className="chart-header">
-                      <h2 className="icsr-chart-title">
-                        <span className="icsr-chart-icon"><FileTextOutlined /></span> Knowledge Transfer
-                      </h2>
-                      <p className="chart-description">
-                        Year-wise patent filings, grants, and publications.
-                      </p>
+                  <div className="cc-subheader">
+                    <h3 className="cc-title">Knowledge Transfer</h3>
+                    <div className="cc-subheader__right">
+                      <div className="rls-mode-toggle">
+                        {['bar', 'trend'].map((mode) => (
+                          <button
+                            key={mode}
+                            onClick={() => setPatentsChartMode(mode)}
+                            className={`rls-mode-btn${patentsChartMode === mode ? ' rls-mode-btn--active' : ''}`}
+                          >
+                            {mode === 'bar' ? 'Bar' : 'Trend'}
+                          </button>
+                        ))}
+                      </div>
+                      <ExportMenu
+                        elementId="research-patents-trend-container"
+                        data={patentTrendChartData}
+                        headers={['Year', 'Filed', 'Granted', 'Total']}
+                        keys={['year', 'Filed', 'Granted', 'total']}
+                        filename="research_patents_trend"
+                        title="Patents Trend"
+                      />
                     </div>
-                    <ExportMenu
-                      elementId="research-patents-trend-container"
-                      data={patentTrendChartData}
-                      headers={['Year', 'Filed', 'Granted', 'Total']}
-                      keys={['year', 'Filed', 'Granted', 'total']}
-                      filename="research_patents_trend"
-                      title="Patents Trend"
-                    />
-                  </div>
-
-                  <div className="icsr-mode-btns">
-                    {['bar', 'trend'].map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setPatentsChartMode(mode)}
-                        className={`icsr-mode-btn${patentsChartMode === mode ? ' icsr-mode-btn--active-orange' : ''}`}
-                      >
-                        {mode === 'bar' ? 'Bar Chart' : 'Trend Line'}
-                      </button>
-                    ))}
                   </div>
 
                   <div
@@ -782,28 +770,28 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           {patentsChartMode === 'bar' ? (
                             <BarChart data={patentTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                               {PATENT_STATUS_ORDER.map((status) => (
                                 <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey={status} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: PATENT_COLORS[status] }} />
+                                  <LabelList dataKey={status} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: PATENT_COLORS[status] }} />
                                 </Bar>
                               ))}
                             </BarChart>
                           ) : (
                             <LineChart data={patentTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                              <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                               {PATENT_STATUS_ORDER.map((status) => (
                                 <Line key={status} type="linear" dataKey={status} name={status}
                                   stroke={PATENT_COLORS[status]} strokeWidth={3}
                                   dot={{ r: 6, fill: PATENT_COLORS[status] }} activeDot={{ r: 8 }}>
-                                  <LabelList dataKey={status} offset={10} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: PATENT_COLORS[status] }} />
+                                  <LabelList dataKey={status} offset={10} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: PATENT_COLORS[status] }} />
                                 </Line>
                               ))}
                             </LineChart>
@@ -822,7 +810,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                           <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                           {PATENT_STATUS_ORDER.map((status) => (
                             <Bar key={status} dataKey={status} name={status} fill={PATENT_COLORS[status]} radius={[4, 4, 0, 0]} barSize={18}>
                               <LabelList dataKey={status} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: PATENT_COLORS[status] }} />
@@ -835,7 +823,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                           <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                           {PATENT_STATUS_ORDER.map((status) => (
                             <Line key={status} type="linear" dataKey={status} name={status}
                               stroke={PATENT_COLORS[status]} strokeWidth={2.5}
@@ -1067,19 +1055,19 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                                 {mouChartMode === 'bar' ? (
                                   <BarChart data={mouTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                                    <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                    <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} />
                                     <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[6, 6, 0, 0]}>
-                                      <LabelList dataKey="total" position="top" style={{ fontSize: '12px', fontWeight: 700, fill: MOU_COLOR }} />
+                                      <LabelList dataKey="total" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: MOU_COLOR }} />
                                     </Bar>
                                   </BarChart>
                                 ) : (
                                   <LineChart data={mouTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                                    <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                                    <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                                    <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                                     <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} />
                                     <Line type="linear" dataKey="total" name="MoUs Signed" stroke={MOU_COLOR} strokeWidth={3} dot={{ r: 6 }} />
@@ -1099,7 +1087,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                                 <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                                 <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                                 <Bar dataKey="total" name="MoUs Signed" fill={MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
                                   <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: MOU_COLOR }} />
                                 </Bar>
@@ -1110,7 +1098,7 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                                 <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
                                 <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]} />
                                 <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                                 <Line type="linear" dataKey="total" name="MoUs Signed"
                                   stroke={MOU_COLOR} strokeWidth={3}
                                   dot={{ r: 6, fill: MOU_COLOR }} activeDot={{ r: 8 }}>

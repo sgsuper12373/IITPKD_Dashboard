@@ -69,7 +69,7 @@
 
 /* ── Chart header ── */
 .hg-chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-.hg-chart-h2     { margin: 0 0 4px 0; color: #142D4E; display: flex; align-items: center; gap: 8px; font-size: 18px; }
+.hg-chart-h2     { margin: 0 0 4px 0; color: #142D4E; display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .hg-chart-icon   { font-size: 22px; }
 .hg-chart-desc   { color: #666; margin: 0; font-size: 13px; }
 .hg-chart-actions { display: flex; align-items: center; gap: 8px; }

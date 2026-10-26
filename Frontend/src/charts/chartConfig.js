@@ -29,15 +29,18 @@ export const COLORS = {
 /** Opacity ladder for ranked slate series (donut slices, secondary bars). */
 export const SLATE_STEPS = [1, 0.7, 0.5, 0.35, 0.22, 0.14];
 
+export const FONT_FAMILY = "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif";
+
 export const FONT = {
+  family: FONT_FAMILY,
   tick: 11,
-  label: 12,
+  label: 13,
   small: 10,
 };
 
 export const MARGINS = {
-  cartesian: { top: 12, right: 8, bottom: 4, left: 0 },
-  combo: { top: 12, right: 8, bottom: 4, left: 0 },
+  cartesian: { top: 16, right: 12, bottom: 8, left: 0 },
+  combo: { top: 16, right: 12, bottom: 8, left: 0 },
   spark: { top: 4, right: 2, bottom: 2, left: 2 },
   radar: { top: 8, right: 24, bottom: 8, left: 24 },
 };

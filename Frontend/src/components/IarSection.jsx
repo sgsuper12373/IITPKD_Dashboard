@@ -38,8 +38,8 @@ import CustomTooltip from './CustomTooltip';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const PIE_COLORS = ['#142D4E', '#0F1F36', '#066A75', '#087E8B', '#066A75', '#087E8B', '#066A75', '#066A75'];
-const OTHERS_PIE_COLOR = '#94a3b8';
+const PIE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
+const OTHERS_PIE_COLOR = '#8C9BB5';
 
 function makePieTooltip(total) {
   return function PieTooltip({ active, payload }) {
@@ -114,10 +114,10 @@ function PieDistributionTable({ data, nameKey, total, colors, chartIsMobile }) {
 }
 
 const HIGHER_BAR_COLOR = '#087E8B';
-const CORPORATE_BAR_COLOR = '#066A75';
+const CORPORATE_BAR_COLOR = '#F5A623';
 const TREND_TOTAL_COLOR = '#142D4E';
 const TREND_HIGHER_COLOR = '#087E8B';
-const TREND_CORPORATE_COLOR = '#087E8B';
+const TREND_CORPORATE_COLOR = '#F5A623';
 
 function ClippedLabel(props) {
   const { x, y, width, value, fill } = props;
@@ -386,43 +386,31 @@ function IarSection({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* View Selector */}
-          <div className="iar-view-tabs">
-            {[
-              { id: 'trend', label: 'Outcome Trend', icon: <LineChartOutlined />, activeColor: '#142D4E', activeText: 'white' },
-              { id: 'state', label: 'State Distribution', icon: <DashboardIcon name="location" size={14} />, activeColor: '#67e8f9', activeText: '#333' },
-              { id: 'country', label: 'Country Distribution', icon: <DashboardIcon name="global" size={14} />, activeColor: '#0F1F36', activeText: 'white' },
-              { id: 'outcome', label: 'Department Outcome', icon: <BarChartOutlined />, activeColor: '#087E8B', activeText: 'white' },
-            ].map(({ id, label, icon, activeColor, activeText }) => (
-              <button key={id} type="button" onClick={() => setActiveView(id)} className="iar-view-tab" style={{
-                backgroundColor: activeView === id ? activeColor : undefined,
-                color: activeView === id ? activeText : undefined,
-                fontWeight: activeView === id ? '600' : undefined,
-              }}>
-                <span>{icon}</span> {label}
-              </button>
-            ))}
-          </div>
-
           <div className="chart-section iar-chart-section-mb">
-            {/* Compact filter bar */}
-            <div className="iar-filter-bar">
-              <div className="iar-filter-header">
-                <span className="iar-filter-title">Filters</span>
-                <button className="clear-filters-btn" onClick={handleClearFilters}>
-                  Clear All Filters
-                </button>
-              </div>
-              <div className="iar-filter-grid">
+            {/* ── Unified card header: view tabs + inline filters ── */}
+            <div className="cc-header">
+              <div className="cc-header__tabs">
                 {[
-                  { id: 'iar-dept', label: 'Department', key: 'department', options: filterOptions.departments },
-                  { id: 'iar-program', label: 'Course Type', key: 'course_type', options: filterOptions.course_types },
+                  { id: 'trend', label: 'Outcome Trend', icon: <LineChartOutlined /> },
+                  { id: 'state', label: 'State', icon: <DashboardIcon name="location" size={14} /> },
+                  { id: 'country', label: 'Country', icon: <DashboardIcon name="global" size={14} /> },
+                  { id: 'outcome', label: 'Dept Outcome', icon: <BarChartOutlined /> },
+                ].map(({ id, label, icon }) => (
+                  <button key={id} type="button" onClick={() => setActiveView(id)} className={`cc-tab${activeView === id ? ' cc-tab--active' : ''}`}>
+                    <span>{icon}</span> {label}
+                  </button>
+                ))}
+              </div>
+              <div className="cc-header__filters">
+                {[
+                  { id: 'iar-dept', label: 'DEPT', key: 'department', options: filterOptions.departments },
+                  { id: 'iar-program', label: 'TYPE', key: 'course_type', options: filterOptions.course_types },
                 ].map(({ id, label, key, options }) => (
-                  <div key={id} className="iar-filter-field">
-                    <label htmlFor={id} className="iar-filter-label">{label}</label>
+                  <div key={id} className="cc-filter-pair">
+                    <span className="cc-filter-label">{label}</span>
                     <select id={id} value={filters[key]}
                       onChange={(e) => handleFilterChange(key, e.target.value)}
-                      className="iar-filter-select">
+                      className="cc-filter-select">
                       <option value="All">All</option>
                       {options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
@@ -433,16 +421,14 @@ function IarSection({ user, isPublicView = false }) {
 
             {/* ── Outcome Trend View ── */}
             <div style={{ display: activeView === 'trend' ? 'block' : 'none' }}>
-              <div className="chart-mode-toggle">
-                {['Bar', 'Trend'].map(type => (
-                  <button key={type} onClick={() => setChartType(type)} className={`chart-mode-btn${chartType === type ? ' chart-mode-btn--active' : ''}`}>{type}</button>
-                ))}
-              </div>
-              <div>
-                <div className="iar-chart-header">
-                  <h2>
-                    <LineChartOutlined className="iar-icon-span" /> Outcome Trend Over Years
-                  </h2>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><LineChartOutlined className="cc-title-icon" /> Outcome Trend Over Years</h3>
+                <div className="cc-subheader__right">
+                  <div className="chart-mode-toggle">
+                    {['Bar', 'Trend'].map(type => (
+                      <button key={type} onClick={() => setChartType(type)} className={`chart-mode-btn${chartType === type ? ' chart-mode-btn--active' : ''}`}>{type}</button>
+                    ))}
+                  </div>
                   <ExportMenu
                     elementId="iar-outcome-trend-container"
                     data={trendData}
@@ -452,15 +438,35 @@ function IarSection({ user, isPublicView = false }) {
                     title="Outcome Trend Over Years"
                   />
                 </div>
+              </div>
 
-                <div className="iar-relative">
-                  {trendData.length === 0 && (
-                    <div className="no-data-overlay">
-                      <DashboardIcon name="line-chart" size={32} className="no-data-overlay-icon" />
-                      <p className="no-data-overlay-text">No trend data available for the selected filters.</p>
-                    </div>
-                  )}
-                  <div id="iar-outcome-trend-container" className="chart-container">
+              <div className="iar-stats-bar">
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--purple">{trendData.reduce((sum, item) => sum + item.total, 0)}</div>
+                  <div className="iar-stat-sub">Total Alumni</div>
+                </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--cyan">{trendData.reduce((sum, item) => sum + item.higher, 0)}</div>
+                  <div className="iar-stat-sub">Higher Studies</div>
+                </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--orange">{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div>
+                  <div className="iar-stat-sub">Corporate</div>
+                </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--violet">{trendData.length}</div>
+                  <div className="iar-stat-sub">Years Covered</div>
+                </div>
+              </div>
+
+              <div className="iar-relative">
+                {trendData.length === 0 && (
+                  <div className="no-data-overlay">
+                    <DashboardIcon name="line-chart" size={32} className="no-data-overlay-icon" />
+                    <p className="no-data-overlay-text">No trend data available for the selected filters.</p>
+                  </div>
+                )}
+                <div id="iar-outcome-trend-container" className="chart-container">
                     <div
                       className={`chart-wrapper clickable-chart ${chartType === 'Bar' ? 'active' : 'inactive'}`}
                       onClick={() => setExpandedChart({
@@ -469,8 +475,8 @@ function IarSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <BarChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[6, 6, 0, 0]} barSize={20}>
@@ -514,8 +520,8 @@ function IarSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={3} dot={{ r: 6 }} />
@@ -546,49 +552,24 @@ function IarSection({ user, isPublicView = false }) {
                       </ResponsiveContainer>
                     </div>
 
-                    <div className="iar-stats-bar">
-                      <div>
-                        <div className="iar-stat-metric iar-stat-metric--purple">{trendData.reduce((sum, item) => sum + item.total, 0)}</div>
-                        <div className="iar-stat-sub">Total Alumni</div>
-                      </div>
-                      <div>
-                        <div className="iar-stat-metric iar-stat-metric--cyan">{trendData.reduce((sum, item) => sum + item.higher, 0)}</div>
-                        <div className="iar-stat-sub">Higher Studies</div>
-                      </div>
-                      <div>
-                        <div className="iar-stat-metric iar-stat-metric--orange">{trendData.reduce((sum, item) => sum + item.corporate, 0)}</div>
-                        <div className="iar-stat-sub">Corporate</div>
-                      </div>
-                      <div>
-                        <div className="iar-stat-metric iar-stat-metric--violet">{trendData.length}</div>
-                        <div className="iar-stat-sub">Years Covered</div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
 
             {/* ── State Distribution View ── */}
             <div style={{ display: activeView === 'state' ? 'block' : 'none' }}>
-              <div>
-                <div className="iar-chart-header">
-                  <div>
-                    <h2>
-                      <DashboardIcon name="location" size={18} className="iar-icon-span" /> State-wise Alumni Distribution
-                    </h2>
-                    <p className="chart-description">Top 5 states by alumni count</p>
-                  </div>
-                  <ExportMenu
-                    elementId="iar-state-dist-container"
-                    data={stateTop10}
-                    headers={['State', 'Count']}
-                    keys={['state', 'count']}
-                    filename="iar_state_distribution"
-                    title="State-wise Alumni Distribution"
-                  />
-                </div>
-                <div className="iar-relative">
+              <div className="cc-subheader">
+                <h3 className="cc-title"><DashboardIcon name="location" size={14} className="cc-title-icon" /> State-wise Alumni Distribution</h3>
+                <ExportMenu
+                  elementId="iar-state-dist-container"
+                  data={stateTop10}
+                  headers={['State', 'Count']}
+                  keys={['state', 'count']}
+                  filename="iar_state_distribution"
+                  title="State-wise Alumni Distribution"
+                />
+              </div>
+              <div className="iar-relative">
                   {stateDistribution.length === 0 && (
                     <div className="no-data-overlay">
                       <DashboardIcon name="location" size={32} className="no-data-overlay-icon" />
@@ -609,7 +590,7 @@ function IarSection({ user, isPublicView = false }) {
                                 ))}
                               </Pie>
                               <Tooltip content={<StatePieTooltip />} />
-                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
                             </PieChart>
                           </ResponsiveContainer>
                         )
@@ -641,29 +622,22 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* ── Country Distribution View ── */}
             <div style={{ display: activeView === 'country' ? 'block' : 'none' }}>
-              <div>
-                <div className="iar-chart-header">
-                  <div>
-                    <h2>
-                      <DashboardIcon name="global" size={18} className="iar-icon-span" /> Global Alumni Reach
-                    </h2>
-                    <p className="chart-description">Top 5 countries by alumni count</p>
-                  </div>
-                  <ExportMenu
-                    elementId="iar-country-dist-container"
-                    data={countryDistribution}
-                    headers={['Country', 'Count']}
-                    keys={['country', 'count']}
-                    filename="iar_country_distribution"
-                    title="Global Alumni Reach"
-                  />
-                </div>
-                <div className="iar-relative">
+              <div className="cc-subheader">
+                <h3 className="cc-title"><DashboardIcon name="global" size={14} className="cc-title-icon" /> Global Alumni Reach</h3>
+                <ExportMenu
+                  elementId="iar-country-dist-container"
+                  data={countryDistribution}
+                  headers={['Country', 'Count']}
+                  keys={['country', 'count']}
+                  filename="iar_country_distribution"
+                  title="Global Alumni Reach"
+                />
+              </div>
+              <div className="iar-relative">
                   {countryDistribution.length === 0 && (
                     <div className="no-data-overlay">
                       <DashboardIcon name="global" size={32} className="no-data-overlay-icon" />
@@ -684,7 +658,7 @@ function IarSection({ user, isPublicView = false }) {
                                 ))}
                               </Pie>
                               <Tooltip content={<CountryPieTooltip />} />
-                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
                             </PieChart>
                           </ResponsiveContainer>
                         )
@@ -716,20 +690,23 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* ── Outcome by Department View ── */}
             <div style={{ display: activeView === 'outcome' ? 'block' : 'none' }}>
-              <div>
-                <div className="iar-chart-header">
-                  <div>
-                    <h2>
-                      <BarChartOutlined className="iar-icon-span" /> Outcome by Department
-                    </h2>
-                    <p className="chart-description">
-                      Top 10 departments by alumni count — higher studies vs corporate career paths.
-                    </p>
+              <div className="cc-subheader">
+                <h3 className="cc-title"><BarChartOutlined className="cc-title-icon" /> Outcome by Department</h3>
+                <div className="cc-subheader__right">
+                  <div className="iar-graph-table-toggle">
+                    {['Graph', 'Table'].map(mode => (
+                      <button
+                        key={mode}
+                        onClick={() => setOutcomeDisplayMode(mode)}
+                        className={`iar-toggle-btn${outcomeDisplayMode === mode ? ' iar-toggle-btn--active' : ''}`}
+                      >
+                        {mode === 'Graph' ? <><BarChartOutlined /> Graph</> : <><ProfileOutlined /> Table</>}
+                      </button>
+                    ))}
                   </div>
                   <ExportMenu
                     elementId="iar-dept-outcome-container"
@@ -740,27 +717,34 @@ function IarSection({ user, isPublicView = false }) {
                     title="Outcome by Department"
                   />
                 </div>
+              </div>
 
-                {/* Graph / Table toggle */}
-                <div className="iar-graph-table-toggle">
-                  {['Graph', 'Table'].map(mode => (
-                    <button
-                      key={mode}
-                      onClick={() => setOutcomeDisplayMode(mode)}
-                      className={`iar-toggle-btn${outcomeDisplayMode === mode ? ' iar-toggle-btn--active' : ''}`}
-                    >
-                      {mode === 'Graph' ? <><BarChartOutlined /> Graph</> : <><ProfileOutlined /> Table</>}
-                    </button>
-                  ))}
+              <div className="iar-stats-bar">
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--purple">{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>
+                  <div className="iar-stat-sub">Total Alumni</div>
                 </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--green">{outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}</div>
+                  <div className="iar-stat-sub">Higher Studies</div>
+                </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--pink">{outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}</div>
+                  <div className="iar-stat-sub">Corporate</div>
+                </div>
+                <div>
+                  <div className="iar-stat-metric iar-stat-metric--orange">{outcomeBreakdown.length}</div>
+                  <div className="iar-stat-sub">Departments</div>
+                </div>
+              </div>
 
-                <div className="iar-relative">
-                  {outcomeBreakdown.length === 0 && (
-                    <div className="no-data-overlay">
-                      <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
-                      <p className="no-data-overlay-text">No departmental breakdown to display.</p>
-                    </div>
-                  )}
+              <div className="iar-relative">
+                {outcomeBreakdown.length === 0 && (
+                  <div className="no-data-overlay">
+                    <DashboardIcon name="chart" size={32} className="no-data-overlay-icon" />
+                    <p className="no-data-overlay-text">No departmental breakdown to display.</p>
+                  </div>
+                )}
 
                   {/* Fixed-height panel */}
                   <div className="iar-fixed-panel">
@@ -789,14 +773,14 @@ function IarSection({ user, isPublicView = false }) {
                               <BarChart data={sortedOutcomeBreakdown} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                 <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
-                                <YAxis tick={{ fontSize: 13, fontWeight: 600 }} />
+                                <YAxis tick={{ fontSize: 10, fontWeight: 500 }} />
                                 <Tooltip content={<CustomTooltip denominatorKey="total" />} />
                                 <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px', fontWeight: 600 }} />
                                 <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="higher" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: HIGHER_BAR_COLOR }} />
+                                  <LabelList dataKey="higher" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: HIGHER_BAR_COLOR }} />
                                 </Bar>
                                 <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="corporate" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: CORPORATE_BAR_COLOR }} />
+                                  <LabelList dataKey="corporate" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: CORPORATE_BAR_COLOR }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -886,26 +870,6 @@ function IarSection({ user, isPublicView = false }) {
                     </div>
                   </div>
 
-                  {/* Stats row */}
-                  <div className="iar-stats-bar">
-                    <div>
-                      <div className="iar-stat-metric iar-stat-metric--purple">{outcomeBreakdown.reduce((sum, item) => sum + item.total, 0)}</div>
-                      <div className="iar-stat-sub">Total Alumni</div>
-                    </div>
-                    <div>
-                      <div className="iar-stat-metric iar-stat-metric--green">{outcomeBreakdown.reduce((sum, item) => sum + (item.higher || 0), 0)}</div>
-                      <div className="iar-stat-sub">Higher Studies</div>
-                    </div>
-                    <div>
-                      <div className="iar-stat-metric iar-stat-metric--pink">{outcomeBreakdown.reduce((sum, item) => sum + (item.corporate || 0), 0)}</div>
-                      <div className="iar-stat-sub">Corporate</div>
-                    </div>
-                    <div>
-                      <div className="iar-stat-metric iar-stat-metric--orange">{outcomeBreakdown.length}</div>
-                      <div className="iar-stat-sub">Departments</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

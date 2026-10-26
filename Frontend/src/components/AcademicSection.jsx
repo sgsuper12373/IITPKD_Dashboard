@@ -23,11 +23,11 @@ import { getOrderedLegend } from '../utils/chartUtils';
 import LastUpdated from './LastUpdated';
 import ShareButton from './ShareButton';
 
-const COLORS = ['#142D4E', '#0F1F36', '#066A75'];
+const COLORS = ['#142D4E', '#087E8B', '#F5A623'];
 
-const GROUP_COLORS = { UG: '#142D4E', PG: '#087E8B', Research: '#06b6d4', Total: '#22c55e' };
+const GROUP_COLORS = { UG: '#142D4E', PG: '#087E8B', Research: '#F5A623', Total: '#16A34A' };
 
-const PIE_COLORS = ['#142D4E', '#10b981', '#066A75', '#ef4444', '#066A75', '#06b6d4', '#066A75', '#087E8B'];
+const PIE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
 
 // ── Pie distribution table (desktop: table / mobile: card list) ─────────────
 function PieDistributionTable({ data, nameKey, total, colors }) {
@@ -102,8 +102,8 @@ function getProgramGroup(prog) {
 const AREA_COLORS = {
   Total:       { stroke: '#142D4E', fill: 'url(#colorTotal)' },
   Male:        { stroke: '#142D4E', fill: 'url(#colorMale)' },
-  Female:      { stroke: '#0F1F36', fill: 'url(#colorFemale)' },
-  Transgender: { stroke: '#066A75', fill: 'url(#colorTransgender)' },
+  Female:      { stroke: '#087E8B', fill: 'url(#colorFemale)' },
+  Transgender: { stroke: '#F5A623', fill: 'url(#colorTransgender)' },
 };
 
 const BAR_ANIMATION = {
@@ -111,8 +111,8 @@ const BAR_ANIMATION = {
   animationEasing: 'ease-out', animationBegin: 80,
 };
 
-const TICK_STYLE = { fill: '#444', fontSize: 14, fontWeight: 400 };
-const AXIS_LABEL_STYLE = { textAnchor: 'middle', fill: '#555', fontSize: 13, fontWeight: 500 };
+const TICK_STYLE = { fill: '#444', fontSize: 10, fontWeight: 500 };
+const AXIS_LABEL_STYLE = { textAnchor: 'middle', fill: '#555', fontSize: 10, fontWeight: 500 };
 
 const AreaGradients = () => (
   <defs>
@@ -125,12 +125,12 @@ const AreaGradients = () => (
       <stop offset="95%" stopColor="#142D4E" stopOpacity={0} />
     </linearGradient>
     <linearGradient id="colorFemale"      x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#0F1F36" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#0F1F36" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#087E8B" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#087E8B" stopOpacity={0} />
     </linearGradient>
     <linearGradient id="colorTransgender" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%"  stopColor="#066A75" stopOpacity={0.72} />
-      <stop offset="95%" stopColor="#066A75" stopOpacity={0} />
+      <stop offset="5%"  stopColor="#F5A623" stopOpacity={0.72} />
+      <stop offset="95%" stopColor="#F5A623" stopOpacity={0} />
     </linearGradient>
   </defs>
 );
@@ -150,15 +150,13 @@ function ChartLegendContent({ payload, orderedKeys, isMobile }) {
   );
 }
 
-// Shared filter panel
 function SharedFilters({
-  mode,
-  token,
+  mode, token,
   selectedGender, setSelectedGender,
   trendYears, setTrendYears,
-  genderTrendFilters, handleGenderTrendFilterChange, handleClearGenderTrendFilters,
-  programTrendFilters, handleProgramTrendFilterChange, handleClearProgramTrendFilters,
-  stateDistributionFilters, handleStateDistributionFilterChange, handleClearStateDistributionFilters,
+  genderTrendFilters, handleGenderTrendFilterChange,
+  programTrendFilters, handleProgramTrendFilterChange,
+  stateDistributionFilters, handleStateDistributionFilterChange,
   stackGender, setStackGender,
 }) {
   const isGender  = mode === 'gender';
@@ -167,7 +165,6 @@ function SharedFilters({
 
   const filters  = isGender ? genderTrendFilters  : (isProgram ? programTrendFilters  : stateDistributionFilters);
   const onChange = isGender ? handleGenderTrendFilterChange : (isProgram ? handleProgramTrendFilterChange : handleStateDistributionFilterChange);
-  const onClear  = isGender ? handleClearGenderTrendFilters : (isProgram ? handleClearProgramTrendFilters : handleClearStateDistributionFilters);
 
   const [localOptions, setLocalOptions] = useState({
     program: [], batch: [], branch: [], department: [], category: [], state: [],
@@ -201,95 +198,87 @@ function SharedFilters({
     };
     loadOptions();
     return () => { isMounted = false; };
-  }, [filters, token, genderTrendFilters, handleGenderTrendFilterChange, handleProgramTrendFilterChange, handleStateDistributionFilterChange, isGender, isProgram, isState, programTrendFilters, stateDistributionFilters, handleClearGenderTrendFilters, handleClearProgramTrendFilters, handleClearStateDistributionFilters]);
+  }, [filters, token, genderTrendFilters, handleGenderTrendFilterChange, handleProgramTrendFilterChange, handleStateDistributionFilterChange, isGender, isProgram, isState, programTrendFilters, stateDistributionFilters]);
 
   return (
-    <div className="shared-filter-panel">
-      <div className="shared-filter-panel-header">
-        <span className="shared-filter-panel-title">Filters</span>
-        <button className="clear-filters-btn" onClick={onClear}>Clear All Filters</button>
+    <>
+      {(isGender || isState) && (
+        <div className="cc-filter-pair">
+          <span className="cc-filter-label">Gender</span>
+          {isGender ? (
+            <select className="cc-filter-select" value={selectedGender} onChange={e => setSelectedGender(e.target.value)}>
+              <option value="All">M:F:T</option>
+              <option value="Total">Total</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Transgender">Transgender</option>
+            </select>
+          ) : (
+            <select className="cc-filter-select" value={filters.gender || 'All'} onChange={e => onChange('gender', e.target.value)}>
+              <option value="All">M:F:T</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Transgender">Transgender</option>
+            </select>
+          )}
+        </div>
+      )}
+
+      {isProgram && (
+        <div className="cc-filter-pair">
+          <span className="cc-filter-label">Stack</span>
+          <select className="cc-filter-select" value={stackGender ? 'yes' : 'no'} onChange={e => setStackGender(e.target.value === 'yes')}>
+            <option value="yes">Stacked</option>
+            <option value="no">Totals Only</option>
+          </select>
+        </div>
+      )}
+
+      <div className="cc-filter-pair">
+        <span className="cc-filter-label">Program</span>
+        <select className="cc-filter-select" value={filters.program || 'All'} onChange={e => onChange('program', e.target.value)}>
+          <option value="All">All</option>
+          {localOptions.program.map(p => <option key={p} value={p}>{p}</option>)}
+        </select>
       </div>
 
-      <div className="shared-filter-grid">
-
-        {(isGender || isState) && (
-          <div className="shared-filter-item">
-            <label className="shared-filter-label">Gender</label>
-            {isGender ? (
-              <select value={selectedGender} onChange={e => setSelectedGender(e.target.value)} className="filter-select filter-select-sm">
-                <option value="All">M:F:T</option>
-                <option value="Total">Total</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Transgender">Transgender</option>
-              </select>
-            ) : (
-              <select value={filters.gender || 'All'} onChange={e => onChange('gender', e.target.value)} className="filter-select filter-select-sm">
-                <option value="All">M:F:T</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Transgender">Transgender</option>
-              </select>
-            )}
-          </div>
-        )}
-
-        {isProgram && (
-          <div className="shared-filter-item">
-            <label className="shared-filter-label">Gender Stack</label>
-            <select value={stackGender ? 'yes' : 'no'} onChange={e => setStackGender(e.target.value === 'yes')} className="filter-select filter-select-sm">
-              <option value="yes">Stacked</option>
-              <option value="no">Totals Only</option>
-            </select>
-          </div>
-        )}
-
-        <div className="shared-filter-item">
-          <label className="shared-filter-label">Program</label>
-          <select value={filters.program || 'All'} onChange={e => onChange('program', e.target.value)} className="filter-select filter-select-sm">
-            <option value="All">All</option>
-            {localOptions.program.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-        </div>
-
-        <div className="shared-filter-item">
-          <label className="shared-filter-label">Batch</label>
-          <select value={filters.batch || 'All'} onChange={e => onChange('batch', e.target.value)} className="filter-select filter-select-sm">
-            <option value="All">All</option>
-            {localOptions.batch.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
-        </div>
-
-        <div className="shared-filter-item">
-          <label className="shared-filter-label">Department</label>
-          <select value={filters.department || 'All'} onChange={e => onChange('department', e.target.value)} className="filter-select filter-select-sm">
-            <option value="All">All</option>
-            {localOptions.department.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
-        </div>
-
-        <div className="shared-filter-item">
-          <label className="shared-filter-label">State</label>
-          <select value={filters.state || 'All'} onChange={e => onChange('state', e.target.value)} className="filter-select filter-select-sm">
-            <option value="All">All</option>
-            {localOptions.state.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-
-        {(isGender || isProgram) && (
-          <div className="shared-filter-item">
-            <label className="shared-filter-label">No. of Years</label>
-            <select value={trendYears} onChange={e => setTrendYears(parseInt(e.target.value, 10))} className="filter-select filter-select-sm">
-              <option value={1}>Last 1 Yr</option>
-              <option value={2}>Last 2 Yrs</option>
-              <option value={3}>Last 3 Yrs</option>
-              <option value={5}>Last 5 Yrs</option>
-              <option value={10}>Last 10 Yrs</option>
-            </select>
-          </div>
-        )}
+      <div className="cc-filter-pair">
+        <span className="cc-filter-label">Batch</span>
+        <select className="cc-filter-select" value={filters.batch || 'All'} onChange={e => onChange('batch', e.target.value)}>
+          <option value="All">All</option>
+          {localOptions.batch.map(b => <option key={b} value={b}>{b}</option>)}
+        </select>
       </div>
-    </div>
+
+      <div className="cc-filter-pair">
+        <span className="cc-filter-label">Dept</span>
+        <select className="cc-filter-select" value={filters.department || 'All'} onChange={e => onChange('department', e.target.value)}>
+          <option value="All">All</option>
+          {localOptions.department.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+      </div>
+
+      <div className="cc-filter-pair">
+        <span className="cc-filter-label">State</span>
+        <select className="cc-filter-select" value={filters.state || 'All'} onChange={e => onChange('state', e.target.value)}>
+          <option value="All">All</option>
+          {localOptions.state.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      {(isGender || isProgram) && (
+        <div className="cc-filter-pair">
+          <span className="cc-filter-label">Years</span>
+          <select className="cc-filter-select" value={trendYears} onChange={e => setTrendYears(parseInt(e.target.value, 10))}>
+            <option value={1}>1 Yr</option>
+            <option value={2}>2 Yrs</option>
+            <option value={3}>3 Yrs</option>
+            <option value={5}>5 Yrs</option>
+            <option value={10}>10 Yrs</option>
+          </select>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -506,7 +495,7 @@ function AcademicSection({ user, isPublicView = false }) {
     const sorted = [...stateDistribution].filter(i => i.state && i.state !== 'Not Found' && i.state.toLowerCase() !== 'unknown').sort((a, b) => b.count - a.count);
     const top5 = sorted.slice(0, 5);
     const rest = sorted.slice(5);
-    if (rest.length > 0) top5.push({ state: 'Others', count: rest.reduce((s, i) => s + i.count, 0), fill: '#a1a1aa' });
+    if (rest.length > 0) top5.push({ state: 'Others', count: rest.reduce((s, i) => s + i.count, 0), fill: '#8C9BB5' });
     return top5;
   }, [stateDistribution]);
 
@@ -533,14 +522,14 @@ function AcademicSection({ user, isPublicView = false }) {
     }
     return [
       { key: 'UG_Male',          name: 'UG Male',          stackId: 'UG',       fill: '#142D4E' },
-      { key: 'UG_Female',        name: 'UG Female',        stackId: 'UG',       fill: '#818cf8' },
-      { key: 'UG_Transgender',   name: 'UG Transgender',   stackId: 'UG',       fill: '#c7d2fe' },
-      { key: 'PG_Male',          name: 'PG Male',          stackId: 'PG',       fill: '#087E8B' },
-      { key: 'PG_Female',        name: 'PG Female',        stackId: 'PG',       fill: '#fb923c' },
-      { key: 'PG_Transgender',   name: 'PG Transgender',   stackId: 'PG',       fill: '#fed7aa' },
-      { key: 'Research_Male',    name: 'Research Male',    stackId: 'Research', fill: '#06b6d4' },
+      { key: 'UG_Female',        name: 'UG Female',        stackId: 'UG',       fill: '#087E8B' },
+      { key: 'UG_Transgender',   name: 'UG Transgender',   stackId: 'UG',       fill: '#F5A623' },
+      { key: 'PG_Male',          name: 'PG Male',          stackId: 'PG',       fill: '#142D4E' },
+      { key: 'PG_Female',        name: 'PG Female',        stackId: 'PG',       fill: '#087E8B' },
+      { key: 'PG_Transgender',   name: 'PG Transgender',   stackId: 'PG',       fill: '#F5A623' },
+      { key: 'Research_Male',    name: 'Research Male',    stackId: 'Research', fill: '#142D4E' },
       { key: 'Research_Female',  name: 'Research Female',  stackId: 'Research', fill: '#087E8B' },
-      { key: 'Research_Transgender', name: 'Research Transgender', stackId: 'Research', fill: '#a5f3fc' },
+      { key: 'Research_Transgender', name: 'Research Transgender', stackId: 'Research', fill: '#F5A623' },
       { key: 'Total',            name: 'Total',            stackId: 'Total',    fill: GROUP_COLORS.Total },
     ];
   }, [stackGender]);
@@ -550,7 +539,7 @@ function AcademicSection({ user, isPublicView = false }) {
     { label: 'Total Students On Roll', icon: 'total-students', value: onrollSummary.total_onroll, grad: 'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)', shadow: 'rgba(15, 31, 54,0.25)',   subtitle: 'Total on roll students' },
     { label: 'UG',       icon: 'ug', value: onrollSummary.ug_onroll,       grad: 'linear-gradient(135deg,#142D4E 0%,#066A75 100%)', shadow: 'rgba(20, 45, 78,0.2)',    subtitle: 'BTech — On Roll' },
     { label: 'PG',       icon: 'pg', value: onrollSummary.pg_onroll,       grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)',   subtitle: 'MTech and MSc — On Roll' },
-    { label: 'Research', icon: 'research', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'PhD and MS (By Research) — On Roll' },
+    { label: 'Research', icon: 'research', value: onrollSummary.research_onroll, grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'PhD and MS (By Research) — On Roll' },
   ];
 
   // Summary card data
@@ -558,7 +547,7 @@ function AcademicSection({ user, isPublicView = false }) {
     { label: 'Total Students', icon: 'students', value: cumulativeSummary.total_students, grad: 'linear-gradient(135deg,#142D4E 0%,#0F1F36 100%)', shadow: 'rgba(15, 31, 54,0.2)', subtitle: summaryYear === 'All' ? 'Cumulative students' : `Admitted in ${summaryYear}` },
     { label: 'UG',             icon: 'ug', value: cumulativeSummary.ug_total,       grad: 'linear-gradient(135deg,#142D4E 0%,#066A75 100%)', shadow: 'rgba(20, 45, 78,0.2)',    subtitle: 'BTech' },
     { label: 'PG',             icon: 'pg', value: cumulativeSummary.pg_total,       grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(8, 126, 139,0.2)',   subtitle: 'MTech and MSc' },
-    { label: 'Research',       icon: 'phd', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'MS and PHD' },
+    { label: 'Research',       icon: 'phd', value: cumulativeSummary.research_total, grad: 'linear-gradient(135deg,#087E8B 0%,#066A75 100%)', shadow: 'rgba(6,182,212,0.2)',    subtitle: 'MS and PHD' },
   ];
 
   // Pie tooltip
@@ -710,57 +699,53 @@ function AcademicSection({ user, isPublicView = false }) {
         {/* ══ Charts ════════════════════════════════════════════════════════ */}
         <div className="chart-section">
 
-          {/* Mode toggle */}
-          <div className="mode-toggle-row">
-            {[{ key: 'gender', label: 'Gender Breakdown' }, { key: 'program', label: 'UG / PG / Research' }, { key: 'state', label: 'State Distribution' }].map(({ key, label }) => (
-              <button key={key} onClick={() => setProgramChartMode(key)} className={`mode-btn${programChartMode === key ? ' active' : ''}`}>{label}</button>
-            ))}
-          </div>
-
-          {/* Shared filter panel */}
-          <SharedFilters
-            mode={programChartMode}
-            filterOptions={filterOptions}
-            selectedGender={selectedGender} setSelectedGender={setSelectedGender}
-            trendYears={trendYears} setTrendYears={setTrendYears}
-            genderTrendFilters={genderTrendFilters}
-            handleGenderTrendFilterChange={handleGenderTrendFilterChange}
-            handleClearGenderTrendFilters={handleClearGenderTrendFilters}
-            programTrendFilters={programTrendFilters}
-            handleProgramTrendFilterChange={handleProgramTrendFilterChange}
-            handleClearProgramTrendFilters={handleClearProgramTrendFilters}
-            stateDistributionFilters={stateDistributionFilters}
-            handleStateDistributionFilterChange={handleStateDistributionFilterChange}
-            handleClearStateDistributionFilters={handleClearStateDistributionFilters}
-            stackGender={stackGender} setStackGender={setStackGender}
-            token={token}
-          />
-
-          {/* Bar / Trend toggle */}
-          {(programChartMode === 'gender' || programChartMode === 'program') && (
-            <div className="chart-mode-row">
-              {['Bar', 'Trend'].map(mode => (
-                <button key={mode} onClick={() => setChartType(mode)} className={`mode-btn${chartType === mode ? ' active' : ''}`}>
-                  {mode === 'Bar' ? <><DashboardIcon name="chart" size={14} /> Bar</> : <><DashboardIcon name="line-chart" size={14} /> Trend</>}
-                </button>
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              {[{ key: 'gender', label: 'Gender' }, { key: 'program', label: 'UG / PG / Research' }, { key: 'state', label: 'State' }].map(({ key, label }) => (
+                <button key={key} onClick={() => setProgramChartMode(key)} className={`cc-tab${programChartMode === key ? ' cc-tab--active' : ''}`}>{label}</button>
               ))}
             </div>
-          )}
+            <div className="cc-header__filters">
+              <SharedFilters
+                mode={programChartMode}
+                selectedGender={selectedGender} setSelectedGender={setSelectedGender}
+                trendYears={trendYears} setTrendYears={setTrendYears}
+                genderTrendFilters={genderTrendFilters}
+                handleGenderTrendFilterChange={handleGenderTrendFilterChange}
+                programTrendFilters={programTrendFilters}
+                handleProgramTrendFilterChange={handleProgramTrendFilterChange}
+                stateDistributionFilters={stateDistributionFilters}
+                handleStateDistributionFilterChange={handleStateDistributionFilterChange}
+                stackGender={stackGender} setStackGender={setStackGender}
+                token={token}
+              />
+            </div>
+          </div>
 
           {/* ── Gender breakdown charts ── */}
           {programChartMode === 'gender' && (
             <div className={`bar-chart-container trend-chart${hasTrendData ? '' : ' has-empty'}`}>
               <div className={`trend-empty-state${hasTrendData ? ' hidden' : ''}`}><p>No information available for the selected filter</p></div>
 
-              <div className="export-row">
-                <ExportMenu
-                  elementId={chartType === 'Bar' ? 'academic-gender-bar-chart' : 'academic-gender-trend-chart'}
-                  data={displayGenderTrendData}
-                  headers={['Year', 'Total', 'Male', 'Female', 'Transgender']}
-                  keys={['year', 'Total', 'Male', 'Female', 'Transgender']}
-                  filename="academic_gender_trend"
-                  title="Gender Trend"
-                />
+              <div className="cc-subheader">
+                <h3 className="cc-title">Gender Breakdown</h3>
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {['Bar', 'Trend'].map(mode => (
+                      <button key={mode} onClick={() => setChartType(mode)} className={`rls-mode-btn${chartType === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {mode === 'Bar' ? <><DashboardIcon name="chart" size={14} /> Bar</> : <><DashboardIcon name="line-chart" size={14} /> Trend</>}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId={chartType === 'Bar' ? 'academic-gender-bar-chart' : 'academic-gender-trend-chart'}
+                    data={displayGenderTrendData}
+                    headers={['Year', 'Total', 'Male', 'Female', 'Transgender']}
+                    keys={['year', 'Total', 'Male', 'Female', 'Transgender']}
+                    filename="academic_gender_trend"
+                    title="Gender Trend"
+                  />
+                </div>
               </div>
 
               {/* Trend (line) */}
@@ -822,7 +807,7 @@ function AcademicSection({ user, isPublicView = false }) {
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
                           <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.stroke || '#142D4E'} radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: '#142D4E' }} />
+                            <LabelList dataKey={key} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
                           </Bar>
                         ))}
                       </BarChart>
@@ -859,23 +844,32 @@ function AcademicSection({ user, isPublicView = false }) {
             <div className={`bar-chart-container trend-chart${hasProgramTrendData ? '' : ' has-empty'}`}>
               <div className={`trend-empty-state${hasProgramTrendData ? ' hidden' : ''}`}><p>No information available for the selected filter</p></div>
 
-              <div className="chart-title-row">
-                <h3 className="chart-heading">
-                  Student Strength — UG / PG / Research / Total
-                  {stackGender && <span className="text-muted text-sm acad-stacked-hint">(stacked by gender)</span>}
+              <div className="cc-subheader">
+                <h3 className="cc-title">
+                  Student Strength — UG / PG / Research
+                  {stackGender && <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84', marginLeft: 6 }}>(stacked by gender)</span>}
                 </h3>
-                <ExportMenu
-                  elementId="academic-program-strength-chart"
-                  data={ugPgResearchTrend}
-                  headers={stackGender
-                    ? ['Year', 'UG Male', 'UG Female', 'UG Trans', 'UG Total', 'PG Male', 'PG Female', 'PG Trans', 'PG Total', 'Research Male', 'Research Female', 'Research Trans', 'Research Total', 'Total']
-                    : ['Year', 'UG', 'PG', 'Research', 'Total']}
-                  keys={stackGender
-                    ? ['year', 'UG_Male', 'UG_Female', 'UG_Transgender', 'UG_Total', 'PG_Male', 'PG_Female', 'PG_Transgender', 'PG_Total', 'Research_Male', 'Research_Female', 'Research_Transgender', 'Research_Total', 'Total']
-                    : ['year', 'UG_Total', 'PG_Total', 'Research_Total', 'Total']}
-                  filename="academic_program_strength"
-                  title="Student Strength Overview"
-                />
+                <div className="cc-subheader__right">
+                  <div className="rls-mode-toggle">
+                    {['Bar', 'Trend'].map(mode => (
+                      <button key={mode} onClick={() => setChartType(mode)} className={`rls-mode-btn${chartType === mode ? ' rls-mode-btn--active' : ''}`}>
+                        {mode === 'Bar' ? <><DashboardIcon name="chart" size={14} /> Bar</> : <><DashboardIcon name="line-chart" size={14} /> Trend</>}
+                      </button>
+                    ))}
+                  </div>
+                  <ExportMenu
+                    elementId="academic-program-strength-chart"
+                    data={ugPgResearchTrend}
+                    headers={stackGender
+                      ? ['Year', 'UG Male', 'UG Female', 'UG Trans', 'UG Total', 'PG Male', 'PG Female', 'PG Trans', 'PG Total', 'Research Male', 'Research Female', 'Research Trans', 'Research Total', 'Total']
+                      : ['Year', 'UG', 'PG', 'Research', 'Total']}
+                    keys={stackGender
+                      ? ['year', 'UG_Male', 'UG_Female', 'UG_Transgender', 'UG_Total', 'PG_Male', 'PG_Female', 'PG_Transgender', 'PG_Total', 'Research_Male', 'Research_Female', 'Research_Transgender', 'Research_Total', 'Total']
+                      : ['year', 'UG_Total', 'PG_Total', 'Research_Total', 'Total']}
+                    filename="academic_program_strength"
+                    title="Student Strength Overview"
+                  />
+                </div>
               </div>
 
               {/* Bar chart */}
@@ -894,7 +888,7 @@ function AcademicSection({ user, isPublicView = false }) {
                         <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
                         {programStackedBars.map(({ key, name, fill, stackId }) => (
                           <Bar key={key} dataKey={key} name={name} fill={fill} stackId={stackId} radius={stackId ? (programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key ? [6,6,0,0] : [0,0,0,0]) : [6,6,0,0]}>
-                            {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '11px', fontWeight: 700, fill }} />}
+                            {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '9px', fontWeight: 500, fill }} />}
                           </Bar>
                         ))}
                       </BarChart>
@@ -972,10 +966,9 @@ function AcademicSection({ user, isPublicView = false }) {
           {/* ── State Distribution View ── */}
           {programChartMode === 'state' && (
             <div className={`bar-chart-container trend-chart${stateTop10.length > 0 ? '' : ' has-empty'}`}>
-              <div className="chart-title-row">
-                <h3 className="chart-heading">
-                  State-wise Distribution
-                  <span className="text-muted text-sm ac-chart-note">(Students in India)</span>
+              <div className="cc-subheader">
+                <h3 className="cc-title">
+                  State-wise Distribution <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>(Students in India)</span>
                 </h3>
                 <ExportMenu
                   elementId="academic-state-dist-container"

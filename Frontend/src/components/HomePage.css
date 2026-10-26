@@ -12,7 +12,7 @@
 /* ── Main heading ── */
 .welcome-section > h1 {
   font-size: clamp(1.2rem, 5vw, 2.5rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.25;
   color: var(--color-text);
   text-align: center;

@@ -163,15 +163,15 @@ function NptelSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={chartIsMobile ? summary.yearly_stats.slice(-3) : summary.yearly_stats} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="stat_year" stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
-                      <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 13, fontWeight: 600 }} />
+                      <XAxis dataKey="stat_year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                      <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                      <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                       <Bar dataKey="enrollment_count" name="Enrollments" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                        <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#142D4E' }} />
+                        <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
                       </Bar>
-                      <Bar dataKey="certification_count" name="Certifications" fill="#22c55e" radius={[6, 6, 0, 0]}>
-                        <LabelList dataKey="certification_count" position="top" style={{ fontSize: '11px', fontWeight: 700, fill: '#22c55e' }} />
+                      <Bar dataKey="certification_count" name="Certifications" fill="#087E8B" radius={[6, 6, 0, 0]}>
+                        <LabelList dataKey="certification_count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#087E8B' }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -181,14 +181,14 @@ function NptelSection({ user, isPublicView = false }) {
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={chartIsMobile ? summary.yearly_stats.slice(-3) : summary.yearly_stats} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="stat_year" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                  <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                  <XAxis dataKey="stat_year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                  <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="enrollment_count" fill="#142D4E" name="Enrollments" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
+                    <LabelList dataKey="enrollment_count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
                   </Bar>
-                  <Bar dataKey="certification_count" fill="#22c55e" name="Certifications" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="certification_count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#22c55e' }} />
+                  <Bar dataKey="certification_count" fill="#087E8B" name="Certifications" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="certification_count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#087E8B' }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

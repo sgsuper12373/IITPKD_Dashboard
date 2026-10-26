@@ -171,53 +171,53 @@ function EducationIarSection({ user, isPublicView = false }) {
             </div>
 
             <section className="chart-section eiar-chart-section">
-              <div className="eiar-export-row">
-                <ExportMenu
-                  elementId={viewType === 'trend' ? "iar-mou-trend-container" : "iar-mou-directory-table"}
-                  data={viewType === 'trend' ? mouTrendChartData : mouList}
-                  headers={viewType === 'trend' ? ['Year', 'MoUs Signed'] : ['Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']}
-                  keys={viewType === 'trend' ? ['year', 'total'] : ['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']}
-                  filename={viewType === 'trend' ? "iar_mou_trend" : "iar_mou_directory"}
-                  title={viewType === 'trend' ? "IAR MoUs Trend" : "IAR MoUs Directory"}
-                />
-              </div>
-
-              <div className="eiar-filter-header">
-                <h4 className="eiar-filter-h4">Filters</h4>
-                <button className="eiar-clear-btn" onClick={handleClearFilters}>
-                  Clear Filters
-                </button>
-              </div>
-
-              <div className="eiar-view-row">
-                <button
-                  onClick={() => setViewType('trend')}
-                  className={`eiar-view-btn${viewType === 'trend' ? ' eiar-view-btn--trend-active' : ''}`}
-                >
-                  <LineChartOutlined /> Trend Overview
-                </button>
-                {(!!user && user.role_id !== 0) && (
+              <div className="cc-header">
+                <div className="cc-header__tabs">
                   <button
-                    onClick={() => setViewType('directory')}
-                    className={`eiar-view-btn${viewType === 'directory' ? ' eiar-view-btn--dir-active' : ''}`}
+                    onClick={() => setViewType('trend')}
+                    className={`cc-tab${viewType === 'trend' ? ' cc-tab--active' : ''}`}
                   >
-                    <ProfileOutlined /> MoUs Directory
+                    <LineChartOutlined /> Trend
                   </button>
-                )}
+                  {(!!user && user.role_id !== 0) && (
+                    <button
+                      onClick={() => setViewType('directory')}
+                      className={`cc-tab${viewType === 'directory' ? ' cc-tab--active' : ''}`}
+                    >
+                      <ProfileOutlined /> Directory
+                    </button>
+                  )}
+                </div>
               </div>
 
               {viewType === 'trend' && (
                 <>
-                  <div className="eiar-mode-row">
-                    {['bar', 'trend'].map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setChartMode(mode)}
-                        className={`eiar-mode-btn${chartMode === mode ? ' eiar-mode-btn--active' : ''}`}
-                      >
-                        {mode === 'bar' ? 'Bar' : 'Trend'}
-                      </button>
-                    ))}
+                  <div className="cc-subheader">
+                    <h2 className="cc-title">
+                      <LineChartOutlined className="cc-title-icon" />
+                      MoUs Signed Over Time
+                    </h2>
+                    <div className="cc-subheader__right">
+                      <div className="rls-mode-toggle">
+                        {['bar', 'trend'].map((mode) => (
+                          <button
+                            key={mode}
+                            onClick={() => setChartMode(mode)}
+                            className={`rls-mode-btn${chartMode === mode ? ' rls-mode-btn--active' : ''}`}
+                          >
+                            {mode === 'bar' ? 'Bar' : 'Trend'}
+                          </button>
+                        ))}
+                      </div>
+                      <ExportMenu
+                        elementId="iar-mou-trend-container"
+                        data={mouTrendChartData}
+                        headers={['Year', 'MoUs Signed']}
+                        keys={['year', 'total']}
+                        filename="iar_mou_trend"
+                        title="IAR MoUs Trend"
+                      />
+                    </div>
                   </div>
                   <div
                     id="iar-mou-trend-container"
@@ -233,7 +233,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} iconType="rect" />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                           <Bar dataKey="total" name="MoUs Signed" fill={IAR_MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
                             <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
                           </Bar>
@@ -244,7 +244,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                           <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
                           <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                          <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                           <Line
                             type="linear"
                             dataKey="total"
@@ -265,7 +265,23 @@ function EducationIarSection({ user, isPublicView = false }) {
 
               {viewType === 'directory' && (
                 <>
-                  <p className="eiar-dir-count">{mouList.length} records found</p>
+                  <div className="cc-subheader">
+                    <h2 className="cc-title">
+                      <ProfileOutlined className="cc-title-icon" />
+                      MoUs Directory
+                      <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({mouList.length} records)</span>
+                    </h2>
+                    <div className="cc-subheader__right">
+                      <ExportMenu
+                        elementId="iar-mou-directory-table"
+                        data={mouList}
+                        headers={['Partner', 'Framework', 'Country', 'Collaboration Nature', 'Signed', 'Valid Till']}
+                        keys={['partner_name', 'framework', 'country', 'collaboration_nature', 'date_signed', 'validity_end']}
+                        filename="iar_mou_directory"
+                        title="IAR MoUs Directory"
+                      />
+                    </div>
+                  </div>
                   <div id="iar-mou-directory-table" className="table-responsive eiar-dir-table-wrap">
                     {(!!user && user.role_id !== 0) && (
                       <table className="eiar-dir-table">

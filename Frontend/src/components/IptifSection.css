@@ -180,7 +180,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
+  font-size: 13px;
+  font-weight: 600;
 }
 .iptif-chart-icon { font-size: 22px; }
 .iptif-chart-desc { color: #666; margin: 0; font-size: 13px; }

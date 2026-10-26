@@ -36,10 +36,10 @@ import ShareButton from './ShareButton';
 
 const ENGAGEMENT_COLORS = {
   Adjunct: '#142D4E',
-  Honorary: '#0F1F36',
-  Visiting: '#066A75',
-  FacultyFellow: '#066A75',
-  PoP: '#087E8B'
+  Honorary: '#087E8B',
+  Visiting: '#F5A623',
+  FacultyFellow: '#6366F1',
+  PoP: '#16A34A'
 };
 
 const ENGAGEMENT_LABELS = {
@@ -50,7 +50,7 @@ const ENGAGEMENT_LABELS = {
   PoP: 'PoP'
 };
 
-const COLORS = ['#142D4E', '#0F1F36', '#066A75', '#066A75', '#087E8B'];
+const COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1'];
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
@@ -523,92 +523,67 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
           </div>
         )}
 
-        {/* Radio Buttons - Outside and Centered */}
-        <div className="mode-toggle-row edu-adm-toggle-row">
-          <label className={`view-radio-label edu-adm-radio edu-adm-radio--summary${viewType === 'summary' ? ' active' : ''}`}>
-            <input type="radio" name="viewType" value="summary" checked={viewType === 'summary'} onChange={(e) => setViewType(e.target.value)} />
-            <span>
-              ðŸ"Š Summary Indicators
-            </span>
-          </label>
+        <section className="rls-chart-section">
+          <div className="cc-header">
+            <div className="cc-header__tabs">
+              <button className={`cc-tab${viewType === 'summary' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('summary')}>Summary</button>
+              <button className={`cc-tab${viewType === 'department' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('department')}>Department</button>
+              <button className={`cc-tab${viewType === 'trend' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('trend')}>Trends</button>
+              <button className={`cc-tab${viewType === 'distribution' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('distribution')}>Distribution</button>
+              <button className={`cc-tab${viewType === 'details' ? ' cc-tab--active' : ''}`} onClick={() => setViewType('details')}>Details</button>
+            </div>
+            <div className="cc-header__filters">
+              <div className="cc-filter-pair">
+                <span className="cc-filter-label">Year</span>
+                <select className="cc-filter-select" value={currentFilters.year} onChange={(e) => handleFilterChange('year', e.target.value)}>
+                  <option value="All">All Years</option>
+                  {filterOptions.years.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              {viewType !== 'summary' && (
+                <>
+                  <div className="cc-filter-pair">
+                    <span className="cc-filter-label">Dept</span>
+                    <select className="cc-filter-select" value={currentFilters.department} onChange={(e) => handleFilterChange('department', e.target.value)}>
+                      <option value="All">All Departments</option>
+                      {filterOptions.departments.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="cc-filter-pair">
+                    <span className="cc-filter-label">Type</span>
+                    <select className="cc-filter-select" value={currentFilters.engagement_type} onChange={(e) => handleFilterChange('engagement_type', e.target.value)}>
+                      <option value="All">All Types</option>
+                      {filterOptions.engagement_types.map((type) => (
+                        <option key={type} value={type}>{ENGAGEMENT_LABELS[type] || type}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
-          <label className={`view-radio-label edu-adm-radio edu-adm-radio--dept${viewType === 'department' ? ' active' : ''}`}>
-            <input type="radio" name="viewType" value="department" checked={viewType === 'department'} onChange={(e) => setViewType(e.target.value)} />
-            <span>
-              ðŸ¢ Department-wise
-            </span>
-          </label>
-
-          <label className={`view-radio-label edu-adm-radio edu-adm-radio--trend${viewType === 'trend' ? ' active' : ''}`}>
-            <input type="radio" name="viewType" value="trend" checked={viewType === 'trend'} onChange={(e) => setViewType(e.target.value)} />
-            <span>
-              ðŸ"ˆ Year-wise Trends
-            </span>
-          </label>
-
-          <label className={`view-radio-label edu-adm-radio edu-adm-radio--dist${viewType === 'distribution' ? ' active' : ''}`}>
-            <input type="radio" name="viewType" value="distribution" checked={viewType === 'distribution'} onChange={(e) => setViewType(e.target.value)} />
-            <span>
-              ðŸ¥§ Type Distribution
-            </span>
-          </label>
-
-          <label className={`view-radio-label edu-adm-radio edu-adm-radio--details${viewType === 'details' ? ' active' : ''}`}>
-            <input type="radio" name="viewType" value="details" checked={viewType === 'details'} onChange={(e) => setViewType(e.target.value)} />
-            <span>
-              ðŸ"‹ Engagement Details
-            </span>
-          </label>
-
-
-        </div>
-
-        <div className="edu-adm-panels">
+          <div className="edu-adm-panels">
 
 
           {/* Summary Indicators View */}
           <div className={viewType !== 'summary' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              {/* Filters for Summary View */}
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Summary View</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Summary Indicators</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-summary-cards-container"
+                    data={summaryCards}
+                    headers={['Type', 'Total', 'Active']}
+                    keys={['type', 'total', 'active']}
+                    filename="faculty_engagement_summary"
+                    title="Summary Indicators"
+                  />
                 </div>
-
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={summaryFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Summary Indicators</h2>
-                  <p className="chart-description">
-                    Total counts by faculty engagement type
-                  </p>
-                </div>
-                <ExportMenu 
-                  elementId="education-summary-cards-container"
-                  data={summaryCards}
-                  headers={['Type', 'Total', 'Active']}
-                  keys={['type', 'total', 'active']}
-                  filename="faculty_engagement_summary"
-                  title="Summary Indicators"
-                />
               </div>
 
               <>{(!!user && user.role_id !== 0) && (
@@ -719,80 +694,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
 
                 </div>
               )}
-            </div>
           </div>
 
           {/* Department-wise Breakdown View */}
           <div className={viewType !== 'department' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              {/* Filters for Department View */}
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Department-wise View</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Department-wise Breakdown</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-dept-chart-container"
+                    data={departmentChartData}
+                    headers={['Department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type), 'Total']}
+                    keys={['department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type), 'total']}
+                    filename="faculty_engagement_department_breakdown"
+                    title="Department-wise Breakdown"
+                  />
                 </div>
-
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={departmentFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Department</label>
-                    <select
-                      value={departmentFilters.department}
-                      onChange={(e) => handleFilterChange('department', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Departments</option>
-                      {filterOptions.departments.map((dept) => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Engagement Type</label>
-                    <select
-                      value={departmentFilters.engagement_type}
-                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Types</option>
-                      {filterOptions.engagement_types.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Department-wise Breakdown</h2>
-                  <p className="chart-description">
-                    Distribution of external academic engagement by department
-                  </p>
-                </div>
-                <ExportMenu 
-                  elementId="education-dept-chart-container"
-                  data={departmentChartData}
-                  headers={['Department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type), 'Total']}
-                  keys={['department', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type), 'total']}
-                  filename="faculty_engagement_department_breakdown"
-                  title="Department-wise Breakdown"
-                />
               </div>
 
               <div id="education-dept-chart-container"
@@ -803,8 +720,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={departmentChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="department" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="department" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
                         {summary.summary.map((item, index) => {
@@ -812,7 +729,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           if (type === 'FacultyFellow') return null;
                           return (
                             <Bar key={type} dataKey={type} name={ENGAGEMENT_LABELS[type] || type} fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} radius={[6, 6, 0, 0]}>
-                              <LabelList dataKey={type} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
                             </Bar>
                           );
                         })}
@@ -835,19 +752,19 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       textAnchor="end"
                       height={100}
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                      label={{ value: 'Department', position: 'insideBottom', offset: -70, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
+                      label={{ value: 'Department', position: 'insideBottom', offset: -70, style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
                     />
                     <YAxis
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
+                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
                       verticalAlign="top"
                       align="center"
-                      wrapperStyle={{ paddingBottom: '20px', fontWeight: 'bold' }}
+                      wrapperStyle={{ paddingBottom: '20px', fontWeight: 500 }}
                       iconType="rect"
                     />
                     {summary.summary.map((item, index) => {
@@ -867,80 +784,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </div>
           </div>
 
           {/* Year-wise Trends View */}
           <div className={viewType !== 'trend' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              {/* Filters for Trend View */}
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Year-wise Trends</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Year-wise Trends</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-trend-chart-container"
+                    data={yearTrendChartData}
+                    headers={['Year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type)]}
+                    keys={['year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type)]}
+                    filename="faculty_engagement_trends"
+                    title="Year-wise Trends"
+                  />
                 </div>
-
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={trendFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Department</label>
-                    <select
-                      value={trendFilters.department}
-                      onChange={(e) => handleFilterChange('department', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Departments</option>
-                      {filterOptions.departments.map((dept) => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Engagement Type</label>
-                    <select
-                      value={trendFilters.engagement_type}
-                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Types</option>
-                      {filterOptions.engagement_types.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Year-wise Trends</h2>
-                  <p className="chart-description">
-                    Faculty engagement trends over multiple years
-                  </p>
-                </div>
-                <ExportMenu 
-                  elementId="education-trend-chart-container"
-                  data={yearTrendChartData}
-                  headers={['Year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => ENGAGEMENT_LABELS[item.engagement_type] || item.engagement_type)]}
-                  keys={['year', ...summary.summary.filter(item => item.engagement_type !== 'FacultyFellow').map(item => item.engagement_type)]}
-                  filename="faculty_engagement_trends"
-                  title="Year-wise Trends"
-                />
               </div>
 
               <div id="education-trend-chart-container"
@@ -951,8 +810,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={yearTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 13, fontWeight: 600 }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
                         {summary.summary.map((item, index) => {
@@ -960,7 +819,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           if (type === 'FacultyFellow') return null;
                           return (
                             <Line key={type} type="linear" dataKey={type} name={ENGAGEMENT_LABELS[type] || type} stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                              <LabelList dataKey={type} position="top" style={{ fontSize: '12px', fontWeight: 700, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
                             </Line>
                           );
                         })}
@@ -980,17 +839,17 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <XAxis
                       dataKey="year"
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                      label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
+                      label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
                     />
                     <YAxis
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 12, fontWeight: 'bold' }}
-                      label={{ value: 'Total Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 'bold' } }}
+                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
+                      label={{ value: 'Total Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
-                      wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
+                      wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }}
                       iconType="rect"
                     />
                     {summary.summary.map((item, index) => {
@@ -1013,80 +872,22 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
           </div>
 
           {/* Type Distribution View */}
           <div className={viewType !== 'distribution' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              {/* Filters for Distribution View */}
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Type Distribution</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Type Distribution</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-distribution-chart-container"
+                    data={pieChartData}
+                    headers={['Type', 'Count']}
+                    keys={['name', 'value']}
+                    filename="faculty_engagement_distribution"
+                    title="Type Distribution"
+                  />
                 </div>
-
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={distributionFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Department</label>
-                    <select
-                      value={distributionFilters.department}
-                      onChange={(e) => handleFilterChange('department', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Departments</option>
-                      {filterOptions.departments.map((dept) => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Engagement Type</label>
-                    <select
-                      value={distributionFilters.engagement_type}
-                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Types</option>
-                      {filterOptions.engagement_types.map((type) => (
-                        <option key={type} value={type}>{ENGAGEMENT_LABELS[type] || type}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Type Distribution</h2>
-                  <p className="chart-description">
-                    Proportional breakdown by faculty engagement type
-                  </p>
-                </div>
-                <ExportMenu 
-                  elementId="education-distribution-chart-container"
-                  data={pieChartData}
-                  headers={['Type', 'Count']}
-                  keys={['name', 'value']}
-                  filename="faculty_engagement_distribution"
-                  title="Type Distribution"
-                />
               </div>
 
               <div id="education-distribution-chart-container"
@@ -1096,13 +897,13 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   content: (
                     <ResponsiveContainer width="100%" height={500}>
                       <PieChart>
-                        <Pie data={pieChartData} cx="50%" cy="50%" labelLine={true} outerRadius={150} fill="#8884d8" dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                        <Pie data={pieChartData} cx="50%" cy="50%" labelLine={true} outerRadius={150} fill="#142D4E" dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
                           {pieChartData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={ENGAGEMENT_COLORS[entry.name] || COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip formatter={(value) => formatNumber(value)} />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }} />
+                        <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                       </PieChart>
                     </ResponsiveContainer>
                   )
@@ -1122,7 +923,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       cy="50%"
                       labelLine={true}
                       outerRadius={150}
-                      fill="#8884d8"
+                      fill="#142D4E"
                       dataKey="value"
                       label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                       animationDuration={800}
@@ -1136,80 +937,29 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     </Pie>
                     <Tooltip formatter={(value) => formatNumber(value)} />
                     <Legend
-                      wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold' }}
+                      wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
 )}</>
               </div>
-            </div>
           </div>
 
           {/* Engagement Details View */}
           <div className={viewType !== 'details' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Engagement Details</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Engagement Details</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-engagement-details-table"
+                    data={engagementList}
+                    headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                    keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                    filename="faculty_engagement_details"
+                    title="Engagement Details"
+                    exportType="table"
+                  />
                 </div>
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={detailsFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Department</label>
-                    <select
-                      value={detailsFilters.department}
-                      onChange={(e) => handleFilterChange('department', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Departments</option>
-                      {filterOptions.departments.map((dept) => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Engagement Type</label>
-                    <select
-                      value={detailsFilters.engagement_type}
-                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Types</option>
-                      {filterOptions.engagement_types.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>External Academic Engagement Details</h2>
-                  <p className="chart-description">Detailed list of all external academic engagements</p>
-                </div>
-                <ExportMenu 
-                  elementId="education-engagement-details-table"
-                  data={engagementList}
-                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
-                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
-                  filename="faculty_engagement_details"
-                  title="Engagement Details"
-                  exportType="table"
-                />
               </div>
 
               <div id="education-engagement-details-table">
@@ -1265,74 +1015,23 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                 )}
               </div>
 
-            </div>
           </div>
 
           {/* Honorary Professors View */}
           <div className={viewType !== 'honorary' ? 'edu-adm-hidden' : ''}>
-            <div className="chart-section">
-              <div className="filter-panel">
-                <div className="filter-panel-header">
-                  <h4 className="shared-filter-panel-title">Filters for Honorary Professors</h4>
-                  <button className="btn-danger" onClick={handleClearFilters}>Clear Filters</button>
+              <div className="cc-subheader">
+                <h3 className="cc-title">Honorary Professors</h3>
+                <div className="cc-subheader__right">
+                  <ExportMenu
+                    elementId="education-honorary-professors-table"
+                    data={engagementList}
+                    headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
+                    keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
+                    filename="honorary_professors"
+                    title="Honorary Professors"
+                    exportType="table"
+                  />
                 </div>
-                <div className="filter-grid">
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Year</label>
-                    <select
-                      value={honoraryFilters.year}
-                      onChange={(e) => handleFilterChange('year', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Years</option>
-                      {filterOptions.years.map((year) => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Department</label>
-                    <select
-                      value={honoraryFilters.department}
-                      onChange={(e) => handleFilterChange('department', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Departments</option>
-                      {filterOptions.departments.map((dept) => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="filter-group">
-                    <label className="shared-filter-label">Engagement Type</label>
-                    <select
-                      value={honoraryFilters.engagement_type}
-                      onChange={(e) => handleFilterChange('engagement_type', e.target.value)}
-                      className="filter-select"
-                    >
-                      <option value="All">All Types</option>
-                      {filterOptions.engagement_types.map((type) => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="chart-title-row">
-                <div className="chart-header">
-                  <h2>Honorary Professors</h2>
-                  <p className="chart-description">List of honorary professors for the selected filters</p>
-                </div>
-                <ExportMenu
-                  elementId="education-honorary-professors-table"
-                  data={engagementList}
-                  headers={['Sl No', 'Name', 'Academia or Industry', 'Discipline', 'Remarks']}
-                  keys={['sl_no', 'faculty_name', 'fc_bg_type', 'department', 'remarks']}
-                  filename="honorary_professors"
-                  title="Honorary Professors"
-                  exportType="table"
-                />
               </div>
 
               {viewType === 'honorary' && (
@@ -1388,9 +1087,9 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                   )}
                 </div>
               )}
-            </div>
           </div>
         </div>
+        </section>
 
         <DataUploadModal
           isOpen={isUploadModalOpen}
