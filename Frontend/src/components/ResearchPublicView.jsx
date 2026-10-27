@@ -18,6 +18,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       id: 'icsr',
       title: 'Sponsored and Consultancy Projects',
       expandedTitle: 'Driving innovation through industry partnerships and funded research',
+      blurb: 'Explore funded projects and consultancy.',
       icon: <DashboardIcon name="research" />,
       component: ResearchIcsrSection
     },
@@ -25,6 +26,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       id: 'library',
       title: 'Research Publications',
       expandedTitle: 'Advancing knowledge through publications and research contributions',
+      blurb: 'Explore publications and citations.',
       icon: <DashboardIcon name="ug" />,
       component: ResearchLibrarySection
     },
@@ -32,6 +34,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
       id: 'icsr-mous',
       title: 'Research Collaboration',
       expandedTitle: 'Track and manage collaborative IC&SR MoUs',
+      blurb: 'Explore collaborative MoUs.',
       icon: <DashboardIcon name="link" />,
       component: (props) => <ResearchIcsrSection {...props} mouOnly={true} />
     }
@@ -41,6 +44,7 @@ function ResearchPublicView({ user: realUser, embedded }) {
     id: 'patents',
     title: 'Patents',
     expandedTitle: 'Explore patents and intellectual property contributions',
+    blurb: 'Explore patents and IP contributions.',
     icon: <DashboardIcon name="innovation" />,
     component: Patents
   };

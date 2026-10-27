@@ -19,6 +19,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       id: 'home-ground-startup',
       title: 'Home Grown Startup',
       expandedTitle: 'Internal startups incubated through IPTIF and TECHIN programs',
+      blurb: 'Explore home-grown startups.',
       icon: <DashboardIcon name="home" />,
       component: HomeGroundStartup
     },
@@ -26,6 +27,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       id: 'startups',
       title: 'IPTIF',
       expandedTitle: 'Nurturing startups and innovation projects at IPTIF',
+      blurb: 'Explore IPTIF incubation and projects.',
       icon: <DashboardIcon name="innovation" />,
       component: IptifSection
     },
@@ -33,6 +35,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       id: 'innovation-hub',
       title: 'TECHIN',
       expandedTitle: 'Driving innovation through cutting-edge research and development',
+      blurb: 'Explore TECHIN innovation hub.',
       icon: <DashboardIcon name="startup" />,
       component: TechinSection
     },
@@ -40,6 +43,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
       id: 'startup-portfolio',
       title: 'Startup Portfolio',
       expandedTitle: 'Showcasing startups incubated and supported across IPTIF and TECHIN',
+      blurb: 'Browse incubated startups.',
       icon: <DashboardIcon name="profile" />,
       component: StartupPortfolio
     }

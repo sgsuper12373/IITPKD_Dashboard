@@ -18,6 +18,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       id: 'placements',
       title: 'Placement Statistics',
       expandedTitle: 'Empowering careers through industry-leading placement opportunities.',
+      blurb: 'Explore placement outcomes and recruiters.',
       icon: <DashboardIcon name="briefcase" />,
       component: PlacementSection
     },
@@ -25,6 +26,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       id: 'academic',
       title: 'Courses Details',
       expandedTitle: 'Advancing academic excellence through innovative programs.',
+      blurb: 'Explore academic programmes.',
       icon: <DashboardIcon name="education" />,
       component: EducationAcademicSection
     },
@@ -32,6 +34,7 @@ function EducationPublicView({ user: realUser, embedded }) {
       id: 'iar',
       title: 'Academic Collaborations',
       expandedTitle: 'Track and manage collaborations with Education Institutes',
+      blurb: 'Explore institutional partnerships.',
       icon: <DashboardIcon name="link" />,
       component: EducationIarSection
     }

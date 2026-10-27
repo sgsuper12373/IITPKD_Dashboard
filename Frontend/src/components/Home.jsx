@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
 import Footer from './Footer';
-import { KeepExploring, JourneyBar } from '../home/KeepExploring';
+import { JourneyBar } from '../home/KeepExploring';
 import JumpPalette, { JumpButton } from '../home/JumpPalette';
 import { useRecordVisit } from '../home/useRecentPages';
 import { usePageTracking } from '../analytics/usePageTracking';
@@ -26,7 +26,6 @@ function Home({ user, onLogout, isGuest }) {
         <div key={pathname} className="route-fade">
           <Outlet />
         </div>
-        <KeepExploring />
         <JumpPalette />
       </main>
       <br></br> <br></br> <br></br> <br></br> <br></br> 

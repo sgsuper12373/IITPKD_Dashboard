@@ -21,6 +21,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       id: 'academic',
       title: 'Student Overview',
       expandedTitle: 'Meet the minds shaping tomorrow.',
+      blurb: 'Explore student strength and diversity.',
       icon: <DashboardIcon name="students" />,
       component: AcademicSection
     },
@@ -28,6 +29,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       id: 'administrative',
       title: 'Employee Overview',
       expandedTitle: 'Dedicated Professionals. One Shared Mission.',
+      blurb: 'Explore faculty and staff composition.',
       icon: <DashboardIcon name="institute" />,
       component: AdministrativeSection
     },
@@ -35,6 +37,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
       id: 'iar',
       title: 'Our Alumni',
       expandedTitle: 'Fostering global partnerships and maintaining strong alumni connections',
+      blurb: 'Explore alumni outcomes and connections.',
       icon: <DashboardIcon name="global" />,
       component: IarSection
     }

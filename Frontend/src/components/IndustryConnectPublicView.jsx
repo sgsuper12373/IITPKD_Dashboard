@@ -18,6 +18,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       id: 'administrative',
       title: 'Externship',
       expandedTitle: 'Bridging academia and industry through Externships',
+      blurb: 'Explore externship programmes.',
       icon: <DashboardIcon name="bank" />,
       component: IndustryAdministrativeSection
     },
@@ -25,6 +26,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       id: 'icsr',
       title: 'Industry Events',
       expandedTitle: 'Fostering innovation through dynamic industry-academia collaboration.',
+      blurb: 'Explore industry collaboration events.',
       icon: <DashboardIcon name="link" />,
       component: IcsrSection
     },
@@ -32,6 +34,7 @@ function IndustryConnectPublicView({ user: realUser, embedded }) {
       id: 'conclave',
       title: 'Industry Academic Conclave',
       expandedTitle: 'Building bridges between industry leaders and academic excellence.',
+      blurb: 'Explore the conclave and partnerships.',
       icon: <DashboardIcon name="aim" />,
       component: ConclaveSection
     }
