@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import './Page.css';
 import './HomePage.css';
-import SplashScreen from './SplashScreen';
+
 import NirfRankingSection from './NirfRankingSection';
 import HomeIntro from '../home/HomeIntro';
 import HomeTour from '../home/HomeTour';
@@ -36,25 +36,14 @@ const iitPalakkadImages = [
 ];
 
 function HomePage({ user }) {
-  const [showSplash, setShowSplash] = useState(
-    () => !sessionStorage.getItem('splashShown')
-  );
-
-  const [showTour, setShowTour] = useState(false);
-  // One data load shared by the preview cards, pillar teasers and highlights.
+  const [showTour, setShowTour] = useState(() => {
+    try { return !localStorage.getItem('homeTourSeen'); } catch { return false; }
+  });
   const { data } = useInstitutePulse(null);
   const { settings, toggle } = useSiteSettings();
   const isAdmin = user?.role_id === 3;
   const showSlider = settings.show_image_slider === 'true';
   const showNirf = settings.show_nirf === 'true';
-
-  const handleSplashComplete = () => {
-    sessionStorage.setItem('splashShown', '1');
-    setShowSplash(false);
-    let seen = true;
-    try { seen = !!localStorage.getItem('homeTourSeen'); } catch { /* storage blocked: skip auto-tour */ }
-    if (!seen) setShowTour(true);
-  };
 
   const closeTour = () => {
     try { localStorage.setItem('homeTourSeen', '1'); } catch { /* ignore */ }
@@ -63,7 +52,6 @@ function HomePage({ user }) {
 
   return (
     <>
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       {showTour && <HomeTour onClose={closeTour} />}
       <div className="page-container">
         <div className="page-content">
