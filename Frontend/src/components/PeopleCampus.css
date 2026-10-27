@@ -337,6 +337,7 @@
 
 .pc-tab-panel__content {
   min-height: 120px;
+  min-width: 0;
 }
 
 /* ── Responsive ── */

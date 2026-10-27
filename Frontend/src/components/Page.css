@@ -18,6 +18,7 @@
   color: var(--color-text);
   line-height: 1.6;
   overflow: visible;
+  min-width: 0;
 }
 
 /* ── Page headings ── */

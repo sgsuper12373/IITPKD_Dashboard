@@ -13,9 +13,11 @@
 .pls-chart-area {
   position: relative;
   padding: 10px;
+  contain: inline-size;
 }
 .pls-chart-area--no-pad {
   position: relative;
+  contain: inline-size;
 }
 
 /* ── Top-recruiters table ── */

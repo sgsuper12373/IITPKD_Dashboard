@@ -345,6 +345,7 @@
 /* ── Chart area ── */
 .ewd-chart-area {
   padding: 10px;
+  contain: inline-size;
 }
 .ewd-scale-note {
   text-align: center;

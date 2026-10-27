@@ -1002,16 +1002,32 @@ function PlacementSection({ user, isPublicView = false }) {
                   const otherTotal = sectorPieData.slice(5).reduce((s, i) => s + i.companies, 0);
                   const pieData = [...top5];
                   if (otherTotal > 0) pieData.push({ sector: 'Others', companies: otherTotal, offers: otherTotal });
+                  const pieRadius = chartIsMobile ? 70 : 100;
                   return (
-                    <ResponsiveContainer width="100%" height={chartIsMobile ? 260 : 350}>
+                    <ResponsiveContainer width="100%" height={chartIsMobile ? 320 : 380}>
                       <PieChart>
-                        <Pie data={pieData} dataKey="companies" nameKey="sector" cx="50%" cy="50%" outerRadius={chartIsMobile ? 80 : 120} label={!chartIsMobile ? ({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%` : false} labelLine={false}>
+                        <Pie
+                          data={pieData}
+                          dataKey="companies"
+                          nameKey="sector"
+                          cx="50%"
+                          cy={chartIsMobile ? "40%" : "45%"}
+                          outerRadius={pieRadius}
+                          label={!chartIsMobile ? ({ sector, percent }) => `${sector} ${(percent * 100).toFixed(0)}%` : false}
+                          labelLine={false}
+                        >
                           {pieData.map((entry, index) => (
                             <Cell key={entry.sector} fill={index < SECTOR_COLORS.length ? SECTOR_COLORS[index % SECTOR_COLORS.length] : '#a0a0a0'} />
                           ))}
                         </Pie>
                         <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                        <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} />
+                        <Legend
+                          layout="horizontal"
+                          align="center"
+                          verticalAlign="bottom"
+                          wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }}
+                          iconSize={10}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   );

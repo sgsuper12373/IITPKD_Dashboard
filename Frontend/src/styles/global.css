@@ -1179,6 +1179,8 @@ strong { font-weight: 700; }
   box-shadow: 0 1px 2px rgba(20, 45, 78, 0.04);
   position: relative;
   overflow: visible;
+  min-width: 0;
+  contain: inline-size;
 }
 
 .chart-section + .chart-section {
@@ -1210,11 +1212,13 @@ strong { font-weight: 700; }
 }
 .cc-header__tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 2px;
   background: rgba(71, 85, 105, 0.06);
   padding: 2px;
   border-radius: 6px;
   margin-right: auto;
+  min-width: 0;
 }
 .cc-tab {
   padding: 4px 10px;
@@ -1314,6 +1318,8 @@ strong { font-weight: 700; }
   border: none;
   min-height: 260px;
   overflow: visible;
+  min-width: 0;
+  contain: inline-size;
 }
 
 .chart-container.clickable {
@@ -1394,6 +1400,7 @@ strong { font-weight: 700; }
   visibility: visible;
   transform: scale(1) translateY(0);
   pointer-events: auto;
+  contain: inline-size;
   transition: opacity var(--dur-slow) var(--ease-spring),
               transform var(--dur-slow) var(--ease-spring),
               visibility 0ms linear 0ms;
@@ -1404,7 +1411,7 @@ strong { font-weight: 700; }
 /* Recharts global overrides */
 .recharts-responsive-container {
   max-width: 100% !important;
-  overflow: visible !important;
+  min-width: 0 !important;
 }
 
 .recharts-wrapper,
@@ -2750,6 +2757,19 @@ strong { font-weight: 700; }
   .tab-btn { font-size: var(--text-xs); padding: 0.4rem 0.75rem; }
   .tab-group { gap: var(--space-1); }
 
+  .cc-header { padding: 8px 10px; gap: 6px; }
+  .cc-header__tabs { gap: 1px; padding: 1px; }
+  .cc-tab { padding: 4px 7px; font-size: 10px; white-space: normal; text-align: center; line-height: 1.3; }
+  .cc-header__filters { gap: 6px; width: 100%; }
+  .cc-filter-pair { gap: 3px; flex: 1 1 auto; }
+  .cc-filter-select { height: 26px; font-size: 11px; padding: 0 20px 0 6px; width: 100%; }
+  .cc-subheader { padding: 6px 10px 4px; gap: 6px; }
+  .cc-title { font-size: 12px; }
+  .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
+  .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
+    padding: 3px 8px; font-size: 10px;
+  }
+
   .chart-section { padding: clamp(0.75rem, 2vw, 1rem); }
   .chart-container { padding: clamp(0.625rem, 2vw, 0.875rem); min-height: 220px; }
   .chart-container.clickable::after { display: none; }
@@ -2777,6 +2797,19 @@ strong { font-weight: 700; }
   }
 
   .filter-group > .filter-item { flex: 1 1 100%; }
+
+  .cc-header { flex-direction: column; align-items: stretch; padding: 6px 8px; }
+  .cc-header__tabs { margin-right: 0; }
+  .cc-tab { flex: 1 1 auto; justify-content: center; padding: 3px 4px; font-size: 9px; }
+  .cc-header__filters { flex-direction: column; gap: 4px; }
+  .cc-filter-pair { width: 100%; }
+  .cc-filter-select { height: 24px; font-size: 10px; }
+  .cc-subheader { padding: 4px 8px; flex-direction: column; align-items: flex-start; }
+  .cc-title { font-size: 11px; }
+  .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
+  .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
+    padding: 3px 6px; font-size: 9px;
+  }
 
   .toggle-btn { font-size: 10px; padding: 4px 6px; }
 
@@ -2822,6 +2855,286 @@ strong { font-weight: 700; }
 @media (pointer: coarse) {
   body { -webkit-overflow-scrolling: touch; }
   .nav-link { padding: 0.75rem 0.875rem; }
+}
+
+/* ================================================================
+   17. LIQUID GLASS — Subtle frosted-glass treatment for tabs,
+       toggle pills, filter selects and dropdown controls.
+       Lightweight CSS only — no JS animation libraries.
+   ================================================================ */
+
+/* ── Token layer ─────────────────────────────────────────────────── */
+:root {
+  --lg-glass:           rgba(255, 255, 255, 0.55);
+  --lg-glass-hover:     rgba(255, 255, 255, 0.72);
+  --lg-glass-active-bg: rgba(247, 166, 0, 0.14);
+  --lg-gold:            #F7A600;
+  --lg-gold-soft:       rgba(247, 166, 0, 0.22);
+  --lg-gold-glow:       rgba(247, 166, 0, 0.10);
+  --lg-gold-text:       #4A3200;
+  --lg-border:          rgba(255, 255, 255, 0.60);
+  --lg-border-active:   rgba(247, 166, 0, 0.40);
+  --lg-inset:           inset 0 1px 0 rgba(255, 255, 255, 0.70);
+  --lg-inset-active:    inset 0 1px 0 rgba(255, 240, 190, 0.60);
+  --lg-shadow:          0 1px 3px rgba(0, 0, 0, 0.06);
+  --lg-shadow-hover:    0 2px 6px rgba(0, 0, 0, 0.08);
+  --lg-shadow-active:   0 1px 4px rgba(247, 166, 0, 0.12);
+  --lg-radius:          9999px;
+  --lg-radius-bar:      14px;
+  --lg-dur:             0.18s;
+}
+
+/* ── Main tab bar (pc-tab-bar) — subtle blur allowed here only ──── */
+.pc-tab-bar {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--lg-border);
+  border-radius: var(--lg-radius-bar);
+  padding: 4px;
+  gap: 4px;
+  box-shadow: var(--lg-shadow), var(--lg-inset);
+}
+
+/* ── Tab pills ──────────────────────────────────────────────────── */
+.pc-tab {
+  border-radius: var(--lg-radius);
+  background: var(--lg-glass);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: var(--color-text-muted, #64748b);
+  box-shadow: var(--lg-inset), var(--lg-shadow);
+  transition: background var(--lg-dur) ease,
+              color var(--lg-dur) ease,
+              border-color var(--lg-dur) ease,
+              box-shadow var(--lg-dur) ease;
+}
+
+.pc-tab:hover:not(.pc-tab--active) {
+  background: var(--lg-glass-hover);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
+  color: var(--color-text, #142D4E);
+}
+
+.pc-tab:focus-visible {
+  outline: 2px solid var(--lg-gold);
+  outline-offset: 2px;
+}
+
+.pc-tab--active {
+  background: var(--lg-glass-active-bg);
+  border-color: var(--lg-border-active);
+  color: var(--lg-gold-text);
+  font-weight: 600;
+  box-shadow: var(--lg-inset-active), var(--lg-shadow-active);
+}
+
+/* ── Mode-toggle trough (Bar/Trend, Gender, etc.) ───────────────── */
+.mode-toggle-row,
+.ewd-mode-toggle,
+.rls-mode-toggle,
+.ias-mode-toggle,
+.chart-mode-toggle,
+.pat-chart-mode-row,
+.mou-mode-btns-row,
+.icsr-mode-btns,
+.igrc-toggle-left,
+.hg-chart-toggle,
+.view-type-bar,
+.cc-tab-group,
+.iar-graph-table-toggle {
+  background: rgba(255, 255, 255, 0.30);
+  border: 1px solid var(--lg-border);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: var(--lg-inset), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Mode-toggle pill buttons ───────────────────────────────────── */
+.mode-btn,
+.ewd-mode-btn,
+.igrc-mode-btn,
+.ias-mode-btn,
+.nirf-mode-btn,
+.pat-mode-btn,
+.rls-mode-btn,
+.mou-mode-btn,
+.hg-mode-btn,
+.eiar-mode-btn,
+.icsr-mode-btn,
+.chart-mode-btn,
+.view-type-btn,
+.cc-tab,
+.iar-toggle-btn {
+  border-radius: var(--lg-radius);
+  background: rgba(250, 248, 243, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  color: var(--color-text-muted);
+  box-shadow: var(--lg-inset), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: background var(--lg-dur) ease,
+              color var(--lg-dur) ease,
+              border-color var(--lg-dur) ease,
+              box-shadow var(--lg-dur) ease;
+}
+
+.mode-btn:hover,
+.ewd-mode-btn:hover,
+.igrc-mode-btn:hover,
+.ias-mode-btn:hover,
+.nirf-mode-btn:hover,
+.pat-mode-btn:hover,
+.rls-mode-btn:hover,
+.mou-mode-btn:hover,
+.hg-mode-btn:hover,
+.eiar-mode-btn:hover,
+.icsr-mode-btn:hover,
+.chart-mode-btn:hover,
+.view-type-btn:hover,
+.cc-tab:hover,
+.iar-toggle-btn:hover {
+  background: var(--lg-glass-hover);
+  border-color: rgba(255, 255, 255, 0.60);
+  color: var(--color-text);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
+}
+
+.mode-btn:focus-visible,
+.ewd-mode-btn:focus-visible,
+.igrc-mode-btn:focus-visible,
+.ias-mode-btn:focus-visible,
+.nirf-mode-btn:focus-visible,
+.pat-mode-btn:focus-visible,
+.rls-mode-btn:focus-visible,
+.mou-mode-btn:focus-visible,
+.hg-mode-btn:focus-visible,
+.eiar-mode-btn:focus-visible,
+.icsr-mode-btn:focus-visible,
+.chart-mode-btn:focus-visible,
+.view-type-btn:focus-visible,
+.cc-tab:focus-visible,
+.iar-toggle-btn:focus-visible {
+  outline: 2px solid var(--lg-gold);
+  outline-offset: 2px;
+}
+
+/* ── Active state — gold accent ─────────────────────────────────── */
+.mode-btn.active,
+.ewd-mode-btn--active,
+.igrc-mode-btn--active,
+.ias-mode-btn--active,
+.nirf-mode-btn--active,
+.pat-mode-btn--active,
+.rls-mode-btn--active,
+.mou-mode-btn--active,
+.hg-mode-btn--active,
+.eiar-mode-btn--active,
+.icsr-mode-btn--active-indigo,
+.icsr-mode-btn--active-orange,
+.icsr-mode-btn--active-purple,
+.chart-mode-btn--active,
+.view-type-btn.active,
+.view-type-btn--yearly-active,
+.view-type-btn--dept-active,
+.view-type-btn--dir-active,
+.cc-tab--active,
+.iar-toggle-btn--active {
+  background: var(--lg-glass-active-bg) !important;
+  color: var(--lg-gold-text) !important;
+  border-color: var(--lg-border-active);
+  box-shadow: var(--lg-inset-active), var(--lg-shadow-active);
+  font-weight: 600;
+}
+
+/* ── Filter selects — glass treatment ───────────────────────────── */
+.filter-select,
+.rls-filter-select,
+.pat-filter-select,
+.iar-filter-select,
+.inno-filter-select,
+.hg-filter-select,
+.iptif-filter-select,
+.techin-filter-select,
+.mou-filter-select,
+.cc-filter-select {
+  background-color: rgba(255, 255, 255, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.50);
+  border-radius: var(--lg-radius);
+  box-shadow: var(--lg-inset), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: border-color var(--lg-dur) ease,
+              box-shadow var(--lg-dur) ease,
+              background-color var(--lg-dur) ease;
+}
+
+.filter-select:hover,
+.rls-filter-select:hover,
+.pat-filter-select:hover,
+.iar-filter-select:hover,
+.inno-filter-select:hover,
+.hg-filter-select:hover,
+.iptif-filter-select:hover,
+.techin-filter-select:hover,
+.mou-filter-select:hover,
+.cc-filter-select:hover {
+  background-color: var(--lg-glass-hover);
+  border-color: rgba(247, 166, 0, 0.25);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
+}
+
+.filter-select:focus,
+.rls-filter-select:focus,
+.pat-filter-select:focus,
+.iar-filter-select:focus,
+.inno-filter-select:focus,
+.hg-filter-select:focus,
+.iptif-filter-select:focus,
+.techin-filter-select:focus,
+.mou-filter-select:focus,
+.cc-filter-select:focus {
+  outline: none;
+  border-color: var(--lg-gold);
+  box-shadow: 0 0 0 3px var(--lg-gold-glow), var(--lg-inset);
+  background-color: rgba(255, 255, 255, 0.80);
+}
+
+/* ── Section tab buttons (MoU, ICSR) ────────────────────────────── */
+.mou-tab-btn,
+.icsr-tab-btn {
+  border-radius: var(--lg-radius);
+  background: var(--lg-glass);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: var(--lg-inset), var(--lg-shadow);
+}
+
+.mou-tab-btn:hover,
+.icsr-tab-btn:hover {
+  background: var(--lg-glass-hover);
+  border-color: rgba(255, 255, 255, 0.60);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
+}
+
+/* ── Responsive — tighten glass controls on narrow screens ──────── */
+@media (max-width: 600px) {
+  .pc-tab-bar {
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .pc-tab {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: var(--lg-radius);
+  }
+}
+
+@media (max-width: 380px) {
+  .pc-tab {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.75rem;
+  }
 }
 
 /* ── Reduced motion ── */

@@ -6,6 +6,11 @@
   --sidebar-w: 240px;
 }
 
+.home-container {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
 /* ── Background ── */
 body {
   background: var(--color-bg);

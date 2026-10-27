@@ -52,6 +52,7 @@
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  contain: inline-size;
 }
 
 /* ── Filters ── */
@@ -97,7 +98,7 @@
 }
 
 /* ── Chart wrapper ── */
-.hg-chart-wrapper { position: relative; height: 480px; }
+.hg-chart-wrapper { position: relative; height: 480px; contain: inline-size; }
 
 /* ── No-data overlay ── */
 .hg-no-data-overlay {

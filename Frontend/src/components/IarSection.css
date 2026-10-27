@@ -195,28 +195,7 @@
 .iar-filter-select:hover { border-color: var(--color-accent); }
 .iar-filter-select:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-light); }
 
-/* ── Chart type toggle (Bar / Trend) ── */
-.chart-mode-toggle {
-  display: inline-flex;
-  gap: 3px;
-  background: var(--color-bg-2);
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 20px;
-}
-.chart-mode-btn {
-  padding: 6px 16px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: var(--text-xs);
-  background: transparent;
-  color: var(--color-text-muted);
-  transition: color var(--dur-mid) var(--ease-spring),
-              background-color var(--dur-mid) var(--ease-spring),
-              box-shadow var(--dur-mid) var(--ease-spring);
-}
+/* chart-mode-toggle / chart-mode-btn: styled by global Liquid Glass rules */
 
 /* ── IAR chart header (flex row with export action) ── */
 .iar-chart-header {
@@ -414,29 +393,24 @@
 
 /* ── Outcome section ── */
 .iar-graph-table-toggle {
-  display: flex;
-  gap: 8px;
+  display: inline-flex;
   margin-bottom: 16px;
 }
 .iar-toggle-btn {
   padding: 7px 22px;
-  border-radius: 8px;
-  border: none;
   cursor: pointer;
   font-weight: 600;
   font-size: 13px;
-  background: #EDE9DF;
-  color: #64748b;
   transition: all 0.2s ease;
 }
 .iar-fixed-panel {
   overflow: hidden;
   height: 450px;
+  contain: inline-size;
 }
 .iar-chart-section-mb { margin-bottom: 30px; }
 .iar-relative          { position: relative; }
-.chart-mode-btn--active { background: #142D4E; color: #fff; }
-.iar-toggle-btn--active { background: #087E8B; color: #fff; }
+/* active states handled by global Liquid Glass rules */
 .iar-graph-panel {
   flex-direction: column;
   height: 100%;
@@ -471,6 +445,7 @@
   flex: 1;
   min-height: 0;
   max-height: 450px;
+  contain: inline-size;
 }
 .iar-table-panel {
   flex-direction: column;
@@ -623,6 +598,11 @@
   }
 }
 
+@media (max-width: 640px) {
+  .iar-view-tabs { gap: 6px; }
+  .iar-view-tab { padding: 8px 14px; font-size: 12px; }
+}
+
 @media (max-width: 480px) {
   .chart-section .grievance-table th:nth-child(1),
   .chart-section .grievance-table td:nth-child(1) {
@@ -633,10 +613,8 @@
     font-size: 0.76rem;
     padding: 0.4rem 0.5rem;
   }
-  .iar-view-tab {
-    padding: 8px 14px;
-    font-size: 13px;
-  }
+  .iar-view-tabs { gap: 4px; padding-bottom: 8px; }
+  .iar-view-tab { padding: 6px 10px; font-size: 11px; gap: 4px; }
 }
 
 @media (max-width: 360px) {

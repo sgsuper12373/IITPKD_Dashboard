@@ -265,6 +265,7 @@
 .icsr-chart-area {
   position: relative;
   padding: 10px;
+  contain: inline-size;
 }
 
 /* ── Projects directory — mobile cards ── */
