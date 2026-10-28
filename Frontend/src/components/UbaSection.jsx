@@ -14,8 +14,7 @@ import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
@@ -113,29 +112,22 @@ function UbaSection({ user, isPublicView = false }) {
           &#8592; Back to Outreach Extension
         </button>
       )}
-      {!isReadOnlyView && <h1>UBA (Unnat Bharat Abhiyan)</h1>}
-
-      {!isReadOnlyView && isAdmin && (
-        <div className="uba-upload-row">
-          <button
-            className="page-upload-btn"
-            onClick={() => { setActiveUploadTable('uba_projects'); setIsUploadModalOpen(true); }}
-          >
-            <UploadOutlined /> Upload Projects
-          </button>
-          <button
-            className="page-upload-btn"
-            onClick={() => { setActiveUploadTable('uba_events'); setIsUploadModalOpen(true); }}
-          >
-            <CalendarOutlined /> Upload Events
-          </button>
-        </div>
-      )}
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['uba_projects', 'uba_events']} />
-        <ShareButton />
-      </div>
+      <DashboardPageHeader
+        title="UBA (Unnat Bharat Abhiyan)"
+        subtitle="Explore rural development initiatives."
+        tables={['uba_projects', 'uba_events']}
+      >
+        {!isReadOnlyView && isAdmin && (
+          <div className="uba-upload-row">
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('uba_projects'); setIsUploadModalOpen(true); }}>
+              <UploadOutlined /> Upload Projects
+            </button>
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('uba_events'); setIsUploadModalOpen(true); }}>
+              <CalendarOutlined /> Upload Events
+            </button>
+          </div>
+        )}
+      </DashboardPageHeader>
 
       <div className="uba-export-row">
         <ExportMenu

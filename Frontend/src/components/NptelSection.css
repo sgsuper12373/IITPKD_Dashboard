@@ -2,10 +2,6 @@
 /* NPTEL SECTION — component-specific styles                    */
 /* ============================================================ */
 
-/* ── Page header row ── */
-.nptel-header    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px; }
-.nptel-header-h1 { margin: 0; }
-
 /* ── Summary cards ── */
 .nptel-cards        { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
 .nptel-card         { flex: 1 1 min(280px, 100%); border-radius: 20px; padding: 28px; color: white; }

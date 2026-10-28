@@ -170,11 +170,30 @@ body::before {
 
 .ds-nav-item.active svg { opacity: 1; }
 
+/* ── Identity tower (flexible center area) ── */
+.ds-identity {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+}
+
+.ds-clipart {
+  display: block;
+  width: 65%;
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 /* ── Sidebar footer ── */
 .ds-footer {
+  flex-shrink: 0;
   padding: 1rem 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
-  margin-top: auto;
 }
 
 .ds-footer-text {
@@ -196,16 +215,6 @@ body::before {
 }
 
 .ds-footer-link:hover { color: var(--color-accent); }
-
-/* ── Campus clipart in sidebar ── */
-.ds-clipart {
-  display: block;
-  width: 70%;
-  height: auto;
-  flex-shrink: 0;
-  margin: 0.5rem auto 0;
-  pointer-events: none;
-}
 
 /* ================================================================
    HEADER CONTAINER (FIXED)
@@ -239,7 +248,7 @@ body::before {
   box-shadow: var(--shadow-xs);
 }
 
-/* ── Header indicator (desktop: "PUBLIC DASHBOARD") ── */
+/* ── Header indicator (desktop: logo + institute name) ── */
 .header-indicator {
   display: none;
 }
@@ -248,19 +257,34 @@ body::before {
   .header-indicator {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--color-text);
+    gap: 10px;
   }
 
-  .header-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-accent);
+  .header-logo {
+    height: 34px;
+    width: auto;
+    object-fit: contain;
     flex-shrink: 0;
+  }
+
+  .header-institute-name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .header-institute-primary {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+  }
+
+  .header-institute-sub {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -333,6 +357,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  justify-self: end;
 }
 
 /* ── Feedback button ── */

@@ -25,8 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomTooltip from './CustomTooltip';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -98,22 +97,17 @@ function NptelSection({ user, isPublicView = false }) {
         </button>
       )}
 
-      <div className="nptel-header">
-        <h1 className="nptel-header-h1">CCE Statistics</h1>
+      <DashboardPageHeader
+        title="CCE Statistics"
+        subtitle="Explore continuing education statistics."
+        tables={['nptel_courses']}
+      >
         {!isReadOnlyView && isAdmin && (
-          <button
-            className="page-upload-btn"
-            onClick={() => { setActiveUploadTable('nptel_courses'); setIsUploadModalOpen(true); }}
-          >
+          <button className="page-upload-btn" onClick={() => { setActiveUploadTable('nptel_courses'); setIsUploadModalOpen(true); }}>
             <UploadOutlined /> Upload NPTEL Data
           </button>
         )}
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['nptel_courses']} />
-        <ShareButton />
-      </div>
+      </DashboardPageHeader>
 
       <ChartExpandModal
         isOpen={!!expandedChart}

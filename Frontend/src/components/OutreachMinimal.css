@@ -20,45 +20,6 @@
 }
 
 /* ===================================================== */
-/* PAGE HEADER TRANSITIONS */
-/* ===================================================== */
-
-.outreach-page-header {
-  margin-bottom: 3rem;
-}
-
-.outreach-page-header h1,
-.outreach-page-header p {
-  animation: titleFadeIn 0.5s var(--transition-smooth);
-}
-
-@keyframes titleFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.outreach-page-header {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.5s var(--transition-smooth),
-    transform 0.5s var(--transition-smooth);
-}
-
-.outreach-page-header.header-minimized {
-  opacity: 0;
-  transform: scale(0.95) translateY(20px);
-  pointer-events: none;
-  position: absolute;
-}
-
-/* ===================================================== */
 /* OUTREACH SECTIONS GRID */
 /* ===================================================== */
 

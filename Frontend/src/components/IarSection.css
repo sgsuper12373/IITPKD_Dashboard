@@ -529,54 +529,6 @@
 .iar-outcome-table tbody td:nth-child(4) { color: #066A75; font-weight: 500; }
 
 /* ── CTA Banner ── */
-.iar-cta-banner {
-  margin-top: 32px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 28px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  box-shadow: 0 10px 30px rgba(253, 221, 161, 1);
-}
-.iar-cta-body {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.iar-cta-title {
-  padding: 0 50px 0 0;
-  margin: 0 40px 4px 0;
-  color: #000;
-  font-size: 18px;
-  font-weight: 700;
-}
-.iar-cta-desc {
-  margin: 0;
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 13px;
-}
-.iar-cta-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #fff;
-  color: #000;
-  padding: 10px 22px;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  white-space: nowrap;
-}
-.iar-cta-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
 
 /* ============================================================ */
 /* RESPONSIVE                                                   */
@@ -587,14 +539,6 @@
   .chart-section .grievance-table td {
     font-size: 0.82rem;
     padding: 0.5rem 0.6rem;
-  }
-  .iar-cta-banner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .iar-cta-title {
-    padding: 0;
-    margin: 0 0 4px 0;
   }
 }
 

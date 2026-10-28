@@ -1274,43 +1274,6 @@
 .ac-modal-table { margin-top: 30px; }
 
 /* ── CDC career promo footer ── */
-.cdc-promo {
-  margin-top: 32px;
-  background: #fff;
-  border-radius: 16px;
-  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1rem, 3vw, 2rem);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  box-shadow: 0 10px 30px rgba(241, 229, 196, 1);
-}
-
-.cdc-promo h3 { margin: 0 0 4px 0; color: #000; font-size: 18px; font-weight: 700; }
-.cdc-promo p  { margin: 0; color: rgba(0, 0, 0, 0.85); font-size: 13px; }
-
-.cdc-promo-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff;
-  color: #000;
-  padding: 10px 22px;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  white-space: nowrap;
-}
-
-.cdc-promo-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  color: #000;
-}
 
 /* ── Engagement cards grid (EducationAdmin summary view) ── */
 .engagement-cards-grid {

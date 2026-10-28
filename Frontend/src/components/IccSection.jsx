@@ -19,8 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import SectionSkeleton from './SectionSkeleton';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const AREA_COLORS = {
   total: '#142D4E',
@@ -152,29 +151,17 @@ function IccSection({ user, isPublicView = false }) {
               </button>
             )}
 
-            {!isReadOnlyView && (
-              <div className="section-header">
-                <div className="section-header-left">
-                  <h1>ICC (Internal Complaints Committee)</h1>
-                </div>
-
-                <div className="section-header-actions">
-                  {!isReadOnlyView && isAdmin && (
-                    <button
-                      className="page-upload-btn"
-                      onClick={() => setIsUploadModalOpen(true)}
-                    >
-                      <UploadOutlined /> Upload Data
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <LastUpdated tables={['icc_yearwise']} />
-              <ShareButton />
-            </div>
+            <DashboardPageHeader
+              title="ICC (Internal Complaints Committee)"
+              subtitle="Explore the internal complaints committee."
+              tables={['icc_yearwise']}
+            >
+              {!isReadOnlyView && isAdmin && (
+                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                  <UploadOutlined /> Upload Data
+                </button>
+              )}
+            </DashboardPageHeader>
 
             {error && <div className="error-message">{error}</div>}
 

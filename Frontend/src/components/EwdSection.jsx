@@ -28,8 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import SectionSkeleton from './SectionSkeleton';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const ENERGY_BAR_COLOR = '#142D4E';
 const ELECTRICITY_LINE_COLOR = '#066A75';
@@ -184,28 +183,17 @@ function EwdSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Engineering and Works Division (EWD)</h1>
-            </div>
-            <div className="section-header-actions">
-              {!isReadOnlyView && isAdmin && (
-                <button
-                  className="page-upload-btn"
-                  onClick={() => setIsUploadModalOpen(true)}
-                >
-                  <UploadOutlined /> Upload Data
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['ewd_yearwise']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          title="Engineering and Works Division (EWD)"
+          subtitle="Explore campus infrastructure and works."
+          tables={['ewd_yearwise']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
 

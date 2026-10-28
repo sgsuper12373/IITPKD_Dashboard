@@ -30,8 +30,7 @@ import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 
 const SECTOR_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
@@ -68,19 +67,15 @@ function InnovationSection({ user, isPublicView }) {
   return (
     <div className="page-container">
       <div className="page-content">
-        <div className="inno-admin-header">
-          <div>
-            <h1>Innovation & Entrepreneurship</h1>
-            <p className="inno-admin-desc">
-              Track incubatees, startups, and innovation projects at TECHIN and IPTIF.
-            </p>
-          </div>
-          <div>
-            <button className="page-upload-btn" onClick={() => setShowPublicView(true)}>
-              View Public Page
-            </button>
-          </div>
-        </div>
+        <DashboardPageHeader
+          title="Innovation &amp; Entrepreneurship"
+          subtitle="Track incubatees, startups, and innovation projects at TECHIN and IPTIF."
+          tables={['innovation_projects']}
+        >
+          <button className="page-upload-btn" onClick={() => setShowPublicView(true)}>
+            View Public Page
+          </button>
+        </DashboardPageHeader>
         <InnovationSectionContent user={user} isPublicView={false} />
       </div>
     </div>
@@ -272,10 +267,12 @@ function InnovationSectionContent({ user, isPublicView }) {
 
   return (
     <div className={wrapClass}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['innovation_projects']} />
-        <ShareButton />
-      </div>
+      {!isPublicView && (
+        <DashboardPageHeader
+          subtitle="Explore innovation, startups and entrepreneurship."
+          tables={['innovation_projects']}
+        />
+      )}
 
       {error && <div className="error-message">{error}</div>}
 

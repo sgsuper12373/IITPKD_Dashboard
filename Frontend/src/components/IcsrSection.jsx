@@ -28,8 +28,7 @@ import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -152,19 +151,19 @@ function IcsrSection({ user, isPublicView = false }) {
         </button>
       )}
 
-      <div className="icsr-action-row">
-        {error && <div className="icsr-error">{error}</div>}
+      <DashboardPageHeader
+        title="Industry Events"
+        subtitle="Explore industry collaboration events."
+        tables={['industry_events']}
+      >
         {!isReadOnlyView && isAdmin && (
           <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
             <UploadOutlined /> Upload Events
           </button>
         )}
-      </div>
+      </DashboardPageHeader>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['industry_events']} />
-        <ShareButton />
-      </div>
+      {error && <div className="icsr-error">{error}</div>}
 
       <ChartExpandModal
         isOpen={!!expandedChart}

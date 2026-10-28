@@ -25,11 +25,11 @@ import {
 } from '../services/iptifStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
 import './Page.css';
 import './PeopleCampus.css';
 import './IptifSection.css';
+import { ArrowUpRight } from 'lucide-react';
+import DashboardPageHeader from './DashboardPageHeader';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 
@@ -569,29 +569,35 @@ function IptifSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        <h1 className="iptif-h1">IIT Palakkad Technology IHub Foundation (IPTIF)</h1>
-
-        {!isReadOnlyView && isAdmin && (
-          <div className="iptif-upload-row">
-            {[
-              { label: 'Upload Projects',   table: 'iptif_projects_table' },
-              { label: 'Upload Programs',   table: 'iptif_program_table' },
-              { label: 'Upload Startups',   table: 'iptif_startup_table' },
-              { label: 'Upload Facilities', table: 'iptif_facilities_table' },
-            ].map(({ label, table }) => (
-              <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
-                <UploadOutlined /> {label}
-              </button>
-            ))}
-          </div>
-        )}
+        <DashboardPageHeader
+          title="IIT Palakkad Technology IHub Foundation (IPTIF)"
+          subtitle="Explore IPTIF incubation, projects and programmes."
+          externalLabel="Visit IPTIF"
+          externalUrl="https://iptif.tech/"
+          tables={['iptif_projects_table', 'iptif_program_table', 'iptif_startup_table', 'iptif_facilities_table']}
+        >
+          {!hideFacilities && (
+            <button type="button" className="visit-ext-btn visit-ext-btn--internal" onClick={() => navigate('/innovation-entrepreneurship/iptif/facilities')}>
+              View Facilities <ArrowUpRight size={14} strokeWidth={2} />
+            </button>
+          )}
+          {!isReadOnlyView && isAdmin && (
+            <div className="iptif-upload-row">
+              {[
+                { label: 'Upload Projects',   table: 'iptif_projects_table' },
+                { label: 'Upload Programs',   table: 'iptif_program_table' },
+                { label: 'Upload Startups',   table: 'iptif_startup_table' },
+                { label: 'Upload Facilities', table: 'iptif_facilities_table' },
+              ].map(({ label, table }) => (
+                <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
+                  <UploadOutlined /> {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['iptif_projects_table', 'iptif_program_table', 'iptif_startup_table', 'iptif_facilities_table']} />
-          <ShareButton />
-        </div>
 
         <div className="iptif-export-row">
           <ExportMenu
@@ -678,38 +684,7 @@ function IptifSection({ user, isPublicView = false }) {
           </div>
         </section>
 
-        <div className="iptif-cta-banner iptif-cta-banner--facilities">
-          <div className="iptif-cta-left">
-            <div>
-              <h3 className="iptif-cta-h3">Explore Our Facilities</h3>
-              <p className="iptif-cta-p">Browse the labs, equipment, and spaces IPTIF offers — with details on availability and how to avail each one.</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate('/innovation-entrepreneurship/iptif/facilities')}
-            className="iptif-cta-link iptif-cta-link--primary"
-          >
-            View Facilities &#8594;
-          </button>
-        </div>
 
-        <div className="iptif-cta-banner">
-          <div className="iptif-cta-left">
-            <div>
-              <h3 className="iptif-cta-h3">Explore More on IPTIF</h3>
-              <p className="iptif-cta-p">Discover how IPTIF at IIT Palakkad is fostering innovation, incubation, and entrepreneurial excellence at IPTIF IIT Palakkad</p>
-            </div>
-          </div>
-          <a
-            href="https://iptif.tech/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="iptif-cta-link"
-          >
-            Visit iptif.tech &#8594;
-          </a>
-        </div>
       </div>
 
       <DataUploadModal

@@ -29,8 +29,7 @@ import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -337,67 +336,38 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
               </button>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <LastUpdated tables={['icsr_consultancy_projects', 'icsr_sponsered_projects', 'icsr_csr', 'research_patents', 'research_mous']} />
-              <ShareButton />
-            </div>
-
-            {!isReadOnlyView && (
-              <div className="section-header">
-                <div className="section-header-left">
-                  <h1>
-                    {mouOnly
-                      ? 'Industry Collaboration'
-                      : 'Industrial Consultancy & Sponsored Research'}
-                  </h1>
-                </div>
-
-                {!isReadOnlyView && isAdmin && (
-                  <div className="section-header-actions">
-                    {!mouOnly && (
-                      <>
-                        <button
-                          className="page-upload-btn"
-                          onClick={() => navigate('/research/icsr_consultancy_prj')}
-                        >
-                          <DashboardIcon name="setting" size={14} /> Manage Consultancy
-                        </button>
-                        <button
-                          className="page-upload-btn"
-                          onClick={() => navigate('/research/icsr_sponsered_prj')}
-                        >
-                          <DashboardIcon name="setting" size={14} /> Manage Sponsored
-                        </button>
-                        <button
-                          className="page-upload-btn"
-                          onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}
-                        >
-                          <UploadOutlined /> Consultancy
-                        </button>
-                        <button
-                          className="page-upload-btn"
-                          onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}
-                        >
-                          <UploadOutlined /> Sponsored
-                        </button>
-                        <button
-                          className="page-upload-btn"
-                          onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}
-                        >
-                          <UploadOutlined /> Patents
-                        </button>
-                      </>
-                    )}
-                    <button
-                      className="page-upload-btn"
-                      onClick={() => { setActiveUploadTable('research_mous'); setIsUploadModalOpen(true); }}
-                    >
-                      <UploadOutlined /> MoUs
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+            <DashboardPageHeader
+              title={mouOnly ? 'Industry Collaboration' : 'Industrial Consultancy & Sponsored Research'}
+              subtitle="Explore funded projects and consultancy."
+              tables={['icsr_consultancy_projects', 'icsr_sponsered_projects', 'icsr_csr', 'research_patents', 'research_mous']}
+            >
+              {!isReadOnlyView && isAdmin && (
+                <>
+                  {!mouOnly && (
+                    <>
+                      <button className="page-upload-btn" onClick={() => navigate('/research/icsr_consultancy_prj')}>
+                        <DashboardIcon name="setting" size={14} /> Manage Consultancy
+                      </button>
+                      <button className="page-upload-btn" onClick={() => navigate('/research/icsr_sponsered_prj')}>
+                        <DashboardIcon name="setting" size={14} /> Manage Sponsored
+                      </button>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_consultancy_projects'); setIsUploadModalOpen(true); }}>
+                        <UploadOutlined /> Consultancy
+                      </button>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('icsr_sponsered_projects'); setIsUploadModalOpen(true); }}>
+                        <UploadOutlined /> Sponsored
+                      </button>
+                      <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_patents'); setIsUploadModalOpen(true); }}>
+                        <UploadOutlined /> Patents
+                      </button>
+                    </>
+                  )}
+                  <button className="page-upload-btn" onClick={() => { setActiveUploadTable('research_mous'); setIsUploadModalOpen(true); }}>
+                    <UploadOutlined /> MoUs
+                  </button>
+                </>
+              )}
+            </DashboardPageHeader>
 
             {error && (
               <div className="icsr-error">{error}</div>

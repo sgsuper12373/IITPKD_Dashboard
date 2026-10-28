@@ -26,8 +26,7 @@ import './AcademicSection.css';
 import './OpenHouseSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import { useNavigate } from 'react-router-dom';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -121,19 +120,17 @@ function OpenHouseSection({ user, isPublicView = false }) {
         </button>
       )}
 
-      <div className="oh-header">
-        <h1 className="oh-header-h1">Open House &amp; Campus Events</h1>
+      <DashboardPageHeader
+        title="Open House &amp; Campus Events"
+        subtitle="Explore campus events and open house."
+        tables={['open_house']}
+      >
         {!isReadOnlyView && isAdmin && (
           <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
             <UploadOutlined /> Upload Event Data
           </button>
         )}
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <LastUpdated tables={['open_house']} />
-        <ShareButton />
-      </div>
+      </DashboardPageHeader>
 
       <ChartExpandModal
         isOpen={!!expandedChart}

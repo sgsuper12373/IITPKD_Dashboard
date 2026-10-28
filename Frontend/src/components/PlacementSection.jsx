@@ -31,6 +31,7 @@ import {
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DashboardIcon from './DashboardIcon';
 import { UploadOutlined, SearchOutlined } from '@ant-design/icons';
+import DashboardPageHeader from './DashboardPageHeader';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 
@@ -40,8 +41,6 @@ import './GrievanceSection.css';
 import './PlacementSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
 
 const GENDER_COLORS = ['#142D4E', '#087E8B', '#F5A623'];
 const SECTOR_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
@@ -539,41 +538,27 @@ function PlacementSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['placement_summary', 'placement_companies', 'placement_packages']} />
-          <ShareButton />
-        </div>
-
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Placements &amp; Career Outcomes</h1>
-            </div>
-
-            {!isReadOnlyView && isAdmin && (
-              <div className="section-header-actions">
-                <button
-                  className="page-upload-btn"
-                  onClick={() => { setActiveUploadTable('placement_summary'); setIsUploadModalOpen(true); }}
-                >
-                  <UploadOutlined /> Upload Summary
-                </button>
-                <button
-                  className="page-upload-btn"
-                  onClick={() => { setActiveUploadTable('placement_companies'); setIsUploadModalOpen(true); }}
-                >
-                  <UploadOutlined /> Upload Companies
-                </button>
-                <button
-                  className="page-upload-btn"
-                  onClick={() => { setActiveUploadTable('placement_packages'); setIsUploadModalOpen(true); }}
-                >
-                  <UploadOutlined /> Upload Packages
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <DashboardPageHeader
+          title="Placements &amp; Career Outcomes"
+          subtitle="Explore placement outcomes and recruiters."
+          externalLabel="Visit CDC"
+          externalUrl="https://cdc.iitpkd.ac.in/"
+          tables={['placement_summary', 'placement_companies', 'placement_packages']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('placement_summary'); setIsUploadModalOpen(true); }}>
+                <UploadOutlined /> Upload Summary
+              </button>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('placement_companies'); setIsUploadModalOpen(true); }}>
+                <UploadOutlined /> Upload Companies
+              </button>
+              <button className="page-upload-btn" onClick={() => { setActiveUploadTable('placement_packages'); setIsUploadModalOpen(true); }}>
+                <UploadOutlined /> Upload Packages
+              </button>
+            </>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
 
@@ -1225,20 +1210,6 @@ function PlacementSection({ user, isPublicView = false }) {
 
         </div>
 
-        <div className="cdc-promo">
-          <div>
-            <h3>Explore Career Development Center of IIT Palakkad</h3>
-            <p>Empowering students for successful careers through training, internships, and placements at Career Development Centre IIT Palakkad</p>
-          </div>
-          <a
-            href="https://cdc.iitpkd.ac.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cdc-promo-link"
-          >
-            Visit &#8594; cdc.iitpkd.ac.in
-          </a>
-        </div>
 
       </div>
 

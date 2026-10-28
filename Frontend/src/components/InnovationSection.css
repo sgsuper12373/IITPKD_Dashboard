@@ -2,18 +2,6 @@
 /* INNOVATION SECTION — component-specific styles               */
 /* ============================================================ */
 
-/* ── Admin header ── */
-.inno-admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.inno-admin-desc {
-  color: #666;
-  margin: 0;
-}
-
 /* ── Summary stat cards grid ── */
 .inno-stats-grid {
   display: flex;

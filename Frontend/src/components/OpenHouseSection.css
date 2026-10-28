@@ -2,10 +2,6 @@
 /* OPEN HOUSE SECTION — component-specific styles               */
 /* ============================================================ */
 
-/* ── Page header row ── */
-.oh-header    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px; }
-.oh-header-h1 { margin: 0; }
-
 /* ── Summary cards ── */
 .oh-cards       { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
 .oh-card        { flex: 1 1 min(200px, 100%); border-radius: 20px; padding: 28px; color: white; }

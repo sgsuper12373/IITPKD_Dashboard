@@ -23,8 +23,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 import './Page.css';
 import './AcademicSection.css';
@@ -117,35 +116,17 @@ function EducationIarSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        <div className="section-header eiar-section-header">
-          <div className="section-header-left">
-            <h1 className="eiar-h1">
-              <span className="icon-wrapper eiar-icon-wrapper">
-                <DashboardIcon name="link" size={24} />
-              </span>
-              {isPublicView
-                ? 'Academic Collaborations'
-                : 'International & Alumni Relations MoUs'
-              }
-            </h1>
-          </div>
-
+        <DashboardPageHeader
+          title={isPublicView ? 'Academic Collaborations' : 'International & Alumni Relations MoUs'}
+          subtitle="Explore institutional academic partnerships."
+          tables={['iar_mous']}
+        >
           {!isReadOnlyView && isAdmin && (
-            <div className="section-header-actions">
-              <button
-                className="page-upload-btn"
-                onClick={() => setIsUploadModalOpen(true)}
-              >
-                <UploadOutlined /> Upload MoUs
-              </button>
-            </div>
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload MoUs
+            </button>
           )}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['iar_mous']} />
-          <ShareButton />
-        </div>
+        </DashboardPageHeader>
 
         {error && (
           <div className="error-message eiar-error">{error}</div>

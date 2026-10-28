@@ -42,7 +42,7 @@ function Header({ user, onLogout, isGuest }) {
     const location = useLocation();
     const dropdownRef = useRef(null);
 
-    const visibleBottomTabs = [...ALL_BOTTOM_TABS, MORE_TAB];
+    const visibleBottomTabs = [MORE_TAB, ...ALL_BOTTOM_TABS];
 
     useEffect(() => {
         const mq = window.matchMedia('(max-width: 768px)');
@@ -81,7 +81,6 @@ function Header({ user, onLogout, isGuest }) {
         <>
             <div className="ds-logo-area">
                 <div className="ds-title">IIT Palakkad</div>
-                <div className="ds-subtitle">INSTITUTIONAL DASHBOARD</div>
             </div>
 
             <p className="ds-section-label">EXPLORE THE INSTITUTE</p>
@@ -100,10 +99,12 @@ function Header({ user, onLogout, isGuest }) {
                 ))}
             </nav>
 
-            <CampusClipart className="ds-clipart" />
+            <div className="ds-identity">
+                <CampusClipart className="ds-clipart" />
+            </div>
 
             <div className="ds-footer">
-                <p className="ds-footer-text">A public view of our people, work and impact.</p>
+                <p className="ds-footer-text">IIT Palakkad, at a Glance. Everything, One Click Away.</p>
                 {!isGuest && (
                     <button className="ds-footer-link" onClick={() => { setSidebarOpen(false); onLogout(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}>
                         <LogIn size={14} strokeWidth={2} />
@@ -142,14 +143,17 @@ function Header({ user, onLogout, isGuest }) {
                         <img src={IIPKD_Logo} alt="IIT Palakkad" className="logo-image" />
                         <div className="logo-text-group">
                             <span className="logo-text">IIT Palakkad</span>
-                            <span className="logo-tagline">INSTITUTIONAL DASHBOARD</span>
+                            <span className="logo-tagline">DASHBOARD</span>
                         </div>
                     </Link>
 
-                    {/* Desktop only: PUBLIC DASHBOARD indicator */}
+                    {/* Desktop only: logo + institute name */}
                     <div className="header-indicator">
-                        <span className="header-dot" />
-                        <span>PUBLIC DASHBOARD</span>
+                        <img src={IIPKD_Logo} alt="IIT Palakkad" className="header-logo" />
+                        <div className="header-institute-name">
+                            <span className="header-institute-primary">Indian Institute of Technology Palakkad</span>
+                            <span className="header-institute-sub">DASHBOARD</span>
+                        </div>
                     </div>
 
                     {/* Right side: search + user */}

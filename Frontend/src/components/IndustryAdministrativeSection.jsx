@@ -32,8 +32,7 @@ import './IndustryAdministrativeSection.css';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const TYPE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9'];
 
@@ -271,29 +270,17 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Administrative Section (Industry Faculty Industry Stint)</h1>
-            </div>
-
-            {!isReadOnlyView && isAdmin && (
-              <div className="section-header-actions">
-                <button
-                  className="page-upload-btn"
-                  onClick={() => setIsUploadModalOpen(true)}
-                >
-                  <UploadOutlined /> Upload Externship Data
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['externship_info']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          title="Administrative Section (Industry Faculty Industry Stint)"
+          subtitle="Explore externship programmes."
+          tables={['externship_info']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload Externship Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
 

@@ -9,8 +9,7 @@ import { useUploadRefresh } from '../hooks/useUploadRefresh';
 
 import DataUploadModal from './LazyDataUploadModal';
 import ChartExpandModal from './ChartExpandModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const NirfRankingSection = ({ user }) => {
     const uploadVersion = useUploadRefresh();
@@ -103,10 +102,10 @@ const NirfRankingSection = ({ user }) => {
 
     return (
         <>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['nirf_ranking']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          subtitle="NIRF ranking and institutional performance."
+          tables={['nirf_ranking']}
+        />
         {(!isGuest) && (
         <>
         <div className="content-card">

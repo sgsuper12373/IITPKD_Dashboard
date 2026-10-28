@@ -31,8 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import ChartExpandModal from './ChartExpandModal';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const ENGAGEMENT_COLORS = {
   Adjunct: '#142D4E',
@@ -498,24 +497,17 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
             â† Back to Education
           </button>
         )}
-        {!isReadOnlyView && (
-          <div className="chart-title-row">
-            <h1>Administrative Section - External Academic Engagement</h1>
-            {!isReadOnlyView && isAdmin && (
-              <button
-                className="page-upload-btn"
-                onClick={() => setIsUploadModalOpen(true)}
-              >
-                Upload Data
-              </button>
-            )}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['faculty_engagement']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          title="Administrative Section - External Academic Engagement"
+          subtitle="Explore external academic engagement."
+          tables={['faculty_engagement']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              Upload Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && (
           <div className="error-message">

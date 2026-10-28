@@ -24,8 +24,7 @@ import { getOrderedLegend } from '../utils/chartUtils';
 import './Page.css';
 import './AcademicSection.css';
 import './AdministrativeSection.css';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 // ── Constants ──────────────────────────────────────────────────────────────
 
 const BAR_ANIMATION = {
@@ -912,29 +911,23 @@ function AdministrativeSection({ user, isPublicView = false }) {
             ← Back to People & Campus
           </button>
         )}
-        {!isReadOnlyView && isAdmin && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>{section === 'education' ? 'Faculty Engagement Overview' : 'Employee Overview'}</h1>
-            </div>
-            <div className="section-header-actions">
-              {section === 'education' ? (
-                <button className="page-upload-btn" onClick={() => setIsFacultyUploadModalOpen(true)}>
-                  <UploadOutlined /> Upload Faculty Engagement Data
-                </button>
-              ) : (
-                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <UploadOutlined /> Upload Employee Data
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={[section === 'education' ? 'faculty_engagement' : 'employees']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          title={section === 'education' ? 'Faculty Engagement Overview' : 'Employee Overview'}
+          subtitle={section === 'education' ? 'Explore faculty engagement overview.' : 'Explore faculty and staff composition.'}
+          tables={[section === 'education' ? 'faculty_engagement' : 'employees']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            section === 'education' ? (
+              <button className="page-upload-btn" onClick={() => setIsFacultyUploadModalOpen(true)}>
+                <UploadOutlined /> Upload Faculty Engagement Data
+              </button>
+            ) : (
+              <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                <UploadOutlined /> Upload Employee Data
+              </button>
+            )
+          )}
+        </DashboardPageHeader>
 
         {(regError || eduError) && (
           <div className="error-message">{regError || eduError}</div>

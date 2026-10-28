@@ -21,8 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import SectionSkeleton from './SectionSkeleton';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const BAR_COLORS = {
   filed: '#142D4E',
@@ -129,24 +128,17 @@ function IgrcSection({ user, isPublicView = false }) {
               </button>
             )}
 
-            {!isReadOnlyView && (
-              <div className="section-header">
-                <h1 className="section-title">
-                  Internal Grievance Resolution Cell (IGRC)
-                </h1>
-
-                {!isReadOnlyView && isAdmin && (
-                  <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                    Upload Data
-                  </button>
-                )}
-              </div>
-            )}
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <LastUpdated tables={['igrs_yearwise']} />
-              <ShareButton />
-            </div>
+            <DashboardPageHeader
+              title="Internal Grievance Resolution Cell (IGRC)"
+              subtitle="Explore institutional grievance redressal."
+              tables={['igrs_yearwise']}
+            >
+              {!isReadOnlyView && isAdmin && (
+                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+                  Upload Data
+                </button>
+              )}
+            </DashboardPageHeader>
 
             {error && <div className="error-message">{error}</div>}
 

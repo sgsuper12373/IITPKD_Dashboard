@@ -15,8 +15,7 @@ import './GrievanceSection.css';
 import './EducationAcademicSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -119,25 +118,17 @@ function EducationAcademicSection({ user, isPublicView = false }) {
             &#8592; Back to Education
           </button>
         )}
-        {!isReadOnlyView && (
-          <div className="page-header-row">
-            <div className="page-header-left">
-              <h1>Academic Section</h1>
-            </div>
-            {isAdmin && (
-              <div className="page-header-actions">
-                <button className="page-upload-btn" onClick={() => { setActiveUploadTable('courses_table'); setIsUploadModalOpen(true); }}>
-                  <UploadOutlined /> Upload Course Data
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['courses_table']} />
-          <ShareButton />
-        </div>
+        <DashboardPageHeader
+          title="Academic Section"
+          subtitle="Explore academic programmes and courses."
+          tables={['courses_table']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => { setActiveUploadTable('courses_table'); setIsUploadModalOpen(true); }}>
+              <UploadOutlined /> Upload Course Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="eas-error">{error}</div>}
 

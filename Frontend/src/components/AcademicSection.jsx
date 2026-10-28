@@ -20,8 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
 import { getOrderedLegend } from '../utils/chartUtils';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const COLORS = ['#142D4E', '#087E8B', '#F5A623'];
 
@@ -573,24 +572,19 @@ function AcademicSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {showUploadBtn && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Student Overview</h1>
-            </div>
+        <DashboardPageHeader
+          title="Student Overview"
+          subtitle="Explore student strength and diversity."
+          tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']}
+        >
+          {showUploadBtn && (
             <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
               Upload Data
             </button>
-          </div>
-        )}
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
-
-        {/* ══ On-Roll Students ══════════════════════════════════════════════ */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <LastUpdated tables={['student_table', 'courses_table', 'nptel_courses', 'faculty_engagement', 'alumni']} />
-              <ShareButton />
-          </div>
         <div className="export-row">
           <ExportMenu
             elementId="academic-onroll-cards-container"

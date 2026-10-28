@@ -20,8 +20,7 @@ import ExportMenu from './ExportMenu';
 import DashboardIcon from './DashboardIcon';
 import { BarChartOutlined, LineChartOutlined, ProfileOutlined, UploadOutlined } from '@ant-design/icons';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const TYPE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706'];
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(Number(value) || 0);
@@ -176,30 +175,21 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>Publications</h1>
-            </div>
-
-            {!isReadOnlyView && isAdmin && (
-              <div className="section-header-actions">
-                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <UploadOutlined /> Upload Publications
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {!isReadOnlyView && <h1>Library &amp; Scholarly Outputs</h1>}
+        <DashboardPageHeader
+          title="Library &amp; Scholarly Outputs"
+          subtitle="Explore publications and citations."
+          externalLabel="Visit Library"
+          externalUrl="https://lib.iitpkd.ac.in/"
+          tables={['research_publications']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload Publications
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['research_publications']} />
-          <ShareButton />
-        </div>
 
         <div className="rls-export-row">
           <ExportMenu
@@ -424,22 +414,6 @@ function ResearchLibrarySection({ user, isPublicView = false }) {
           )}
         </section>
 
-        <div className="rls-cta-banner">
-          <div className="rls-cta-left">
-            <div>
-              <h3 className="rls-cta-h3">Explore More about IIT Palakkad Library</h3>
-              <p className="rls-cta-p">Explore the information hub of IIT Palakkad, where knowledge meets curiosity and innovation begins.</p>
-            </div>
-          </div>
-          <a
-            href="https://lib.iitpkd.ac.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rls-cta-link"
-          >
-            Visit lib.iitpkd.ac.in &#8594;
-          </a>
-        </div>
 
       </div>
 

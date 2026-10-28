@@ -22,14 +22,13 @@ import {
 } from '../services/techinStats';
 import { useUploadRefresh } from '../hooks/useUploadRefresh';
 import DataUploadModal from './LazyDataUploadModal';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
 import './Page.css';
 import './PeopleCampus.css';
 import '../DesignSystem.css';
 import './TechinSection.css';
 import DashboardIcon from './DashboardIcon';
 import { UploadOutlined } from '@ant-design/icons';
+import DashboardPageHeader from './DashboardPageHeader';
 import ExportMenu from './ExportMenu';
 import ChartExpandModal from './ChartExpandModal';
 
@@ -507,28 +506,29 @@ function TechinSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        <h1 className="techin-h1">TECHIN</h1>
-
-        {!isReadOnlyView && isAdmin && (
-          <div className="techin-upload-row">
-            {[
-              { label: 'Upload Programs',  table: 'techin_program_table' },
-              { label: 'Upload Skill Dev', table: 'techin_skill_development_program' },
-              { label: 'Upload Startups',  table: 'techin_startup_table' },
-            ].map(({ label, table }) => (
-              <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
-                <UploadOutlined /> {label}
-              </button>
-            ))}
-          </div>
-        )}
+        <DashboardPageHeader
+          title="TECHIN"
+          subtitle="Explore TECHIN innovation hub services and solutions."
+          externalLabel="Visit TECHIN"
+          externalUrl="https://techin-iitpkd.org/"
+          tables={['techin_program_table', 'techin_skill_development_program', 'techin_startup_table']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <div className="techin-upload-row">
+              {[
+                { label: 'Upload Programs',  table: 'techin_program_table' },
+                { label: 'Upload Skill Dev', table: 'techin_skill_development_program' },
+                { label: 'Upload Startups',  table: 'techin_startup_table' },
+              ].map(({ label, table }) => (
+                <button key={table} className="page-upload-btn" onClick={() => { setActiveUploadTable(table); setIsUploadModalOpen(true); }}>
+                  <UploadOutlined /> {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['techin_program_table', 'techin_skill_development_program', 'techin_startup_table']} />
-          <ShareButton />
-        </div>
 
         <div className="techin-export-row">
           <ExportMenu
@@ -644,22 +644,6 @@ function TechinSection({ user, isPublicView = false }) {
           </div>
         </section>
 
-        <div className="techin-cta-banner">
-          <div className="techin-cta-left">
-            <div>
-              <h3 className="techin-cta-h3">Explore More on TECHIN</h3>
-              <p className="techin-cta-p">Visit our website to explore our services and solutions.</p>
-            </div>
-          </div>
-          <a
-            href="https://techin-iitpkd.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="techin-cta-link"
-          >
-            Visit Techin.com &#8594;
-          </a>
-        </div>
       </div>
 
       <DataUploadModal

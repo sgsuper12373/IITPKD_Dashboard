@@ -103,6 +103,38 @@
   color: var(--color-text);
 }
 
+.visit-ext-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #087E8B;
+  background: transparent;
+  border: 1.5px solid rgba(8, 126, 139, 0.3);
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.visit-ext-btn:hover {
+  background: rgba(8, 126, 139, 0.06);
+  border-color: rgba(8, 126, 139, 0.5);
+  color: #087E8B;
+}
+.visit-ext-btn--internal {
+  color: #142D4E;
+  border-color: rgba(20, 45, 78, 0.25);
+}
+.visit-ext-btn--internal:hover {
+  background: rgba(20, 45, 78, 0.05);
+  border-color: rgba(20, 45, 78, 0.4);
+  color: #142D4E;
+}
+
 /* ================================================================
    FILTER PANEL
    ================================================================ */

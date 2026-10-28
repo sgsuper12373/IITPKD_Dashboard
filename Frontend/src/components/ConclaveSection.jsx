@@ -13,8 +13,7 @@ import './AcademicSection.css';
 import './ConclaveSection.css';
 import DataUploadModal from './LazyDataUploadModal';
 import ExportMenu from './ExportMenu';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
+import DashboardPageHeader from './DashboardPageHeader';
 
 const formatNumber = (value) => new Intl.NumberFormat('en-IN').format(value || 0);
 
@@ -74,27 +73,19 @@ function ConclaveSection({ user, isPublicView = false }) {
             &#8592; Back to Industry Connect
           </button>
         )}
-        {!isReadOnlyView && (
-          <div className="page-header-row">
-            <div className="page-header-left">
-              <h1>Industry-Academia Conclave</h1>
-            </div>
-            {!isReadOnlyView && isAdmin && (
-              <div className="page-header-actions">
-                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <UploadOutlined /> Upload Conclave Data
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <DashboardPageHeader
+          title="Industry-Academia Conclave"
+          subtitle="Explore the conclave and partnerships."
+          tables={['industry_conclave']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload Conclave Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
         {error && <div className="error-message">{error}</div>}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['industry_conclave']} />
-          <ShareButton />
-        </div>
 
         <div className="cncl-export-row">
           <ExportMenu

@@ -1,46 +1,97 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import './HomeIntro.css';
 
+function isLowEndDevice() {
+  if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
+  if (navigator.deviceMemory && navigator.deviceMemory <= 2) return true;
+  if (navigator.connection) {
+    const { effectiveType, saveData } = navigator.connection;
+    if (saveData) return true;
+    if (effectiveType === 'slow-2g' || effectiveType === '2g') return true;
+  }
+  return false;
+}
+
 export default function HomeIntro() {
   const videoRef = useRef(null);
+  const sectionRef = useRef(null);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [lowEnd] = useState(isLowEndDevice);
+
+  const tryPlay = useCallback(() => {
+    const v = videoRef.current;
+    if (v && v.paused && !document.hidden) v.play().catch(() => {});
+  }, []);
+
+  const tryPause = useCallback(() => {
+    const v = videoRef.current;
+    if (v && !v.paused) v.pause();
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    const section = sectionRef.current;
+    if (!video || !section) return;
 
+    const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (motionMq.matches) { tryPause(); return; }
+
+    // Pause when tab hidden, resume when visible (if hero still in view)
     const onVisibility = () => {
-      if (document.hidden) video.pause();
-      else video.play().catch(() => {});
+      if (document.hidden) tryPause();
+      // resume handled by IntersectionObserver re-check below
     };
 
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mq.matches) video.pause();
+    // Pause when user scrolls past the hero, resume when hero comes back
+    let heroVisible = true;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        heroVisible = entry.isIntersecting;
+        if (heroVisible && !document.hidden) tryPlay();
+        else tryPause();
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(section);
 
     const onMotionPref = (e) => {
-      if (e.matches) video.pause();
-      else if (!document.hidden) video.play().catch(() => {});
+      if (e.matches) tryPause();
+      else if (heroVisible) tryPlay();
+    };
+
+    // On low-end devices, pause after the first loop completes
+    let loopCount = 0;
+    const onLoop = () => {
+      loopCount++;
+      if (lowEnd && loopCount >= 1) {
+        tryPause();
+        video.removeEventListener('ended', onLoop);
+      }
     };
 
     document.addEventListener('visibilitychange', onVisibility);
-    mq.addEventListener('change', onMotionPref);
+    motionMq.addEventListener('change', onMotionPref);
+    if (lowEnd) video.addEventListener('ended', onLoop);
+
     return () => {
+      observer.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
-      mq.removeEventListener('change', onMotionPref);
+      motionMq.removeEventListener('change', onMotionPref);
+      if (lowEnd) video.removeEventListener('ended', onLoop);
     };
-  }, []);
+  }, [lowEnd, tryPlay, tryPause]);
 
   return (
-    <section className="hi" data-tour="intro">
+    <section className="hi" ref={sectionRef} data-tour="intro">
       {!videoFailed && (
         <video
           ref={videoRef}
           className="hi__video"
           autoPlay
           muted
-          loop
+          loop={!lowEnd}
           playsInline
           preload="metadata"
           onError={() => setVideoFailed(true)}

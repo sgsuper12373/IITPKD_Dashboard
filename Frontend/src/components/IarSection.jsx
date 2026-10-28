@@ -33,10 +33,9 @@ import './AcademicSection.css';
 import './GrievanceSection.css';
 import './IarSection.css';
 import { useNavigate } from 'react-router-dom';
+import DashboardPageHeader from './DashboardPageHeader';
 import ExportMenu from './ExportMenu';
 import CustomTooltip from './CustomTooltip';
-import LastUpdated from './LastUpdated';
-import ShareButton from './ShareButton';
 
 const PIE_COLORS = ['#142D4E', '#087E8B', '#F5A623', '#16A34A', '#6366F1', '#D97706', '#0EA5E9', '#DC2626'];
 const OTHERS_PIE_COLOR = '#8C9BB5';
@@ -298,29 +297,21 @@ function IarSection({ user, isPublicView = false }) {
           </button>
         )}
 
-        {!isReadOnlyView && (
-          <div className="section-header">
-            <div className="section-header-left">
-              <h1>International and Alumni Relations</h1>
-            </div>
-            <div className="section-header-actions">
-              {!isReadOnlyView && isAdmin && (
-                <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
-                  <UploadOutlined /> Upload Data
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+        <DashboardPageHeader
+          title="International and Alumni Relations"
+          subtitle="Explore alumni outcomes and connections."
+          externalLabel="Visit IAR"
+          externalUrl="https://iar.iitpkd.ac.in/home"
+          tables={['alumni']}
+        >
+          {!isReadOnlyView && isAdmin && (
+            <button className="page-upload-btn" onClick={() => setIsUploadModalOpen(true)}>
+              <UploadOutlined /> Upload Data
+            </button>
+          )}
+        </DashboardPageHeader>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LastUpdated tables={['alumni']} />
-          <ShareButton />
-        </div>
-
-        {error && (
-          <div className="error-message">{error}</div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <div className="iar-body">
 
@@ -874,23 +865,6 @@ function IarSection({ user, isPublicView = false }) {
             </div>
           </div>
 
-          {/* Alumni CTA Banner */}
-          <div className="iar-cta-banner">
-            <div className="iar-cta-body">
-              <div>
-                <h3 className="iar-cta-title">Explore About our Alumni</h3>
-                <p className="iar-cta-desc">Explore the achievements, innovations, and leadership journeys of our alumni community at IAR IIT Palakkad</p>
-              </div>
-            </div>
-            <a
-              href="https://iar.iitpkd.ac.in/home"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="iar-cta-link"
-            >
-              Visit iar.iitpkd.ac.in →
-            </a>
-          </div>
         </div>
 
       {/* Upload Modal */}
