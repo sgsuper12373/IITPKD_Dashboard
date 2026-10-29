@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
 import DashboardIcon from './DashboardIcon';
+import ScrollableTabBar from './ScrollableTabBar';
 import './Page.css';
 import './PeopleCampus.css';
 import './InnovationMinimal.css';
@@ -54,7 +55,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
 
   const inner = (
     <>
-      <nav className="pc-tab-bar" role="tablist" aria-label="Innovation sections">
+      <ScrollableTabBar ariaLabel="Innovation sections">
         {sections.map((section) => (
           <button
             key={section.id}
@@ -67,7 +68,7 @@ function InnovationPublicView({ user: realUser, embedded }) {
             <span className="pc-tab__label">{section.title}</span>
           </button>
         ))}
-      </nav>
+      </ScrollableTabBar>
 
       {activeSection && (
         <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>

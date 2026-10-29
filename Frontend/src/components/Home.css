@@ -264,7 +264,7 @@ body::before {
   }
 
   .header-logo {
-    height: 34px;
+    height: 38px;
     width: auto;
     object-fit: contain;
     flex-shrink: 0;
@@ -277,8 +277,8 @@ body::before {
   }
 
   .header-institute-primary {
-    font-size: var(--font-size-navigation);
-    font-weight: 600;
+    font-size: clamp(1rem, 0.9rem + 0.35vw, 1.25rem);
+    font-weight: 700;
     color: var(--color-text);
     letter-spacing: 0.01em;
   }

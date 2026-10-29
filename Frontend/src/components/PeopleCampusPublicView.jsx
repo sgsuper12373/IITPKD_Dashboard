@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PUBLIC_PREVIEW_USER, PublicPreviewContext } from '../utils/publicPreview';
 import DashboardIcon from './DashboardIcon';
+import ScrollableTabBar from './ScrollableTabBar';
 import './Page.css';
 import './PeopleCampus.css';
 import './PeopleCampusMinimal.css';
@@ -54,7 +55,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
   const inner = (
     <>
       {/* Horizontal tab bar */}
-      <nav className="pc-tab-bar" role="tablist" aria-label="People &amp; Campus sections">
+      <ScrollableTabBar ariaLabel="People & Campus sections">
         {visibleSections.map((section) => (
           <button
             key={section.id}
@@ -67,7 +68,7 @@ function PeopleCampusPublicView({ user: realUser, embedded }) {
             <span className="pc-tab__label">{section.title}</span>
           </button>
         ))}
-      </nav>
+      </ScrollableTabBar>
 
       {/* Active section content */}
       {activeSection && (

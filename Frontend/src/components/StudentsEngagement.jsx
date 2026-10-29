@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PUBLIC_PREVIEW_USER, PREVIEW_QUERY, PublicPreviewContext, isPreviewSearch } from '../utils/publicPreview';
 import DashboardIcon from './DashboardIcon';
+import ScrollableTabBar from './ScrollableTabBar';
 import './Page.css';
 import './PeopleCampus.css';
 import './StudentsEngagement.css';
@@ -60,7 +61,7 @@ function StudentsEngagementSection({ user: realUser }) {
           &#8592; Back to Outreach Extension
         </button>
         <PublicPreviewContext.Provider value={isPreview}>
-          <nav className="pc-tab-bar" role="tablist" aria-label="Students Engagement sections">
+          <ScrollableTabBar ariaLabel="Students Engagement sections">
             {SECTIONS.map((section) => (
               <button
                 key={section.id}
@@ -73,7 +74,7 @@ function StudentsEngagementSection({ user: realUser }) {
                 <span className="pc-tab__label">{section.title}</span>
               </button>
             ))}
-          </nav>
+          </ScrollableTabBar>
 
           {activeSection && (
             <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>

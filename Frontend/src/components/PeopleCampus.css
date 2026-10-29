@@ -258,11 +258,50 @@
 /* PUBLIC VIEW — HORIZONTAL TAB BAR                      */
 /* ===================================================== */
 
+/* ── Tab bar wrapper with scroll arrows ── */
+.pc-tab-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1.25rem;
+}
+
+.pc-tab-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(20, 45, 78, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #142D4E;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  font: inherit;
+  transition: background 0.15s, border-color 0.15s, opacity 0.2s, transform 0.15s;
+}
+
+.pc-tab-arrow:hover {
+  background: #fff;
+  border-color: rgba(20, 45, 78, 0.4);
+  transform: scale(1.08);
+}
+
+.pc-tab-arrow--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .pc-tab-bar {
   display: flex;
   gap: 0.375rem;
   padding: 0.3rem;
-  margin-top: 1.25rem;
+  flex: 1;
+  min-width: 0;
   background: var(--color-bg-2, #F0EDE5);
   border-radius: var(--radius-md, 10px);
   overflow-x: auto;
