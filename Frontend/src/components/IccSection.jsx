@@ -289,12 +289,12 @@ function IccSection({ user, isPublicView = false }) {
                                 <ResponsiveContainer width="100%" height={400}>
                                   <BarChart data={summary.grievance_status} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                    <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
-                                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                                    <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 14, fontWeight: 500 }} />
+                                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 14, fontWeight: 500 }} />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                                     <Bar dataKey="count" name="Count" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                                      <LabelList dataKey="count" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
+                                      <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: '#142D4E' }} />
                                     </Bar>
                                   </BarChart>
                                 </ResponsiveContainer>
@@ -304,11 +304,11 @@ function IccSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={300}>
                               <BarChart data={summary.grievance_status} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
-                                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+                                <XAxis dataKey="status" stroke="#666" tick={{ fill: '#666', fontSize: 14 }} />
+                                <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 14 }} />
                                 <Tooltip content={<CustomTooltip />} />
                                 <Bar dataKey="count" fill="#142D4E" name="Count" radius={[4, 4, 0, 0]}>
-                                  <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
+                                  <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: '#142D4E' }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -323,18 +323,18 @@ function IccSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={500}>
                               <BarChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }} barCategoryGap="20%">
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} interval={0} angle={-40} textAnchor="end" height={60} />
-                                <YAxis stroke="#666" tick={{ fontSize: 12 }} allowDecimals={false} label={{ value: 'Complaints', angle: -90, position: 'insideLeft' }} />
+                                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                <YAxis stroke="#666" tick={{ fontSize: 14 }} allowDecimals={false} label={{ value: 'Complaints', angle: -90, position: 'insideLeft' }} />
                                 <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                                <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }} />
+                                <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} />
                                 <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="total" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.total }} />
+                                  <LabelList dataKey="total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.total }} />
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="pending" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.pending }} />
+                                  <LabelList dataKey="pending" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.pending }} />
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="resolved" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
+                                  <LabelList dataKey="resolved" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.resolved }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -344,18 +344,18 @@ function IccSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={350}>
                           <BarChart data={displayYearlyData} margin={{ top: 26, right: 20, left: 30, bottom: chartIsMobile ? 50 : 30 }} barCategoryGap="20%">
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} allowDecimals={false} />
                             <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Complaints']} />} />
-                            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                            <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '10px' }} />
                             <Bar dataKey={visibleMetrics.total ? "total" : "__hidden__"} name="Complaints" fill={AREA_COLORS.total} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.total ? "rect" : "none"}>
-                              {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.total }} />}
+                              {visibleMetrics.total && <LabelList dataKey="total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.total }} />}
                             </Bar>
                             <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={AREA_COLORS.pending} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.pending ? "rect" : "none"}>
-                              {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
+                              {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.pending }} />}
                             </Bar>
                             <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={AREA_COLORS.resolved} radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700} legendType={visibleMetrics.resolved ? "rect" : "none"}>
-                              {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
+                              {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS.resolved }} />}
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>

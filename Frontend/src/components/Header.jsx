@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   House, Users, FlaskConical, GraduationCap, Menu,
   Factory, Lightbulb, Sprout, X,
-  LayoutGrid, ArrowUpRight, LogIn,
+  /* LayoutGrid, */ ArrowUpRight, LogIn,
 } from 'lucide-react';
 import './Home.css';
 import './NativeApp.css';
@@ -15,7 +15,7 @@ import { getRoleName } from '../utils/rolePermissions';
 
 const SIDEBAR_NAV = [
   { Icon: House,          label: 'Institute overview',           path: '/',                            match: (p) => p === '/' },
-  { Icon: LayoutGrid,     label: 'Quick glance',                 path: '/quick-glance',                match: (p) => p.startsWith('/quick-glance') },
+  // { Icon: LayoutGrid,     label: 'Quick glance',                 path: '/quick-glance',                match: (p) => p.startsWith('/quick-glance') },
   { Icon: Users,          label: 'People & campus',              path: '/people-campus',               match: (p) => p.startsWith('/people-campus') },
   { Icon: FlaskConical,   label: 'Research',                     path: '/research',                    match: (p) => p.startsWith('/research') || p.startsWith('/patents') || p.startsWith('/mou-collaborations') },
   { Icon: GraduationCap,  label: 'Education',                    path: '/education',                   match: (p) => p.startsWith('/education') },

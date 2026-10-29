@@ -306,11 +306,11 @@
   margin-bottom: 16px;
 }
 .ewd-mode-btn {
-  padding: 6px 16px;
+  padding: 8px 20px;
   border-radius: 5px;
   border: none;
   cursor: pointer;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-weight: 600;
   transition: color var(--dur-mid) var(--ease-spring),
               background-color var(--dur-mid) var(--ease-spring),

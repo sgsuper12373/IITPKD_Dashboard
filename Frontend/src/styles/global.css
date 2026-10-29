@@ -291,7 +291,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.01em;
-  color: var(--color-text);
+  color: inherit;
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -658,6 +658,36 @@ strong { font-weight: 700; }
   border-radius: var(--radius-full);
 }
 .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--color-navy-mid); }
+
+/* ── Scrollable containers — thin styled scrollbar for all data panels ────── */
+.icsr-proj-table-wrap,
+.icsr-mou-table-wrap,
+.mou-table-wrapper,
+.rls-table-wrapper,
+.eiar-dir-table-wrap {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 45, 78, 0.15) transparent;
+}
+.icsr-proj-table-wrap::-webkit-scrollbar,
+.icsr-mou-table-wrap::-webkit-scrollbar,
+.mou-table-wrapper::-webkit-scrollbar,
+.rls-table-wrapper::-webkit-scrollbar,
+.eiar-dir-table-wrap::-webkit-scrollbar { width: 6px; }
+.icsr-proj-table-wrap::-webkit-scrollbar-track,
+.icsr-mou-table-wrap::-webkit-scrollbar-track,
+.mou-table-wrapper::-webkit-scrollbar-track,
+.rls-table-wrapper::-webkit-scrollbar-track,
+.eiar-dir-table-wrap::-webkit-scrollbar-track { background: transparent; border-radius: 3px; }
+.icsr-proj-table-wrap::-webkit-scrollbar-thumb,
+.icsr-mou-table-wrap::-webkit-scrollbar-thumb,
+.mou-table-wrapper::-webkit-scrollbar-thumb,
+.rls-table-wrapper::-webkit-scrollbar-thumb,
+.eiar-dir-table-wrap::-webkit-scrollbar-thumb { background: rgba(20, 45, 78, 0.15); border-radius: 3px; }
+.icsr-proj-table-wrap::-webkit-scrollbar-thumb:hover,
+.icsr-mou-table-wrap::-webkit-scrollbar-thumb:hover,
+.mou-table-wrapper::-webkit-scrollbar-thumb:hover,
+.rls-table-wrapper::-webkit-scrollbar-thumb:hover,
+.eiar-dir-table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(20, 45, 78, 0.3); }
 
 /* Base table */
 .data-table {
@@ -1048,7 +1078,7 @@ strong { font-weight: 700; }
   color: var(--color-text);
   padding: clamp(0.45rem, 1.2vw, 0.65rem) clamp(0.75rem, 2vw, 1.4rem);
   border-radius: var(--radius-md);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -1092,11 +1122,11 @@ strong { font-weight: 700; }
 .toggle-btn {
   flex: 1;
   min-width: 52px;
-  padding: 5px 10px;
+  padding: 7px 14px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-weight: 600;
   font-family: inherit;
   color: var(--color-text-muted);
@@ -1221,11 +1251,11 @@ strong { font-weight: 700; }
   min-width: 0;
 }
 .cc-tab {
-  padding: 4px 10px;
+  padding: 7px 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
   color: var(--color-text-muted);
@@ -1251,7 +1281,7 @@ strong { font-weight: 700; }
   gap: 4px;
 }
 .cc-filter-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: #8A8A84;
   letter-spacing: 0.05em;
@@ -1259,9 +1289,9 @@ strong { font-weight: 700; }
   white-space: nowrap;
 }
 .cc-filter-select {
-  height: 28px;
-  padding: 0 24px 0 8px;
-  font-size: 12px;
+  height: 36px;
+  padding: 0 24px 0 10px;
+  font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
   border: 1px solid rgba(71, 85, 105, 0.12);
@@ -1429,23 +1459,23 @@ strong { font-weight: 700; }
 }
 
 .recharts-cartesian-axis-tick text {
-  font-size: 10px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
 }
 
 .recharts-label text,
 .recharts-cartesian-axis-label text {
-  font-size: 10px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
 }
 
 .recharts-label-list text {
-  font-size: 9px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
 }
 
 .recharts-legend-wrapper {
-  font-size: 11px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
 }
 
@@ -2312,11 +2342,11 @@ strong { font-weight: 700; }
 .eiar-mode-btn,
 .icsr-mode-btn,
 .chart-mode-btn {
-  padding: 4px 10px;
+  padding: 7px 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
   color: var(--color-text-muted);
@@ -2382,11 +2412,11 @@ strong { font-weight: 700; }
 .view-type-btn {
   flex: 1;
   min-width: 48px;
-  padding: 4px 10px;
+  padding: 8px 18px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
   transition: color var(--dur-mid) var(--ease-spring),
@@ -2417,19 +2447,23 @@ strong { font-weight: 700; }
   font-weight: 600;
 }
 
-/* ── Section tab buttons (MoU, ICSR, etc.) ──────────────────────── */
+/* ── Section tab buttons (MoU, ICSR, etc.) — liquid glass ──────── */
 .mou-tab-btn,
 .icsr-tab-btn {
-  padding: 8px 18px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--color-border);
+  padding: 9px 20px;
+  border-radius: var(--lg-radius);
+  border: 1px solid rgba(255, 255, 255, 0.40);
   cursor: pointer;
   font-weight: 600;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-family: inherit;
-  background: var(--color-bg-card);
+  background: rgba(250, 248, 243, 0.65);
   color: var(--color-text-muted);
-  transition: var(--transition);
+  box-shadow: var(--lg-inset), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: background var(--lg-dur) ease,
+              color var(--lg-dur) ease,
+              border-color var(--lg-dur) ease,
+              box-shadow var(--lg-dur) ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2437,26 +2471,32 @@ strong { font-weight: 700; }
 
 .mou-tab-btn:hover,
 .icsr-tab-btn:hover {
-  border-color: var(--color-primary);
+  background: var(--lg-glass-hover);
+  border-color: rgba(255, 255, 255, 0.60);
   color: var(--color-text);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
 }
 
-.icsr-tab-btn--active,
+.mou-tab-btn:focus-visible,
+.icsr-tab-btn:focus-visible {
+  outline: 2px solid var(--lg-gold);
+  outline-offset: 2px;
+}
+
 .icsr-tab-btn--active {
-  background: var(--color-primary) !important;
-  color: #ffffff !important;
-  border-color: var(--color-primary) !important;
-  box-shadow: var(--shadow-primary) !important;
+  background: var(--lg-glass-active-bg) !important;
+  color: var(--lg-gold-text) !important;
+  border-color: var(--lg-border-active) !important;
+  box-shadow: var(--lg-inset-active), var(--lg-shadow-active) !important;
+  font-weight: 600;
 }
 
 .icsr-tab-btn--inactive {
-  background: var(--color-bg-card);
+  background: rgba(250, 248, 243, 0.65);
   color: var(--color-text-muted);
 }
 
-/* ── Clear-filter buttons ───────────────────────────────────────── */
+/* ── Clear-filter buttons — liquid glass ────────────────────────── */
 .rls-clear-btn,
 .ias-clear-btn,
 .mou-clear-btn,
@@ -2465,16 +2505,21 @@ strong { font-weight: 700; }
 .hg-clear-btn,
 .eiar-clear-btn,
 .iar-clear-btn {
-  padding: 5px 14px;
-  background: transparent;
-  color: var(--color-error);
-  border: 1.5px solid var(--color-error);
-  border-radius: var(--radius-full);
+  padding: 7px 16px;
+  background: rgba(250, 248, 243, 0.65);
+  color: var(--color-text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  border-radius: var(--lg-radius);
   cursor: pointer;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-weight: 600;
   font-family: inherit;
-  transition: var(--transition);
+  box-shadow: var(--lg-inset), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: background var(--lg-dur) ease,
+              color var(--lg-dur) ease,
+              border-color var(--lg-dur) ease,
+              box-shadow var(--lg-dur) ease,
+              transform 0.15s ease;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -2489,10 +2534,23 @@ strong { font-weight: 700; }
 .hg-clear-btn:hover,
 .eiar-clear-btn:hover,
 .iar-clear-btn:hover {
-  background: var(--color-error);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(220,38,38,0.25);
+  background: var(--lg-glass-hover);
+  border-color: rgba(255, 255, 255, 0.60);
+  color: var(--color-text);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover);
   transform: translateY(-1px);
+}
+
+.rls-clear-btn:focus-visible,
+.ias-clear-btn:focus-visible,
+.mou-clear-btn:focus-visible,
+.iptif-clear-btn:focus-visible,
+.techin-clear-btn:focus-visible,
+.hg-clear-btn:focus-visible,
+.eiar-clear-btn:focus-visible,
+.iar-clear-btn:focus-visible {
+  outline: 2px solid var(--lg-gold);
+  outline-offset: 2px;
 }
 
 /* ── Page upload / action buttons ───────────────────────────────── */
@@ -2549,13 +2607,13 @@ strong { font-weight: 700; }
 .techin-filter-select,
 .mou-filter-select {
   width: 100%;
-  height: 28px;
+  height: 36px;
   background: var(--color-bg-card);
   color: var(--color-text);
   border: 1px solid rgba(71, 85, 105, 0.08);
   border-radius: 4px;
-  padding: 0 28px 0 8px;
-  font-size: 12px;
+  padding: 0 28px 0 10px;
+  font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
   appearance: none;
@@ -2614,7 +2672,7 @@ strong { font-weight: 700; }
 .hg-filter-label,
 .iptif-filter-label,
 .techin-filter-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: #8A8A84;
   margin-bottom: 3px;
@@ -2732,10 +2790,10 @@ strong { font-weight: 700; }
   /* Recharts */
   .recharts-legend-wrapper ul,
   .recharts-legend-wrapper li {
-    font-size: 10px !important;
+    font-size: 13px !important;
     flex-wrap: nowrap !important;
   }
-  .recharts-label-list text { font-size: 8px !important; }
+  .recharts-label-list text { font-size: 12px !important; }
 }
 
 /* ── 640px — Mobile ── */
@@ -2759,15 +2817,15 @@ strong { font-weight: 700; }
 
   .cc-header { padding: 8px 10px; gap: 6px; }
   .cc-header__tabs { gap: 1px; padding: 1px; }
-  .cc-tab { padding: 4px 7px; font-size: 10px; white-space: normal; text-align: center; line-height: 1.3; }
+  .cc-tab { padding: 5px 10px; font-size: 12px; white-space: normal; text-align: center; line-height: 1.3; }
   .cc-header__filters { gap: 6px; width: 100%; }
   .cc-filter-pair { gap: 3px; flex: 1 1 auto; }
-  .cc-filter-select { height: 26px; font-size: 11px; padding: 0 20px 0 6px; width: 100%; }
+  .cc-filter-select { height: 30px; font-size: 13px; padding: 0 20px 0 6px; width: 100%; }
   .cc-subheader { padding: 6px 10px 4px; gap: 6px; }
   .cc-title { font-size: 12px; }
   .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
   .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
-    padding: 3px 8px; font-size: 10px;
+    padding: 4px 10px; font-size: 12px;
   }
 
   .chart-section { padding: clamp(0.75rem, 2vw, 1rem); }
@@ -2780,7 +2838,7 @@ strong { font-weight: 700; }
 
   .recharts-legend-wrapper ul,
   .recharts-legend-wrapper li {
-    font-size: 9px !important;
+    font-size: 12px !important;
     gap: 6px !important;
     white-space: nowrap !important;
   }
@@ -2800,23 +2858,23 @@ strong { font-weight: 700; }
 
   .cc-header { flex-direction: column; align-items: stretch; padding: 6px 8px; }
   .cc-header__tabs { margin-right: 0; }
-  .cc-tab { flex: 1 1 auto; justify-content: center; padding: 3px 4px; font-size: 9px; }
+  .cc-tab { flex: 1 1 auto; justify-content: center; padding: 4px 6px; font-size: 11px; }
   .cc-header__filters { flex-direction: column; gap: 4px; }
   .cc-filter-pair { width: 100%; }
-  .cc-filter-select { height: 24px; font-size: 10px; }
+  .cc-filter-select { height: 28px; font-size: 12px; }
   .cc-subheader { padding: 4px 8px; flex-direction: column; align-items: flex-start; }
   .cc-title { font-size: 11px; }
   .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
   .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
-    padding: 3px 6px; font-size: 9px;
+    padding: 4px 8px; font-size: 11px;
   }
 
-  .toggle-btn { font-size: 10px; padding: 4px 6px; }
+  .toggle-btn { font-size: 12px; padding: 5px 8px; }
 
   /* Recharts axis */
   .recharts-yAxis { width: 36px !important; }
-  .recharts-cartesian-axis-tick text { font-size: 9px !important; }
-  .recharts-legend-wrapper { font-size: 10px !important; }
+  .recharts-cartesian-axis-tick text { font-size: 11px !important; }
+  .recharts-legend-wrapper { font-size: 12px !important; }
   .recharts-label-list { display: none !important; }
 }
 

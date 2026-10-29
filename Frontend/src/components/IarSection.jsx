@@ -130,7 +130,7 @@ function ClippedLabel(props) {
       fill={fill}
       textAnchor="middle"
       dominantBaseline="auto"
-      style={{ fontSize: '10px', fontWeight: 600 }}
+      style={{ fontSize: '14px', fontWeight: 600 }}
     >
       {value}
     </text>
@@ -466,8 +466,8 @@ function IarSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <BarChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[6, 6, 0, 0]} barSize={20}>
@@ -487,10 +487,10 @@ function IarSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={350}>
                         <BarChart data={trendData} margin={{ top: 24, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
-                          <Legend wrapperStyle={{ fontSize: '11px' }} />
+                          <Legend wrapperStyle={{ fontSize: '14px' }} />
                           <Bar dataKey="total" name="Total Alumni" fill={TREND_TOTAL_COLOR} radius={[4, 4, 0, 0]} barSize={14}>
                             <LabelList dataKey="total" content={<ClippedLabel fill={TREND_TOTAL_COLOR} />} />
                           </Bar>
@@ -511,8 +511,8 @@ function IarSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={trendData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
                               <Legend wrapperStyle={{ paddingTop: '20px' }} />
                               <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={3} dot={{ r: 6 }} />
@@ -526,10 +526,10 @@ function IarSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={350}>
                         <LineChart data={trendData} margin={{ top: 24, right: 10, left: chartIsMobile ? 0 : 40, bottom: chartIsMobile ? 60 : 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                           <Tooltip content={<CustomTooltip denominatorKey="total" excludePercentageFor={['Total Alumni']} />} />
-                          <Legend wrapperStyle={{ fontSize: '11px' }} />
+                          <Legend wrapperStyle={{ fontSize: '14px' }} />
                           <Line type="linear" dataKey="total" name="Total Alumni" stroke={TREND_TOTAL_COLOR} strokeWidth={2.5} dot={{ r: 3 }}>
                             <LabelList dataKey="total" content={<ClippedLabel fill={TREND_TOTAL_COLOR} />} />
                           </Line>
@@ -581,7 +581,7 @@ function IarSection({ user, isPublicView = false }) {
                                 ))}
                               </Pie>
                               <Tooltip content={<StatePieTooltip />} />
-                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
                             </PieChart>
                           </ResponsiveContainer>
                         )
@@ -649,7 +649,7 @@ function IarSection({ user, isPublicView = false }) {
                                 ))}
                               </Pie>
                               <Tooltip content={<CountryPieTooltip />} />
-                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
+                              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
                             </PieChart>
                           </ResponsiveContainer>
                         )
@@ -763,15 +763,15 @@ function IarSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={500}>
                               <BarChart data={sortedOutcomeBreakdown} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 12, fontWeight: 600 }} />
-                                <YAxis tick={{ fontSize: 10, fontWeight: 500 }} />
+                                <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 14, fontWeight: 600 }} />
+                                <YAxis tick={{ fontSize: 14, fontWeight: 500 }} />
                                 <Tooltip content={<CustomTooltip denominatorKey="total" />} />
                                 <Legend verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '20px', fontWeight: 600 }} />
                                 <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="higher" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: HIGHER_BAR_COLOR }} />
+                                  <LabelList dataKey="higher" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: HIGHER_BAR_COLOR }} />
                                 </Bar>
                                 <Bar dataKey="corporate" name="Corporate" fill={CORPORATE_BAR_COLOR} radius={[6, 6, 0, 0]}>
-                                  <LabelList dataKey="corporate" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: CORPORATE_BAR_COLOR }} />
+                                  <LabelList dataKey="corporate" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: CORPORATE_BAR_COLOR }} />
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -785,8 +785,8 @@ function IarSection({ user, isPublicView = false }) {
                             barCategoryGap="20%"
                           >
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 10 }} interval={0} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} width={35} />
+                            <XAxis dataKey="department" angle={-38} textAnchor="end" height={80} tick={{ fontSize: 14 }} interval={0} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} width={35} />
                             <Tooltip content={<CustomTooltip denominatorKey="total" />} />
                             <Bar dataKey="higher" name="Higher Studies" fill={HIGHER_BAR_COLOR} radius={[4, 4, 0, 0]} barSize={12} maxBarSize={20}>
                               <LabelList dataKey="higher" content={<ClippedLabel fill={HIGHER_BAR_COLOR} />} />

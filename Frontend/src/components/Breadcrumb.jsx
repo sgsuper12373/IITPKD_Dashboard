@@ -38,7 +38,7 @@ const LABELS = {
   'OpenHouse':                  'Open House',
   'InstituteVisits':            'Institute Visits',
   'NSS':                        'NSS',
-  'quick-glance':               'Quick Glance',
+  // 'quick-glance':               'Quick Glance',
   'site-monitor':               'Site Monitor',
   'profile':                    'Profile',
   'upload':                     'Upload',

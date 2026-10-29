@@ -42,7 +42,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
   gap: 1rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 45, 78, 0.15) transparent;
 }
+.iff-list::-webkit-scrollbar { width: 6px; }
+.iff-list::-webkit-scrollbar-track { background: transparent; border-radius: 3px; }
+.iff-list::-webkit-scrollbar-thumb { background: rgba(20, 45, 78, 0.15); border-radius: 3px; }
+.iff-list::-webkit-scrollbar-thumb:hover { background: rgba(20, 45, 78, 0.3); }
 
 .iff-row {
   display: grid;

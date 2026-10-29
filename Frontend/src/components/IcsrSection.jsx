@@ -219,8 +219,8 @@ function IcsrSection({ user, isPublicView = false }) {
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart data={chartIsMobile ? yearlyChartData.slice(-3) : yearlyChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
-                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 10, fontWeight: 500 }} />
+                    <XAxis dataKey="year" stroke="#666" tick={{ fill: '#666', fontSize: 14, fontWeight: 500 }} />
+                    <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 14, fontWeight: 500 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                     <Bar dataKey="events" name="Events" fill="#142D4E" radius={[6, 6, 0, 0]} />
@@ -232,8 +232,8 @@ function IcsrSection({ user, isPublicView = false }) {
             <ResponsiveContainer width="100%" height={chartIsMobile ? 220 : 350}>
               <BarChart data={chartIsMobile ? yearlyChartData.slice(-3) : yearlyChartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 12 }} />
-                <YAxis stroke="#666" tick={{ fontSize: 12 }} />
+                <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} />
+                <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="events" fill="#142D4E" radius={[4, 4, 0, 0]} barSize={30} />
               </BarChart>

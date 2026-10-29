@@ -21,9 +21,9 @@ export default function LivePreview({ status, data }) {
     <section className="lp" aria-label="Live headline figures" data-tour="preview">
       <header className="lp__head">
         <h2 className="lp__title">The Institute right now</h2>
-        <Link to="/quick-glance" className="lp__more" data-track="preview-more">
+        {/* <Link to="/quick-glance" className="lp__more" data-track="preview-more">
           Open Quick Glance <span aria-hidden="true">→</span>
-        </Link>
+        </Link> */}
       </header>
       <div className="lp__grid">
         {kpis.map((k) => (
@@ -36,7 +36,7 @@ export default function LivePreview({ status, data }) {
             invert={k.invert}
             series={k.series}
             sub={k.sub}
-            to="/quick-glance"
+            // to="/quick-glance"
             loading={loading}
           />
           </div>

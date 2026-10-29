@@ -294,8 +294,8 @@ function IgrcSection({ user, isPublicView = false }) {
                       ? yearlyData
                       : yearlyData.filter((row) => String(row.year) === String(selectedYear));
                     const sharedAxisProps = {
-                      xAxis: <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />,
-                      yAxis: <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />,
+                      xAxis: <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#26384D', fontSize: 14, fontWeight: 500 } }} />,
+                      yAxis: <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#26384D', fontSize: 14, fontWeight: 500 } }} />,
                       tooltip: <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />,
                       legend: <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />,
                       grid: <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />,
@@ -311,18 +311,18 @@ function IgrcSection({ user, isPublicView = false }) {
                               <ResponsiveContainer width="100%" height={500}>
                                 <BarChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
-                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />
+                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 14, fontWeight: 500 } }} />
                                   <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
                                   <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                                   <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed}>
-                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                   </Bar>
                                   <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending}>
-                                    <LabelList dataKey="pending" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.pending }} />
+                                    <LabelList dataKey="pending" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.pending }} />
                                   </Bar>
                                   <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved}>
-                                    <LabelList dataKey="resolved" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.resolved }} />
+                                    <LabelList dataKey="resolved" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.resolved }} />
                                   </Bar>
                                 </BarChart>
                               </ResponsiveContainer>
@@ -333,18 +333,18 @@ function IgrcSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={420}>
                               <BarChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
                                 <Bar dataKey={visibleMetrics.filed ? "filed" : "__hidden__"} name="Filed" fill={BAR_COLORS.filed} legendType={visibleMetrics.filed ? "rect" : "none"}>
-                                  {visibleMetrics.filed && <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />}
+                                  {visibleMetrics.filed && <LabelList dataKey="filed" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.filed }} />}
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.pending ? "pending" : "__hidden__"} name="Pending" fill={BAR_COLORS.pending} legendType={visibleMetrics.pending ? "rect" : "none"}>
-                                  {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.pending }} />}
+                                  {visibleMetrics.pending && <LabelList dataKey="pending" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.pending }} />}
                                 </Bar>
                                 <Bar dataKey={visibleMetrics.resolved ? "resolved" : "__hidden__"} name="Resolved" fill={BAR_COLORS.resolved} legendType={visibleMetrics.resolved ? "rect" : "none"}>
-                                  {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.resolved }} />}
+                                  {visibleMetrics.resolved && <LabelList dataKey="resolved" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.resolved }} />}
                                 </Bar>
                               </BarChart>
                             </ResponsiveContainer>
@@ -360,12 +360,12 @@ function IgrcSection({ user, isPublicView = false }) {
                               <ResponsiveContainer width="100%" height={500}>
                                 <LineChart data={chartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
-                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 10, fontWeight: 500 } }} />
+                                  <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} interval={0} angle={-40} textAnchor="end" height={60} />
+                                  <YAxis stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} label={{ value: 'Number of Grievances', angle: -90, position: 'insideLeft', style: { fill: '#26384D', fontSize: 14, fontWeight: 500 } }} />
                                   <Tooltip content={<CustomTooltip denominatorKey="filed" excludePercentageFor={['Filed']} />} />
                                   <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                                   <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 6, fill: BAR_COLORS.filed }} activeDot={{ r: 8 }}>
-                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
+                                    <LabelList dataKey="filed" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                   </Line>
                                 </LineChart>
                               </ResponsiveContainer>
@@ -376,12 +376,12 @@ function IgrcSection({ user, isPublicView = false }) {
                             <ResponsiveContainer width="100%" height={420}>
                               <LineChart data={chartData} margin={{ top: 20, right: 20, left: chartIsMobile ? 30 : 60, bottom: chartIsMobile ? 50 : 60 }}>
                                 {sharedAxisProps.grid}
-                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 10, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
+                                <XAxis dataKey="year" stroke="#26384D" tick={{ fill: '#26384D', fontSize: 14, fontWeight: 500 }} interval={0} angle={chartIsMobile ? -40 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 50 : 30} />
                                 {sharedAxisProps.yAxis}
                                 {sharedAxisProps.tooltip}
                                 {sharedAxisProps.legend}
                                 <Line type="linear" dataKey="filed" name="Filed" stroke={BAR_COLORS.filed} strokeWidth={3} dot={{ r: 5, fill: BAR_COLORS.filed, strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                                  <LabelList dataKey="filed" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: BAR_COLORS.filed }} />
+                                  <LabelList dataKey="filed" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: BAR_COLORS.filed }} />
                                 </Line>
                               </LineChart>
                             </ResponsiveContainer>

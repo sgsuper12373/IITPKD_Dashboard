@@ -77,7 +77,6 @@ function StudentsEngagementSection({ user: realUser }) {
 
           {activeSection && (
             <div className="pc-tab-panel" role="tabpanel" key={activeSection.id}>
-              <p className="pc-tab-panel__subtitle">{activeSection.expandedTitle}</p>
               <div className="pc-tab-panel__content">
                 {(() => {
                   const SectionComponent = activeSection.component;

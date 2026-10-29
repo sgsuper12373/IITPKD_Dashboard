@@ -7,18 +7,18 @@
  */
 export const SUGGESTIONS = {
   'research/icsr': { trends: ['funding', 'publications'], combos: ['funding', 'patents', 'industry'], pages: ['/industry-connect', '/innovation-entrepreneurship'] },
-  'research/library': { trends: ['publications', 'patents'], combos: ['funding', 'faculty'], pages: ['/education', '/quick-glance'] },
+  'research/library': { trends: ['publications', 'patents'], combos: ['funding', 'faculty'], pages: ['/education'] },
   'research/icsr-mous': { trends: ['funding'], combos: ['industry', 'funding'], pages: ['/industry-connect'] },
   'research/patents': { trends: ['patents', 'publications'], combos: ['patents', 'funding'], pages: ['/innovation-entrepreneurship'] },
 
-  'education/placements': { trends: ['students'], combos: ['enrolment'], pages: ['/industry-connect', '/quick-glance'] },
+  'education/placements': { trends: ['students'], combos: ['enrolment'], pages: ['/industry-connect'] },
   'education/academic': { trends: ['students', 'faculty'], combos: ['enrolment', 'faculty'], pages: ['/people-campus', '/research'] },
   'education/iar': { trends: ['students'], combos: ['enrolment'], pages: ['/people-campus'] },
 
   'people-campus/academic': { trends: ['students', 'faculty'], combos: ['enrolment', 'faculty'], pages: ['/education'] },
   'people-campus/administrative': { trends: ['faculty'], combos: ['faculty'], pages: ['/research'] },
-  'people-campus/grievances': { trends: [], combos: [], pages: ['/outreach-extension', '/quick-glance'] },
-  'people-campus/ewd': { trends: [], combos: [], pages: ['/outreach-extension', '/quick-glance'] },
+  'people-campus/grievances': { trends: [], combos: [], pages: ['/outreach-extension'] },
+  'people-campus/ewd': { trends: [], combos: [], pages: ['/outreach-extension'] },
   'people-campus/iar': { trends: ['students'], combos: ['enrolment'], pages: ['/education', '/industry-connect'] },
 
   'industry-connect/administrative': { trends: ['funding'], combos: ['industry', 'funding'], pages: ['/research'] },

@@ -121,9 +121,9 @@
   text-transform: uppercase;
 }
 .rls-filter-select {
-  height: 28px;
-  padding: 0 28px 0 8px;
-  font-size: 12px;
+  height: 36px;
+  padding: 0 28px 0 10px;
+  font-size: var(--text-base);
   font-weight: 500;
   width: 100%;
   border-radius: 4px;
@@ -185,8 +185,8 @@
   width: fit-content;
 }
 .rls-mode-btn {
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 7px 16px;
+  font-size: var(--text-base);
   font-weight: 500;
   border-radius: 4px;
   cursor: pointer;

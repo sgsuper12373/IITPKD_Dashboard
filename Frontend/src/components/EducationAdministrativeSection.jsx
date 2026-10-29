@@ -712,8 +712,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={departmentChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="department" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
-                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                        <XAxis dataKey="department" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} />
+                        <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
                         {summary.summary.map((item, index) => {
@@ -721,7 +721,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           if (type === 'FacultyFellow') return null;
                           return (
                             <Bar key={type} dataKey={type} name={ENGAGEMENT_LABELS[type] || type} fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} radius={[6, 6, 0, 0]}>
-                              <LabelList dataKey={type} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
                             </Bar>
                           );
                         })}
@@ -744,13 +744,13 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                       textAnchor="end"
                       height={100}
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
-                      label={{ value: 'Department', position: 'insideBottom', offset: -70, style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
+                      tick={{ fill: '#000000', fontSize: 14, fontWeight: 500 }}
+                      label={{ value: 'Department', position: 'insideBottom', offset: -70, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 500 } }}
                     />
                     <YAxis
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
-                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
+                      tick={{ fill: '#000000', fontSize: 14, fontWeight: 500 }}
+                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 500 } }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
@@ -769,7 +769,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           fill={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]}
                           animationDuration={800}
                           radius={[4, 4, 0, 0]}>
-  <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+  <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
 </Bar>
                       );
                     })}
@@ -802,8 +802,8 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={yearTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                        <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />
                         {summary.summary.map((item, index) => {
@@ -811,7 +811,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           if (type === 'FacultyFellow') return null;
                           return (
                             <Line key={type} type="linear" dataKey={type} name={ENGAGEMENT_LABELS[type] || type} stroke={ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length]} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                              <LabelList dataKey={type} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+                              <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 500, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
                             </Line>
                           );
                         })}
@@ -831,13 +831,13 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                     <XAxis
                       dataKey="year"
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
-                      label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
+                      tick={{ fill: '#000000', fontSize: 14, fontWeight: 500 }}
+                      label={{ value: 'Year', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 500 } }}
                     />
                     <YAxis
                       stroke="#000000"
-                      tick={{ fill: '#000000', fontSize: 10, fontWeight: 500 }}
-                      label={{ value: 'Total Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 10, fontWeight: 500 } }}
+                      tick={{ fill: '#000000', fontSize: 14, fontWeight: 500 }}
+                      label={{ value: 'Total Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#000000', fontSize: 14, fontWeight: 500 } }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
@@ -857,7 +857,7 @@ function EducationAdministrativeSection({ user, isPublicView = false }) {
                           dot={{ r: 5 }}
                           activeDot={{ r: 8 }}
                           animationDuration={800}>
-  <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
+  <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: ENGAGEMENT_COLORS[type] || COLORS[index % COLORS.length] }} />
 </Line>
                       );
                     })}

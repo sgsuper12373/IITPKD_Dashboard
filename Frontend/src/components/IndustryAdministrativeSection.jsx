@@ -415,13 +415,13 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={yearlyChartData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 14 }} />
+                        <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         {externshipTypeKeys.map((type, index) => (
                           <Bar key={type} dataKey={type} stackId="a" fill={TYPE_COLORS[index % TYPE_COLORS.length]}>
-                            <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                            <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
                           </Bar>
                         ))}
                       </BarChart>
@@ -432,8 +432,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                 <ResponsiveContainer width="100%" height={400} minWidth={0}>
                   <BarChart data={yearlyChartData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                    <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                    <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 14 }} />
+                    <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ paddingTop: '20px' }} />
                     {externshipTypeKeys.map((type, index) => (
@@ -443,7 +443,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         radius={index === externshipTypeKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
                         isAnimationActive={true} animationDuration={1000}
                       >
-                        <LabelList dataKey={type} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                        <LabelList dataKey={type} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
                       </Bar>
                     ))}
                   </BarChart>
@@ -489,11 +489,11 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={departmentComparisonData} margin={{ top: 40, right: 30, left: 40, bottom: 100 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                            <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={100} interval={0} />
-                            <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                            <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 14 }} angle={-45} textAnchor="end" height={100} interval={0} />
+                            <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="count" name="Externships" fill="#087E8B" radius={[4, 4, 0, 0]}>
-                              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
+                              <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#087E8B" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -501,13 +501,13 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 40, right: 30, left: 40, bottom: 60 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                            <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                            <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                            <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 14 }} />
+                            <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ paddingTop: '20px' }} />
                             {departmentYearlyTrendData.departments.map((dept, index) => (
                               <Line key={dept} type="linear" dataKey={dept} stroke={TYPE_COLORS[index % TYPE_COLORS.length]} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}>
-                                <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                                <LabelList dataKey={dept} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
                               </Line>
                             ))}
                           </LineChart>
@@ -522,11 +522,11 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 400}>
                       <BarChart data={departmentComparisonData} margin={{ top: 30, right: 30, left: chartIsMobile ? 10 : 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                        <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
-                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <XAxis dataKey="department" stroke="#888" tick={{ fontSize: 14 }} angle={-45} textAnchor="end" height={80} interval={0} />
+                        <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="count" name="Externships" fill="#087E8B" radius={[4, 4, 0, 0]} isAnimationActive={true} animationDuration={1000}>
-                          <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
+                          <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#087E8B" }} />
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -541,8 +541,8 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 400}>
                       <LineChart data={departmentYearlyTrendData.trendData} margin={{ top: 10, right: 30, left: chartIsMobile ? 10 : 40, bottom: 30 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 12 }} />
-                        <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                        <XAxis dataKey="year" stroke="#888" tick={{ fontSize: 14 }} />
+                        <YAxis stroke="#888" tick={{ fontSize: 14 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }} />
                         {departmentYearlyTrendData.departments.map((dept, index) => (
@@ -553,7 +553,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
                             activeDot={{ r: 6, strokeWidth: 0 }}
                             isAnimationActive={true} animationDuration={1000}
                           >
-                            <LabelList dataKey={dept} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
+                            <LabelList dataKey={dept} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: TYPE_COLORS[index % TYPE_COLORS.length] }} />
                           </Line>
                         ))}
                       </LineChart>
@@ -571,7 +571,7 @@ function IndustryAdministrativeSection({ user, isPublicView = false }) {
             {canViewDirectory && viewType === 'externshipTable' && (
               <div className="chart-view active performance-render-auto">
                 <div className="cc-subheader">
-                  <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Faculty Industry Stint Directory <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({externshipList.length} records)</span></h3>
+                  <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Faculty Industry Stint Directory <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>({externshipList.length} records)</span></h3>
                   <ExportMenu
                     elementId="externship-directory-table"
                     data={externshipList}

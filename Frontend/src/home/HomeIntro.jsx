@@ -112,9 +112,9 @@ export default function HomeIntro() {
           Explore institutional data across research, education, innovation and
           outreach — all in one place.
         </p>
-        <Link to="/quick-glance" className="hi__cta">
+        {/* <Link to="/quick-glance" className="hi__cta">
           Quick glance <ArrowRight size={16} strokeWidth={2} />
-        </Link>
+        </Link> */}
       </div>
 
       <div className="hi__tagline" aria-hidden="true">

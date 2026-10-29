@@ -179,8 +179,8 @@
 
 /* ── Mode buttons ── */
 .techin-mode-btn {
-  padding: 6px 16px;
-  font-size: var(--text-xs);
+  padding: 8px 20px;
+  font-size: var(--text-base);
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;

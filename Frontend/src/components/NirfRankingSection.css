@@ -19,7 +19,7 @@
 /* ── Header controls row ── */
 .nirf-controls     { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .nirf-mode-row     { display: inline-flex; gap: 3px; background: var(--color-bg-2); padding: 3px; border-radius: var(--radius-sm); }
-.nirf-mode-btn     { padding: 6px 16px; border-radius: 5px; border: none; cursor: pointer; background: transparent; color: var(--color-text-muted); font-weight: 600; font-size: var(--text-xs); transition: color var(--dur-mid) var(--ease-spring), background-color var(--dur-mid) var(--ease-spring), box-shadow var(--dur-mid) var(--ease-spring); }
+.nirf-mode-btn     { padding: 8px 20px; border-radius: 5px; border: none; cursor: pointer; background: transparent; color: var(--color-text-muted); font-weight: 600; font-size: var(--text-base); transition: color var(--dur-mid) var(--ease-spring), background-color var(--dur-mid) var(--ease-spring), box-shadow var(--dur-mid) var(--ease-spring); }
 .nirf-mode-btn--active { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
 
 /* ── Overall rank summary ── */

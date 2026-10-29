@@ -397,10 +397,10 @@
   margin-bottom: 16px;
 }
 .iar-toggle-btn {
-  padding: 7px 22px;
+  padding: 8px 22px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--text-base);
   transition: all 0.2s ease;
 }
 .iar-fixed-panel {

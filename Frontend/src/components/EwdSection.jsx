@@ -387,12 +387,12 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <BarChart data={scaledYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} label={{ value: 'Financial Year', position: 'insideBottom', offset: -60, style: { fill: '#555', fontSize: 10, fontWeight: 500 } }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 10, fontWeight: 500 } }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} label={{ value: 'Financial Year', position: 'insideBottom', offset: -60, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#142D4E" }} />
+                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#142D4E" }} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -403,12 +403,12 @@ function EwdSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <BarChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } } : undefined} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } } : undefined} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Bar dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" fill="#142D4E" radius={[4, 4, 0, 0]} barSize={30}>
-                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
+                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#142D4E" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -422,12 +422,12 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={scaledYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} label={{ value: 'Financial Year', position: 'insideBottom', offset: -60, style: { fill: '#555', fontSize: 10, fontWeight: 500 } }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 10, fontWeight: 500 } }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} interval={0} angle={-45} textAnchor="end" height={80} label={{ value: 'Financial Year', position: 'insideBottom', offset: -60, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} label={{ value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -25, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#142D4E" strokeWidth={4} dot={{ r: 6, fill: '#142D4E' }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#142D4E" }} />
+                                <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#142D4E" }} />
                               </Line>
                             </LineChart>
                           </ResponsiveContainer>
@@ -438,12 +438,12 @@ function EwdSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 380}>
                           <LineChart data={scaledYearlyData} margin={{ top: 26, right: 10, left: chartIsMobile ? 20 : 60, bottom: chartIsMobile ? 60 : 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } } : undefined} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} interval={0} angle={chartIsMobile ? -45 : 0} textAnchor={chartIsMobile ? "end" : "middle"} height={chartIsMobile ? 60 : 30} label={!chartIsMobile ? { value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } } : undefined} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={!chartIsMobile ? { value: 'Consumption (× 1,000 kWh)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } } : undefined} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Line type="linear" dataKey="annualElectricityScaled" name="Electricity Consumption (× 1,000 kWh)" stroke="#142D4E" strokeWidth={3} dot={{ r: 5, fill: '#142D4E', strokeWidth: 0 }} activeDot={{ r: 7 }}>
-                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#142D4E" }} />
+                              <LabelList dataKey="annualElectricityScaled" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#142D4E" }} />
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
@@ -493,18 +493,18 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <BarChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#066A75" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
+                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#066A75" }} />
                               </Bar>
                               <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#087E8B" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#087E8B" }} />
+                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#087E8B" }} />
                               </Bar>
                               <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#066A75" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
+                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#066A75" }} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -515,18 +515,18 @@ function EwdSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                           <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }} barCategoryGap="20%">
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Bar dataKey="perCapitaElectricity" name="Electricity (kWh / person)" fill="#066A75" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#066A75" }} />
                             </Bar>
                             <Bar dataKey="perCapitaWater" name="Water (litres / person)" fill="#087E8B" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#087E8B" }} />
                             </Bar>
                             <Bar dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" fill="#066A75" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#066A75" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -540,18 +540,18 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
+                                <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#066A75" }} />
                               </Line>
                               <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#087E8B" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#087E8B" }} />
+                                <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#087E8B" }} />
                               </Line>
                               <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#066A75" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#066A75" }} />
+                                <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#066A75" }} />
                               </Line>
                             </LineChart>
                           </ResponsiveContainer>
@@ -562,18 +562,18 @@ function EwdSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 250 : 400}>
                           <LineChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Per Capita Consumption', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Line type="linear" dataKey="perCapitaElectricity" name="Electricity (kWh / person)" stroke="#066A75" strokeWidth={2.5} dot={{ r: 4, fill: '#066A75', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
+                              <LabelList dataKey="perCapitaElectricity" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#066A75" }} />
                             </Line>
                             <Line type="linear" dataKey="perCapitaWater" name="Water (litres / person)" stroke="#087E8B" strokeWidth={2.5} dot={{ r: 4, fill: '#087E8B', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#087E8B" }} />
+                              <LabelList dataKey="perCapitaWater" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#087E8B" }} />
                             </Line>
                             <Line type="linear" dataKey="perCapitaRecycled" name="Recycled Water (litres / person)" stroke="#066A75" strokeWidth={2.5} dot={{ r: 4, fill: '#066A75', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#066A75" }} />
+                              <LabelList dataKey="perCapitaRecycled" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#066A75" }} />
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>
@@ -623,12 +623,12 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <BarChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[6, 6, 0, 0]}>
-                                <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#34d399" }} />
+                                <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#34d399" }} />
                               </Bar>
                             </BarChart>
                           </ResponsiveContainer>
@@ -639,12 +639,12 @@ function EwdSection({ user, isPublicView = false }) {
                         <ResponsiveContainer width="100%" height={chartIsMobile ? 240 : 370}>
                           <BarChart data={filteredYearlyData} margin={{ top: 26, right: 20, left: 60, bottom: 55 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Bar dataKey="greenCoverage" name="Green Coverage (sq.m)" fill="#34d399" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={700}>
-                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#34d399" }} />
                             </Bar>
                           </BarChart>
                         </ResponsiveContainer>
@@ -658,12 +658,12 @@ function EwdSection({ user, isPublicView = false }) {
                           <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={filteredYearlyData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
-                              <YAxis stroke="#666" tick={{ fontSize: 10, fontWeight: 500 }} />
+                              <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                              <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                               <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '20px' }} />
+                              <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '20px' }} />
                               <Line type="linear" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                                <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '9px', fontWeight: 500, fill: "#34d399" }} />
+                                <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '14px', fontWeight: 500, fill: "#34d399" }} />
                               </Line>
                             </LineChart>
                           </ResponsiveContainer>
@@ -680,12 +680,12 @@ function EwdSection({ user, isPublicView = false }) {
                               </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
-                            <YAxis stroke="#666" tick={{ fontSize: 11 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 12, fontWeight: 500 } }} />
+                            <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Financial Year', position: 'insideBottom', offset: -30, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
+                            <YAxis stroke="#666" tick={{ fontSize: 14 }} label={{ value: 'Green Coverage (sq.m)', angle: -90, position: 'insideLeft', offset: -45, style: { fill: '#555', fontSize: 14, fontWeight: 500 } }} />
                             <Tooltip content={<CustomTooltip hidePercentage={true} />} />
-                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }} />
+                            <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '14px', paddingBottom: '10px' }} />
                             <Line type="linear" dataKey="greenCoverage" name="Green Coverage (sq.m)" stroke="#34d399" fill="url(#colorGreenCoverage)" strokeWidth={2} dot={{ r: 4, fill: '#34d399', strokeWidth: 0 }} activeDot={{ r: 6 }}>
-                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: "#34d399" }} />
+                              <LabelList dataKey="greenCoverage" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: "#34d399" }} />
                             </Line>
                           </LineChart>
                         </ResponsiveContainer>

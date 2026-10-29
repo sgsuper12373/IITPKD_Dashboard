@@ -28,8 +28,7 @@ function Home({ user, onLogout, isGuest }) {
         </div>
         <JumpPalette />
       </main>
-      <br></br> <br></br> <br></br> <br></br> <br></br> 
-      
+
       <Footer />
     </div>
   );

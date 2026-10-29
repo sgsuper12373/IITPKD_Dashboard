@@ -163,7 +163,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Bar dataKey="count" name="Startups Count" fill={CHART_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
-              <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: CHART_COLOR }} />
+              <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: CHART_COLOR }} />
             </Bar>
           </BarChart>
         ) : (
@@ -174,7 +174,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Line type="linear" dataKey="count" name="Startups Count" stroke={CHART_COLOR} strokeWidth={3} dot={{ r: 6, fill: CHART_COLOR, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 8 }}>
-              <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: CHART_COLOR }} />
+              <LabelList offset={10} dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: CHART_COLOR }} />
             </Line>
           </LineChart>
         )}
@@ -230,7 +230,6 @@ function HomeGroundStartup({ user, isPublicView = false }) {
           </button>
         )}
 
-        <h1 className="hg-page-h1">Home Grown Startups</h1>
         <p className="hg-page-sub">
           Internal startups incubated through IPTIF and TECHIN programs
         </p>
@@ -362,7 +361,7 @@ function HomeGroundStartup({ user, isPublicView = false }) {
             <h2 className="cc-title">
               <DashboardIcon name="home" className="cc-title-icon" />
               Startup Growth
-              <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84', marginLeft: 4 }}>Yearly growth across IPTIF &amp; TECHIN</span>
+              <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84', marginLeft: 4 }}>Yearly growth across IPTIF &amp; TECHIN</span>
             </h2>
             <div className="cc-subheader__right">
               <ExportMenu

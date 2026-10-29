@@ -28,7 +28,7 @@ const PAGE_ICON = {
   '/people-campus': 'people',
   '/innovation-entrepreneurship': 'innovation',
   '/outreach-extension': 'outreach',
-  '/quick-glance': 'chart',
+  // '/quick-glance': 'chart',
   '/outreach-extension/students-engagement': 'students',
   '/outreach-extension/social-engagement': 'outreach',
   '/innovation-entrepreneurship/startup-portfolio': 'startup',

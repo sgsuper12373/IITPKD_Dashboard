@@ -15,7 +15,7 @@ import CampusClipart from './CampusClipart';
 // ImageSlider carries its own CSS and animation logic; defer it so it doesn't
 // block the initial paint of the welcome text and splash screen.
 const ImageSlider = lazy(() => import('./ImageSlider'));
-const QuickGlance = lazy(() => import('../pages/QuickGlance'));
+// const QuickGlance = lazy(() => import('../pages/QuickGlance'));
 
 // Auto-imports every image from iit-palakkad/ at build time.
 // Drop images into that folder — they appear in the slider automatically, sorted alphabetically.
@@ -65,12 +65,13 @@ function HomePage({ user }) {
               </Suspense>
             )}
 
-            {/* Quick Glance — embedded directly */}
+            {/* Quick Glance — commented out
             <section id="quick-glance" className="hp-quick-glance-section">
               <Suspense fallback={null}>
                 <QuickGlance user={user} />
               </Suspense>
             </section>
+            */}
 
             {/* ── Six Dimensions of Our Vision ── */}
             <div className="vision-pillars-section" data-tour="pillars">

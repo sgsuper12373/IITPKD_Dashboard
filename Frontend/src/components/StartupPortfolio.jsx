@@ -400,7 +400,6 @@ function StartupPortfolio({ user, isPublicView = false }) {
       <div className={innerClass}>
         <div className="sp-header">
           <div>
-            <h1 className="sp-h1">Startup Portfolio</h1>
             <p className="sp-subtitle">
               Startups incubated and supported across IPTIF and TECHIN at IIT Palakkad.
             </p>

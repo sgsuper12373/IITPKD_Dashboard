@@ -269,11 +269,11 @@
 .view-type-btn {
   flex: 1;
   min-width: 56px;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-weight: 600;
   font-family: inherit;
   transition: color var(--dur-mid) var(--ease-spring),
@@ -307,11 +307,11 @@
    CHART TOGGLE BUTTONS
    ================================================================ */
 .chart-toggle-btn {
-  padding: 5px 13px;
+  padding: 7px 18px;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
   font-weight: 600;
   font-family: inherit;
   transition: var(--transition);
@@ -454,8 +454,8 @@
   .filter-grid > * { flex: 1 1 calc(50% - var(--space-2)); }
 
   .recharts-legend-wrapper ul,
-  .recharts-legend-wrapper li { font-size: 10px !important; }
-  .recharts-label-list text { font-size: 8px !important; }
+  .recharts-legend-wrapper li { font-size: 12px !important; }
+  .recharts-label-list text { font-size: 10px !important; }
 }
 
 @media (max-width: 640px) {
@@ -465,10 +465,10 @@
 
   .shared-filter-grid > * { flex: 1 1 calc(50% - var(--space-1)); }
 
-  .view-type-btn { font-size: 10px; padding: 4px 5px; min-width: 44px; }
+  .view-type-btn { font-size: 12px; padding: 5px 8px; min-width: 44px; }
 
   .recharts-legend-wrapper ul,
-  .recharts-legend-wrapper li { font-size: 9px !important; gap: 6px !important; }
+  .recharts-legend-wrapper li { font-size: 11px !important; gap: 6px !important; }
 }
 
 @media (max-width: 480px) {
@@ -490,11 +490,11 @@
   .stat-card-label { font-size: var(--text-xs); }
   .stat-card-value { font-size: clamp(1.2rem, 5vw, 1.75rem); }
 
-  .chart-toggle-btn { padding: 4px 8px; font-size: 11px; }
+  .chart-toggle-btn { padding: 5px 10px; font-size: 12px; }
 
   .recharts-yAxis { width: 36px !important; }
-  .recharts-cartesian-axis-tick text { font-size: 9px !important; }
-  .recharts-legend-wrapper { font-size: 10px !important; }
+  .recharts-cartesian-axis-tick text { font-size: 11px !important; }
+  .recharts-legend-wrapper { font-size: 12px !important; }
   .recharts-label-list { display: none !important; }
 }
 
@@ -509,5 +509,5 @@
 @media (max-width: 320px) {
   .page-content { padding: 0.5rem 0.35rem; }
   .chart-toggle-group { gap: 2px; }
-  .chart-toggle-btn { padding: 3px 6px; font-size: 10px; }
+  .chart-toggle-btn { padding: 4px 8px; font-size: 11px; }
 }

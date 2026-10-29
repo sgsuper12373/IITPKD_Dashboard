@@ -126,27 +126,40 @@
   gap: 10px;
 }
 
-/* ── Nav tab (view switcher) ── */
+/* ── Nav tab (view switcher) — liquid glass ── */
 .icsr-nav-tab {
-  padding: 5px 12px;
-  border-radius: 6px;
-  border: 1px solid #DCE3E7;
-  background-color: #EDE9DF;
-  color: #142D4E;
-  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: var(--lg-radius, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  background: rgba(250, 248, 243, 0.65);
+  color: var(--color-text-muted, #64748b);
+  font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
+  box-shadow: var(--lg-inset, inset 0 1px 0 rgba(255,255,255,0.5)), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.icsr-nav-tab:hover {
+  background: var(--lg-glass-hover, rgba(250, 248, 243, 0.85));
+  border-color: rgba(255, 255, 255, 0.60);
+  color: var(--color-text, #142D4E);
+  box-shadow: var(--lg-inset, inset 0 1px 0 rgba(255,255,255,0.5)), var(--lg-shadow-hover, 0 2px 8px rgba(0,0,0,0.08));
+}
+.icsr-nav-tab:focus-visible {
+  outline: 2px solid var(--lg-gold, #C88A2C);
+  outline-offset: 2px;
 }
 .icsr-nav-tab--active {
-  border: 2px solid #087E8B;
-  background-color: rgba(8, 126, 139,0.08);
-  color: #0F1F36;
-  box-shadow: 0 4px 10px rgba(8, 126, 139,0.25);
-  transform: translateY(-1px);
+  background: var(--lg-glass-active-bg, rgba(200, 138, 44, 0.12)) !important;
+  color: var(--lg-gold-text, #9A6D1F) !important;
+  border-color: var(--lg-border-active, rgba(200, 138, 44, 0.35));
+  box-shadow: var(--lg-inset-active, inset 0 1px 0 rgba(200,138,44,0.15)), var(--lg-shadow-active, 0 2px 8px rgba(200,138,44,0.13));
+  font-weight: 600;
 }
 
 /* ── Filter dropdown ── */
@@ -229,8 +242,8 @@
   margin-bottom: 16px;
 }
 .icsr-mode-btn {
-  padding: 6px 16px;
-  font-size: var(--text-xs);
+  padding: 8px 20px;
+  font-size: var(--text-base);
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
@@ -452,27 +465,45 @@
   gap: 8px;
 }
 .icsr-mou-tab {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #DCE3E7;
-  background-color: #EDE9DF;
-  color: #142D4E;
-  font-weight: 500;
-  font-size: 13px;
+  padding: 8px 18px;
+  border-radius: var(--lg-radius, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  background: rgba(250, 248, 243, 0.65);
+  color: var(--color-text-muted, #64748b);
+  font-weight: 600;
+  font-size: var(--text-base);
   cursor: pointer;
   white-space: nowrap;
   font-family: inherit;
+  box-shadow: var(--lg-inset, inset 0 1px 0 rgba(255,255,255,0.5)), 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.icsr-mou-tab:hover {
+  background: var(--lg-glass-hover, rgba(250, 248, 243, 0.85));
+  border-color: rgba(255, 255, 255, 0.60);
+  color: var(--color-text, #142D4E);
+  box-shadow: var(--lg-inset, inset 0 1px 0 rgba(255,255,255,0.5)), var(--lg-shadow-hover, 0 2px 8px rgba(0,0,0,0.08));
+}
+.icsr-mou-tab:focus-visible {
+  outline: 2px solid var(--lg-gold, #C88A2C);
+  outline-offset: 2px;
 }
 .icsr-mou-tab--active-trend {
-  border: 2px solid #142D4E;
-  background-color: #faf5ff;
-  color: #6b21a8;
+  background: var(--lg-glass-active-bg, rgba(200, 138, 44, 0.12)) !important;
+  color: var(--lg-gold-text, #9A6D1F) !important;
+  border-color: var(--lg-border-active, rgba(200, 138, 44, 0.35));
+  box-shadow: var(--lg-inset-active, inset 0 1px 0 rgba(200,138,44,0.15)), var(--lg-shadow-active, 0 2px 8px rgba(200,138,44,0.13));
+  font-weight: 600;
 }
 .icsr-mou-tab--active-directory {
-  padding: 5px 12px;
-  border: 2px solid #066A75;
-  background-color: #fdf2f8;
-  color: #9d174d;
+  background: var(--lg-glass-active-bg, rgba(200, 138, 44, 0.12)) !important;
+  color: var(--lg-gold-text, #9A6D1F) !important;
+  border-color: var(--lg-border-active, rgba(200, 138, 44, 0.35));
+  box-shadow: var(--lg-inset-active, inset 0 1px 0 rgba(200,138,44,0.15)), var(--lg-shadow-active, 0 2px 8px rgba(200,138,44,0.13));
+  font-weight: 600;
 }
 .icsr-mou-year-filter {
   display: flex;

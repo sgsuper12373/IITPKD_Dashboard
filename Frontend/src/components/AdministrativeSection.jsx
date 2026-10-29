@@ -698,7 +698,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
         <div className="cc-subheader">
           <h3 className="cc-title">
             <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: typeColor, display: 'inline-block' }} />
-            {typeLabel} Faculty List <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({eduFilters.year === 'All' ? 'All Years' : `Year: ${eduFilters.year}`})</span>
+            {typeLabel} Faculty List <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>({eduFilters.year === 'All' ? 'All Years' : `Year: ${eduFilters.year}`})</span>
           </h3>
           <div className="cc-subheader__right">
             <ExportMenu
@@ -867,7 +867,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           <LabelList
             dataKey={type}
             position="top"
-            style={{ fontSize: '10px', fontWeight: 600, fill: color }}
+            style={{ fontSize: '14px', fontWeight: 600, fill: color }}
           />
         </Bar>
       );
@@ -892,7 +892,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
             offset={10}
             dataKey={type}
             position="top"
-            style={{ fontSize: '10px', fontWeight: 600, fill: color }}
+            style={{ fontSize: '14px', fontWeight: 600, fill: color }}
           />
         </Line>
       );
@@ -986,14 +986,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <BarChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }} barCategoryGap="20%">
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} allowDecimals={false} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }}
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
                             content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Bar key={key} dataKey={key} name={label} fill={color} radius={[6, 6, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
-                              <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                              <LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: color }} />
                             </Bar>
                           ))}
                         </BarChart>
@@ -1004,14 +1004,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={350}>
                     <BarChart data={yearwiseData} margin={{ top: 40, right: 20, left: 40, bottom: 30 }} barCategoryGap="20%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} allowDecimals={false} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 14 }} allowDecimals={false} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                      <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '10px' }}
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} />} />
                       {SERIES_META.map(({ key, color, label }) => (
                         <Bar key={key} dataKey={key} name={label} fill={color} radius={[4, 4, 0, 0]} {...BAR_ANIMATION} hide={!visibleSeries[key]}>
-                          <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                          <LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: color }} />
                         </Bar>
                       ))}
                     </BarChart>
@@ -1027,14 +1027,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <LineChart data={yearwiseData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11, fontWeight: 500 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14, fontWeight: 500 }} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }}
+                          <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
                             content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} size="large" />} />
                           {SERIES_META.map(({ key, color, label }) => (
                             <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }} hide={!visibleSeries[key]}>
-                              <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                              <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: color }} />
                             </Line>
                           ))}
                         </LineChart>
@@ -1053,14 +1053,14 @@ function AdministrativeSection({ user, isPublicView = false }) {
                         ))}
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                      <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} />
+                      <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                      <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '10px' }}
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={regularSeriesKeys} />} />
                       {SERIES_META.map(({ key, color, label }) => (
                         <Line key={key} type="linear" dataKey={key} name={label} stroke={color} strokeWidth={2} hide={!visibleSeries[key]}>
-                          <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: color }} />
+                          <LabelList offset={10} dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: color }} />
                         </Line>
                       ))}
                     </LineChart>
@@ -1074,7 +1074,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {section === 'regular' && activeView === 'department' && (
             <>
               <div className="cc-subheader">
-                <h3 className="cc-title">Faculty Department Wise Count <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({expertiseTotal} total)</span></h3>
+                <h3 className="cc-title">Faculty Department Wise Count <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>({expertiseTotal} total)</span></h3>
                 <ExportMenu
                   elementId="admin-expertise-chart-container"
                   data={expertiseData}
@@ -1100,11 +1100,11 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       <ResponsiveContainer width="100%" height={500}>
                         <BarChart data={expertiseData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 10, fontWeight: 500 }} interval={0} />
-                          <YAxis tick={{ fontSize: 11, fontWeight: 500 }} allowDecimals={false} />
+                          <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 14, fontWeight: 500 }} interval={0} />
+                          <YAxis tick={{ fontSize: 14, fontWeight: 500 }} allowDecimals={false} />
                           <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                           <Bar dataKey="count" name="Faculty" fill="#142D4E" radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
+                            <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: '#142D4E' }} />
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
@@ -1115,10 +1115,10 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <BarChart data={expertiseData} margin={{ top: 26, right: 20, left: 0, bottom: 130 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                       <XAxis dataKey="name" tick={<CustomXAxisTick />} interval={0} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                      <YAxis tick={{ fontSize: 14 }} allowDecimals={false} />
                       <Tooltip content={<CustomTooltip hidePercentage={true} />} />
                       <Bar dataKey="count" name="Faculty" fill="#142D4E" radius={[4, 4, 0, 0]} {...BAR_ANIMATION}>
-                        <LabelList dataKey="count" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} />
+                        <LabelList dataKey="count" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: '#142D4E' }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -1155,7 +1155,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           ))}
                         </Pie>
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   )
@@ -1183,7 +1183,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <Tooltip content={<CustomTooltip />} />
                     {genderData.length > 0 && (
                       <Legend verticalAlign="bottom" align="center"
-                        formatter={value => <span style={{ color: GENDER_COLORS[value] || '#555', fontWeight: 600, fontSize: '0.82rem' }}>{value}</span>}
+                        formatter={value => <span style={{ color: GENDER_COLORS[value] || '#555', fontWeight: 600, fontSize: '1.05rem' }}>{value}</span>}
                       />
                     )}
                   </PieChart>
@@ -1230,8 +1230,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <BarChart data={eduDeptChartData} margin={{ top: 40, right: 30, left: 40, bottom: 120 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 10, fontWeight: 500 }} />
-                        <YAxis tick={{ fontSize: 11, fontWeight: 500 }} />
+                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 14, fontWeight: 500 }} />
+                        <YAxis tick={{ fontSize: 14, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }}
                           content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
@@ -1251,8 +1251,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 14 }} />
+                      <YAxis tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect"
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
@@ -1265,8 +1265,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduDeptChartData} margin={{ top: 20, right: 30, left: 60, bottom: 100 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} tick={{ fill: '#333', fontSize: 14 }} />
+                      <YAxis tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '20px' }} iconType="rect"
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
@@ -1285,7 +1285,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {section === 'education' && eduView === 'trend' && (
             <>
               <div className="cc-subheader">
-                <h3 className="cc-title">Year-wise Trends <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span></h3>
+                <h3 className="cc-title">Year-wise Trends <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>Last {eduTrendNumYears} {eduTrendNumYears === 1 ? 'Year' : 'Years'}</span></h3>
                 <div className="cc-subheader__right">
                   <div className="rls-mode-toggle">
                     {[{ mode: 'Bar', icon: <BarChartOutlined /> }, { mode: 'Line', icon: <LineChartOutlined /> }].map(({ mode, icon }) => (
@@ -1313,8 +1313,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={eduTrendChartData} margin={{ top: 40, right: 30, left: 40, bottom: 80 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11, fontWeight: 500 }} />
-                        <YAxis tick={{ fontSize: 11, fontWeight: 500 }} />
+                        <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 14, fontWeight: 500 }} />
+                        <YAxis tick={{ fontSize: 14, fontWeight: 500 }} />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend wrapperStyle={{ paddingTop: '20px' }}
                           content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} size="large" />} />
@@ -1334,8 +1334,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 14 }} />
+                      <YAxis tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect"
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
@@ -1348,8 +1348,8 @@ function AdministrativeSection({ user, isPublicView = false }) {
                   <ResponsiveContainer width="100%" height={400}>
                     <LineChart data={eduTrendChartData} margin={{ top: 20, right: 30, left: 60, bottom: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                      <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
+                      <XAxis dataKey="year" tick={{ fill: '#333', fontSize: 14 }} />
+                      <YAxis tick={{ fontSize: 14 }} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect"
                         content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={eduSeriesKeys} />} />
@@ -1389,7 +1389,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                           ))}
                         </Pie>
                         <Tooltip formatter={v => formatNumber(v)} />
-                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '11px' }} />
+                        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontWeight: 600, fontSize: '14px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   )
@@ -1438,7 +1438,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
                       wrapperStyle={{
                         position: 'relative',
                         paddingTop: '8px',
-                        fontSize: '11px',
+                        fontSize: '14px',
                         fontWeight: '500',
                         lineHeight: '20px',
                       }}
@@ -1458,7 +1458,7 @@ function AdministrativeSection({ user, isPublicView = false }) {
           {(!!user && user.role_id !== 0) && section === 'education' && eduView === 'details' && (
             <>
               <div className="cc-subheader">
-                <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Engagement Details <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({eduEngagementList.length} records)</span></h3>
+                <h3 className="cc-title"><ProfileOutlined className="cc-title-icon" /> Engagement Details <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>({eduEngagementList.length} records)</span></h3>
                 <ExportMenu
                   elementId="edu-engagement-details-table"
                   data={eduEngagementList}

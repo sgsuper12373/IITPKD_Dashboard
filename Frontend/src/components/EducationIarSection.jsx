@@ -211,19 +211,19 @@ function EducationIarSection({ user, isPublicView = false }) {
                       {chartMode === 'bar' ? (
                         <BarChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} iconType="rect" />
                           <Bar dataKey="total" name="MoUs Signed" fill={IAR_MOU_COLOR} radius={[4, 4, 0, 0]} barSize={28}>
-                            <LabelList dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+                            <LabelList dataKey="total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
                           </Bar>
                         </BarChart>
                       ) : (
                         <LineChart data={mouTrendChartData} margin={{ top: 10, right: 20, left: 40, bottom: 30 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 11 }} />
-                          <YAxis stroke="#666" tick={{ fontSize: 11 }} />
+                          <XAxis dataKey="year" stroke="#666" tick={{ fontSize: 14 }} />
+                          <YAxis stroke="#666" tick={{ fontSize: 14 }} />
                           <Tooltip content={<CustomTooltip />} />
                           <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 500 }} />
                           <Line
@@ -235,7 +235,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                             dot={{ r: 6, fill: IAR_MOU_COLOR }}
                             activeDot={{ r: 8 }}
                           >
-                            <LabelList offset={15} dataKey="total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
+                            <LabelList offset={15} dataKey="total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: IAR_MOU_COLOR }} />
                           </Line>
                         </LineChart>
                       )}
@@ -250,7 +250,7 @@ function EducationIarSection({ user, isPublicView = false }) {
                     <h2 className="cc-title">
                       <ProfileOutlined className="cc-title-icon" />
                       MoUs Directory
-                      <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>({mouList.length} records)</span>
+                      <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>({mouList.length} records)</span>
                     </h2>
                     <div className="cc-subheader__right">
                       <ExportMenu

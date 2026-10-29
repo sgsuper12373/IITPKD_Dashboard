@@ -110,8 +110,8 @@ const BAR_ANIMATION = {
   animationEasing: 'ease-out', animationBegin: 80,
 };
 
-const TICK_STYLE = { fill: '#444', fontSize: 10, fontWeight: 500 };
-const AXIS_LABEL_STYLE = { textAnchor: 'middle', fill: '#555', fontSize: 10, fontWeight: 500 };
+const TICK_STYLE = { fill: '#444', fontSize: 14, fontWeight: 500 };
+const AXIS_LABEL_STYLE = { textAnchor: 'middle', fill: '#555', fontSize: 14, fontWeight: 500 };
 
 const AreaGradients = () => (
   <defs>
@@ -755,10 +755,10 @@ function AcademicSection({ user, isPublicView = false }) {
                         <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -15, style: AXIS_LABEL_STYLE }} />
                         <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W + 10} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: 0, style: AXIS_LABEL_STYLE }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
+                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
                           <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#142D4E'} strokeWidth={3} dot={{ r: 6 }} activeDot={{ r: 8 }}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '11px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
+                            <LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
                           </Line>
                         ))}
                       </LineChart>
@@ -773,12 +773,12 @@ function AcademicSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" interval={X_INTERVAL} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                     <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }}
+                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.05rem', paddingBottom: '8px' }}
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={areaKeys} isMobile={chartIsMobile} />}
                     />
                     {areaKeys.map(key => (
                       <Line key={key} type="linear" dataKey={key} stroke={AREA_COLORS[key]?.stroke || '#142D4E'} strokeWidth={2.5} dot={{ fill: AREA_COLORS[key]?.stroke || '#142D4E', r: 4, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} animationDuration={800} animationEasing="ease-in-out">
-                        <LabelList dataKey={key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
+                        <LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill: AREA_COLORS[key]?.stroke || '#142D4E' }} />
                       </Line>
                     ))}
                   </LineChart>
@@ -798,10 +798,10 @@ function AcademicSection({ user, isPublicView = false }) {
                         <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -15, style: AXIS_LABEL_STYLE }} />
                         <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W + 10} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: 0, style: AXIS_LABEL_STYLE }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
+                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '20px' }} />
                         {areaKeys.map(key => (
                           <Bar key={key} dataKey={key} fill={AREA_COLORS[key]?.stroke || '#142D4E'} radius={[6, 6, 0, 0]}>
-                            <LabelList dataKey={key} position="top" style={{ fontSize: '9px', fontWeight: 500, fill: '#142D4E' }} />
+                            <LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 500, fill: '#142D4E' }} />
                           </Bar>
                         ))}
                       </BarChart>
@@ -815,18 +815,18 @@ function AcademicSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" interval={X_INTERVAL} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                     <YAxis domain={[0, 'dataMax + 10']} allowDecimals={false} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.82rem', paddingBottom: '8px' }}
+                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.05rem', paddingBottom: '8px' }}
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={areaKeys} isMobile={chartIsMobile} />}
                     />
-                    {selectedGender === 'Total'       && <Bar dataKey="Total"       fill="#142D4E" radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Total"       position="top" style={{ fontSize: '10px', fontWeight: 600, fill: '#142D4E' }} /></Bar>}
+                    {selectedGender === 'Total'       && <Bar dataKey="Total"       fill="#142D4E" radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Total"       position="top" style={{ fontSize: '14px', fontWeight: 600, fill: '#142D4E' }} /></Bar>}
                     {selectedGender === 'All' && <>
-                      <Bar dataKey="Male"        fill={COLORS[0]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Male"        position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[0] }} /></Bar>
-                      <Bar dataKey="Female"      fill={COLORS[1]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Female"      position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[1] }} /></Bar>
-                      <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} /></Bar>
+                      <Bar dataKey="Male"        fill={COLORS[0]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Male"        position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[0] }} /></Bar>
+                      <Bar dataKey="Female"      fill={COLORS[1]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Female"      position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[1] }} /></Bar>
+                      <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[2] }} /></Bar>
                     </>}
-                    {selectedGender === 'Male'        && <Bar dataKey="Male"        fill={COLORS[0]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Male"        position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[0] }} /></Bar>}
-                    {selectedGender === 'Female'      && <Bar dataKey="Female"      fill={COLORS[1]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Female"      position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[1] }} /></Bar>}
-                    {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: COLORS[2] }} /></Bar>}
+                    {selectedGender === 'Male'        && <Bar dataKey="Male"        fill={COLORS[0]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Male"        position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[0] }} /></Bar>}
+                    {selectedGender === 'Female'      && <Bar dataKey="Female"      fill={COLORS[1]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Female"      position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[1] }} /></Bar>}
+                    {selectedGender === 'Transgender' && <Bar dataKey="Transgender" fill={COLORS[2]} radius={[3,3,0,0]} isAnimationActive animationDuration={800} animationEasing="ease-in-out"><LabelList dataKey="Transgender" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: COLORS[2] }} /></Bar>}
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -841,7 +841,7 @@ function AcademicSection({ user, isPublicView = false }) {
               <div className="cc-subheader">
                 <h3 className="cc-title">
                   Student Strength — UG / PG / Research
-                  {stackGender && <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84', marginLeft: 6 }}>(stacked by gender)</span>}
+                  {stackGender && <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84', marginLeft: 6 }}>(stacked by gender)</span>}
                 </h3>
                 <div className="cc-subheader__right">
                   <div className="rls-mode-toggle">
@@ -879,10 +879,10 @@ function AcademicSection({ user, isPublicView = false }) {
                         <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -15, style: AXIS_LABEL_STYLE }} />
                         <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W + 10} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: 0, style: AXIS_LABEL_STYLE }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
+                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '20px' }} />
                         {programStackedBars.map(({ key, name, fill, stackId }) => (
                           <Bar key={key} dataKey={key} name={name} fill={fill} stackId={stackId} radius={stackId ? (programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key ? [6,6,0,0] : [0,0,0,0]) : [6,6,0,0]}>
-                            {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '9px', fontWeight: 500, fill }} />}
+                            {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '14px', fontWeight: 500, fill }} />}
                           </Bar>
                         ))}
                       </BarChart>
@@ -896,12 +896,12 @@ function AcademicSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" interval={chartIsMobile ? 1 : 0} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                     <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.78rem', paddingBottom: '8px' }}
+                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '8px' }}
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={programStackedBars.map(b => b.key)} isMobile={chartIsMobile} />}
                     />
                     {programStackedBars.map(({ key, name, fill, stackId }) => (
                       <Bar key={key} dataKey={key} name={name} fill={fill} stackId={stackId} radius={stackId ? (programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key ? [4,4,0,0] : [0,0,0,0]) : [4,4,0,0]} {...BAR_ANIMATION}>
-                        {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '10px', fontWeight: 600, fill }} />}
+                        {(!stackId || programStackedBars.filter(b => b.stackId === stackId).at(-1)?.key === key) && <LabelList dataKey={stackId ? `${stackId}_Total` : key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill }} />}
                       </Bar>
                     ))}
                   </BarChart>
@@ -920,14 +920,14 @@ function AcademicSection({ user, isPublicView = false }) {
                         <XAxis dataKey="year" interval={0} angle={-40} textAnchor="end" height={65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -15, style: AXIS_LABEL_STYLE }} />
                         <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W + 10} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: 0, style: AXIS_LABEL_STYLE }} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.9rem', paddingBottom: '20px' }} />
+                        <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '20px' }} />
                         {stackGender
-                          ? programStackedBars.map(({ key, name, fill }) => (<Line key={key} type="linear" dataKey={key} name={name} stroke={fill} strokeWidth={3} dot={{ r: 6, fill }} activeDot={{ r: 8 }}><LabelList dataKey={key} position="top" style={{ fontSize: '11px', fontWeight: 600, fill }} /></Line>))
+                          ? programStackedBars.map(({ key, name, fill }) => (<Line key={key} type="linear" dataKey={key} name={name} stroke={fill} strokeWidth={3} dot={{ r: 6, fill }} activeDot={{ r: 8 }}><LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill }} /></Line>))
                           : (<>
-                              <Line type="linear" dataKey="UG_Total"       name="UG"       stroke={GROUP_COLORS.UG}       strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.UG }}><LabelList       dataKey="UG_Total"       position="top" style={{ fontSize: '11px', fontWeight: 600, fill: GROUP_COLORS.UG }} /></Line>
-                              <Line type="linear" dataKey="PG_Total"       name="PG"       stroke={GROUP_COLORS.PG}       strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.PG }}><LabelList       dataKey="PG_Total"       position="top" style={{ fontSize: '11px', fontWeight: 600, fill: GROUP_COLORS.PG }} /></Line>
-                              <Line type="linear" dataKey="Research_Total" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.Research }}><LabelList dataKey="Research_Total" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: GROUP_COLORS.Research }} /></Line>
-                              <Line type="linear" dataKey="Total"          name="Total"    stroke={GROUP_COLORS.Total}    strokeWidth={3} strokeDasharray="6 3" dot={{ r: 6, fill: GROUP_COLORS.Total }}><LabelList dataKey="Total" position="top" style={{ fontSize: '11px', fontWeight: 600, fill: GROUP_COLORS.Total }} /></Line>
+                              <Line type="linear" dataKey="UG_Total"       name="UG"       stroke={GROUP_COLORS.UG}       strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.UG }}><LabelList       dataKey="UG_Total"       position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.UG }} /></Line>
+                              <Line type="linear" dataKey="PG_Total"       name="PG"       stroke={GROUP_COLORS.PG}       strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.PG }}><LabelList       dataKey="PG_Total"       position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.PG }} /></Line>
+                              <Line type="linear" dataKey="Research_Total" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 6, fill: GROUP_COLORS.Research }}><LabelList dataKey="Research_Total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.Research }} /></Line>
+                              <Line type="linear" dataKey="Total"          name="Total"    stroke={GROUP_COLORS.Total}    strokeWidth={3} strokeDasharray="6 3" dot={{ r: 6, fill: GROUP_COLORS.Total }}><LabelList dataKey="Total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.Total }} /></Line>
                             </>)}
                       </LineChart>
                     </ResponsiveContainer>
@@ -940,16 +940,16 @@ function AcademicSection({ user, isPublicView = false }) {
                     <XAxis dataKey="year" interval={chartIsMobile ? 1 : 0} angle={-40} textAnchor="end" height={chartIsMobile ? 50 : 65} tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} label={{ value: 'Year', position: 'insideBottom', offset: -10, style: AXIS_LABEL_STYLE }} />
                     <YAxis tick={TICK_STYLE} tickLine={false} axisLine={{ stroke: '#ddd' }} width={Y_AXIS_W} label={{ value: 'Students', angle: -90, position: 'insideLeft', offset: -5, style: AXIS_LABEL_STYLE }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '0.78rem', paddingBottom: '8px' }}
+                    <Legend verticalAlign="top" align="center" wrapperStyle={{ fontSize: '1.1rem', paddingBottom: '8px' }}
                       content={(props) => <ChartLegendContent payload={props.payload} orderedKeys={programStackedBars.map(b => b.key)} isMobile={chartIsMobile} />}
                     />
                     {stackGender
-                      ? programStackedBars.map(({ key, name, fill }) => (<Line key={key} type="linear" dataKey={key} name={name} stroke={fill} strokeWidth={2} dot={{ r: 4, fill, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey={key} position="top" style={{ fontSize: '9px', fontWeight: 600, fill }} /></Line>))
+                      ? programStackedBars.map(({ key, name, fill }) => (<Line key={key} type="linear" dataKey={key} name={name} stroke={fill} strokeWidth={2} dot={{ r: 4, fill, strokeWidth: 0 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey={key} position="top" style={{ fontSize: '14px', fontWeight: 600, fill }} /></Line>))
                       : (<>
-                          <Line type="linear" dataKey="UG_Total"       name="UG"       stroke={GROUP_COLORS.UG}       strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG,       strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="UG_Total"       position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.UG }} /></Line>
-                          <Line type="linear" dataKey="PG_Total"       name="PG"       stroke={GROUP_COLORS.PG}       strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG,       strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="PG_Total"       position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.PG }} /></Line>
-                          <Line type="linear" dataKey="Research_Total" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="Research_Total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Research }} /></Line>
-                          <Line type="linear" dataKey="Total"          name="Total"    stroke={GROUP_COLORS.Total}    strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="Total" position="top" style={{ fontSize: '10px', fontWeight: 600, fill: GROUP_COLORS.Total }} /></Line>
+                          <Line type="linear" dataKey="UG_Total"       name="UG"       stroke={GROUP_COLORS.UG}       strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.UG,       strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="UG_Total"       position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.UG }} /></Line>
+                          <Line type="linear" dataKey="PG_Total"       name="PG"       stroke={GROUP_COLORS.PG}       strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.PG,       strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="PG_Total"       position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.PG }} /></Line>
+                          <Line type="linear" dataKey="Research_Total" name="Research" stroke={GROUP_COLORS.Research} strokeWidth={3} dot={{ r: 5, fill: GROUP_COLORS.Research, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="Research_Total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.Research }} /></Line>
+                          <Line type="linear" dataKey="Total"          name="Total"    stroke={GROUP_COLORS.Total}    strokeWidth={3} strokeDasharray="6 3" dot={{ r: 5, fill: GROUP_COLORS.Total, strokeWidth: 0 }} activeDot={{ r: 7, stroke: '#fff', strokeWidth: 2 }} animationDuration={800}><LabelList dataKey="Total" position="top" style={{ fontSize: '14px', fontWeight: 600, fill: GROUP_COLORS.Total }} /></Line>
                         </>)}
                   </LineChart>
                 </ResponsiveContainer>
@@ -962,7 +962,7 @@ function AcademicSection({ user, isPublicView = false }) {
             <div className={`bar-chart-container trend-chart${stateTop10.length > 0 ? '' : ' has-empty'}`}>
               <div className="cc-subheader">
                 <h3 className="cc-title">
-                  State-wise Distribution <span style={{ fontSize: 11, fontWeight: 400, color: '#8A8A84' }}>(Students in India)</span>
+                  State-wise Distribution <span style={{ fontSize: 14, fontWeight: 400, color: '#8A8A84' }}>(Students in India)</span>
                 </h3>
                 <ExportMenu
                   elementId="academic-state-dist-container"

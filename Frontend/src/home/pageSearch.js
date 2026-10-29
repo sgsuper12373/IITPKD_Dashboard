@@ -29,7 +29,7 @@ const PILLAR_TABLES = {
 };
 
 export const PAGE_TABLES = {
-  '/quick-glance': Object.values(PILLAR_TABLES).flat(),
+  // '/quick-glance': Object.values(PILLAR_TABLES).flat(),
   '/people-campus': PILLAR_TABLES.people,
   '/research': PILLAR_TABLES.research,
   '/education': PILLAR_TABLES.education,

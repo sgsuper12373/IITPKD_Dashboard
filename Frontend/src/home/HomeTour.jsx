@@ -3,7 +3,7 @@ import './HomeTour.css';
 
 const STEPS = [
   { target: 'intro', title: 'Welcome', body: 'This dashboard gives a live view of IIT Palakkad. Here is a quick look around.' },
-  { target: 'preview', title: 'Live figures', body: 'Headline numbers with their recent trend. Click any card to open Quick Glance.' },
+  { target: 'preview', title: 'Live figures', body: 'Headline numbers with their recent trend at a glance.' },
   { target: 'pillars', title: 'Six dimensions', body: 'Each card opens one area of the Institute. Start with whichever interests you most.' },
   { target: 'journeys', title: 'Guided paths', body: 'Tell us who you are and we will walk you through the pages that matter most.' },
   { target: 'nirf', title: 'Rankings', body: 'See how the Institute is placed in national rankings.' },

@@ -8,7 +8,7 @@
  */
 
 export const PAGES = [
-  { path: '/quick-glance', title: 'Quick Glance', blurb: 'Key figures and trends across the Institute on one page.', keywords: 'overview dashboard summary kpi' },
+  // { path: '/quick-glance', title: 'Quick Glance', blurb: 'Key figures and trends across the Institute on one page.', keywords: 'overview dashboard summary kpi' },
   { path: '/people-campus', title: 'People & Campus', blurb: 'Faculty, staff, students, alumni and campus sustainability.', keywords: 'faculty staff alumni campus diversity' },
   { path: '/research', title: 'Research', blurb: 'Publications, patents, projects and research funding.', keywords: 'publications patents projects funding library icsr' },
   { path: '/education', title: 'Education', blurb: 'Programmes, student strength, placements and outcomes.', keywords: 'students programmes placements admissions academics' },
@@ -43,8 +43,8 @@ export const isKnownPath = (path) => PAGE_BY_PATH.has(normalizePath(path));
 
 /* "You might also like" — hand-curated, 3 per page. */
 const RELATED = {
-  '/quick-glance': ['/research', '/education', '/industry-connect'],
-  '/people-campus': ['/education', '/outreach-extension', '/quick-glance'],
+  // '/quick-glance': ['/research', '/education', '/industry-connect'],
+  '/people-campus': ['/education', '/outreach-extension'],
   '/research': ['/industry-connect', '/innovation-entrepreneurship', '/innovation-entrepreneurship/iptif/facilities'],
   '/education': ['/research', '/industry-connect', '/outreach-extension/students-engagement'],
   '/industry-connect': ['/research', '/innovation-entrepreneurship/startup-portfolio', '/education'],
@@ -98,7 +98,7 @@ export const JOURNEYS = {
       { path: '/research', why: 'Start with publications, patents and funding.' },
       { path: '/innovation-entrepreneurship/iptif/facilities', why: 'Labs and facilities available.' },
       { path: '/industry-connect', why: 'Industry collaboration and consultancy.' },
-      { path: '/quick-glance', why: 'Finish with the Institute-wide trends.' },
+      // { path: '/quick-glance', why: 'Finish with the Institute-wide trends.' },
     ],
   },
 };
