@@ -6,6 +6,7 @@ identifiable by design (raw IP, attempted email) and therefore admin-only and
 short-lived — see Database_Schema/migrations/add_security_and_analytics.sql.
 Anonymous visitor analytics live separately in analytics.py.
 """
+import logging
 import os
 import re
 import threading
@@ -15,6 +16,8 @@ from urllib.parse import unquote
 from flask import request
 
 from .db import get_db_connection, release_db_connection
+
+logger = logging.getLogger(__name__)
 
 SEVERITIES = ('info', 'warning', 'high')
 
@@ -61,13 +64,19 @@ def _client_ip():
     return _clean(request.remote_addr, 64)
 
 
+_throttle_last_clean = 0.0
+
+
 def _throttled(ip, event_type):
+    global _throttle_last_clean
     now = time.time()
     key = (ip, event_type)
     with _throttle_lock:
-        if len(_throttle) > 5000:
-            for k in [k for k, (start, _) in _throttle.items() if now - start > 60]:
+        if now - _throttle_last_clean > 60:
+            expired = [k for k, (start, _) in _throttle.items() if now - start > 60]
+            for k in expired:
                 del _throttle[k]
+            _throttle_last_clean = now
         start, count = _throttle.get(key, (now, 0))
         if now - start > 60:
             start, count = now, 0
@@ -108,7 +117,7 @@ def log_event(event_type, severity='info', *, user_id=None, email=None, detail=N
             _alert(event_type, ip, user_id, email, detail)
         _maybe_purge()
     except Exception as e:
-        print(f"security_log: could not record '{event_type}': {type(e).__name__}")
+        logger.warning("security_log: could not record '%s': %s", event_type, type(e).__name__)
         try:
             if conn:
                 conn.rollback()
@@ -201,7 +210,7 @@ def purge_old_rows():
         conn.commit()
         cur.close()
     except Exception as e:
-        print(f"security_log: purge failed: {type(e).__name__}")
+        logger.warning("security_log: purge failed: %s", type(e).__name__)
     finally:
         if conn:
             release_db_connection(conn)
@@ -249,5 +258,5 @@ def init_security_logging(app):
                     and not path.startswith(_WRITE_SKIP_PREFIXES)):
                 log_event('admin_write', 'info', user_id=_user_id_from_bearer(), detail=f"{request.method} {path}", status_code=status)
         except Exception as e:
-            print(f"security_log: hook error: {type(e).__name__}")
+            logger.warning("security_log: hook error: %s", type(e).__name__)
         return response

@@ -43,7 +43,7 @@
 }
 
 .fb-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: #142D4E;
   margin: 0;
@@ -53,7 +53,7 @@
 .fb-close-btn {
   border: none;
   background: none;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   color: #999;
   cursor: pointer;
   padding: 0.25rem 0.4rem;
@@ -76,7 +76,7 @@
 }
 
 .fb-field label {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: #444;
   font-family: inherit;
@@ -93,7 +93,7 @@
   border: 1.5px solid #DCE3E7;
   border-radius: 8px;
   padding: 0.58rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-body);
   font-family: inherit;
   color: #142D4E;
   background: #F7F5EF;
@@ -117,14 +117,14 @@
 
 /* ── Error ── */
 .fb-error-msg {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   color: #ef4444;
   margin: 0.25rem 0 0.75rem;
 }
 
 /* ── Verification step ── */
 .fb-step-hint {
-  font-size: 0.83rem;
+  font-size: var(--font-size-navigation);
   color: #666;
   line-height: 1.5;
   margin: 0 0 1.1rem;
@@ -157,7 +157,7 @@
   border: none;
   background: none;
   color: #066A75;
-  font-size: 0.82rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -177,12 +177,12 @@
 .fb-optional {
   font-weight: 400;
   color: #999;
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
 }
 
 .fb-file-input {
   width: 100%;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-family: inherit;
   color: #444;
   padding: 0.4rem 0;
@@ -196,7 +196,7 @@
   border-radius: 8px;
   padding: 0.45rem 0.8rem;
   margin-right: 0.75rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.18s ease, background 0.18s ease;
@@ -209,7 +209,7 @@
 
 .fb-file-hint {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   color: #b0aeab;
   margin-top: 0.3rem;
 }
@@ -241,7 +241,7 @@
 }
 
 .fb-screenshot-name {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   color: #142D4E;
   white-space: nowrap;
   overflow: hidden;
@@ -254,7 +254,7 @@
   border: none;
   background: none;
   color: #ef4444;
-  font-size: 0.78rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -280,7 +280,7 @@
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1.6rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-body);
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -317,7 +317,7 @@
   border-radius: 50%;
   background: rgba(34, 197, 94, 0.12);
   color: #22c55e;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,14 +325,14 @@
 }
 
 .fb-success-title {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: #142D4E;
   margin: 0;
 }
 
 .fb-success-msg {
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   color: #666;
   margin: 0 0 0.75rem;
 }
@@ -345,6 +345,6 @@
   }
 
   .fb-title {
-    font-size: 1rem;
+    font-size: var(--font-size-card-title);
   }
 }

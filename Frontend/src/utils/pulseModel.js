@@ -270,17 +270,21 @@ export function buildPulse(series, year, extras = {}) {
       sub: `Published in ${year}`,
       to: SOURCE_ROUTES.publications,
     }),
-    kpi({
-      key: 'patents',
-      label: 'Patents filed',
-      value: at('patentsFiled'),
-      text: fmtInt(at('patentsFiled')),
-      delta: yoy(series.patentsFiled, year),
-      series: series.patentsFiled,
-      years,
-      sub: `Filed in ${year}`,
-      to: SOURCE_ROUTES.patents,
-    }),
+    (() => {
+      const allFiled = Object.values(series.patentsFiled || {});
+      const totalFiled = allFiled.length ? allFiled.reduce((s, v) => s + (v || 0), 0) : null;
+      return kpi({
+        key: 'patents',
+        label: 'Patents filed',
+        value: totalFiled,
+        text: fmtInt(totalFiled),
+        delta: null,
+        series: series.patentsFiled,
+        years,
+        sub: 'Total patents filed',
+        to: SOURCE_ROUTES.patents,
+      });
+    })(),
     kpi({
       key: 'funding',
       label: 'Sponsored funding',

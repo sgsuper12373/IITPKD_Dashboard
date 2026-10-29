@@ -150,7 +150,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: var(--text-metric-sm);
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg,
       rgba(8, 126, 139, 0.1) 0%,
@@ -172,7 +172,7 @@
 
 .card-title-minimal {
   font-family: inherit;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
@@ -182,7 +182,7 @@
 
 .card-subtitle-minimal {
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
@@ -202,7 +202,7 @@
   position: absolute;
   bottom: 2rem;
   right: 2rem;
-  font-size: 1.75rem;
+  font-size: var(--text-3xl);
   color: var(--accent-teal);
   opacity: 0;
   transform: translateX(-16px);
@@ -289,7 +289,7 @@
   border-radius: 100px;
 
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-weight: 500;
   color: var(--text-primary);
 
@@ -313,7 +313,7 @@
 }
 
 .back-button-inline .back-arrow {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   transition: transform 0.25s var(--transition-smooth);
 }
 
@@ -328,7 +328,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   background: linear-gradient(135deg,
       rgba(8, 126, 139, 0.12) 0%,
       rgba(8, 126, 139, 0.06) 100%);
@@ -353,7 +353,7 @@
 /* Expanded title text */
 .section-overview-text {
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 500;
   color: var(--text-primary);
   margin: 0;
@@ -448,7 +448,7 @@
 }
 
 .grievance-subsection--second { margin-top: 3rem; padding-top: 3rem; border-top: 1px solid #eee; }
-.grievance-section-h2 { margin-bottom: 1.5rem; font-weight: 700; color: #1a1a1a; font-size: 1.5rem; }
+.grievance-section-h2 { margin-bottom: 1.5rem; font-weight: 700; color: #1a1a1a; font-size: var(--text-2xl); }
 
 /* Subsection Header */
 .subsection-header {
@@ -470,7 +470,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   background: linear-gradient(135deg,
       rgba(8, 126, 139, 0.12) 0%,
       rgba(8, 126, 139, 0.06) 100%);
@@ -486,7 +486,7 @@
 
 .subsection-title {
   font-family: inherit;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -495,7 +495,7 @@
 
 .subsection-subtitle {
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
@@ -549,11 +549,11 @@
   .card-icon-minimal {
     width: 64px;
     height: 64px;
-    font-size: 2.2rem;
+    font-size: var(--text-metric-sm);
   }
 
   .card-title-minimal {
-    font-size: 1.3rem;
+    font-size: var(--text-xl);
   }
 
   .expanded-card-top-bar {
@@ -565,11 +565,11 @@
   .section-icon-header {
     width: 44px;
     height: 44px;
-    font-size: 1.75rem;
+    font-size: var(--text-3xl);
   }
 
   .section-overview-text {
-    font-size: 1rem;
+    font-size: var(--font-size-card-title);
   }
 
   /* Grievances subsections responsive */
@@ -580,15 +580,15 @@
   .subsection-icon {
     width: 48px;
     height: 48px;
-    font-size: 1.75rem;
+    font-size: var(--text-3xl);
   }
 
   .subsection-title {
-    font-size: 1.3rem;
+    font-size: var(--text-xl);
   }
 
   .subsection-subtitle {
-    font-size: 0.875rem;
+    font-size: var(--font-size-body);
   }
 
   .subsection-content {
@@ -603,11 +603,11 @@
   }
 
   .card-title-minimal {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
   }
 
   .card-subtitle-minimal {
-    font-size: 0.875rem;
+    font-size: var(--font-size-body);
   }
 
   .expanded-card-top-bar {
@@ -617,17 +617,17 @@
 
   .back-button-inline {
     padding: 6px 12px;
-    font-size: 13px;
+    font-size: var(--font-size-navigation);
   }
 
   .section-icon-header {
     width: 40px;
     height: 40px;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .section-overview-text {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
   }
 
   /* Grievances subsections responsive */
@@ -643,11 +643,11 @@
   .subsection-icon {
     width: 44px;
     height: 44px;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .subsection-title {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
   }
 
   .subsection-content {

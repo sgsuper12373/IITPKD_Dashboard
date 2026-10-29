@@ -1,5 +1,6 @@
 """Authentication: JWT helpers, decorator, and user management routes."""
 import datetime
+import logging
 import os
 import secrets
 from datetime import timezone
@@ -7,7 +8,7 @@ from functools import wraps
 
 import jwt
 import psycopg2.errors
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, make_response, request, current_app
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 
@@ -15,7 +16,13 @@ from .db import get_db_connection, release_db_connection
 from . import bcrypt, limiter
 from .security_log import log_event, seen_login_from_ip, current_ip
 
+logger = logging.getLogger(__name__)
+
 auth_bp = Blueprint('auth', __name__)
+
+AUTH_COOKIE_NAME = 'authToken'
+ACCESS_TOKEN_HOURS = 1
+REFRESH_TOKEN_DAYS = 7
 
 
 def _record_login_success(user):
@@ -34,13 +41,12 @@ def _record_login_success(user):
 
 def encode_auth_token(user_id, role_id, password_changed_at):
     """
-    Creates a signed JWT valid for 24 hours. Returns the token string or None.
+    Creates a signed JWT valid for ACCESS_TOKEN_HOURS. Returns the token string or None.
 
     Embeds password_changed_at (as the 'pwd' claim, a unix timestamp) at the
     moment of issuance. token_required compares this against the account's
     *current* password_changed_at on every request, so a password change
-    invalidates every outstanding token immediately instead of waiting up to
-    24 hours for natural expiry.
+    invalidates every outstanding token immediately.
     """
     try:
         now = datetime.datetime.now(timezone.utc)
@@ -49,12 +55,31 @@ def encode_auth_token(user_id, role_id, password_changed_at):
             'sub': str(user_id),
             'role': role_id,
             'pwd': pwd_epoch,
+            'type': 'access',
             'iat': int(now.timestamp()),
-            'exp': int((now + datetime.timedelta(hours=24)).timestamp()),
+            'exp': int((now + datetime.timedelta(hours=ACCESS_TOKEN_HOURS)).timestamp()),
         }
         return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
     except Exception as e:
-        print(f"Token encoding error: {e}")
+        logger.exception("Token encoding error")
+        return None
+
+
+def encode_refresh_token(user_id, password_changed_at):
+    """Creates a long-lived refresh token for silent re-auth."""
+    try:
+        now = datetime.datetime.now(timezone.utc)
+        pwd_epoch = int(password_changed_at.replace(tzinfo=timezone.utc).timestamp()) if password_changed_at else 0
+        payload = {
+            'sub': str(user_id),
+            'pwd': pwd_epoch,
+            'type': 'refresh',
+            'iat': int(now.timestamp()),
+            'exp': int((now + datetime.timedelta(days=REFRESH_TOKEN_DAYS)).timestamp()),
+        }
+        return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+    except Exception as e:
+        logger.exception("Refresh token encoding error")
         return None
 
 
@@ -111,27 +136,35 @@ def _check_session_still_valid(user_id, pwd_epoch_claim):
 
         return True, None
     except Exception as e:
-        print(f"Session validity check error: {e}")
+        logger.exception("Session validity check error")
         return False, 'Error validating session. Please log in again.'
     finally:
         if conn:
             release_db_connection(conn)
 
 
+def _extract_token():
+    """Reads the JWT from the httpOnly cookie first, then falls back to Authorization header."""
+    cookie_token = request.cookies.get(AUTH_COOKIE_NAME)
+    if cookie_token:
+        return cookie_token
+
+    auth_header = request.headers.get('Authorization', '')
+    parts = auth_header.split()
+    if len(parts) == 2 and parts[0].lower() == 'bearer':
+        return parts[1]
+    return None
+
+
 def token_required(f):
-    """Route decorator that checks for a valid Bearer token in the Authorization header,
-    that the account it belongs to is still active, and that its password hasn't
-    changed since the token was issued."""
+    """Route decorator that checks for a valid JWT (httpOnly cookie preferred,
+    Authorization header as fallback), that the account it belongs to is still
+    active, and that its password hasn't changed since the token was issued."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth_header = request.headers.get('Authorization', '')
-        parts = auth_header.split()
-        if len(parts) == 2 and parts[0].lower() == 'bearer':
-            token = parts[1]
-        elif not auth_header:
+        token = _extract_token()
+        if not token:
             return jsonify({'message': 'Token is missing! Please log in again.'}), 401
-        else:
-            return jsonify({'message': 'Invalid Authorization header format!'}), 401
 
         decoded = decode_auth_token(token)
         if isinstance(decoded, str):
@@ -156,11 +189,9 @@ def token_optional(f):
     other invalid token."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        auth_header = request.headers.get('Authorization', '')
-        parts = auth_header.split()
-        if (len(parts) == 2 and parts[0].lower() == 'bearer'
-                and parts[1].lower() not in ('null', 'undefined', '')):
-            decoded = decode_auth_token(parts[1])
+        token = _extract_token()
+        if token and token.lower() not in ('null', 'undefined', ''):
+            decoded = decode_auth_token(token)
             if isinstance(decoded, str):
                 return jsonify({'message': decoded}), 401
 
@@ -174,6 +205,36 @@ def token_optional(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+# ---------------------------------------------------------------------------
+# Cookie helpers
+# ---------------------------------------------------------------------------
+
+def _set_auth_cookies(response, user_id, role_id, password_changed_at):
+    """Sets httpOnly access + refresh cookies on a login response."""
+    is_debug = os.environ.get('FLASK_DEBUG', '0') == '1'
+    access_token = encode_auth_token(user_id, role_id, password_changed_at)
+    refresh_token = encode_refresh_token(user_id, password_changed_at)
+    if access_token:
+        response.set_cookie(
+            AUTH_COOKIE_NAME, access_token,
+            httponly=True, secure=not is_debug, samesite='Lax',
+            max_age=ACCESS_TOKEN_HOURS * 3600, path='/',
+        )
+    if refresh_token:
+        response.set_cookie(
+            'refreshToken', refresh_token,
+            httponly=True, secure=not is_debug, samesite='Lax',
+            max_age=REFRESH_TOKEN_DAYS * 86400, path='/auth',
+        )
+    return access_token
+
+
+def _clear_auth_cookies(response):
+    """Clears auth cookies on logout."""
+    response.delete_cookie(AUTH_COOKIE_NAME, path='/')
+    response.delete_cookie('refreshToken', path='/auth')
 
 
 # ---------------------------------------------------------------------------
@@ -244,11 +305,13 @@ def login():
         password_changed_at = user['password_changed_at']
         del user['password_hash']
         del user['password_changed_at']
-        return jsonify({
+        response = make_response(jsonify({
             'message': 'Login successful!',
             'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
-        }), 200
+        }), 200)
+        _set_auth_cookies(response, user['id'], user['role_id'], password_changed_at)
+        return response
     finally:
         if conn:
             cur.close()
@@ -282,7 +345,7 @@ def google_login():
             clock_skew_in_seconds=120,
         )
     except ValueError as e:
-        print(f"Google token verification failed: {e}")
+        logger.warning("Google token verification failed: %s", e)
         log_event('login_failed', 'warning', detail='invalid Google token')
         return jsonify({'message': 'Invalid Google token. Please try again.'}), 401
 
@@ -347,11 +410,13 @@ def google_login():
             user.pop('password_hash', None)
 
         password_changed_at = user.pop('password_changed_at', None)
-        return jsonify({
+        response = make_response(jsonify({
             'message': 'Login successful!',
             'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
-        }), 200
+        }), 200)
+        _set_auth_cookies(response, user['id'], user['role_id'], password_changed_at)
+        return response
 
     finally:
         if conn:
@@ -394,15 +459,84 @@ def guest_login():
         user = dict(user)
         user.pop('password_hash', None)
         password_changed_at = user.pop('password_changed_at', None)
-        return jsonify({
+        response = make_response(jsonify({
             'message': 'Login successful!',
             'token': encode_auth_token(user['id'], user['role_id'], password_changed_at),
             'user': user,
-        }), 200
+        }), 200)
+        _set_auth_cookies(response, user['id'], user['role_id'], password_changed_at)
+        return response
     finally:
         if conn:
             cur.close()
             release_db_connection(conn)
+
+
+# ---------------------------------------------------------------------------
+# Logout + Refresh
+# ---------------------------------------------------------------------------
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    """Clears auth cookies. No token required — an expired/missing token should still be clearable."""
+    response = make_response(jsonify({'message': 'Logged out successfully.'}), 200)
+    _clear_auth_cookies(response)
+    log_event('logout', 'info')
+    return response
+
+
+@auth_bp.route('/refresh', methods=['POST'])
+@limiter.limit("30 per minute")
+def refresh():
+    """Issues a fresh access token from a valid refresh token cookie."""
+    refresh_tok = request.cookies.get('refreshToken')
+    if not refresh_tok:
+        return jsonify({'message': 'Refresh token missing.'}), 401
+
+    try:
+        secret = current_app.config['SECRET_KEY']
+        payload = jwt.decode(refresh_tok, secret, algorithms=['HS256'], leeway=10)
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Refresh token expired. Please log in again.'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid refresh token.'}), 401
+
+    if payload.get('type') != 'refresh':
+        return jsonify({'message': 'Invalid token type.'}), 401
+
+    user_id = int(payload['sub'])
+    pwd_epoch = int(payload.get('pwd', 0))
+
+    is_valid, error_message = _check_session_still_valid(user_id, pwd_epoch)
+    if not is_valid:
+        return jsonify({'message': error_message}), 401
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'message': 'Database connection failed.'}), 503
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT role_id, password_changed_at FROM users WHERE id = %s;", (user_id,))
+        row = cur.fetchone()
+        cur.close()
+        if not row:
+            return jsonify({'message': 'User not found.'}), 401
+
+        access_token = encode_auth_token(user_id, row['role_id'], row['password_changed_at'])
+        response = make_response(jsonify({
+            'message': 'Token refreshed.',
+            'token': access_token,
+            'user_id': user_id,
+        }), 200)
+        is_debug = os.environ.get('FLASK_DEBUG', '0') == '1'
+        response.set_cookie(
+            AUTH_COOKIE_NAME, access_token,
+            httponly=True, secure=not is_debug, samesite='Lax',
+            max_age=ACCESS_TOKEN_HOURS * 3600, path='/',
+        )
+        return response
+    finally:
+        release_db_connection(conn)
 
 
 # ---------------------------------------------------------------------------
@@ -499,7 +633,7 @@ def update_role(current_user_id, role_id):
         return jsonify(updated), 200
     except Exception as e:
         conn.rollback()
-        print(f"Error updating role: {e}")
+        logger.exception("Error updating role")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -533,7 +667,7 @@ def create_role(current_user_id):
         return jsonify({'message': 'A role with that id or name already exists'}), 409
     except Exception as e:
         conn.rollback()
-        print(f"Error creating role: {e}")
+        logger.exception("Error creating role")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -564,7 +698,7 @@ def delete_role(current_user_id, role_id):
         return jsonify({'message': 'Role deleted successfully'}), 200
     except Exception as e:
         conn.rollback()
-        print(f"Error deleting role: {e}")
+        logger.exception("Error deleting role")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -627,7 +761,7 @@ def create_user(current_user_id):
         return jsonify({'message': 'Email or username already exists'}), 409
     except Exception as e:
         conn.rollback()
-        print(f"Error creating user: {e}")
+        logger.exception("Error creating user")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -647,7 +781,7 @@ def get_users(current_user_id):
         users = cur.fetchall()
         return jsonify(users), 200
     except Exception as e:
-        print(f"Error fetching users: {e}")
+        logger.exception("Error fetching users")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -716,7 +850,7 @@ def update_user(current_user_id, user_id):
         return jsonify({'message': 'User updated successfully'}), 200
     except Exception as e:
         conn.rollback()
-        print(f"Error updating user: {e}")
+        logger.exception("Error updating user")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()

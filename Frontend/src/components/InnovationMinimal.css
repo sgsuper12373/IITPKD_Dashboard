@@ -167,7 +167,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: var(--text-metric-sm);
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg,
       rgba(8, 126, 139, 0.1) 0%,
@@ -189,7 +189,7 @@
 
 .innovation-card-title {
   font-family: inherit;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
@@ -199,7 +199,7 @@
 
 .innovation-card-subtitle {
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
@@ -219,7 +219,7 @@
   position: absolute;
   bottom: 2rem;
   right: 2rem;
-  font-size: 1.75rem;
+  font-size: var(--text-3xl);
   color: var(--accent-teal);
   opacity: 0;
   transform: translateX(-16px);
@@ -305,7 +305,7 @@
   border-radius: 100px;
 
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-weight: 500;
   color: var(--text-primary);
 
@@ -329,7 +329,7 @@
 }
 
 .innovation-back-arrow {
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   transition: transform 0.25s var(--transition-smooth);
 }
 
@@ -344,7 +344,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   background: linear-gradient(135deg,
       rgba(8, 126, 139, 0.12) 0%,
       rgba(8, 126, 139, 0.06) 100%);
@@ -369,7 +369,7 @@
 /* Expanded title text */
 .innovation-overview-text {
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 500;
   color: var(--text-primary);
   margin: 0;
@@ -488,11 +488,11 @@
   .innovation-card-icon {
     width: 64px;
     height: 64px;
-    font-size: 2.2rem;
+    font-size: var(--text-metric-sm);
   }
 
   .innovation-card-title {
-    font-size: 1.3rem;
+    font-size: var(--text-xl);
   }
 
   .innovation-top-bar {
@@ -504,11 +504,11 @@
   .innovation-icon-header {
     width: 44px;
     height: 44px;
-    font-size: 1.75rem;
+    font-size: var(--text-3xl);
   }
 
   .innovation-overview-text {
-    font-size: 1rem;
+    font-size: var(--font-size-card-title);
   }
 }
 
@@ -519,11 +519,11 @@
   }
 
   .innovation-card-title {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
   }
 
   .innovation-card-subtitle {
-    font-size: 0.875rem;
+    font-size: var(--font-size-body);
   }
 
   .innovation-top-bar {
@@ -533,17 +533,17 @@
 
   .innovation-back-button {
     padding: 6px 12px;
-    font-size: 13px;
+    font-size: var(--font-size-navigation);
   }
 
   .innovation-icon-header {
     width: 40px;
     height: 40px;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .innovation-overview-text {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
   }
 }
 

@@ -67,7 +67,7 @@
 
 .sg-panel__title {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 700;
   color: #142D4E;
   line-height: 1.3;
@@ -75,14 +75,14 @@
 
 .sg-panel__subtitle {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 400;
   color: #64748b;
   line-height: 1.4;
 }
 
 .sg-panel__view-all {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #087E8B;
   text-decoration: none;
@@ -170,14 +170,14 @@
 }
 
 .sg-card__name {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: #142D4E;
   line-height: 1.3;
 }
 
 .sg-card__desc {
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 400;
   color: #64748b;
   line-height: 1.35;
@@ -255,10 +255,10 @@
     margin-bottom: 10px;
   }
   .sg-panel__title {
-    font-size: 14px;
+    font-size: var(--font-size-body);
   }
   .sg-panel__subtitle {
-    font-size: 11px;
+    font-size: var(--font-size-caption);
   }
   .sg-card {
     padding: 8px 10px;
@@ -269,10 +269,10 @@
     height: 28px;
   }
   .sg-card__name {
-    font-size: 12px;
+    font-size: var(--font-size-caption);
   }
   .sg-card__desc {
-    font-size: 10px;
+    font-size: var(--font-size-caption);
   }
 }
 

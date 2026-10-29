@@ -17,7 +17,7 @@
 .eas-card-decor  { position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; }
 .eas-card-inner  { position: relative; z-index: 1; }
 .eas-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.eas-card-icon   { font-size: 28px; background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 12px; }
+.eas-card-icon   { font-size: var(--text-3xl); background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 12px; }
 .eas-card-label  { font-size: var(--text-sm); opacity: 0.9; font-weight: 500; }
 .eas-card-value  { font-size: var(--text-metric); font-weight: bold; margin-bottom: 6px; }
 .eas-card-sub    { font-size: var(--text-xs); opacity: 0.7; }
@@ -43,12 +43,12 @@
 /* ── Content toolbar ── */
 .eas-toolbar   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .eas-table-h3  { margin: 0 0 4px 0; color: #142D4E; transition: color 0.3s; }
-.eas-table-sub { margin: 0; color: #666; font-size: 14px; }
+.eas-table-sub { margin: 0; color: #666; font-size: var(--font-size-body); }
 
 /* ── CourseTable: empty state ── */
 .eas-table-empty      { text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px; }
 .eas-table-empty-icon { font-size: 48px; display: block; margin-bottom: 16px; }
-.eas-table-empty-p    { color: #666; font-size: 16px; }
+.eas-table-empty-p    { color: #666; font-size: var(--font-size-card-title); }
 
 /* ── CourseTable: scroll wrapper ── */
 .eas-table-wrap {
@@ -64,14 +64,14 @@
 /* ── CourseTable: table ── */
 .eas-table         { width: 100%; border-collapse: collapse; background-color: #fff; min-width: 600px; }
 .eas-table thead   { position: sticky; top: 0; z-index: 10; }
-.eas-table th      { padding: 14px 12px; text-align: left; position: sticky; top: 0; font-size: 13px; color: white; }
-.eas-table td      { padding: 12px; font-size: 13px; border-bottom: 1px solid #e0e0e0; }
+.eas-table th      { padding: 14px 12px; text-align: left; position: sticky; top: 0; font-size: var(--font-size-navigation); color: white; }
+.eas-table td      { padding: 12px; font-size: var(--font-size-navigation); border-bottom: 1px solid #e0e0e0; }
 .eas-td-name       { font-weight: 500; }
 
 /* ── Category badge ── */
-.eas-cat-badge { background-color: #e0e7ff; color: #142D4E; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+.eas-cat-badge { background-color: #e0e7ff; color: #142D4E; padding: 3px 8px; border-radius: 4px; font-size: var(--font-size-caption); font-weight: 500; }
 
 /* ── Status badge ── */
-.eas-status          { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+.eas-status          { padding: 4px 10px; border-radius: 12px; font-size: var(--font-size-caption); font-weight: bold; }
 .eas-status--active  { background-color: #dcfce7; color: #166534; }
 .eas-status--inactive { background-color: #fee2e2; color: #991b1b; }

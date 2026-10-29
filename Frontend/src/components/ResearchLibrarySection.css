@@ -38,7 +38,7 @@
   margin-bottom: 8px;
 }
 .rls-card-icon {
-  font-size: 28px;
+  font-size: var(--text-3xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 5px;
   border-radius: 6px;
@@ -73,7 +73,7 @@
 .rls-filter-h4 {
   margin: 0;
   color: #142D4E;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
 }
 
@@ -94,7 +94,7 @@
 /* ── View type wrapper ── */
 .rls-view-type-wrapper { margin-bottom: 12px; }
 .rls-view-type-label {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #64748b;
   margin-bottom: 4px;
@@ -112,7 +112,7 @@
 
 /* ── Filter label & select ── */
 .rls-filter-label {
-  font-size: 10px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #8A8A84;
   margin-bottom: 3px;
@@ -169,10 +169,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
-.rls-chart-icon { font-size: 0.9375rem; color: var(--color-accent); display: inline-flex; align-items: center; }
+.rls-chart-icon { font-size: var(--font-size-body); color: var(--color-accent); display: inline-flex; align-items: center; }
 .rls-chart-desc { color: var(--color-text-muted); margin: 0; font-size: var(--text-sm); }
 
 /* ── Mode toggle (trend chart) ── */
@@ -229,7 +229,7 @@
 /* ── Directory table ── */
 .rls-table {
   width: 100%;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   border-collapse: collapse;
 }
 .rls-table thead {

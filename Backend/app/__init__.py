@@ -1,4 +1,5 @@
 """Flask application factory."""
+import logging
 import os
 import secrets
 from flask import Flask, abort, jsonify, request, send_from_directory
@@ -11,20 +12,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logger = logging.getLogger(__name__)
+
 cors = CORS()
 bcrypt = Bcrypt()
 limiter = Limiter(
     key_func=get_remote_address,
-    # Baseline per-IP ceiling for every route that doesn't set its own
-    # (uploads, export, feedback verify/submit, etc. add stricter limits
-    # below; this is what used to be an unlimited default for everything
-    # else — every stats/read endpoint included).
     default_limits=["200 per minute", "3000 per hour"],
-    # In-memory store: correct for a single worker process. Behind gunicorn
-    # with multiple workers each worker counts independently, so the
-    # effective ceiling is (this limit × worker count) — switch to a shared
-    # storage_uri (e.g. redis://...) if/when this runs with >1 worker.
-    storage_uri="memory://",
+    # RATE_LIMIT_STORAGE: set to "redis://localhost:6379/0" for multi-worker
+    # deployments. In-memory is only safe for a single worker process.
+    storage_uri=os.environ.get('RATE_LIMIT_STORAGE', 'memory://'),
 )
 
 
@@ -83,6 +80,7 @@ def create_app():
             "origins": allowed_origins,
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True,
         }
     })
     bcrypt.init_app(app)
@@ -197,6 +195,12 @@ def create_app():
     def health_check():
         return jsonify({'status': 'running'}), 200
 
+    @app.route('/api/csp-report', methods=['POST'])
+    def csp_report():
+        """Logs CSP violations. No auth required — the browser sends these automatically."""
+        logger.warning("CSP violation: %s", request.get_data(as_text=True)[:500])
+        return '', 204
+
     @app.after_request
     def add_security_headers(response):
         # ── Don't leak server/language version ──
@@ -256,6 +260,7 @@ def create_app():
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
+            "report-uri /api/csp-report",
         ])
         response.headers['Content-Security-Policy'] = csp_directives
 

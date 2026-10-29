@@ -18,7 +18,7 @@
 }
 
 .mpl-heading {
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   color: #0F1F36;
   margin: 0;
@@ -31,7 +31,7 @@
 
 .mpl-empty {
   color: #94a3b8;
-  font-size: 0.875rem;
+  font-size: var(--font-size-body);
   text-align: center;
   padding: 1.5rem 0;
 }
@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   background: #DCE3E7;
   border-radius: 6px;
 }
@@ -104,7 +104,7 @@
 }
 
 .mpl-name {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: #142D4E;
   text-align: center;
@@ -118,7 +118,7 @@
   position: absolute;
   top: 6px;
   left: 8px;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   color: #94a3b8;
   cursor: grab;
   line-height: 1;
@@ -145,7 +145,7 @@
   border: 1px solid #BCC8D0;
   background: #fff;
   color: #142D4E;
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
@@ -220,7 +220,7 @@
   right: 14px;
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   color: #64748b;
   cursor: pointer;
   line-height: 1;
@@ -241,13 +241,13 @@
 
 .mpl-zoom-name {
   margin: 1rem 0 0.25rem;
-  font-size: 1.05rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   color: #0F1F36;
 }
 
 .mpl-zoom-hint {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   color: #94a3b8;
   margin: 0;
 }
@@ -265,7 +265,7 @@
 
 .mpl-form-title {
   margin: 0 0 1.25rem;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   color: #0F1F36;
 }
@@ -280,7 +280,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 500;
   color: #142D4E;
 }
@@ -289,7 +289,7 @@
   padding: 0.45rem 0.625rem;
   border: 1px solid #BCC8D0;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-body);
   color: #0F1F36;
   outline: none;
   transition: border-color 0.12s;
@@ -302,7 +302,7 @@
 }
 
 .mpl-form-error {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   color: #ef4444;
   margin: 0;
 }

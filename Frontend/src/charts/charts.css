@@ -36,7 +36,7 @@
 
 .ds-card__title {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.005em;
@@ -50,7 +50,7 @@
 
 .ds-card__sub {
   margin: 0.125rem 0 0;
-  font-size: 0.6875rem;
+  font-size: var(--font-size-caption);
   line-height: 1.4;
   color: var(--ds-slate-60);
 }
@@ -62,7 +62,7 @@
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid var(--ds-slate-06);
-  font-size: 0.6875rem;
+  font-size: var(--font-size-caption);
   line-height: 1.4;
   color: var(--ds-slate-60);
 }
@@ -101,7 +101,7 @@
   justify-content: center;
   padding: 2rem 1rem;
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
   color: var(--ds-slate-60);
 }
 
@@ -110,7 +110,7 @@
 
 /* ───────────── Type ───────────── */
 .ds-label {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.01em;
   text-transform: none;
@@ -121,7 +121,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -130,7 +130,7 @@
 .ds-delta--down { color: var(--ds-danger); }
 .ds-delta--flat { color: var(--ds-slate-60); }
 .ds-delta__tag {
-  font-size: 0.6875rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.01em;
   text-transform: none;
@@ -146,10 +146,10 @@
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgba(20, 45, 78, 0.12);
   font-family: var(--ds-font);
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
   color: var(--ds-slate);
 }
-.ds-tip__label { margin: 0 0 0.375rem; font-weight: 700; font-size: 0.8125rem; color: var(--ds-text-strong); }
+.ds-tip__label { margin: 0 0 0.375rem; font-weight: 700; font-size: var(--font-size-navigation); color: var(--ds-text-strong); }
 .ds-tip__row { display: flex; align-items: center; gap: 0.5rem; line-height: 1.65; }
 .ds-tip__dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex-shrink: 0; }
 .ds-tip__name { flex: 1; color: var(--ds-slate-60); }
@@ -159,7 +159,7 @@
 .ds-gauge { display: flex; flex-direction: column; align-items: center; gap: 0.375rem; }
 .ds-gauge__plot { position: relative; width: 100%; max-width: 22rem; }
 .ds-gauge__overlay { position: absolute; inset: 0; pointer-events: none; }
-.ds-gauge__end { font-size: 0.6875rem; fill: var(--ds-slate-60); }
+.ds-gauge__end { font-size: var(--font-size-caption); fill: var(--ds-slate-60); }
 .ds-gauge__read { display: flex; flex-direction: column; align-items: center; gap: 0.125rem; text-align: center; }
 .ds-gauge__value {
   font-size: clamp(1.5rem, 4vw, 2.25rem);
@@ -172,7 +172,7 @@
 .ds-gauge__value--success { color: var(--ds-success); }
 .ds-gauge__value--warning { color: var(--ds-warning); }
 .ds-gauge__value--danger { color: var(--ds-danger); }
-.ds-gauge__sub { font-size: 0.8125rem; color: var(--ds-slate-60); }
+.ds-gauge__sub { font-size: var(--font-size-navigation); color: var(--ds-slate-60); }
 
 /* ───────────── KPI spark ───────────── */
 .ds-kpi { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -186,7 +186,7 @@
   color: var(--ds-text-strong);
 }
 .ds-kpi__spark { height: 3rem; min-width: 0; }
-.ds-kpi__sub { margin: 0; font-size: 0.75rem; letter-spacing: 0.01em; text-transform: none; color: var(--ds-slate-60); }
+.ds-kpi__sub { margin: 0; font-size: var(--font-size-caption); letter-spacing: 0.01em; text-transform: none; color: var(--ds-slate-60); }
 
 /* ───────────── VU meter ───────────── */
 .vu { display: flex; flex-direction: column; align-items: center; gap: 0.375rem; }
@@ -194,7 +194,7 @@
 .vu__seg { transition: opacity 150ms ease-out; }
 .vu__glow { transition: opacity 600ms ease-out; }
 .vu__needle { transition: transform 750ms ease-out; }
-.vu__tick { font-size: 0.625rem; fill: var(--ds-slate-60); font-variant-numeric: tabular-nums; }
+.vu__tick { font-size: var(--font-size-caption); fill: var(--ds-slate-60); font-variant-numeric: tabular-nums; }
 .vu__read { display: flex; flex-direction: column; align-items: center; gap: 0.125rem; text-align: center; }
 .vu__val {
   font-size: clamp(1.5rem, 4vw, 2.25rem);
@@ -207,7 +207,7 @@
 .vu__val--success { color: var(--ds-success); }
 .vu__val--warning { color: var(--ds-warning); }
 .vu__val--danger { color: var(--ds-danger); }
-.vu__sub { font-size: 0.8125rem; color: var(--ds-slate-60); }
+.vu__sub { font-size: var(--font-size-navigation); color: var(--ds-slate-60); }
 
 /* ───────────── Donut + legend ───────────── */
 .ds-donut__plot { position: relative; }
@@ -221,7 +221,7 @@
   gap: 0.25rem;
   pointer-events: none;
 }
-.ds-donut__big { font-size: 1.625rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ds-text-strong); font-variant-numeric: tabular-nums; }
+.ds-donut__big { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; color: var(--ds-text-strong); font-variant-numeric: tabular-nums; }
 
 .ds-legend {
   list-style: none;
@@ -232,7 +232,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.25rem 1rem;
-  font-size: 0.6875rem;
+  font-size: var(--font-size-caption);
 }
 .ds-legend li { display: flex; align-items: center; gap: 0.3rem; }
 .ds-legend__dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
@@ -242,7 +242,7 @@
 /* ───────────── Progress row ───────────── */
 .ds-progress { display: grid; gap: 0.375rem; }
 .ds-progress__head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
-.ds-progress__val { font-size: 0.9375rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
+.ds-progress__val { font-size: var(--font-size-body); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
 .ds-progress__track { position: relative; height: 0.5rem; border-radius: var(--radius-full); background: var(--ds-slate-06); overflow: visible; }
 .ds-progress__fill { height: 100%; border-radius: inherit; transition: width 750ms ease-out; }
 .ds-progress__fill--slate { background: var(--ds-slate); }
@@ -251,7 +251,7 @@
 .ds-progress__fill--warning { background: var(--ds-warning); }
 .ds-progress__fill--danger { background: var(--ds-danger); }
 .ds-progress__target { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ds-text-strong); border-radius: 1px; }
-.ds-progress__sub { font-size: 0.75rem; color: var(--ds-slate-60); }
+.ds-progress__sub { font-size: var(--font-size-caption); color: var(--ds-slate-60); }
 
 /* ───────────── Ranked bars ───────────── */
 .ds-ranked {
@@ -270,9 +270,9 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
 }
-.ds-ranked__rank { font-size: 0.75rem; font-weight: 700; color: var(--ds-slate-60); text-align: right; }
+.ds-ranked__rank { font-size: var(--font-size-caption); font-weight: 700; color: var(--ds-slate-60); text-align: right; }
 .ds-ranked__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ds-text-strong); font-weight: 500; }
 .ds-ranked__track { height: 0.625rem; border-radius: var(--radius-full); background: var(--ds-slate-06); overflow: hidden; }
 .ds-ranked__fill { height: 100%; border-radius: inherit; background: var(--ds-slate); opacity: 0.7; transition: width 750ms ease-out; }
@@ -286,15 +286,15 @@
 .ds-funnel { display: grid; gap: 0.875rem; }
 .ds-funnel__stage { display: grid; gap: 0.3rem; }
 .ds-funnel__head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
-.ds-funnel__val { font-size: 1.0625rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
-.ds-funnel__val em { margin-left: 0.5rem; font-size: 0.75rem; font-style: normal; font-weight: 500; color: var(--ds-slate-60); }
+.ds-funnel__val { font-size: var(--text-lg); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
+.ds-funnel__val em { margin-left: 0.5rem; font-size: var(--font-size-caption); font-style: normal; font-weight: 500; color: var(--ds-slate-60); }
 .ds-funnel__track { height: 1.5rem; border-radius: var(--radius-sm); background: var(--ds-slate-06); overflow: hidden; }
 .ds-funnel__fill { height: 100%; border-radius: inherit; background: var(--ds-slate); transition: width 750ms ease-out; }
 .ds-funnel__fill--last { background: var(--ds-accent); }
 
 .ds-chips { list-style: none; margin: 0.375rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 .ds-chips li { display: flex; align-items: baseline; gap: 0.4rem; }
-.ds-chips strong { font-size: 1rem; font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
+.ds-chips strong { font-size: var(--font-size-card-title); font-variant-numeric: tabular-nums; color: var(--ds-text-strong); }
 
 /* ───────────── Segmented control ───────────── */
 .ds-seg {
@@ -316,7 +316,7 @@
   border-radius: 4px;
   background: transparent;
   font-family: var(--ds-font);
-  font-size: 0.6875rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
@@ -339,7 +339,7 @@
 
 .recharts-cartesian-axis-tick-value {
   fill: #8A8A84 !important;
-  font-size: 0.625rem !important;
+  font-size: var(--font-size-caption) !important;
   font-weight: 500 !important;
 }
 
@@ -351,7 +351,7 @@
   display: flex !important;
   justify-content: center !important;
   gap: 0.75rem !important;
-  font-size: 0.6875rem !important;
+  font-size: var(--font-size-caption) !important;
 }
 
 .recharts-legend-item-text {
@@ -368,7 +368,7 @@
 /* ───────────── Mobile ───────────── */
 @media (max-width: 40rem) {
   .ds-card { padding: 0.75rem 0.875rem 0.625rem; }
-  .ds-card__title { font-size: 0.75rem; }
+  .ds-card__title { font-size: var(--font-size-caption); }
   .ds-ranked { grid-template-columns: 1fr; grid-auto-flow: row; grid-template-rows: none; }
   .ds-ranked__row { grid-template-columns: 1rem minmax(4rem, 7rem) minmax(2rem, 1fr) 2.5rem 3.25rem; }
   .ds-ranked__spark, .ds-ranked__spark--none { display: none; }

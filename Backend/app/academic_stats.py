@@ -1,6 +1,12 @@
+import logging
+
 from flask import Blueprint, jsonify, request
+from psycopg2 import sql
+
 from .db import get_dashboard_connection, release_dashboard_connection
 from .auth import token_optional, _is_management
+
+logger = logging.getLogger(__name__)
 
 academic_bp = Blueprint('academic', __name__)
 
@@ -26,14 +32,14 @@ def get_latest_year(is_mgmt=False):
 
         table = _student_table(is_mgmt)
         cur = conn.cursor()
-        cur.execute(f"SELECT MAX(admission_year) as latest_year FROM {table};")
+        cur.execute(sql.SQL("SELECT MAX(admission_year) as latest_year FROM {};").format(sql.Identifier(table)))
         result = cur.fetchone()
 
         if result and result['latest_year']:
             return result['latest_year']
         return None
     except Exception as e:
-        print(f"Error getting latest year: {e}")
+        logger.exception("Error getting latest year")
         if conn:
             try:
                 conn.rollback()

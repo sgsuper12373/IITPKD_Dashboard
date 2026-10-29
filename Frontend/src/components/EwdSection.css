@@ -23,14 +23,14 @@
 
 .indicator-title {
   color: #087E8B;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0 0 0.75rem 0;
 }
 
 .indicator-value {
-  font-size: 1.8rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: #ffffff;
   margin: 0;
@@ -40,7 +40,7 @@
   display: block;
   margin-top: 0.5rem;
   color: #aaaaaa;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
 }
 
 /* ============================================================ */
@@ -107,7 +107,7 @@
   flex-wrap: wrap;
 }
 .ewd-stat-card-icon {
-  font-size: 20px;
+  font-size: var(--text-xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 6px;
   border-radius: 8px;
@@ -115,7 +115,7 @@
 }
 .ewd-stat-card-label {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 500;
   line-height: 1.3;
 }
@@ -140,7 +140,7 @@
   flex-shrink: 0;
 }
 .ewd-stat-card-subtext {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -166,14 +166,14 @@
   gap: 10px;
 }
 .ewd-indicators-icon {
-  font-size: 24px;
+  font-size: var(--text-2xl);
   background: #f0f0f0;
   padding: 8px;
   border-radius: 8px;
 }
 .ewd-indicators-h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--text-xl);
   color: #142D4E;
 }
 .ewd-indicators-controls {
@@ -184,14 +184,14 @@
 }
 .ewd-year-label {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: #64748b;
 }
 .ewd-year-select {
   padding: 8px 16px;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   background-color: #fff;
   cursor: pointer;
   min-width: 150px;
@@ -228,7 +228,7 @@
   border: 1px solid rgba(52, 211, 153, 0.19);
 }
 .ewd-indicator-label {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -237,7 +237,7 @@
 .ewd-indicator-label--pink  { color: #066A75; }
 .ewd-indicator-label--teal  { color: #34d399; }
 .ewd-indicator-value {
-  font-size: 28px;
+  font-size: var(--text-3xl);
   font-weight: bold;
   margin-bottom: 4px;
 }
@@ -246,7 +246,7 @@
 .ewd-indicator-value--pink  { color: #066A75; }
 .ewd-indicator-value--teal  { color: #34d399; }
 .ewd-indicator-unit {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   color: #666;
 }
 
@@ -266,7 +266,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   transition: all 0.3s ease;
   display: flex;
@@ -286,13 +286,13 @@
 }
 .ewd-chart-h2 {
   margin: 0 0 5px 0;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: #142D4E;
 }
 .ewd-chart-desc {
   color: #666;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   margin: 0;
 }
 
@@ -339,7 +339,7 @@
 }
 .ewd-no-data-text {
   color: #666;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
 }
 
 /* ── Chart area ── */
@@ -350,7 +350,7 @@
 .ewd-scale-note {
   text-align: center;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   color: #666;
   font-style: italic;
 }
@@ -388,6 +388,6 @@
     padding: 1rem;
   }
   .indicator-value {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 }

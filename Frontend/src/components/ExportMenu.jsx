@@ -11,9 +11,10 @@ const ExportMenu = ({
   filename = 'export',
   exportType = 'both'
 }) => {
-  const isGuest = !localStorage.getItem('authToken');
   const storedUser = localStorage.getItem('authUser');
-  const roleId = storedUser ? JSON.parse(storedUser)?.role_id : undefined;
+  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+  const isGuest = !parsedUser;
+  const roleId = parsedUser?.role_id;
   const isPublicPreview = useIsPublicPreview();
 
   const [isOpen, setIsOpen] = useState(false);

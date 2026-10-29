@@ -13,7 +13,7 @@
 .uet-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.82rem;
+    font-size: var(--font-size-navigation);
     background: #fff;
 }
 
@@ -46,7 +46,7 @@
 
 .uet-truncated {
     margin-top: 0.4rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-navigation);
     color: #856404;
     background-color: #fff3cd;
     border: 1px solid #ffeeba;

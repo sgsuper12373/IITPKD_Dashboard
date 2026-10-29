@@ -74,7 +74,7 @@
   margin-bottom: 16px;
 }
 .uba-stat-card-icon {
-  font-size: 32px;
+  font-size: var(--text-3xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 10px;
   border-radius: 12px;
@@ -82,7 +82,7 @@
 .uba-stat-card-h3 {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 18px;
+  font-size: var(--text-xl);
   font-weight: 500;
 }
 .uba-stat-card-value {
@@ -106,7 +106,7 @@
   flex-shrink: 0;
 }
 .uba-stat-subtext {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -131,7 +131,7 @@
 .uba-panel-h2 {
   margin: 0;
   color: #142D4E;
-  font-size: 24px;
+  font-size: var(--text-2xl);
 }
 .uba-panel-header-right {
   display: flex;
@@ -144,7 +144,7 @@
   color: white;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
 }
 .uba-count-badge--purple { background-color: #142D4E; }
@@ -163,7 +163,7 @@
   display: block;
   margin-bottom: 16px;
 }
-.uba-empty-text { font-size: 16px; }
+.uba-empty-text { font-size: var(--font-size-card-title); }
 
 /* ── Project cards grid (flex, replaces CSS grid) ── */
 .uba-project-grid {
@@ -188,7 +188,7 @@
 }
 .uba-project-card-h3 {
   margin: 0 0 8px 0;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   line-height: 1.4;
 }
@@ -196,7 +196,7 @@
   background-color: rgba(255, 255, 255, 0.2);
   padding: 3px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
 }
 .uba-project-card-body { padding: 16px; }
 .uba-project-info-row {
@@ -204,10 +204,10 @@
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: #64748b;
 }
-.uba-project-info-row--sm { font-size: 13px; color: #666; }
+.uba-project-info-row--sm { font-size: var(--font-size-navigation); color: #666; }
 
 /* ── Expanded modal ── */
 .uba-expanded-panel {
@@ -217,7 +217,7 @@
 .uba-exp-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   min-width: 1000px;
 }
 .uba-exp-thead-tr {
@@ -256,19 +256,19 @@
 .uba-mobile-card-year {
   font-weight: 700;
   color: #142D4E;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .uba-mobile-card-type {
   background-color: #f3f4f6;
   color: #374151;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
 }
 .uba-mobile-card-h4 {
   margin: 0 0 10px 0;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   color: #111;
   line-height: 1.4;
 }
@@ -276,7 +276,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   color: #666;
 }
 .uba-mobile-card-fields > * { flex: 1 1 calc(50% - 4px); }
@@ -295,7 +295,7 @@
 .uba-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   min-width: 1200px;
 }
 .uba-table thead tr {
@@ -317,12 +317,12 @@
 .uba-table td.uba-td-year    { color: #142D4E; font-weight: 500; white-space: nowrap; }
 .uba-table td.uba-td-wrap    { max-width: 260px; line-height: 1.4; }
 .uba-table td.uba-td-nowrap  { white-space: nowrap; }
-.uba-table td.uba-td-date    { white-space: nowrap; font-size: 13px; color: #666; }
+.uba-table td.uba-td-date    { white-space: nowrap; font-size: var(--font-size-navigation); color: #666; }
 .uba-table td.uba-td-assoc   { max-width: 160px; }
-.uba-table td.uba-td-audience{ max-width: 160px; font-size: 13px; }
+.uba-table td.uba-td-audience{ max-width: 160px; font-size: var(--font-size-navigation); }
 .uba-table td.uba-td-center  { text-align: center; }
-.uba-table td.uba-td-reach   { max-width: 140px; font-size: 13px; }
-.uba-table td.uba-td-remarks { max-width: 160px; font-size: 13px; color: #94a3b8; }
+.uba-table td.uba-td-reach   { max-width: 140px; font-size: var(--font-size-navigation); }
+.uba-table td.uba-td-remarks { max-width: 160px; font-size: var(--font-size-navigation); color: #94a3b8; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

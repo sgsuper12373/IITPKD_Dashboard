@@ -24,7 +24,7 @@
 }
 
 .access-denied-title {
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 0.6rem;
@@ -32,7 +32,7 @@
 
 .access-denied-msg {
   color: #666;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   margin: 0 0 1.25rem;
   line-height: 1.5;
 }
@@ -46,7 +46,7 @@
 }
 
 .access-denied-hint {
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: #78350f;
   margin: 0 0 0.6rem;
@@ -64,7 +64,7 @@
 }
 
 .access-denied-link {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: #087E8B;
   text-decoration: none;
   font-weight: 500;
@@ -76,7 +76,7 @@
 
 .access-denied-link::before {
   content: '→';
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
 }
 
 .access-denied-link:hover {
@@ -90,6 +90,6 @@
   }
 
   .access-denied-title {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
   }
 }

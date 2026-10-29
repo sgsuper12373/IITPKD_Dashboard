@@ -42,7 +42,7 @@
   margin-bottom: 12px;
 }
 .mou-stat-card-icon {
-  font-size: 22px;
+  font-size: var(--text-2xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 8px;
   border-radius: 10px;
@@ -50,7 +50,7 @@
 .mou-stat-card-h3 {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 500;
 }
 .mou-stat-card-status {
@@ -67,7 +67,7 @@
   flex-shrink: 0;
 }
 .mou-stat-subtext {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -83,7 +83,7 @@
 }
 .mou-tab-btn {
   padding: 10px 24px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   border-radius: 8px;
   border: none;
@@ -124,7 +124,7 @@
 .mou-filter-h4 {
   margin: 0;
   color: #142D4E;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .mou-view-btns-row {
   display: flex;
@@ -135,7 +135,7 @@
 /* ── View type buttons (base; active states stay inline) ── */
 .mou-view-btn {
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -211,7 +211,7 @@
 }
 .mou-body-h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--text-xl);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -249,7 +249,7 @@
 
 /* ── Directory records count ── */
 .mou-records-count {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: #666;
   margin-bottom: 12px;
 }
@@ -274,7 +274,7 @@
 }
 .mou-mobile-card-h4 {
   margin: 0 0 10px 0;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   color: #111;
   line-height: 1.4;
 }
@@ -282,7 +282,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: #666;
 }
 
@@ -295,7 +295,7 @@
 /* ── Desktop directory table ── */
 .mou-table {
   width: 100%;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   border-collapse: collapse;
 }
 .mou-table thead {

@@ -12,7 +12,7 @@ import uuid
 
 from flask import Blueprint, current_app, jsonify, request
 import psycopg2
-from psycopg2 import errors as pg_errors, extras
+from psycopg2 import errors as pg_errors, extras, sql
 
 from .auth import token_optional, token_required
 from .db import get_db_connection, release_db_connection
@@ -204,7 +204,7 @@ def update_startup(current_user_id, origin, startup_id):
 
         table = ORIGINS[origin]['table']
         cur = conn.cursor(cursor_factory=extras.RealDictCursor)
-        cur.execute(f"SELECT id, startup_logo FROM {table} WHERE id = %s", (startup_id,))
+        cur.execute(sql.SQL("SELECT id, startup_logo FROM {} WHERE id = %s").format(sql.Identifier(table)), (startup_id,))
         existing = cur.fetchone()
         if not existing:
             return jsonify({'error': 'Startup not found.'}), 404

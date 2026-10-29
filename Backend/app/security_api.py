@@ -1,4 +1,5 @@
 """Admin-only read API over the security audit log (role_id 3 only)."""
+import logging
 import re
 
 from flask import Blueprint, jsonify, request
@@ -6,6 +7,8 @@ from flask import Blueprint, jsonify, request
 from . import limiter
 from .auth import _require_admin, token_required
 from .db import get_db_connection, release_db_connection
+
+logger = logging.getLogger(__name__)
 
 security_bp = Blueprint('security', __name__)
 
@@ -57,7 +60,7 @@ def summary(current_user_id):
 
         return jsonify({'hours': hours, 'by_type': by_type, 'top_ips': top_ips, 'recent_high': recent_high}), 200
     except Exception as e:
-        print(f"security summary error: {type(e).__name__}")
+        logger.exception("Security summary error")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -89,7 +92,7 @@ def events(current_user_id):
                ORDER BY occurred_at DESC LIMIT %s;""", (event_type, event_type, limit))
         return jsonify({'events': [_row(r) for r in cur.fetchall()]}), 200
     except Exception as e:
-        print(f"security events error: {type(e).__name__}")
+        logger.exception("Security events error")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()

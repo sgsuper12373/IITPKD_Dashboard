@@ -24,7 +24,7 @@
 
 /* Clickable ancestor links */
 .breadcrumb-link {
-  font-size: 0.76rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: #666;
   text-decoration: none;
@@ -41,7 +41,7 @@
 
 /* › separator */
 .breadcrumb-sep {
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   color: #bbb;
   user-select: none;
   line-height: 1;
@@ -50,7 +50,7 @@
 
 /* Current page — accent orange, bold, not a link */
 .breadcrumb-current {
-  font-size: 0.76rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #087E8B;
   letter-spacing: 0.01em;
@@ -65,6 +65,6 @@
 @media (max-width: 480px) {
   .breadcrumb-link,
   .breadcrumb-current {
-    font-size: 0.72rem;
+    font-size: var(--font-size-caption);
   }
 }

@@ -21,19 +21,16 @@
 /* ── Chart panel ── */
 .icsr-panel        { background-color: #fff; border-radius: 16px; border: 1px solid #e0e0e0; padding: 24px; margin-bottom: 30px; }
 .icsr-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.icsr-tab-row      { display: inline-flex; gap: 3px; background: var(--color-bg-2); padding: 3px; border-radius: var(--radius-sm); flex-wrap: wrap; }
-.icsr-tab-btn          { padding: 9px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: 600; font-size: var(--text-base); font-family: inherit; background: transparent; color: var(--color-text-muted); transition: color var(--dur-mid) var(--ease-spring), background-color var(--dur-mid) var(--ease-spring), box-shadow var(--dur-mid) var(--ease-spring); display: inline-flex; align-items: center; gap: 6px; }
-.icsr-tab-btn--active  { background: var(--color-bg-card); color: var(--color-primary); box-shadow: 0 1px 4px rgba(0,0,0,0.10); font-weight: 700; }
-.icsr-tab-btn--inactive { background: transparent; color: var(--color-text-muted); }
+.icsr-tab-row      { display: inline-flex; gap: 3px; background: rgba(245, 240, 230, 0.55); border: 1px solid rgba(71, 85, 105, 0.15); padding: 3px; border-radius: var(--lg-radius); flex-wrap: wrap; box-shadow: var(--lg-inset), 0 1px 2px rgba(0, 0, 0, 0.04); }
 
 /* ── Mobile directory ── */
 .icsr-mobile-list    { display: flex; flex-direction: column; gap: 16px; }
 .icsr-mobile-card    { background-color: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
 .icsr-mobile-top     { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.icsr-mobile-year    { font-weight: 700; color: #142D4E; font-size: 14px; }
-.icsr-mobile-badge   { background-color: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-.icsr-mobile-h4      { margin: 0 0 10px 0; font-size: 15px; color: #111; line-height: 1.4; }
-.icsr-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+.icsr-mobile-year    { font-weight: 700; color: #142D4E; font-size: var(--font-size-body); }
+.icsr-mobile-badge   { background-color: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: var(--font-size-caption); font-weight: 600; }
+.icsr-mobile-h4      { margin: 0 0 10px 0; font-size: var(--font-size-card-title); color: #111; line-height: 1.4; }
+.icsr-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: var(--font-size-navigation); color: #666; }
 
 /* ── Directory table ── */
 .icsr-table           { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; }

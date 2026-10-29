@@ -489,7 +489,22 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                         >
                           <BarChartOutlined /> Projects Trend
                         </button>
-                        {/* Patents Trend, Projects Directory, MoUs tabs removed per request */}
+                        {!isRestrictedUser && (
+                          <button
+                            className={`icsr-nav-tab${viewType === 'patents' ? ' icsr-nav-tab--active' : ''}`}
+                            onClick={() => safeSetViewType('patents')}
+                          >
+                            <FileTextOutlined /> Patents
+                          </button>
+                        )}
+                        {!isRestrictedUser && (
+                          <button
+                            className={`icsr-nav-tab${viewType === 'projectsTable' ? ' icsr-nav-tab--active' : ''}`}
+                            onClick={() => safeSetViewType('projectsTable')}
+                          >
+                            <ProfileOutlined /> Projects Directory
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -923,7 +938,22 @@ function ResearchIcsrSection({ user, isPublicView = false, mouOnly = false }) {
                             >
                               <BarChartOutlined /> Projects Trend
                             </button>
-                            {/* Patents Trend, Projects Directory, MoUs tabs removed per request */}
+                            {!isRestrictedUser && (
+                              <button
+                                className={`icsr-nav-tab${viewType === 'patents' ? ' icsr-nav-tab--active' : ''}`}
+                                onClick={() => safeSetViewType('patents')}
+                              >
+                                <FileTextOutlined /> Patents
+                              </button>
+                            )}
+                            {!isRestrictedUser && (
+                              <button
+                                className={`icsr-nav-tab${viewType === 'projectsTable' ? ' icsr-nav-tab--active' : ''}`}
+                                onClick={() => safeSetViewType('projectsTable')}
+                              >
+                                <ProfileOutlined /> Projects Directory
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>

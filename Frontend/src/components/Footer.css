@@ -18,7 +18,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.6);
@@ -31,7 +31,7 @@
 }
 
 .footer-copyright {
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   color: rgba(255, 255, 255, 0.55);
 }
 
@@ -49,6 +49,6 @@
   }
 
   .footer-copyright {
-    font-size: 0.62rem;
+    font-size: var(--font-size-caption);
   }
 }

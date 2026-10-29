@@ -18,7 +18,7 @@
 .igrc-chart-h2 {
   margin: 0 0 10px 0;
   color: #142D4E;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
 
@@ -35,7 +35,7 @@
   align-items: center;
 }
 .igrc-metric-row-label {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;

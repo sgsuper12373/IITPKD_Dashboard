@@ -63,7 +63,7 @@
   margin-bottom: 16px;
 }
 .cncl-stat-card-icon {
-  font-size: 32px;
+  font-size: var(--text-3xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 10px;
   border-radius: 12px;
@@ -71,7 +71,7 @@
 .cncl-stat-card-h3 {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 18px;
+  font-size: var(--text-xl);
   font-weight: 500;
 }
 .cncl-stat-card-value {
@@ -95,7 +95,7 @@
   flex-shrink: 0;
 }
 .cncl-stat-subtext {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -161,21 +161,21 @@
   gap: 10px;
 }
 .cncl-card-year-icon {
-  font-size: 28px;
+  font-size: var(--text-3xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 8px;
   border-radius: 12px;
 }
 .cncl-card-year {
   margin: 0;
-  font-size: 28px;
+  font-size: var(--text-3xl);
   font-weight: bold;
 }
 .cncl-card-count-badge {
   background-color: rgba(255, 255, 255, 0.2);
   padding: 8px 16px;
   border-radius: 30px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   backdrop-filter: blur(5px);
   display: flex;
@@ -200,17 +200,17 @@
   gap: 8px;
   margin-bottom: 8px;
 }
-.cncl-theme-icon { font-size: 20px; }
+.cncl-theme-icon { font-size: var(--text-xl); }
 .cncl-theme-h3 {
   margin: 0;
   color: #142D4E;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
 }
 .cncl-theme-text {
   margin: 0;
   color: #142D4E;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   line-height: 1.6;
   font-weight: 500;
 }
@@ -234,10 +234,10 @@
   gap: 6px;
   margin-bottom: 4px;
 }
-.cncl-info-icon { font-size: 16px; }
-.cncl-info-icon--lg { font-size: 20px; flex-shrink: 0; }
+.cncl-info-icon { font-size: var(--font-size-card-title); }
+.cncl-info-icon--lg { font-size: var(--text-xl); flex-shrink: 0; }
 .cncl-info-label {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: #666;
   display: block;
@@ -246,13 +246,13 @@
 .cncl-info-text {
   margin: 0;
   color: #142D4E;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   line-height: 1.5;
 }
 .cncl-desc-text {
   margin: 0 0 16px 0;
   color: #64748b;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   line-height: 1.6;
   padding: 12px;
   background-color: #f8f9fa;
@@ -274,7 +274,7 @@
   color: #142D4E;
   text-decoration: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -301,7 +301,7 @@
   display: block;
   margin-bottom: 16px;
 }
-.cncl-empty-text { color: #666; font-size: 16px; }
+.cncl-empty-text { color: #666; font-size: var(--font-size-card-title); }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

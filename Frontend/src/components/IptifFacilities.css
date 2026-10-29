@@ -10,14 +10,14 @@
 }
 
 .iff-h1 {
-  font-size: 1.6rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 0.35rem;
 }
 
 .iff-subtitle {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
   margin: 0;
   max-width: 56ch;
@@ -31,7 +31,7 @@
 
 .iff-empty {
   color: var(--color-text-light);
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   text-align: center;
   padding: 3rem 1rem;
 }
@@ -127,7 +127,7 @@ button.iff-row:hover {
 }
 
 .iff-row-title {
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
@@ -135,7 +135,7 @@ button.iff-row:hover {
 }
 
 .iff-row-type {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -143,7 +143,7 @@ button.iff-row:hover {
 .iff-row-status {
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   padding: 0.18rem 0.5rem;
   border-radius: var(--radius-full);
@@ -152,7 +152,7 @@ button.iff-row:hover {
 }
 
 .iff-row-summary {
-  font-size: 0.83rem;
+  font-size: var(--font-size-navigation);
   color: var(--color-text-muted);
   margin: 0;
   line-height: 1.45;
@@ -166,7 +166,7 @@ button.iff-row:hover {
 .iff-row-cta {
   margin-top: auto;
   padding-top: 0.3rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-primary-dark);
 }
@@ -186,7 +186,7 @@ button.iff-row:hover {
   border: 1px solid var(--color-border-strong);
   background: var(--color-bg-card);
   color: var(--color-text);
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.12s, color 0.12s, border-color 0.12s;
@@ -264,7 +264,7 @@ button.iff-row:hover {
   background: rgba(255, 255, 255, 0.92);
   border: none;
   border-radius: var(--radius-full);
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   color: var(--color-text);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
@@ -302,7 +302,7 @@ button.iff-row:hover {
 }
 
 .iff-modal-title {
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-text);
   margin: 0;
@@ -311,7 +311,7 @@ button.iff-row:hover {
 .iff-modal-status {
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   padding: 0.25rem 0.7rem;
   border-radius: var(--radius-full);
@@ -319,13 +319,13 @@ button.iff-row:hover {
 }
 
 .iff-modal-type {
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   color: var(--color-text-muted);
   margin: 0.3rem 0 0;
 }
 
 .iff-modal-summary {
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   color: var(--color-text);
   line-height: 1.6;
   margin: 1rem 0 0;
@@ -338,7 +338,7 @@ button.iff-row:hover {
 }
 
 .iff-modal-block-title {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -347,7 +347,7 @@ button.iff-row:hover {
 }
 
 .iff-modal-block-text {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text);
   line-height: 1.6;
   margin: 0;
@@ -360,7 +360,7 @@ button.iff-row:hover {
   padding: 0.55rem 1.1rem;
   background: var(--color-primary);
   color: var(--color-text-inverted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   border-radius: var(--radius-sm);
   text-decoration: none;
@@ -386,7 +386,7 @@ button.iff-row:hover {
 
 .iff-form-title {
   margin: 0 0 1.25rem;
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -407,7 +407,7 @@ button.iff-row:hover {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  font-size: 0.82rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text);
 }
@@ -421,7 +421,7 @@ button.iff-row:hover {
   padding: 0.5rem 0.7rem;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-family: inherit;
   color: var(--color-text);
   background: var(--color-bg-card);
@@ -441,13 +441,13 @@ button.iff-row:hover {
 }
 
 .iff-form-hint {
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   font-weight: 400;
   color: var(--color-text-light);
 }
 
 .iff-form-error {
-  font-size: 0.82rem;
+  font-size: var(--font-size-navigation);
   color: #ef4444;
   margin: 0;
 }
@@ -477,7 +477,7 @@ button.iff-row:hover {
 /* ── Publish badge (manage mode) ──────────────────────────────────────────── */
 
 .iff-pub {
-  font-size: 0.66rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   padding: 0.18rem 0.5rem;
   border-radius: 999px;
@@ -501,7 +501,7 @@ button.iff-row:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text);
   cursor: pointer;

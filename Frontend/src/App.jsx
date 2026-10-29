@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import axios from 'axios';
 import './App.css';
 
+axios.defaults.withCredentials = true;
+
 // Always-eager: on the critical first-paint path
 import ScrollToTop from './components/ScrollToTop';
 import Login from './components/Login';
@@ -132,40 +134,39 @@ function App() {
 
   // Rehydrate auth state on initial load.
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('authUser');
+    const storedToken = localStorage.getItem('authToken');
 
-    if (storedToken) {
-      if (storedUser && storedUser !== 'undefined') {
-        try {
-          const parsedUser = JSON.parse(storedUser);
-          // Guest sessions must not persist across page loads
-          if (parsedUser?.email === import.meta.env.VITE_GUEST_EMAIL) {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('authUser');
-            setIsAuthChecked(true);
-            return;
-          }
-          setToken(storedToken);
-          setUser(parsedUser);
-        } catch {
+    if (storedUser && storedUser !== 'undefined') {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser?.email === import.meta.env.VITE_GUEST_EMAIL) {
+          localStorage.removeItem('authToken');
           localStorage.removeItem('authUser');
+          setIsAuthChecked(true);
+          return;
         }
-      } else {
-        setToken(storedToken);
+        setToken(storedToken || 'cookie');
+        setUser(parsedUser);
+      } catch {
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authToken');
       }
+    } else if (storedToken) {
+      localStorage.removeItem('authToken');
     }
     setIsAuthChecked(true);
   }, []);
 
   const handleLoginSuccess = (receivedToken, receivedUser) => {
-    setToken(receivedToken);
+    setToken(receivedToken || 'cookie');
     setUser(receivedUser);
-    localStorage.setItem('authToken', receivedToken);
+    if (receivedToken) localStorage.setItem('authToken', receivedToken);
     localStorage.setItem('authUser', JSON.stringify(receivedUser));
   };
 
   const handleLogout = () => {
+    axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`).catch(() => {});
     setToken(null);
     setUser(null);
     localStorage.removeItem('authToken');
@@ -184,13 +185,42 @@ function App() {
     return () => { axios.interceptors.request.eject(requestInterceptor); };
   }, []);
 
-  // Axios interceptor to catch 401 errors (e.g. token expiration) and auto-logout
+  // Axios interceptor: on 401, attempt silent refresh before logging out
   useEffect(() => {
+    let isRefreshing = false;
+    let failedQueue = [];
+    const processQueue = (error) => {
+      failedQueue.forEach(p => error ? p.reject(error) : p.resolve());
+      failedQueue = [];
+    };
+
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
-      (error) => {
-        if (error.response && error.response.status === 401 && token) {
-          handleLogout();
+      async (error) => {
+        const original = error.config;
+        if (error.response?.status === 401 && token && !original._retry) {
+          if (original.url?.includes('/auth/refresh') || original.url?.includes('/auth/login')) {
+            handleLogout();
+            return Promise.reject(error);
+          }
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              failedQueue.push({ resolve: () => resolve(axios(original)), reject });
+            });
+          }
+          original._retry = true;
+          isRefreshing = true;
+          try {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`);
+            processQueue(null);
+            return axios(original);
+          } catch {
+            processQueue(error);
+            handleLogout();
+            return Promise.reject(error);
+          } finally {
+            isRefreshing = false;
+          }
         }
         return Promise.reject(error);
       }

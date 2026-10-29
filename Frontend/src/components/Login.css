@@ -37,7 +37,7 @@
 }
 
 .login-brand__title {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   line-height: 1.15;
   margin: 0 0 0.5rem;
@@ -45,7 +45,7 @@
 }
 
 .login-brand__tagline {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -54,7 +54,7 @@
 }
 
 .login-brand__desc {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.65);
   margin: 0;
@@ -89,14 +89,14 @@
 }
 
 .login-form__heading {
-  font-size: 1.75rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 0.35rem;
 }
 
 .login-form__sub {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
   margin: 0 0 2rem;
 }
@@ -117,7 +117,7 @@
 }
 
 .login-field__label {
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text);
 }
@@ -125,7 +125,7 @@
 .login-field input {
   width: 100%;
   padding: 0.75rem 0.9rem;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   background: #fff;
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -153,7 +153,7 @@
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -178,7 +178,7 @@
   gap: 0.75rem;
   margin: 1.5rem 0;
   color: var(--color-text-light);
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
 }
 
 .login-divider::before,
@@ -199,7 +199,7 @@
    ================================================================ */
 .login-error {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   text-align: center;
   color: #b91c1c;
   background: rgba(185, 28, 28, 0.08);
@@ -212,7 +212,7 @@
    ================================================================ */
 @media (max-width: 900px) {
   .login-brand { flex: 0 0 340px; padding: 2.5rem 2rem; }
-  .login-brand__title { font-size: 1.6rem; }
+  .login-brand__title { font-size: var(--text-2xl); }
 }
 
 @media (max-width: 768px) {
@@ -228,7 +228,7 @@
   .login-brand__desc { display: none; }
   .login-brand__clipart { height: 50px; }
   .login-brand__logo { height: 48px; }
-  .login-brand__title { font-size: 1.5rem; }
+  .login-brand__title { font-size: var(--text-2xl); }
 
   .login-form-panel { padding: 2rem 1.25rem; }
 }
@@ -239,31 +239,31 @@
   }
 
   .login-brand__logo { height: 40px; margin-bottom: 1rem; }
-  .login-brand__title { font-size: 1.25rem; }
-  .login-brand__tagline { margin-bottom: 0; font-size: 0.65rem; }
+  .login-brand__title { font-size: var(--text-xl); }
+  .login-brand__tagline { margin-bottom: 0; font-size: var(--font-size-caption); }
 
   .login-form-panel { padding: 1.5rem 1rem; }
-  .login-form__heading { font-size: 1.4rem; }
-  .login-form__sub { font-size: 0.82rem; }
+  .login-form__heading { font-size: var(--text-xl); }
+  .login-form__sub { font-size: var(--font-size-navigation); }
 }
 
 @media (max-width: 360px) {
   .login-brand { padding: 1.25rem 0.75rem 1rem; }
   .login-brand__logo { height: 36px; }
-  .login-brand__title { font-size: 1.1rem; }
+  .login-brand__title { font-size: var(--text-lg); }
 
   .login-form-panel { padding: 1.25rem 0.75rem; }
-  .login-form__heading { font-size: 1.2rem; }
-  .login-field input { padding: 0.65rem 0.75rem; font-size: 0.88rem; }
+  .login-form__heading { font-size: var(--text-xl); }
+  .login-field input { padding: 0.65rem 0.75rem; font-size: var(--font-size-body); }
 }
 
 @media (max-width: 320px) {
   .login-brand { padding: 1rem 0.5rem 0.75rem; }
   .login-brand__logo { height: 30px; }
-  .login-brand__title { font-size: 0.95rem; }
-  .login-brand__tagline { font-size: 0.55rem; }
+  .login-brand__title { font-size: var(--font-size-body); }
+  .login-brand__tagline { font-size: var(--font-size-caption); }
 
   .login-form-panel { padding: 1rem 0.5rem; }
-  .login-form__heading { font-size: 1rem; }
-  .login-submit { padding: 0.7rem; font-size: 0.9rem; }
+  .login-form__heading { font-size: var(--font-size-card-title); }
+  .login-submit { padding: 0.7rem; font-size: var(--font-size-body); }
 }

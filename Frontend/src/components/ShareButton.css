@@ -8,7 +8,7 @@
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
   color: #142D4E;
   cursor: pointer;

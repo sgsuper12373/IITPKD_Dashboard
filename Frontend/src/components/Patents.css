@@ -45,7 +45,7 @@
   margin-bottom: 12px;
 }
 .pat-card-icon {
-  font-size: 22px;
+  font-size: var(--text-2xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 8px;
   border-radius: 10px;
@@ -53,7 +53,7 @@
 .pat-card-h3 {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 500;
 }
 .pat-card-value {
@@ -243,7 +243,7 @@
 }
 .pat-mobile-card-h4 {
   margin: 0 0 10px 0;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   color: #111;
   line-height: 1.4;
 }
@@ -251,7 +251,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: #666;
 }
 .pat-mobile-dates { display: flex; gap: 15px; }
@@ -260,13 +260,13 @@
 .pat-status-badge {
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
 }
 .pat-status-pill {
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
 }
 .pat-status--granted { background-color: #dcfce7; color: #15803d; }
@@ -289,11 +289,11 @@
   padding: 16px;
   text-align: left;
   color: #64748b;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
 }
 .pat-table td { padding: 16px; }
-.pat-td-title { font-size: 14px; color: #142D4E; font-weight: 500; }
-.pat-td-text  { font-size: 14px; color: #64748b; }
+.pat-td-title { font-size: var(--font-size-body); color: #142D4E; font-weight: 500; }
+.pat-td-text  { font-size: var(--font-size-body); color: #64748b; }
 .pat-td-empty { text-align: center; padding: 40px; color: #666; }
 .pat-tr { border-bottom: 1px solid #e0e0e0; }

@@ -30,7 +30,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   transition: all 0.3s ease;
   display: flex;
@@ -58,7 +58,7 @@
 .icc-table-h2 {
   margin: 0 0 5px 0;
   color: #142D4E;
-  font-size: 20px;
+  font-size: var(--text-xl);
 }
 .icc-table-h2-wrap { margin-bottom: 20px; }
 
@@ -90,7 +90,7 @@
 .icc-mobile-card-year {
   font-weight: 700;
   color: #142D4E;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
 }
 .icc-mobile-card-fields {
   display: flex;
@@ -99,14 +99,14 @@
 }
 .icc-mobile-card-fields > * { flex: 1 1 calc(50% - 6px); }
 .icc-field-label {
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   color: #999;
   text-transform: uppercase;
   margin-bottom: 2px;
 }
 .icc-field-value {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .icc-field-value--green { color: #22c55e; }
 .icc-field-value--red   { color: #ef4444; }
@@ -125,7 +125,7 @@
   padding: 16px;
   text-align: left;
   color: #64748b;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
 }
 .icc-table td { padding: 16px; }
@@ -137,10 +137,10 @@
   text-align: center;
   padding: 40px;
   color: #666;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .icc-empty-icon {
-  font-size: 32px;
+  font-size: var(--text-3xl);
   display: block;
   margin-bottom: 8px;
 }

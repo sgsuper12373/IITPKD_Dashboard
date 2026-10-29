@@ -37,7 +37,7 @@
 .cberr-p  { margin-bottom: 24px; color: #666; max-width: 480px; }
 .cberr-reload-btn {
   padding: 10px 24px;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   border-radius: 6px;
   border: none;
   background: #142D4E;

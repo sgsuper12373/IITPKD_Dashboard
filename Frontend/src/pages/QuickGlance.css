@@ -34,7 +34,7 @@
 }
 
 .qg-edit-btn {
-  font: inherit; font-size: 0.82rem; font-weight: 700; padding: 0.4rem 1rem;
+  font: inherit; font-size: var(--font-size-navigation); font-weight: 700; padding: 0.4rem 1rem;
   border: 2px solid var(--ds-accent, #087E8B); border-radius: var(--r-md, 8px);
   background: transparent; color: var(--ds-accent, #087E8B); cursor: pointer;
   white-space: nowrap; transition: background 0.15s, color 0.15s;
@@ -47,7 +47,7 @@
   border: 1px solid var(--ds-slate-12);
   border-radius: var(--radius-md);
   background: var(--ds-slate-06);
-  font-size: 0.8125rem;
+  font-size: var(--font-size-navigation);
 }
 .qg-note--danger { border-color: var(--ds-danger); color: var(--ds-danger); background: transparent; }
 
@@ -92,7 +92,7 @@
 .qg-slider-arrow {
   display: flex; align-items: center; justify-content: center;
   width: 2rem; height: 2rem;
-  font-size: 1.3rem; font-weight: 700; line-height: 1;
+  font-size: var(--text-xl); font-weight: 700; line-height: 1;
   color: var(--ds-slate);
   background: var(--ds-card-bg); border: 1px solid var(--ds-card-border); border-radius: 50%;
   cursor: pointer; transition: background 0.15s, border-color 0.15s;

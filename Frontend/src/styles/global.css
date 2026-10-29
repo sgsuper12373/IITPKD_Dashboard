@@ -106,18 +106,44 @@
   --space-16: 4rem;
 
   /* ── Fluid Typography Scale (Plus Jakarta Sans hierarchy) ── */
-  --text-xs:   clamp(0.75rem,  1.8vw, 0.8125rem); /* 12–13 px | Supporting labels   | 500 */
-  --text-sm:   clamp(0.8125rem,2vw,   0.875rem);  /* 13–14 px | Sidebar navigation  | 500 */
-  --text-base: clamp(0.875rem, 2.2vw, 0.9375rem); /* 14–15 px | Body / dropdowns    | 400–500 */
-  --text-lg:   clamp(0.9375rem,2.5vw, 1rem);      /* 15–16 px | Filter section head | 600 */
-  --text-xl:   clamp(1.125rem, 3vw,   1.25rem);   /* 18–20 px | Sub-headings        | 600 */
-  --text-2xl:  clamp(1.5rem,   4vw,   1.75rem);   /* 24–28 px | Chart heading       | 700 */
-  --text-3xl:  clamp(1.75rem,  5vw,   2rem);      /* 28–32 px | Page heading        | 700 */
-  --text-4xl:  clamp(2rem,     5.5vw, 2.25rem);   /* 32–36 px | Hero heading        | 700 */
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.15vw, 0.8125rem); /* 12–13 px | Supporting labels   | 500 */
+  --text-sm:   clamp(0.8125rem,0.78rem + 0.12vw, 0.875rem);  /* 13–14 px | Sidebar navigation  | 500 */
+  --text-base: clamp(0.875rem, 0.84rem + 0.12vw, 0.9375rem); /* 14–15 px | Body / dropdowns    | 400–500 */
+  --text-lg:   clamp(0.9375rem,0.9rem  + 0.12vw, 1rem);      /* 15–16 px | Filter section head | 600 */
+  --text-xl:   clamp(1.125rem, 1rem    + 0.35vw, 1.25rem);   /* 18–20 px | Sub-headings        | 600 */
+  --text-2xl:  clamp(1.5rem,   1.3rem  + 0.55vw, 1.75rem);   /* 24–28 px | Chart heading       | 700 */
+  --text-3xl:  clamp(1.75rem,  1.5rem  + 0.7vw,  2rem);      /* 28–32 px | Page heading        | 700 */
+  --text-4xl:  clamp(2rem,     1.7rem  + 0.8vw,  2.25rem);   /* 32–36 px | Hero heading        | 700 */
 
   /* ── KPI / Metric Values ── */
-  --text-metric:    clamp(2.25rem, 5vw, 2.5rem);  /* 36–40 px | KPI numbers         | 700 */
-  --text-metric-sm: clamp(1.75rem, 3.5vw, 2rem);  /* 28–32 px | Smaller KPI         | 700 */
+  --text-metric:    clamp(2.25rem, 1.9rem + 0.9vw, 2.5rem);  /* 36–40 px | KPI numbers         | 700 */
+  --text-metric-sm: clamp(1.75rem, 1.5rem + 0.7vw, 2rem);    /* 28–32 px | Smaller KPI         | 700 */
+
+  /* ── Semantic Typography Tokens ──
+     Map purpose → scale step. Change ONE alias to adjust
+     an entire class of elements across all pages.
+     ──────────────────────────────────────────────────── */
+  --font-size-page-title:    var(--text-3xl);   /* h1 — page headings           */
+  --font-size-section-title: var(--text-xl);    /* h3 — section / chart titles  */
+  --font-size-card-title:    var(--text-lg);    /* card headings, stat labels   */
+  --font-size-body:          var(--text-base);  /* body text, descriptions      */
+  --font-size-navigation:    var(--text-base);  /* sidebar, navbar, breadcrumb  */
+  --font-size-caption:       var(--text-xs);    /* badges, timestamps, helpers  */
+  --font-size-metric:        var(--text-metric);/* KPI numbers                  */
+  --font-size-metric-sm:     var(--text-metric-sm);
+  --font-size-chart:         var(--text-sm);    /* axis labels, legends, ticks  */
+  --font-size-filter:        var(--text-base);  /* filter selects, tab buttons  */
+  --font-size-button:        var(--text-base);  /* primary / toggle buttons     */
+  --font-size-footer:        var(--text-xs);    /* footer text, copyright       */
+  --font-size-table:         var(--text-sm);    /* table cells                  */
+  --font-size-table-header:  var(--text-sm);    /* table header cells           */
+
+  /* ── Line Height Scale ── */
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose:   1.75;
 
   /* ── Border Radius ── */
   --radius-sm:   6px;
@@ -157,11 +183,12 @@
 
   /* ── Global Font Scale ──────────────────────────────────────────
      Change this ONE value to scale all text across every page.
+     0.94 = ~-6%  (15px base)
      1    = default (16px base)
      1.06 = ~+6%  (17px base)
      1.12 = ~+12% (18px base)
   ──────────────────────────────────────────────────────────────── */
-  --font-scale: 1;
+  --font-scale: 0.94;
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body:    'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono:    'Fira Code', ui-monospace, 'Cascadia Code', monospace;
@@ -205,8 +232,8 @@ body {
 
 body {
   font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: 1.6;
+  font-size: var(--font-size-body);
+  line-height: var(--leading-relaxed);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -289,21 +316,21 @@ a,
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: var(--leading-tight);
   letter-spacing: -0.01em;
   color: inherit;
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-h1 { font-size: var(--text-3xl); }  /* 28–32 px  Page heading */
-h2 { font-size: var(--text-2xl); }  /* 24–28 px  Chart heading */
-h3 { font-size: var(--text-xl); }   /* 18–20 px  Sub-heading */
-h4 { font-size: var(--text-lg); }   /* 15–16 px  Filter section heading */
-h5 { font-size: var(--text-base); }
-h6 { font-size: var(--text-sm); }
+h1 { font-size: var(--font-size-page-title); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--font-size-section-title); }
+h4 { font-size: var(--font-size-card-title); }
+h5 { font-size: var(--font-size-body); }
+h6 { font-size: var(--font-size-navigation); }
 
-p { line-height: 1.7; color: var(--color-text); overflow-wrap: break-word; }
+p { line-height: var(--leading-loose); color: var(--color-text); overflow-wrap: break-word; }
 
 small  { font-size: var(--text-xs); }
 strong { font-weight: 700; }
@@ -1224,7 +1251,7 @@ strong { font-weight: 700; }
 .chart-header h2,
 .chart-header h3,
 .chart-heading {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 2px;
@@ -1246,28 +1273,21 @@ strong { font-weight: 700; }
   gap: 2px;
   background: rgba(71, 85, 105, 0.06);
   padding: 2px;
-  border-radius: 6px;
+  border-radius: var(--lg-radius);
   margin-right: auto;
   min-width: 0;
 }
 .cc-tab {
   padding: 7px 14px;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
-  color: var(--color-text-muted);
-  background: transparent;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
-.cc-tab:hover { background: rgba(71, 85, 105, 0.08); color: var(--color-text); }
-.cc-tab--active { background: #475569; color: #fff; font-weight: 600; }
 
 .cc-header__filters {
   display: flex;
@@ -1281,7 +1301,7 @@ strong { font-weight: 700; }
   gap: 4px;
 }
 .cc-filter-label {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #8A8A84;
   letter-spacing: 0.05em;
@@ -1318,7 +1338,7 @@ strong { font-weight: 700; }
 }
 .cc-title {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text);
   display: flex;
@@ -1326,7 +1346,7 @@ strong { font-weight: 700; }
   gap: 5px;
   margin-right: auto;
 }
-.cc-title-icon { font-size: 14px; color: var(--color-accent); }
+.cc-title-icon { font-size: var(--font-size-body); color: var(--color-accent); }
 .cc-subheader__right {
   display: flex;
   align-items: center;
@@ -1459,23 +1479,23 @@ strong { font-weight: 700; }
 }
 
 .recharts-cartesian-axis-tick text {
-  font-size: 14px !important;
+  font-size: var(--font-size-chart) !important;
   font-weight: 500 !important;
 }
 
 .recharts-label text,
 .recharts-cartesian-axis-label text {
-  font-size: 14px !important;
+  font-size: var(--font-size-chart) !important;
   font-weight: 500 !important;
 }
 
 .recharts-label-list text {
-  font-size: 14px !important;
+  font-size: var(--font-size-chart) !important;
   font-weight: 500 !important;
 }
 
 .recharts-legend-wrapper {
-  font-size: 14px !important;
+  font-size: var(--font-size-caption) !important;
   font-weight: 500 !important;
 }
 
@@ -2310,7 +2330,7 @@ strong { font-weight: 700; }
    page shares one visual language (Navy + Teal + Ivory).
    ================================================================ */
 
-/* ── Mode-toggle container (the trough) ─────────────────────────── */
+/* ── Mode-toggle container (the trough) — layout only, visuals in liquid glass section ── */
 .mode-toggle-row,
 .ewd-mode-toggle,
 .rls-mode-toggle,
@@ -2322,14 +2342,10 @@ strong { font-weight: 700; }
 .igrc-toggle-left,
 .hg-chart-toggle {
   display: inline-flex;
-  gap: 1px;
-  background: rgba(71, 85, 105, 0.06);
-  padding: 2px;
-  border-radius: 6px;
   flex-wrap: wrap;
 }
 
-/* ── Mode-toggle pill buttons ───────────────────────────────────── */
+/* ── Mode-toggle pill buttons — layout only, visuals in liquid glass section ── */
 .mode-btn,
 .ewd-mode-btn,
 .igrc-mode-btn,
@@ -2343,17 +2359,10 @@ strong { font-weight: 700; }
 .icsr-mode-btn,
 .chart-mode-btn {
   padding: 7px 14px;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
-  color: var(--color-text-muted);
-  background: transparent;
-  transition: color var(--dur-mid) var(--ease-spring),
-              background-color var(--dur-mid) var(--ease-spring),
-              box-shadow var(--dur-mid) var(--ease-spring);
   white-space: nowrap;
   text-align: center;
   display: inline-flex;
@@ -2362,50 +2371,9 @@ strong { font-weight: 700; }
   line-height: 1.4;
 }
 
-.mode-btn:hover,
-.ewd-mode-btn:hover,
-.igrc-mode-btn:hover,
-.ias-mode-btn:hover,
-.nirf-mode-btn:hover,
-.pat-mode-btn:hover,
-.rls-mode-btn:hover,
-.mou-mode-btn:hover,
-.hg-mode-btn:hover,
-.eiar-mode-btn:hover,
-.icsr-mode-btn:hover,
-.chart-mode-btn:hover {
-  color: var(--color-text);
-  background: rgba(71, 85, 105, 0.08);
-}
-
-/* Active state — dark pill */
-.mode-btn.active,
-.ewd-mode-btn--active,
-.igrc-mode-btn--active,
-.ias-mode-btn--active,
-.nirf-mode-btn--active,
-.pat-mode-btn--active,
-.rls-mode-btn--active,
-.mou-mode-btn--active,
-.hg-mode-btn--active,
-.eiar-mode-btn--active,
-.icsr-mode-btn--active-indigo,
-.icsr-mode-btn--active-orange,
-.icsr-mode-btn--active-purple,
-.chart-mode-btn--active {
-  background: #475569;
-  color: #fff;
-  box-shadow: none;
-  font-weight: 600;
-}
-
-/* ── View-type tab buttons (Trend / Directory / etc.) ───────────── */
+/* ── View-type tab buttons — layout only, visuals in liquid glass section ── */
 .view-type-bar {
   display: inline-flex;
-  gap: 1px;
-  background: rgba(71, 85, 105, 0.06);
-  padding: 2px;
-  border-radius: 6px;
   flex-wrap: wrap;
 }
 
@@ -2413,38 +2381,16 @@ strong { font-weight: 700; }
   flex: 1;
   min-width: 48px;
   padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: var(--text-base);
   font-weight: 500;
   font-family: inherit;
-  transition: color var(--dur-mid) var(--ease-spring),
-              background-color var(--dur-mid) var(--ease-spring),
-              box-shadow var(--dur-mid) var(--ease-spring);
   text-align: center;
   white-space: nowrap;
-  background: transparent;
-  color: var(--color-text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
-}
-
-.view-type-btn:hover {
-  color: var(--color-text);
-  background: rgba(71, 85, 105, 0.08);
-}
-
-.view-type-btn.active,
-.view-type-btn--yearly-active,
-.view-type-btn--dept-active,
-.view-type-btn--dir-active {
-  background: #475569 !important;
-  color: #fff !important;
-  box-shadow: none;
-  font-weight: 600;
 }
 
 /* ── Section tab buttons (MoU, ICSR, etc.) — liquid glass ──────── */
@@ -2452,7 +2398,7 @@ strong { font-weight: 700; }
 .icsr-tab-btn {
   padding: 9px 20px;
   border-radius: var(--lg-radius);
-  border: 1px solid rgba(255, 255, 255, 0.40);
+  border: 1px solid rgba(20, 45, 78, 0.18);
   cursor: pointer;
   font-weight: 600;
   font-size: var(--text-base);
@@ -2472,7 +2418,7 @@ strong { font-weight: 700; }
 .mou-tab-btn:hover,
 .icsr-tab-btn:hover {
   background: var(--lg-glass-hover);
-  border-color: rgba(255, 255, 255, 0.60);
+  border-color: rgba(20, 45, 78, 0.28);
   color: var(--color-text);
   box-shadow: var(--lg-inset), var(--lg-shadow-hover);
 }
@@ -2508,7 +2454,7 @@ strong { font-weight: 700; }
   padding: 7px 16px;
   background: rgba(250, 248, 243, 0.65);
   color: var(--color-text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.40);
+  border: 1px solid rgba(0, 0, 0, 0.40);
   border-radius: var(--lg-radius);
   cursor: pointer;
   font-size: var(--text-base);
@@ -2672,7 +2618,7 @@ strong { font-weight: 700; }
 .hg-filter-label,
 .iptif-filter-label,
 .techin-filter-label {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #8A8A84;
   margin-bottom: 3px;
@@ -2713,7 +2659,7 @@ strong { font-weight: 700; }
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -2790,10 +2736,10 @@ strong { font-weight: 700; }
   /* Recharts */
   .recharts-legend-wrapper ul,
   .recharts-legend-wrapper li {
-    font-size: 13px !important;
+    font-size: var(--font-size-chart) !important;
     flex-wrap: nowrap !important;
   }
-  .recharts-label-list text { font-size: 12px !important; }
+  .recharts-label-list text { font-size: var(--font-size-caption) !important; }
 }
 
 /* ── 640px — Mobile ── */
@@ -2817,15 +2763,15 @@ strong { font-weight: 700; }
 
   .cc-header { padding: 8px 10px; gap: 6px; }
   .cc-header__tabs { gap: 1px; padding: 1px; }
-  .cc-tab { padding: 5px 10px; font-size: 12px; white-space: normal; text-align: center; line-height: 1.3; }
+  .cc-tab { padding: 5px 10px; font-size: var(--font-size-caption); white-space: normal; text-align: center; line-height: 1.3; }
   .cc-header__filters { gap: 6px; width: 100%; }
   .cc-filter-pair { gap: 3px; flex: 1 1 auto; }
-  .cc-filter-select { height: 30px; font-size: 13px; padding: 0 20px 0 6px; width: 100%; }
+  .cc-filter-select { height: 30px; font-size: var(--font-size-navigation); padding: 0 20px 0 6px; width: 100%; }
   .cc-subheader { padding: 6px 10px 4px; gap: 6px; }
-  .cc-title { font-size: 12px; }
+  .cc-title { font-size: var(--font-size-caption); }
   .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
   .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
-    padding: 4px 10px; font-size: 12px;
+    padding: 4px 10px; font-size: var(--font-size-caption);
   }
 
   .chart-section { padding: clamp(0.75rem, 2vw, 1rem); }
@@ -2838,7 +2784,7 @@ strong { font-weight: 700; }
 
   .recharts-legend-wrapper ul,
   .recharts-legend-wrapper li {
-    font-size: 12px !important;
+    font-size: var(--font-size-caption) !important;
     gap: 6px !important;
     white-space: nowrap !important;
   }
@@ -2858,23 +2804,23 @@ strong { font-weight: 700; }
 
   .cc-header { flex-direction: column; align-items: stretch; padding: 6px 8px; }
   .cc-header__tabs { margin-right: 0; }
-  .cc-tab { flex: 1 1 auto; justify-content: center; padding: 4px 6px; font-size: 11px; }
+  .cc-tab { flex: 1 1 auto; justify-content: center; padding: 4px 6px; font-size: var(--font-size-caption); }
   .cc-header__filters { flex-direction: column; gap: 4px; }
   .cc-filter-pair { width: 100%; }
-  .cc-filter-select { height: 28px; font-size: 12px; }
+  .cc-filter-select { height: 28px; font-size: var(--font-size-caption); }
   .cc-subheader { padding: 4px 8px; flex-direction: column; align-items: flex-start; }
-  .cc-title { font-size: 11px; }
+  .cc-title { font-size: var(--font-size-caption); }
   .mode-btn, .ewd-mode-btn, .igrc-mode-btn, .ias-mode-btn, .nirf-mode-btn, .pat-mode-btn,
   .rls-mode-btn, .mou-mode-btn, .hg-mode-btn, .eiar-mode-btn, .icsr-mode-btn, .chart-mode-btn {
-    padding: 4px 8px; font-size: 11px;
+    padding: 4px 8px; font-size: var(--font-size-caption);
   }
 
-  .toggle-btn { font-size: 12px; padding: 5px 8px; }
+  .toggle-btn { font-size: var(--font-size-caption); padding: 5px 8px; }
 
   /* Recharts axis */
   .recharts-yAxis { width: 36px !important; }
-  .recharts-cartesian-axis-tick text { font-size: 11px !important; }
-  .recharts-legend-wrapper { font-size: 12px !important; }
+  .recharts-cartesian-axis-tick text { font-size: var(--font-size-caption) !important; }
+  .recharts-legend-wrapper { font-size: var(--font-size-caption) !important; }
   .recharts-label-list { display: none !important; }
 }
 
@@ -2938,16 +2884,16 @@ strong { font-weight: 700; }
   --lg-shadow-hover:    0 2px 6px rgba(0, 0, 0, 0.08);
   --lg-shadow-active:   0 1px 4px rgba(247, 166, 0, 0.12);
   --lg-radius:          9999px;
-  --lg-radius-bar:      14px;
+  --lg-radius-bar:      9999px;
   --lg-dur:             0.18s;
 }
 
 /* ── Main tab bar (pc-tab-bar) — subtle blur allowed here only ──── */
 .pc-tab-bar {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(245, 240, 230, 0.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--lg-border);
+  border: 1px solid rgba(71, 85, 105, 0.15);
   border-radius: var(--lg-radius-bar);
   padding: 4px;
   gap: 4px;
@@ -2958,8 +2904,10 @@ strong { font-weight: 700; }
 .pc-tab {
   border-radius: var(--lg-radius);
   background: var(--lg-glass);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(20, 45, 78, 0.18);
   color: var(--color-text-muted, #64748b);
+  font-size: var(--font-size-navigation);
+  font-weight: 500;
   box-shadow: var(--lg-inset), var(--lg-shadow);
   transition: background var(--lg-dur) ease,
               color var(--lg-dur) ease,
@@ -2969,7 +2917,7 @@ strong { font-weight: 700; }
 
 .pc-tab:hover:not(.pc-tab--active) {
   background: var(--lg-glass-hover);
-  border-color: rgba(255, 255, 255, 0.65);
+  border-color: rgba(20, 45, 78, 0.28);
   box-shadow: var(--lg-inset), var(--lg-shadow-hover);
   color: var(--color-text, #142D4E);
 }
@@ -3000,10 +2948,11 @@ strong { font-weight: 700; }
 .hg-chart-toggle,
 .view-type-bar,
 .cc-tab-group,
+.cc-header__tabs,
 .iar-graph-table-toggle {
-  background: rgba(255, 255, 255, 0.30);
-  border: 1px solid var(--lg-border);
-  border-radius: 10px;
+  background: rgba(245, 240, 230, 0.55);
+  border: 1px solid rgba(71, 85, 105, 0.15);
+  border-radius: var(--lg-radius);
   padding: 3px;
   gap: 2px;
   box-shadow: var(--lg-inset), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -3027,7 +2976,7 @@ strong { font-weight: 700; }
 .iar-toggle-btn {
   border-radius: var(--lg-radius);
   background: rgba(250, 248, 243, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.40);
+  border: 1px solid rgba(20, 45, 78, 0.18);
   color: var(--color-text-muted);
   box-shadow: var(--lg-inset), 0 0.5px 1px rgba(0, 0, 0, 0.04);
   transition: background var(--lg-dur) ease,
@@ -3052,7 +3001,7 @@ strong { font-weight: 700; }
 .cc-tab:hover,
 .iar-toggle-btn:hover {
   background: var(--lg-glass-hover);
-  border-color: rgba(255, 255, 255, 0.60);
+  border-color: rgba(20, 45, 78, 0.28);
   color: var(--color-text);
   box-shadow: var(--lg-inset), var(--lg-shadow-hover);
 }
@@ -3160,21 +3109,21 @@ strong { font-weight: 700; }
 .icsr-tab-btn {
   border-radius: var(--lg-radius);
   background: var(--lg-glass);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(20, 45, 78, 0.18);
   box-shadow: var(--lg-inset), var(--lg-shadow);
 }
 
 .mou-tab-btn:hover,
 .icsr-tab-btn:hover {
   background: var(--lg-glass-hover);
-  border-color: rgba(255, 255, 255, 0.60);
+  border-color: rgba(20, 45, 78, 0.28);
   box-shadow: var(--lg-inset), var(--lg-shadow-hover);
 }
 
 /* ── Responsive — tighten glass controls on narrow screens ──────── */
 @media (max-width: 600px) {
   .pc-tab-bar {
-    border-radius: 10px;
+    border-radius: var(--lg-radius);
     padding: 3px;
     gap: 3px;
     backdrop-filter: blur(6px);

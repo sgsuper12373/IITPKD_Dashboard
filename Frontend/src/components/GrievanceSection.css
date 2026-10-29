@@ -27,14 +27,14 @@
 
 .summary-card h3 {
   color: #111111;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   margin: 0 0 0.75rem 0;
   letter-spacing: 0.5px;
 }
 
 .summary-value {
   color: #142D4E;
-  font-size: 2.2rem;
+  font-size: var(--text-metric-sm);
   font-weight: 700;
   margin: 0;
 }
@@ -50,7 +50,7 @@
 .summary-subtitle {
   display: block;
   color: #2D2D2D;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   margin-top: 0.5rem;
 }
 
@@ -64,14 +64,14 @@
 
 .chart-header h2 {
   color: #111111;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   margin: 0;
 }
 
 .chart-description {
   color: #111111;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   margin: 0.35rem 0 0 0;
   max-width: 600px;
 }
@@ -242,7 +242,7 @@
   font-weight: 600;
   color: #111111;
   text-transform: uppercase;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   letter-spacing: 0.8px;
 }
 
@@ -258,7 +258,7 @@
   display: inline-block;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.6px;
@@ -306,13 +306,13 @@
   }
 
   .chart-header h2 {
-    font-size: 13px;
+    font-size: var(--font-size-navigation);
   }
 
   .grievance-table th,
   .grievance-table td {
     padding: 0.7rem 0.85rem;
-    font-size: 0.88rem;
+    font-size: var(--font-size-body);
   }
 }
 
@@ -331,11 +331,11 @@
   }
 
   .summary-card h3 {
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
   }
 
   .summary-value {
-    font-size: 1.6rem;
+    font-size: var(--text-2xl);
   }
 
   .chart-section,
@@ -344,7 +344,7 @@
   }
 
   .chart-header h2 {
-    font-size: 13px;
+    font-size: var(--font-size-navigation);
   }
 
   /* Reduce fixed table scroll heights so they don't dwarf the viewport */
@@ -363,17 +363,17 @@
   .grievance-table th,
   .grievance-table td {
     padding: 0.5rem 0.6rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-navigation);
   }
 
   .grievance-table th {
-    font-size: 0.72rem;
+    font-size: var(--font-size-caption);
     letter-spacing: 0.4px;
   }
 
   /* Scale down status pills on small screens */
   .status-pill {
-    font-size: 0.68rem;
+    font-size: var(--font-size-caption);
     padding: 0.2rem 0.55rem;
     letter-spacing: 0.3px;
   }
@@ -388,7 +388,7 @@
   .grievance-table th,
   .grievance-table td {
     padding: 0.4rem 0.5rem;
-    font-size: 0.75rem;
+    font-size: var(--font-size-caption);
   }
 }
 

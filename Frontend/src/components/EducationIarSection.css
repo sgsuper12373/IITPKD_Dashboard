@@ -75,7 +75,7 @@
 .eiar-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 
 /* ── Card icon ── */
-.eiar-card-icon { font-size: 28px; background: rgba(255, 255, 255, 0.2); padding: 5px; border-radius: 6px; }
+.eiar-card-icon { font-size: var(--text-3xl); background: rgba(255, 255, 255, 0.2); padding: 5px; border-radius: 6px; }
 
 /* ── Card title ── */
 .eiar-card-title { color: rgba(255, 255, 255, 0.9); font-size: var(--text-lg); font-weight: 500; }
@@ -108,7 +108,7 @@
 .eiar-filter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
 /* ── Filters label ── */
-.eiar-filter-h4 { margin: 0; color: #142D4E; font-size: 14px; }
+.eiar-filter-h4 { margin: 0; color: #142D4E; font-size: var(--font-size-body); }
 
 /* ── Clear/reset button ── */
 .eiar-clear-btn {
@@ -167,13 +167,13 @@
 .eiar-chart-container { position: relative; padding: 10px; }
 
 /* ── Directory records count ── */
-.eiar-dir-count { font-size: 13px; color: #666; margin-bottom: 12px; }
+.eiar-dir-count { font-size: var(--font-size-navigation); color: #666; margin-bottom: 12px; }
 
 /* ── Directory table wrapper ── */
 .eiar-dir-table-wrap { max-height: 350px; height: 350px; overflow-y: auto; }
 
 /* ── Directory table ── */
-.eiar-dir-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.eiar-dir-table { width: 100%; font-size: var(--font-size-navigation); border-collapse: collapse; }
 .eiar-dir-table thead { position: sticky; top: 0; background-color: #087E8B; color: white; }
 .eiar-dir-table th { padding: 10px; }
 .eiar-dir-table td { padding: 8px; }

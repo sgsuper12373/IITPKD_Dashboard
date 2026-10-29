@@ -17,29 +17,29 @@
 .oh-panel--mb2 { margin-bottom: 30px; }
 .oh-panel-header   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
 .oh-panel-h3       { margin: 0; }
-.oh-panel-h2       { margin: 0; font-size: 24px; }
+.oh-panel-h2       { margin: 0; font-size: var(--text-2xl); }
 .oh-chart-empty    { text-align: center; padding: 40px; color: #666; }
 
 /* ── Directory header controls ── */
 .oh-dir-controls { display: flex; gap: 10px; align-items: center; }
-.oh-search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #DCE3E7; font-size: 14px; }
+.oh-search-input { padding: 8px 12px; border-radius: 8px; border: 1px solid #DCE3E7; font-size: var(--font-size-body); }
 
 /* ── Mobile card list ── */
 .oh-mobile-list    { display: flex; flex-direction: column; gap: 16px; }
 .oh-mobile-card    { background-color: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
 .oh-mobile-top     { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.oh-mobile-year    { font-weight: 700; color: #142D4E; font-size: 14px; }
-.oh-mobile-h4      { margin: 0 0 10px 0; font-size: 15px; color: #111; line-height: 1.4; }
-.oh-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+.oh-mobile-year    { font-weight: 700; color: #142D4E; font-size: var(--font-size-body); }
+.oh-mobile-h4      { margin: 0 0 10px 0; font-size: var(--font-size-card-title); color: #111; line-height: 1.4; }
+.oh-mobile-details { display: flex; flex-direction: column; gap: 6px; font-size: var(--font-size-navigation); color: #666; }
 
 /* ── Events table ── */
 .oh-table          { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; }
 .oh-table thead tr { background-color: #f8f9fa; border-bottom: 2px solid #e0e0e0; }
 .oh-table th       { padding: 16px; text-align: left; color: #64748b; }
-.oh-table td       { padding: 16px; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
+.oh-table td       { padding: 16px; font-size: var(--font-size-body); border-bottom: 1px solid #e0e0e0; }
 .oh-td-year        { color: #142D4E; font-weight: 600; }
 .oh-td-bold        { font-weight: 500; }
-.oh-td-link        { color: #142D4E; text-decoration: none; font-size: 13px; }
+.oh-td-link        { color: #142D4E; text-decoration: none; font-size: var(--font-size-navigation); }
 
 /* ── Pagination ── */
 .oh-pagination      { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }

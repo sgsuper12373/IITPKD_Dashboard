@@ -9,11 +9,11 @@
   background: var(--ds-card-bg, #fff); color: var(--ds-slate); border-radius: var(--r-lg);
   border: 1px solid var(--ds-card-border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
-.ht__step { margin: 0 0 0.25rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #066A75; }
-.ht__title { margin: 0 0 0.35rem; font-size: 1.05rem; }
-.ht__body { margin: 0 0 var(--space-3); font-size: 0.9rem; line-height: 1.5; }
+.ht__step { margin: 0 0 0.25rem; font-size: var(--font-size-caption); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #066A75; }
+.ht__title { margin: 0 0 0.35rem; font-size: var(--font-size-card-title); }
+.ht__body { margin: 0 0 var(--space-3); font-size: var(--font-size-body); line-height: 1.5; }
 .ht__actions { display: flex; justify-content: space-between; align-items: center; }
-.ht__skip { background: none; border: 0; font: inherit; font-size: 0.85rem; color: inherit; opacity: 0.7; cursor: pointer; }
+.ht__skip { background: none; border: 0; font: inherit; font-size: var(--font-size-navigation); color: inherit; opacity: 0.7; cursor: pointer; }
 .ht__next { padding: 0.45rem 1rem; font: inherit; font-weight: 600; color: #111; background: var(--ds-accent); border: 0; border-radius: var(--r-lg); cursor: pointer; }
 .ht__skip:focus-visible, .ht__next:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ht__spot { transition: none; } }

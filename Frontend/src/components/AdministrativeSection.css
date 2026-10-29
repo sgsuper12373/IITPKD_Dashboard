@@ -10,7 +10,7 @@
 
 /* ── Year picker inner overrides ── */
 .adm-metric-icon-row--mb { margin-bottom: 1rem; }
-.adm-metric-label--lg { font-size: 1rem; font-weight: 600; color: white; }
+.adm-metric-label--lg { font-size: var(--font-size-card-title); font-weight: 600; color: white; }
 .adm-metric-subtitle--mt { margin-top: 10px; }
 
 /* ── Selectable card (cursor pointer) ── */
@@ -20,7 +20,7 @@
 /* ── Selected-state hint text inside a card ── */
 .adm-selected-hint {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   color: rgba(255, 255, 255, 0.85);
   font-weight: 600;
 }
@@ -60,5 +60,5 @@
   align-items: center;
   gap: 10px;
 }
-.adm-dt-year-label { font-size: 0.9rem; color: #666; font-weight: normal; }
+.adm-dt-year-label { font-size: var(--font-size-body); color: #666; font-weight: normal; }
 .adm-td-name { font-weight: 500; }

@@ -3,11 +3,15 @@
 GET  /              public  — returns all settings as {key: value}
 PUT  /<key>         role 3  — upsert one setting
 """
+import logging
+
 from flask import Blueprint, jsonify, request
 
 from . import limiter
 from .auth import token_optional, token_required, _require_admin
 from .db import get_db_connection, release_db_connection
+
+logger = logging.getLogger(__name__)
 
 site_settings_bp = Blueprint('site_settings', __name__)
 
@@ -23,6 +27,8 @@ DEFAULTS = {
     'show_image_slider': 'true',
     'show_nirf': 'true',
 }
+
+ALLOWED_KEYS = frozenset(DEFAULTS.keys())
 
 
 def _ensure_table(conn):
@@ -50,7 +56,7 @@ def get_settings(current_user_id):
             result[row['key']] = row['value']
         return jsonify(result), 200
     except Exception as e:
-        print(f"Error fetching site settings: {e}")
+        logger.exception("Error fetching site settings")
         return jsonify(DEFAULTS), 200
     finally:
         if conn:
@@ -61,6 +67,8 @@ def get_settings(current_user_id):
 @token_required
 @limiter.limit("30 per minute")
 def update_setting(current_user_id, key):
+    if key not in ALLOWED_KEYS:
+        return jsonify({'message': f'Unknown setting key: {key}'}), 400
     conn = None
     try:
         conn = get_db_connection()
@@ -86,7 +94,7 @@ def update_setting(current_user_id, key):
         cur.close()
         return jsonify({'key': key, 'value': value}), 200
     except Exception as e:
-        print(f"Error updating site setting: {e}")
+        logger.exception("Error updating site setting")
         if conn:
             conn.rollback()
         return jsonify({'message': 'Failed to update setting'}), 500

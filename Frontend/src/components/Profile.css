@@ -14,7 +14,7 @@
   padding: 0.75rem 1.75rem;
   border-radius: 8px;
 
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   font-weight: 600;
   cursor: pointer;
 
@@ -61,7 +61,7 @@
 
 .roles-panel-title {
   margin: 0 0 1rem 0;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: #1a1a1a;
 }
@@ -70,7 +70,7 @@
 .roles-msg {
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   margin-bottom: 1rem;
   font-weight: 500;
 }
@@ -102,7 +102,7 @@
   color: #fff;
   padding: 0.75rem 1rem;
   text-align: left;
-  font-size: 0.82rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -119,7 +119,7 @@
 
 .roles-table td {
   padding: 0.7rem 1rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: #142D4E;
   vertical-align: middle;
 }
@@ -127,7 +127,7 @@
 .roles-id-cell {
   font-weight: 700;
   color: #087E8B;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
 }
 
 .roles-name {
@@ -140,7 +140,7 @@
   padding: 0.5rem 0.75rem;
   border: 1.5px solid #d6d4ce;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-family: inherit;
   background: #fff;
   color: #142D4E;
@@ -163,7 +163,7 @@
 .roles-btn {
   padding: 0.4rem 0.85rem;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -216,7 +216,7 @@
   background: #fef2f2;
   color: #991b1b;
   border-color: #fecaca;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
   padding: 0.3rem 0.65rem;
   line-height: 1;
 }
@@ -299,23 +299,23 @@
 
 @media (max-width: 480px) {
   .upload-data-btn {
-    font-size: 0.9rem;
+    font-size: var(--font-size-body);
     padding: 0.875rem 1.5rem;
   }
 
   .roles-table thead th {
     padding: 0.5rem 0.6rem;
-    font-size: 0.75rem;
+    font-size: var(--font-size-caption);
   }
 
   .roles-table td {
     padding: 0.5rem 0.6rem;
-    font-size: 0.82rem;
+    font-size: var(--font-size-navigation);
   }
 
   .roles-btn {
     padding: 0.35rem 0.65rem;
-    font-size: 0.75rem;
+    font-size: var(--font-size-caption);
   }
 
   .roles-btn-add {
@@ -337,7 +337,7 @@
 
 .truncate-list-name {
   font-family: monospace;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   word-break: break-all;
 }
 
@@ -347,7 +347,7 @@
 
 .truncate-list-delete-btn {
   padding: 0.4rem 0.85rem !important;
-  font-size: 0.8rem !important;
+  font-size: var(--font-size-navigation) !important;
 }
 
 /* Card layout on mobile */
@@ -388,7 +388,7 @@
 
   .truncate-list-name::before {
     content: attr(data-label) ': ';
-    font-size: 0.72rem;
+    font-size: var(--font-size-caption);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -399,7 +399,7 @@
   }
 
   .truncate-list-name {
-    font-size: 0.88rem;
+    font-size: var(--font-size-body);
     margin-bottom: 0.65rem;
     color: #222;
   }
@@ -417,7 +417,7 @@
   }
 
   .truncate-list-delete-btn {
-    font-size: 0.8rem !important;
+    font-size: var(--font-size-navigation) !important;
     padding: 0.4rem 0.5rem !important;
   }
 }
@@ -452,7 +452,7 @@
   display: inline-block;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -487,21 +487,21 @@
 .profile-pw-input { width: 100%; min-width: 140px; }
 
 /* ── Masked password display ── */
-.profile-pw-dots { color: #999; font-size: 12px; }
+.profile-pw-dots { color: #999; font-size: var(--font-size-caption); }
 
 /* ── Export table grid (flex, replaces CSS grid) ── */
 .profile-export-grid        { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .profile-export-grid > *    { flex: 1 1 min(200px, 100%); }
 .profile-export-label       { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.profile-table-name         { font-size: 14px; color: #142D4E; }
+.profile-table-name         { font-size: var(--font-size-body); color: #142D4E; }
 
 /* ── Export action row ── */
 .profile-export-actions      { display: flex; gap: 10px; align-items: center; }
-.profile-export-download-btn { padding: 8px 16px; font-size: 14px; }
+.profile-export-download-btn { padding: 8px 16px; font-size: var(--font-size-body); }
 
 /* ── Truncate panel ── */
 .roles-panel-title--danger { color: #991b1b; }
-.profile-truncate-desc     { color: #666; font-size: 0.875rem; margin: 0 0 1rem 0; }
+.profile-truncate-desc     { color: #666; font-size: var(--font-size-body); margin: 0 0 1rem 0; }
 
 /* ===== Floating Toast ===== */
 
@@ -512,7 +512,7 @@
   z-index: 2000;
   padding: 0.85rem 1.25rem;
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   font-weight: 500;
   max-width: 380px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);

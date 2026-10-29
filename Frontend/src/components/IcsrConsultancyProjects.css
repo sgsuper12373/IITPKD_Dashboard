@@ -10,14 +10,14 @@
 }
 
 .icp-h1 {
-  font-size: 1.6rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 0.35rem;
 }
 
 .icp-subtitle {
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
   margin: 0 0 0.4rem;
   max-width: 60ch;
@@ -48,7 +48,7 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg-card);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text);
 }
 
@@ -59,7 +59,7 @@
 }
 
 .icp-count {
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   color: var(--color-text-muted);
   font-weight: 600;
 }
@@ -71,12 +71,12 @@
   border-radius: 8px;
   padding: 0.65rem 0.9rem;
   margin-bottom: 1rem;
-  font-size: 0.88rem;
+  font-size: var(--font-size-body);
 }
 
 .icp-empty {
   color: var(--color-text-light);
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   text-align: center;
   padding: 3rem 1rem;
 }
@@ -90,7 +90,7 @@
   border: 1px solid var(--color-border);
   border-radius: 10px;
   overflow: hidden;
-  font-size: 0.88rem;
+  font-size: var(--font-size-body);
 }
 
 .icp-table thead {
@@ -161,7 +161,7 @@
   border-radius: 8px;
   background: var(--color-bg-card);
   color: var(--color-text);
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
@@ -190,7 +190,7 @@
 
 .icp-btn--edit {
   padding: 0.4rem 0.7rem;
-  font-size: 0.8rem;
+  font-size: var(--font-size-navigation);
 }
 
 /* ── Modal / form ───────────────────────────────────────────────────────────── */
@@ -218,7 +218,7 @@
 
 .icp-form-title {
   margin: 0 0 1.1rem;
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-text);
 }
@@ -239,7 +239,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  font-size: 0.82rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
   color: var(--color-text-muted);
 }
@@ -249,7 +249,7 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg-card);
-  font-size: 0.9rem;
+  font-size: var(--font-size-body);
   color: var(--color-text);
   font-weight: 400;
 }
@@ -261,7 +261,7 @@
 }
 
 .icp-form-hint {
-  font-size: 0.74rem;
+  font-size: var(--font-size-caption);
   font-weight: 400;
   color: var(--color-text-light);
 }
@@ -274,7 +274,7 @@
 .icp-form-error {
   margin: 0;
   color: var(--color-error-dark);
-  font-size: 0.85rem;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
 
@@ -290,6 +290,6 @@
     grid-template-columns: 1fr;
   }
   .icp-table {
-    font-size: 0.82rem;
+    font-size: var(--font-size-navigation);
   }
 }

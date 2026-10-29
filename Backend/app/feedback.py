@@ -18,6 +18,7 @@ only then relays a cleaned payload to the Apps Script (which additionally reject
 anything missing the shared secret).
 """
 import base64
+import logging
 import os
 import re
 import secrets
@@ -31,10 +32,12 @@ from .db import get_db_connection, release_db_connection
 from .image_safety import ImageRejected, validate_and_reencode
 from .mailer import send_otp_email
 
+logger = logging.getLogger(__name__)
+
 feedback_bp = Blueprint('feedback', __name__)
 
 OTP_TTL_MINUTES = 10        # how long a code stays valid
-MAX_ATTEMPTS = 5            # failed OTP/CAPTCHA tries before the row is dead
+MAX_ATTEMPTS = 3            # failed OTP/CAPTCHA tries before the row is dead
 RESEND_COOLDOWN_SECONDS = 60  # min gap between OTP emails for one email address
 MAX_OTPS_PER_HOUR = 5       # cap OTP emails per email address per hour
 
@@ -167,8 +170,8 @@ def start(current_user_id):
         )
         global_count = cur.fetchone()['total']
         if global_count is not None and global_count >= GLOBAL_OTP_HOURLY_CAP:
-            print(f"⚠️  Feedback OTP circuit breaker tripped: {global_count} sends in the last hour "
-                  f"(cap {GLOBAL_OTP_HOURLY_CAP}). Possible relay abuse — check feedback_verification.")
+            logger.warning("Feedback OTP circuit breaker tripped: %d sends in the last hour (cap %d)",
+                          global_count, GLOBAL_OTP_HOURLY_CAP)
             return jsonify({'message': 'Feedback verification is temporarily unavailable. Please try again later.'}), 503
 
         # Rate limiting keyed by destination email: cooldown between sends + hourly cap.
@@ -216,7 +219,7 @@ def start(current_user_id):
         }), 200
     except Exception as exc:
         conn.rollback()
-        print(f"Feedback start error: {exc}")
+        logger.exception("Feedback start error")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -251,7 +254,7 @@ def verify(current_user_id):
         return jsonify({'ok': True}), 200
     except Exception as exc:
         conn.rollback()
-        print(f"Feedback verify error: {exc}")
+        logger.exception("Feedback verify error")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -327,13 +330,13 @@ def submit(current_user_id):
                 timeout=15,
             )
         except requests.RequestException as exc:
-            print(f"Feedback relay error: {exc}")
+            logger.exception("Feedback relay error")
             return jsonify({'message': 'Could not deliver feedback. Please try again later.'}), 502
 
         return jsonify({'message': 'Feedback submitted successfully.'}), 200
     except Exception as exc:
         conn.rollback()
-        print(f"Feedback submit error: {exc}")
+        logger.exception("Feedback submit error")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()

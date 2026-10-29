@@ -67,7 +67,7 @@
   margin-bottom: 12px;
 }
 .inno-stat-card-icon {
-  font-size: 32px;
+  font-size: var(--text-3xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 10px;
   border-radius: 12px;
@@ -75,7 +75,7 @@
 .inno-stat-card-label {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   font-weight: 500;
 }
 .inno-stat-card-value {
@@ -97,7 +97,7 @@
   flex-shrink: 0;
 }
 .inno-stat-card-subtext {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -134,7 +134,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 
 /* ── View type selector ── */
@@ -150,7 +150,7 @@
   margin-bottom: 10px;
   font-weight: 600;
   color: #142D4E;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .inno-view-grid {
   display: flex;
@@ -271,7 +271,7 @@
   padding: 10px;
   background-color: #EDE9DF;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .inno-filter-tag {
   margin-right: 10px;
@@ -299,7 +299,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
 .inno-chart-header .chart-description {
@@ -307,7 +307,7 @@
   margin: 0;
 }
 .inno-icon-span {
-  font-size: 24px;
+  font-size: var(--text-2xl);
   line-height: 1;
 }
 
@@ -328,7 +328,7 @@
 }
 .inno-no-data-text {
   color: #666;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
 }
 
 /* ── Sector expanded chart padding ── */
@@ -356,12 +356,12 @@
   margin-bottom: 12px;
 }
 .inno-mobile-card-name {
-  font-size: 18px;
+  font-size: var(--text-xl);
   font-weight: 700;
   color: #0F1F36;
 }
 .inno-mobile-card-field {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   color: #142D4E;
   margin-bottom: 8px;
 }
@@ -380,7 +380,7 @@
   border-top: 1px solid #EDE9DF;
 }
 .inno-mobile-card-year {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: #64748b;
 }
 
@@ -388,7 +388,7 @@
 .inno-status-badge {
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 700;
 }
 .inno-status-badge--active   { background-color: #dcfce7; color: #166534; }
@@ -396,7 +396,7 @@
 .inno-status-badge-sm {
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: bold;
 }
 
@@ -406,7 +406,7 @@
   color: #0F1F36;
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: bold;
 }
 
@@ -416,13 +416,13 @@
   color: #0F1F36;
   padding: 2px 8px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 700;
 }
 .inno-bool-badge {
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: bold;
   text-align: center;
 }
@@ -475,7 +475,7 @@
 }
 .inno-stat-num {
   font-weight: bold;
-  font-size: 24px;
+  font-size: var(--text-2xl);
 }
 .inno-stat-num--orange  { color: #087E8B; }
 .inno-stat-num--green   { color: #087E8B; }
@@ -483,7 +483,7 @@
 .inno-stat-num--purple  { color: #142D4E; }
 .inno-stat-label {
   color: #666;
-  font-size: 12px;
+  font-size: var(--font-size-caption);
 }
 
 /* ── Pagination ── */
@@ -502,7 +502,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   transition: background-color 0.2s;
 }
@@ -512,7 +512,7 @@
 }
 .inno-page-info {
   color: #666;
-  font-size: 14px;
+  font-size: var(--font-size-body);
 }
 .inno-page-total {
   margin-left: 8px;

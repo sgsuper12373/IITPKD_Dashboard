@@ -1,4 +1,5 @@
 """Endpoints for querying last_updated timestamps across all data tables."""
+import psycopg2.sql as sql
 from flask import Blueprint, jsonify
 
 from .auth import token_optional
@@ -102,9 +103,9 @@ def get_one(current_user_id=None, table_name=None):
         return jsonify({'error': 'Database connection failed.'}), 503
     try:
         cur = conn.cursor()
-        # Safe: table_name is confirmed to be in TABLES (hardcoded whitelist above)
         cur.execute(
-            f"SELECT MAX(last_updated) AS last_updated FROM public.{table_name}"  # noqa: S608
+            sql.SQL("SELECT MAX(last_updated) AS last_updated FROM {}.{}").format(
+                sql.Identifier("public"), sql.Identifier(table_name))
         )
         row = cur.fetchone()
         cur.close()

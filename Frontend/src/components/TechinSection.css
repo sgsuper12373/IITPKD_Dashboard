@@ -33,11 +33,11 @@
 }
 .techin-summary-card h3 {
   margin: 0 0 10px 0;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   opacity: 0.9;
 }
 .techin-summary-card-footer {
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   opacity: 0.7;
   margin-top: 6px;
 }
@@ -52,7 +52,7 @@
 .techin-revenue-h3 {
   margin: 0;
   color: #142D4E;
-  font-size: 18px;
+  font-size: var(--text-xl);
   font-weight: 600;
 }
 .techin-revenue-grid {
@@ -88,7 +88,7 @@
 }
 .techin-revenue-card-body { position: relative; z-index: 1; }
 .techin-revenue-card-label {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   opacity: 0.9;
   margin-bottom: 8px;
   font-weight: 500;
@@ -111,7 +111,7 @@
 .techin-filter-h4 {
   margin: 0 0 10px 0;
   color: #142D4E;
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -122,7 +122,7 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-.techin-tab-icon { font-size: 16px; }
+.techin-tab-icon { font-size: var(--font-size-card-title); }
 
 /* ── Filter wrapper ── */
 .techin-filter-wrap { padding: 0 6px; }
@@ -231,11 +231,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
-.techin-chart-icon { font-size: 22px; }
-.techin-chart-desc { color: #666; margin: 0; font-size: 13px; }
+.techin-chart-icon { font-size: var(--text-2xl); }
+.techin-chart-desc { color: #666; margin: 0; font-size: var(--font-size-navigation); }
 
 /* ── Mode buttons row ── */
 .techin-mode-row {
@@ -265,7 +265,7 @@
   pointer-events: none;
 }
 .techin-no-data-icon { font-size: 40px; margin-bottom: 10px; }
-.techin-no-data-text { color: #94a3b8; font-size: 15px; font-weight: 500; margin: 0; }
+.techin-no-data-text { color: #94a3b8; font-size: var(--font-size-card-title); font-weight: 500; margin: 0; }
 
 /* ── Mobile list (maxHeight stays inline) ── */
 .techin-mobile-list {
@@ -285,7 +285,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .techin-mobile-card-title {
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 700;
   color: #0F1F36;
   margin-bottom: 8px;
@@ -294,7 +294,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
 }
 .techin-mobile-card-fields > * { flex: 1 1 calc(50% - 6px); }
 .techin-field-label { color: #64748b; font-weight: 600; }
@@ -313,7 +313,7 @@
   gap: 8px;
   padding: 12px;
   font-weight: bold;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   flex-shrink: 0;
 }
 .techin-table-body { overflow-y: auto; flex: 1; }
@@ -322,13 +322,13 @@
   gap: 8px;
   padding: 12px;
   border-bottom: 1px solid #e0e0e0;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   align-items: center;
 }
 .techin-table-row-name { font-weight: 500; }
 
 /* ── Status badge ── */
-.techin-status-badge          { font-size: 11px; font-weight: 500; }
+.techin-status-badge          { font-size: var(--font-size-caption); font-weight: 500; }
 .techin-status-badge--sm      { padding: 2px 8px; border-radius: 10px; }
 .techin-status-badge--md      { padding: 4px 8px; border-radius: 12px; display: inline-block; }
 .techin-status-badge--active  { background-color: #dcfce7; color: #166534; }
@@ -358,7 +358,7 @@
   border: 1px solid #e0e0e0;
 }
 .techin-empty-icon { font-size: 36px; margin-bottom: 10px; }
-.techin-empty-text { color: #94a3b8; font-size: 15px; font-weight: 500; margin: 0; }
+.techin-empty-text { color: #94a3b8; font-size: var(--font-size-card-title); font-weight: 500; margin: 0; }
 
 /* ============================================================ */
 /* RESPONSIVE                                                   */

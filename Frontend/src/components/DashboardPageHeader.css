@@ -26,7 +26,7 @@
 
 .dph__subtitle {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: var(--font-size-body);
   color: #475569;
   line-height: 1.5;
   max-width: 600px;
@@ -47,5 +47,5 @@
 
 @media (max-width: 480px) {
   .dph__primary { gap: 8px; }
-  .dph__subtitle { font-size: 0.82rem; }
+  .dph__subtitle { font-size: var(--font-size-navigation); }
 }

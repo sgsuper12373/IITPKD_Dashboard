@@ -26,7 +26,7 @@
 /* Subtitle (merged duplicate) */
 .page-content-studentsEngagement>p {
     color: #2d2d2d;
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
     line-height: 1.6;
     margin-bottom: 1rem;
 }
@@ -38,7 +38,7 @@
     }
 
     .page-content-studentsEngagement>h1 {
-        font-size: 1.75rem;
+        font-size: var(--text-3xl);
     }
 }
 
@@ -48,7 +48,7 @@
     }
 
     .page-content-studentsEngagement>h1 {
-        font-size: 1.5rem;
+        font-size: var(--text-2xl);
     }
 }
 
@@ -59,11 +59,11 @@
     }
 
     .page-content-studentsEngagement>h1 {
-        font-size: 1.3rem;
+        font-size: var(--text-xl);
     }
 
     .page-content-studentsEngagement>p {
-        font-size: 0.95rem;
+        font-size: var(--font-size-body);
     }
 
     .page-content-studentsEngagement .grievance-table-wrapper {
@@ -109,11 +109,11 @@
 /* ── Card header ── */
 .se-card-header    { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px; }
 .se-card-icon-wrap { font-size: 64px; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 24px; margin-bottom: 16px; display: inline-block; }
-.se-card-h2        { margin: 0; color: white; font-size: 32px; font-weight: bold; letter-spacing: 1px; }
-.se-card-subtitle  { margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; }
+.se-card-h2        { margin: 0; color: white; font-size: var(--text-3xl); font-weight: bold; letter-spacing: 1px; }
+.se-card-subtitle  { margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: var(--font-size-body); }
 
 /* ── Card description ── */
-.se-card-desc { color: rgba(255,255,255,0.95); font-size: 15px; line-height: 1.6; margin-bottom: 30px; text-align: center; padding: 0 10px; }
+.se-card-desc { color: rgba(255,255,255,0.95); font-size: var(--font-size-card-title); line-height: 1.6; margin-bottom: 30px; text-align: center; padding: 0 10px; }
 
 /* ── Card footer / view button ── */
 .se-card-footer { display: flex; justify-content: center; margin-top: auto; }
@@ -130,7 +130,7 @@
   cursor: pointer;
 }
 .se-view-btn:hover { background-color: rgba(255,255,255,0.25); transform: scale(1.05); }
-.se-view-label { color: white; font-size: 16px; font-weight: 500; }
+.se-view-label { color: white; font-size: var(--font-size-card-title); font-weight: 500; }
 
 /* ===================================================== */
 /* SUMMARY CARDS */
@@ -156,7 +156,7 @@
 /* Label */
 .page-content-studentsEngagement .summary-card-label {
     color: #066A75 !important;
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
     font-weight: 500;
     margin-bottom: 0.4rem;
     overflow-wrap: break-word;
@@ -171,7 +171,7 @@
 
 /* Subtitle */
 .page-content-studentsEngagement .summary-subtitle {
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
     color: #64748b;
     margin-top: 0.3rem;
 }

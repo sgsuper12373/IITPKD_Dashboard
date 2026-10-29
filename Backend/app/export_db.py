@@ -1,10 +1,13 @@
 import csv
 import io
+import logging
 from flask import Blueprint, jsonify, request, send_file
 from psycopg2 import sql
 from .db import get_db_connection, release_db_connection
 from .auth import token_required, _require_admin
 from . import bcrypt, limiter
+
+logger = logging.getLogger(__name__)
 
 export_db_bp = Blueprint('export_db', __name__)
 
@@ -60,7 +63,7 @@ def get_tables(current_user_id):
         tables = [row['table_name'] for row in cur.fetchall() if row['table_name'] not in _SENSITIVE_TABLES]
         return jsonify(tables), 200
     except Exception as e:
-        print(f"Error listing tables: {e}")
+        logger.exception("Error listing tables")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -110,7 +113,7 @@ def export_table(current_user_id, table_name):
         )
 
     except Exception as e:
-        print(f"Error exporting table: {e}")
+        logger.exception("Error exporting table")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()
@@ -155,7 +158,7 @@ def truncate_table(current_user_id, table_name):
 
     except Exception as e:
         conn.rollback()
-        print(f"Error truncating table: {e}")
+        logger.exception("Error truncating table")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         cur.close()

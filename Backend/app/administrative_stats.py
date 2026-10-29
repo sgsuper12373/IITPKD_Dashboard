@@ -1,9 +1,15 @@
+import logging
+from datetime import date
+
+import psycopg2.extras
+import psycopg2.sql as sql
 from flask import Blueprint, jsonify, request
+
 from .db import get_dashboard_connection, release_dashboard_connection
 from .auth import token_optional, _is_management
 from .pii_guard import redact_pii_patterns
-import psycopg2.extras
-from datetime import date
+
+logger = logging.getLogger(__name__)
 
 administrative_bp = Blueprint('administrative', __name__)
 
@@ -231,7 +237,7 @@ def get_filter_options(current_user_id):
         return jsonify(filter_options), 200
 
     except Exception as e:
-        print(f"Error fetching filter options: {e}")
+        logger.exception("Error fetching filter options")
         return jsonify({'message': 'An error occurred while fetching filter options.'}), 500
     finally:
         if cur:
@@ -307,8 +313,7 @@ def get_employee_overview(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching employee overview: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching employee overview")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -393,8 +398,7 @@ def get_faculty_gender_last_five_years(current_user_id):
         return jsonify({'data': data}), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching faculty gender last five years: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching faculty gender last five years")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -467,8 +471,7 @@ def get_faculty_by_department_designation(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching faculty by department: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching faculty by department")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -528,8 +531,7 @@ def get_staff_count(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching staff count: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching staff count")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -614,8 +616,7 @@ def get_gender_distribution(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching gender distribution: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching gender distribution")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -695,8 +696,7 @@ def get_category_distribution(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching group distribution: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching group distribution")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -755,8 +755,7 @@ def get_data_summary(current_user_id):
         return jsonify(summary), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching data summary: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching data summary")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -835,8 +834,7 @@ def get_department_breakdown(current_user_id):
         }), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching department breakdown: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching department breakdown")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:
@@ -986,9 +984,7 @@ def get_yearwise_strength(current_user_id):
         return jsonify({'data': data, 'total': current_total}), 200
 
     except Exception as e:
-        import traceback
-        tb = traceback.format_exc()
-        print(f"Error fetching yearwise strength: {e}\n{tb}")
+        logger.exception("Error fetching yearwise strength")
         if conn:
             try:
                 conn.rollback()
@@ -1080,8 +1076,7 @@ def get_faculty_expertise_matrix(current_user_id):
         return jsonify({'data': data, 'total': total}), 200
 
     except Exception as e:
-        import traceback
-        print(f"Error fetching faculty expertise matrix: {e}\n{traceback.format_exc()}")
+        logger.exception("Error fetching faculty expertise matrix")
         return jsonify({'message': 'An internal error occurred.'}), 500
     finally:
         if cur:

@@ -33,7 +33,7 @@
 .edu-adm-radio--details input { accent-color: #087E8B; }
 
 /* ── Radio label text ── */
-.edu-adm-radio span { font-weight: 500; font-size: 14px; }
+.edu-adm-radio span { font-weight: 500; font-size: var(--font-size-body); }
 .edu-adm-radio.active span { font-weight: 600; }
 
 /* ── View panels wrapper ── */
@@ -45,7 +45,7 @@
 
 /* ── Drilldown panel helpers ── */
 .edu-adm-drilldown-h3 { margin: 0; display: flex; align-items: center; gap: 10px; }
-.edu-adm-year-label { font-size: 0.9rem; color: #666; font-weight: normal; margin-left: 10px; }
+.edu-adm-year-label { font-size: var(--font-size-body); color: #666; font-weight: normal; margin-left: 10px; }
 .edu-adm-drilldown-actions { display: flex; gap: 12px; align-items: center; }
 
 /* ── Mobile card top row ── */

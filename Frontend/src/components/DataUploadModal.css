@@ -36,13 +36,13 @@
 .modal-header h2 {
     margin: 0;
     color: #142D4E;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
     cursor: pointer;
     color: #666;
     transition: color 0.2s;
@@ -67,11 +67,11 @@
     display: flex;
     align-items: start;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: var(--font-size-body);
 }
 
 .warning-icon {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
 }
 
 .file-input-container {
@@ -103,7 +103,7 @@
 .preview-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
 }
 
 .preview-table th,
@@ -187,11 +187,11 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
 }
 
 /* ── Required format section ── */
-.dum-format-section { margin-bottom: 1rem; font-size: 0.9rem; color: #ccc; }
+.dum-format-section { margin-bottom: 1rem; font-size: var(--font-size-body); color: #ccc; }
 .dum-format-code {
     background-color: #2d3748;
     padding: 0.5rem;
@@ -211,7 +211,7 @@
 
 /* ── Schema load status ── */
 .dum-schema-note {
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
     color: #666;
     background-color: #f1f3f5;
     border-radius: 6px;
@@ -227,12 +227,12 @@
 .dum-optional-label { display: block; margin-top: 0.75rem; }
 
 /* ── Accepted-values legend ── */
-.dum-enum-legend { margin-top: 0.75rem; font-size: 0.85rem; }
+.dum-enum-legend { margin-top: 0.75rem; font-size: var(--font-size-navigation); }
 .dum-enum-legend ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
 .dum-enum-legend code { background-color: #2d3748; color: #fff; padding: 0.1rem 0.35rem; border-radius: 3px; }
 
 /* ── Misc format hints (date format, auto-generated id notes, etc.) ── */
-.dum-hint { margin-top: 0.5rem; font-size: 0.85rem; color: #64748b; }
+.dum-hint { margin-top: 0.5rem; font-size: var(--font-size-navigation); color: #64748b; }
 .dum-hint code { background-color: #2d3748; color: #fff; padding: 0.1rem 0.35rem; border-radius: 3px; }
 
 /* ── Pre-flight (client-side) validation panel ── */
@@ -242,8 +242,8 @@
     border-radius: 8px;
     padding: 0.75rem 1rem;
 }
-.dum-preflight-header { font-weight: 600; color: #856404; margin-bottom: 0.5rem; font-size: 0.9rem; }
-.dum-preflight-item { font-size: 0.85rem; color: #856404; margin-bottom: 0.25rem; }
+.dum-preflight-header { font-weight: 600; color: #856404; margin-bottom: 0.5rem; font-size: var(--font-size-body); }
+.dum-preflight-item { font-size: var(--font-size-navigation); color: #856404; margin-bottom: 0.25rem; }
 
 /* ── Error row label ── */
 .dum-error-row-header { font-weight: bold; margin-bottom: 0.3rem; }
@@ -253,7 +253,7 @@
 .dum-success-icon  { font-size: 3rem; margin-bottom: 1rem; }
 .dum-success-h3    { color: #2ecc71; margin-bottom: 1rem; }
 .dum-success-msg   { margin-bottom: 2rem; color: #64748b; }
-.dum-success-hint  { font-size: 0.9rem; color: #94a3b8; margin-bottom: 2rem; }
+.dum-success-hint  { font-size: var(--font-size-body); color: #94a3b8; margin-bottom: 2rem; }
 .dum-ok-btn {
     padding: 10px 30px;
     background-color: #2ecc71;
@@ -261,7 +261,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: var(--font-size-card-title);
     font-weight: bold;
 }
 
@@ -274,7 +274,7 @@
     padding: 0.4rem 0.75rem;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: var(--font-size-navigation);
     font-weight: 500;
 }
 .dum-download-errors-btn:hover {

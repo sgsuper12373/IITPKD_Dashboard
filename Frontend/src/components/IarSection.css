@@ -78,14 +78,14 @@
   margin-bottom: 12px;
 }
 .iar-stat-card-icon {
-  font-size: 24px;
+  font-size: var(--text-2xl);
   background: rgba(255, 255, 255, 0.2);
   padding: 8px;
   border-radius: 8px;
 }
 .iar-stat-card-label {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
 }
 .iar-stat-card-value {
@@ -105,7 +105,7 @@
   flex-shrink: 0;
 }
 .iar-stat-card-subtext {
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -125,7 +125,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 500;
   transition: all 0.3s ease;
   display: flex;
@@ -210,7 +210,7 @@
   gap: 6px;
   margin: 0 0 4px 0;
   color: #142D4E;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
   font-weight: 600;
 }
 .iar-chart-header > div > h2 {
@@ -221,7 +221,7 @@
   margin: 0;
 }
 .iar-icon-span {
-  font-size: 24px;
+  font-size: var(--text-2xl);
   line-height: 1;
 }
 
@@ -261,7 +261,7 @@
 .iar-stat-metric--pink    { color: #066A75; }
 .iar-stat-sub {
   color: #8A8A84;
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   font-weight: 400;
 }
 
@@ -277,13 +277,13 @@
 .iar-info-box h2 {
   margin: 0;
   color: #142D4E;
-  font-size: 16px;
+  font-size: var(--font-size-card-title);
   font-weight: 500;
   line-height: 1.5;
 }
-.iar-info-highlight--purple { font-weight: bold; color: #142D4E; font-size: 22px; }
-.iar-info-highlight--green  { font-weight: bold; color: #087E8B; font-size: 18px; }
-.iar-info-highlight--orange { font-weight: bold; color: #087E8B; font-size: 18px; }
+.iar-info-highlight--purple { font-weight: bold; color: #142D4E; font-size: var(--text-2xl); }
+.iar-info-highlight--green  { font-weight: bold; color: #087E8B; font-size: var(--text-xl); }
+.iar-info-highlight--orange { font-weight: bold; color: #087E8B; font-size: var(--text-xl); }
 
 /* ── Pie tooltip ── */
 .iar-pie-tooltip {
@@ -292,7 +292,7 @@
   border-radius: 8px;
   padding: 10px 14px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
 }
 .iar-pie-tooltip-name {
   margin: 0 0 4px;
@@ -335,7 +335,7 @@
   flex-shrink: 0;
 }
 .iar-pie-dist-name-text {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   color: #0F1F36;
 }
@@ -343,12 +343,12 @@
   text-align: right;
 }
 .iar-pie-dist-count {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 700;
   color: #142D4E;
 }
 .iar-pie-dist-pct {
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   color: #94a3b8;
 }
 
@@ -360,7 +360,7 @@
 .iar-pie-dist-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
 }
 .iar-pie-dist-table thead tr {
   background-color: #142D4E;
@@ -437,7 +437,7 @@
   flex-shrink: 0;
 }
 .iar-legend-label {
-  font-size: 12px;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   color: #444;
 }
@@ -479,7 +479,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .iar-mobile-card-dept {
-  font-size: 15px;
+  font-size: var(--font-size-card-title);
   font-weight: 700;
   color: #0F1F36;
   margin-bottom: 8px;
@@ -493,12 +493,12 @@
   text-align: center;
 }
 .iar-mobile-stat-label {
-  font-size: 11px;
+  font-size: var(--font-size-caption);
   color: #64748b;
   margin-bottom: 2px;
 }
 .iar-mobile-stat-value {
-  font-size: 14px;
+  font-size: var(--font-size-body);
   font-weight: 700;
 }
 .iar-mobile-stat-value--total   { color: #0F1F36; }
@@ -509,7 +509,7 @@
 .iar-outcome-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--font-size-navigation);
 }
 .iar-outcome-thead {
   position: sticky;
@@ -537,14 +537,14 @@
 @media (max-width: 768px) {
   .chart-section .grievance-table th,
   .chart-section .grievance-table td {
-    font-size: 0.82rem;
+    font-size: var(--font-size-navigation);
     padding: 0.5rem 0.6rem;
   }
 }
 
 @media (max-width: 640px) {
   .iar-view-tabs { gap: 6px; }
-  .iar-view-tab { padding: 8px 14px; font-size: 12px; }
+  .iar-view-tab { padding: 8px 14px; font-size: var(--font-size-caption); }
 }
 
 @media (max-width: 480px) {
@@ -554,15 +554,15 @@
   }
   .chart-section .grievance-table th,
   .chart-section .grievance-table td {
-    font-size: 0.76rem;
+    font-size: var(--font-size-caption);
     padding: 0.4rem 0.5rem;
   }
   .iar-view-tabs { gap: 4px; padding-bottom: 8px; }
-  .iar-view-tab { padding: 6px 10px; font-size: 11px; gap: 4px; }
+  .iar-view-tab { padding: 6px 10px; font-size: var(--font-size-caption); gap: 4px; }
 }
 
 @media (max-width: 360px) {
   .chart-section .grievance-table {
-    font-size: 0.72rem;
+    font-size: var(--font-size-caption);
   }
 }
